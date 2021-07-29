@@ -922,7 +922,7 @@ medianDP <- function (x, eps, which.sensitivity='bounded',
 
 #' @export
 # logisticRegDP <- function(X, y, ){
-#
+# testing
 # }
 
 
