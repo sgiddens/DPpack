@@ -1,0 +1,25 @@
+Package: DPpack
+Title: Differentially Private Statistical Functions
+Version: 0.0.0.9000
+Authors@R: c(
+    person(given = "Spencer",
+           family = "Giddens",
+           role = c("aut", "cre"),
+           email = "giddens2spencer@gmail.com"),
+    person(given = "Fang",
+           family = "Liu",
+           role = "aut"))
+Description: An implementation of various common statistical functions
+    and models using differential privacy. The package contains, for
+    example, functions providing differentially private computations of
+    mean, variance, median, histograms, contingency tables, and other similar
+    functions. It also implements some statistical models such as linear 
+    regression and SVM. In addition, it implements some popular differential
+    privacy mechanisms that are used in the computations.
+License: GPL (>= 3)
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.1
+Imports: 
+    rmutil (>= 1.1.5)
