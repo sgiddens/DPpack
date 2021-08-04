@@ -1,16 +1,24 @@
+#' Differentially Private Mean Data Access Function
+#'
+#' This function performs the data access step in the computation of a
+#' differentially private mean. The true values are computed using
+#' \code{\link[base]{mean}}, while the bounded and unbounded sensitivities are
+#' computed according to the theoretical values from [TODO: CITE PAPER HERE].
+#'
+#' @param x Numeric vector, matrix, or data frame. Means taken over columns
+#'   (when applicable).
+#' @param lower.bounds Numeric vector of lower bounds on each column of x. The
+#'   length of lower.bounds must match the number of columns of x (length 1 if x
+#'   is a vector).
+#' @param upper.bounds Numeric vector of upper bounds on each column of x. The
+#'   length of upper.bounds must match the number of columns of x (length 1 if x
+#'   is a vector).
+#' @return List of the true mean, and the bounded and unbounded sensitivities.
+#' @examples
+#' meanDataAccess(c(1,4,3,2), 0, 5)
+#'
+#' @keywords internal
 meanDataAccess <- function (x, lower.bounds, upper.bounds){
-  # Performs the data access step for differentially private mean.
-  #
-  # x: The dataset over which the mean will be taken.
-  #     It could be a subset of the full dataset. Means taken over columns.
-  # lower.bounds: The list of lower bounds (minimums) of the full dataset from
-  #     which each column of x was taken.
-  # upper.bounds: The list of upper bounds (maximums) of the full dataset from
-  #     which each column of x was taken.
-  #
-  # Returns:
-  #     List containing the true means, the bounded sensitivities, and the
-  #         unbounded sensitivities for each column of x.
   f <- mean; # Function to evaluate over x
   if (is.null(dim(x))){
     tv <- f(x);
@@ -25,19 +33,28 @@ meanDataAccess <- function (x, lower.bounds, upper.bounds){
               "Unbounded.Sensitivities"=us));
 }
 
+#' Differentially Private Variance Data Access Function
+#'
+#' This function performs the data access step in the computation of a
+#' differentially private variance. The true values are computed using
+#' \code{\link[stats]{var}}, while the bounded and unbounded sensitivities are
+#' computed according to the theoretical values from [TODO: CITE PAPER HERE].
+#'
+#' @param x Numeric vector, matrix, or data frame. Variances taken over columns
+#'   (when applicable).
+#' @param lower.bounds Numeric vector of lower bounds on each column of x. The
+#'   length of lower.bounds must match the number of columns of x (length 1 if x
+#'   is a vector).
+#' @param upper.bounds Numeric vector of upper bounds on each column of x. The
+#'   length of upper.bounds must match the number of columns of x (length 1 if x
+#'   is a vector).
+#' @return List of the true variance, and the bounded and unbounded
+#'   sensitivities.
+#' @examples
+#' varDataAccess(c(1,4,3,2), 0, 5)
+#'
+#' @keywords internal
 varDataAccess <- function (x, lower.bounds, upper.bounds){
-  # Performs the data access step for differentially private variance.
-  #
-  # x: The dataset over which the variance will be taken.
-  #     It could be a subset of the full dataset. Means taken over columns.
-  # lower.bounds: The list of lower bounds (minimums) of the full dataset from
-  #     which each column of x was taken.
-  # upper.bounds: The list of upper bounds (maximums) of the full dataset from
-  #     which each column of x was taken.
-  #
-  # Returns:
-  #     List containing the true variances, the bounded sensitivities, and the
-  #         unbounded sensitivities for each column of x.
   f <- var; # Function to evaluate over x
   if (is.null(dim(x))){
     tv <- f(x);
@@ -52,24 +69,26 @@ varDataAccess <- function (x, lower.bounds, upper.bounds){
               "Unbounded.Sensitivities"=us));
 }
 
+#' Differentially Private Covariance Data Access Function
+#'
+#' This function performs the data access step in the computation of a
+#' differentially private covariance. The true values are computed using
+#' \code{\link[stats]{cov}}, while the bounded and unbounded sensitivities are
+#' computed according to the theoretical values from [TODO: CITE PAPER HERE].
+#'
+#' @param x1,x2 Numeric vectors.
+#' @param lower.bound1,lower.bound2 Real numbers giving the lower bounds of x1
+#'   and x2, respectively.
+#' @param upper.bound1,upper.bound2 Real numbers giving the upper bounds of x1
+#'   and x2, respectively.
+#' @return List of the true covariance, and the bounded and unbounded
+#'   sensitivities.
+#' @examples
+#' covDataAccess(c(1,4,3,2), c(-2,-3,-4,-1), 0, 5, -5, 0)
+#'
+#' @keywords internal
 covDataAccess <- function (x1, x2, lower.bound1, upper.bound1,
                            lower.bound2, upper.bound2){
-  # Performs the data access step for differentially private covariance.
-  #
-  # x1, x2: the datasets between which the covariance will be taken.
-  #     Each could be a subset of the full dataset. Must be single dimensional.
-  # lower.bound1: The lower bound (minimum) of the full dataset from
-  #     which x1 was taken.
-  # upper.bound1: The upper bound (maximum) of the full dataset from
-  #     which x1 was taken.
-  # lower.bound2: The lower bound (minimum) of the full dataset from
-  #     which x2 was taken.
-  # upper.bound2: The upper bound (maximum) of the full dataset from
-  #     which x2 was taken.
-  #
-  # Returns:
-  #     List containing the true covariance, the bounded sensitivity, and the
-  #         unbounded sensitivity between x1, and x2.
   tv <- cov(x1,x2);
   n <- length(x1);
   bs <- (upper.bound1-lower.bound1)*(upper.bound2-lower.bound2)/n;
@@ -78,16 +97,23 @@ covDataAccess <- function (x1, x2, lower.bound1, upper.bound1,
               "Unbounded.Sensitivities"=us));
 }
 
+#' Differentially Private Histogram Data Access Function
+#'
+#' This function performs the data access step in the computation of a
+#' differentially private histogram. The true values are computed using
+#' \code{\link[graphics]{hist}}, while the bounded and unbounded sensitivities are
+#' computed according to the theoretical values from [TODO: CITE PAPER HERE].
+#'
+#' @param x Numeric vector.
+#' @param breaks Identical to the argument with the same name from
+#'   \code{\link[graphics]{hist}}.
+#' @return List of the true histogram, and the bounded and unbounded
+#'   sensitivities.
+#' @examples
+#' histogramDataAccess(c(1,4,3,2,3), 'Sturges')
+#'
+#' @keywords internal
 histogramDataAccess <- function (x, breaks){
-  # Performs the data access step for differentially private histogram.
-  #
-  # x: The dataset over which the histogram will be taken.
-  #     It could be a subset of the full dataset.
-  # breaks: same argument as with hist function.
-  #
-  # Returns:
-  #     List containing the true histogram, the bounded sensitivity, and the
-  #         unbounded sensitivity x.
   tv <- hist(x,breaks,plot=FALSE);
   tv$density <- NULL;
   bs <- 2;
@@ -96,15 +122,23 @@ histogramDataAccess <- function (x, breaks){
               "Unbounded.Sensitivities"=us));
 }
 
+#' Differentially Private Contingency Table Data Access Function
+#'
+#' This function performs the data access step in the computation of a
+#' differentially private contingency table. The true values are computed using
+#' \code{\link[base]{table}}, while the bounded and unbounded sensitivities are
+#' computed according to the theoretical values from [TODO: CITE PAPER HERE].
+#'
+#' @param x,y Vectors of data from which to create the contingency table.
+#' @return List of the true contingency table, and the bounded and unbounded
+#'   sensitivities.
+#' @examples
+#' x <- MASS::Cars93$Type;
+#' y <- MASS::Cars93$Origin;
+#' tableDataAccess(x,y)
+#'
+#' @keywords internal
 tableDataAccess <- function(x, y){
-  # Performs the data access step for a differential private contingency table.
-  #
-  # x: the first set of data over which to create the contingency table.
-  # y: the second set of data over which to create the contingency table.
-  #
-  # Returns:
-  #     List containing the true histogram, the bounded sensitivity, and the
-  #         unbounded sensitivity x.
   tv <- table(x,y);
   bs <- 2;
   us <- 1;
@@ -112,18 +146,27 @@ tableDataAccess <- function(x, y){
               "Unbounded.Sensitivities"=us));
 }
 
+#' Differentially Private Pooled Variance Data Access Function
+#'
+#' This function performs the data access step in the computation of a
+#' differentially private pooled variance. The true values are computed using
+#' the theoretical formula and \code{\link[stats]{var}}, while the bounded and
+#' unbounded sensitivities are computed according to the theoretical values from
+#' [TODO: CITE PAPER HERE].
+#'
+#' @param samples List of vectors from which to compute the pooled variance.
+#' @param lower.bound Real number giving the lower bound of the input data.
+#' @param upper.bound Real number giving the upper bound of the input data.
+#' @param approx.n.max Logical indicating whether to approximate n.max, which is
+#'   defined to be the length of the largest input vector. Approximation is best
+#'   if n.max is very large.
+#' @return List of the true pooled variance, and the bounded and unbounded
+#'   sensitivities.
+#' @examples
+#' pooledVarDataAccess(list(c(1,4,-2,8,-6),c(1,2),c(-5,-7)),-10,10,FALSE)
+#'
+#' @keywords internal
 pooledVarDataAccess <- function(samples, lower.bound, upper.bound,approx.n.max){
-  # Performs the data access step of pooled variance.
-  #
-  # samples: the collection of samples from which to compute the pooled variance.
-  # lower.bound: the lower bound (minimum) of the collections.
-  # upper.bound: the upper bound (maximum) of the collections.
-  # approx.n.max: Boolean indicating whether to approximate n.max. Approximation
-  #     is best if n.max is very large.
-  #
-  # Returns:
-  #     List containing the true histogram, the bounded sensitivity, and the
-  #         unbounded sensitivity x.
   J <- length(samples);
   n <- 0;
   n.max <- 0;
@@ -165,26 +208,34 @@ pooledVarDataAccess <- function(samples, lower.bound, upper.bound,approx.n.max){
               "Unbounded.Sensitivities"=us));
 }
 
+#' Differentially Private Pooled Covariance Data Access Function
+#'
+#' This function performs the data access step in the computation of a
+#' differentially private pooled covariance. The true values are computed using
+#' the theoretical formula and \code{\link[stats]{cov}}, while the bounded and
+#' unbounded sensitivities are computed according to the theoretical values from
+#' [TODO: CITE PAPER HERE].
+#'
+#' @param samples List of two-column matrices from which to compute the pooled
+#'   covariance.
+#' @param lower.bound1,lower.bound2 Real numbers giving the lower bounds of the
+#'   first and second columns of samples, respectively.
+#' @param upper.bound1,upper.bound2 Real numbers giving the upper bounds of the
+#'   first and second columns of samples, respectively.
+#' @param approx.n.max Logical indicating whether to approximate n.max, which is
+#'   defined to be the length of the largest input vector. Approximation is best
+#'   if n.max is very large.
+#' @return List of the true pooled covariance, and the bounded and unbounded
+#'   sensitivities.
+#' @examples
+#' x1 <- matrix(c(1,4,-2,8,-6,-3),ncol=2)
+#' x2 <- matrix(c(1,2,-5,7),ncol=2)
+#' pooledCovDataAccess(list(x1,x2),-10,10,-10,10,FALSE)
+#'
+#' @keywords internal
 pooledCovDataAccess <- function(samples, lower.bound1, upper.bound1,
                                 lower.bound2, upper.bound2,
                                 approx.n.max){
-  # Performs the data access step of pooled variance.
-  #
-  # samples: the collection of samples from which to compute the pooled variance.
-  # lower_bounds1: the lower bounds (minimums) of each of the x1 collections.
-  #     If NULL, it is computed to be the min values of each of them.
-  # upper_bounds1: the upper bounds (maximums) of each of the x2 collections.
-  #     If NULL, it is computed to be the max values of each of them.
-  # lower_bounds2: the lower bounds (minimums) of each of the x1 collections.
-  #     If NULL, it is computed to be the min values of each of them.
-  # upper_bounds2: the upper bounds (maximums) of each of the x2 collections.
-  #     If NULL, it is computed to be the max values of each of them.
-  # approx.n.max: Boolean indicating whether to approximate n.max. Approximation
-  #     is best if n.max is very large.
-  #
-  # Returns:
-  #     List containing the true histogram, the bounded sensitivity, and the
-  #         unbounded sensitivity x.
   J <- length(samples);
   n <- 0;
   n.max <- 0;
@@ -218,18 +269,24 @@ pooledCovDataAccess <- function(samples, lower.bound1, upper.bound1,
               "Unbounded.Sensitivities"=us));
 }
 
+#' Differentially Private Quantile Data Access Function
+#'
+#' This function performs the data access step in the computation of a
+#' differentially private quantile. The utility vector is computed as in
+#' [TODO:CITE THIS], while the bounded and unbounded sensitivities are computed
+#' according to the theoretical values from [TODO:PROVE THESE].
+#'
+#' @param x Numeric vector.
+#' @param quant Real number between 0 and 1 indicating which quantile to return.
+#' @param lower.bound Real number giving the lower bound of the input data.
+#' @param upper.bound Real number giving the upper bound of the input data.
+#' @return List of a vector corresponding to the utility function, the sorted
+#'   and clipped vector of inputs, and the bounded and unbounded sensitivities.
+#' @examples
+#' quantileDataAccess(c(1,1,-2,8,-6),.25,-10,10)
+#'
+#' @keywords internal
 quantileDataAccess <- function (x, quant, lower.bound, upper.bound){
-  # Performs the data access step for differentially private quantile.
-  #
-  # x: The dataset over which the quantile will be taken.
-  #     It could be a subset of the full dataset.
-  # quant: Real number between 0 and 1 indicating which quantile to return.
-  # lower.bound: The lower bounds (minimums) of the full dataset.
-  # upper.bound: The upper bounds (maximums) of the full dataset.
-  #
-  # Returns:
-  #     List containing the ordered data clipped at bounds, the bounded
-  #         sensitivities, and the unbounded sensitivities for x.
   n <- length(x);
   utility <- -abs(0:n - quant*n);
 
@@ -239,7 +296,7 @@ quantileDataAccess <- function (x, quant, lower.bound, upper.bound){
   sorted <- c(lower.bound, sorted, upper.bound);
 
   bs <- 1;
-  us <- 1/2;
+  us <- 1;
   return(list("Utility"=utility, "Sorted"=sorted, "Bounded.Sensitivities"=bs,
               "Unbounded.Sensitivities"=us));
 }
