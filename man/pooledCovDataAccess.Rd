@@ -28,20 +28,26 @@ defined to be the length of the largest input vector. Approximation is best
 if n.max is very large.}
 }
 \value{
-List of the true pooled covariance, and the bounded and unbounded
-sensitivities.
+List of the true pooled covariance and the sensitivities calculated
+based on bounded and unbounded differential privacy.
 }
 \description{
 This function performs the data access step in the computation of a
 differentially private pooled covariance. The true values are computed using
-the theoretical formula and \code{\link[stats]{cov}}, while the bounded and
-unbounded sensitivities are computed according to the theoretical values from
-\link{TODO: CITE PAPER HERE}.
+the theoretical formula and \code{\link[stats]{cov}}, while the sensitivities
+are calculated based on bounded and unbounded differential privacy
+\insertCite{Kifer2011}{DPpack} according to the theoretical values
+\insertCite{Liu2019b}{DPpack}.
 }
 \examples{
 x1 <- matrix(c(1,4,-2,8,-6,-3),ncol=2)
 x2 <- matrix(c(1,2,-5,7),ncol=2)
 pooledCovDataAccess(list(x1,x2),-10,10,-10,10,FALSE)
 
+}
+\references{
+\insertRef{Liu2019b}{DPpack}
+
+\insertRef{Kifer2011}{DPpack}
 }
 \keyword{internal}

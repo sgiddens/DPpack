@@ -10,19 +10,25 @@ tableDataAccess(x, y)
 \item{x, y}{Vectors of data from which to create the contingency table.}
 }
 \value{
-List of the true contingency table, and the bounded and unbounded
-sensitivities.
+List of the true contingency table and the sensitivities calculated
+based on bounded and unbounded differential privacy.
 }
 \description{
 This function performs the data access step in the computation of a
 differentially private contingency table. The true values are computed using
-\code{\link[base]{table}}, while the bounded and unbounded sensitivities are
-computed according to the theoretical values from \link{TODO: CITE PAPER HERE}.
+\code{\link[base]{table}},while the sensitivities are calculated based on
+bounded and unbounded differential privacy \insertCite{Kifer2011}{DPpack}
+according to the theoretical values \insertCite{Liu2019b}{DPpack}.
 }
 \examples{
 x <- MASS::Cars93$Type;
 y <- MASS::Cars93$Origin;
 tableDataAccess(x,y)
 
+}
+\references{
+\insertRef{Liu2019b}{DPpack}
+
+\insertRef{Kifer2011}{DPpack}
 }
 \keyword{internal}

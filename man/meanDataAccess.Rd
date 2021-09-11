@@ -19,16 +19,23 @@ length of upper.bounds must match the number of columns of x (length 1 if x
 is a vector).}
 }
 \value{
-List of the true mean, and the bounded and unbounded sensitivities.
+List of the true mean and the sensitivities calculated based on
+bounded and unbounded differential privacy.
 }
 \description{
 This function performs the data access step in the computation of a
 differentially private mean. The true values are computed using
-\code{\link[base]{mean}}, while the bounded and unbounded sensitivities are
-computed according to the theoretical values from \link{TODO: CITE PAPER HERE}.
+\code{\link[base]{mean}}, while the sensitivities are calculated based on
+bounded and unbounded differential privacy \insertCite{Kifer2011}{DPpack}
+according to the theoretical values \insertCite{Liu2019b}{DPpack}.
 }
 \examples{
 meanDataAccess(c(1,4,3,2), 0, 5)
 
+}
+\references{
+\insertRef{Liu2019b}{DPpack}
+
+\insertRef{Kifer2011}{DPpack}
 }
 \keyword{internal}

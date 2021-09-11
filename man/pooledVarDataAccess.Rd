@@ -18,18 +18,24 @@ defined to be the length of the largest input vector. Approximation is best
 if n.max is very large.}
 }
 \value{
-List of the true pooled variance, and the bounded and unbounded
-sensitivities.
+List of the true pooled variance and the sensitivities calculated
+based on bounded and unbounded differential privacy.
 }
 \description{
 This function performs the data access step in the computation of a
 differentially private pooled variance. The true values are computed using
-the theoretical formula and \code{\link[stats]{var}}, while the bounded and
-unbounded sensitivities are computed according to the theoretical values from
-\link{TODO: CITE PAPER HERE}.
+the theoretical formula and \code{\link[stats]{var}}, while the sensitivities
+are calculated based on bounded and unbounded differential privacy
+\insertCite{Kifer2011}{DPpack} according to the theoretical values
+\insertCite{Liu2019b}{DPpack}.
 }
 \examples{
 pooledVarDataAccess(list(c(1,4,-2,8,-6),c(1,2),c(-5,-7)),-10,10,FALSE)
 
+}
+\references{
+\insertRef{Liu2019b}{DPpack}
+
+\insertRef{Kifer2011}{DPpack}
 }
 \keyword{internal}

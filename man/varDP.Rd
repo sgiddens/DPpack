@@ -24,12 +24,13 @@ varDP(
 
 \item{which.sensitivity}{String indicating which type of sensitivity to use.
 Can be one of {'bounded', 'unbounded', 'both'}. If 'bounded' (default),
-returns result plus noise based on bounded sensitivities. If 'unbounded',
-returns result plus noise based on unbounded sensitivities. If 'both',
-returns result based on both methods. Note that if 'both' is chosen, each
-result individually satisfies differential privacy at level eps, but may
-not do so collectively. Care must be taken not to violate differential
-privacy in this case.}
+returns result plus noise based on bounded definition for differential
+privacy. If 'unbounded', returns result plus noise based on unbounded
+definition. If 'both', returns result based on both methods
+\insertCite{Kifer2011}{DPpack}. Note that if 'both' is chosen, each result
+individually satisfies differential privacy at level eps, but may not do so
+collectively. Care must be taken not to violate differential privacy in
+this case.}
 
 \item{lower.bounds}{Numeric vector of lower bounds on each column of x. The
 length of lower.bounds must match the number of columns of x (length 1 if x
@@ -69,7 +70,8 @@ calculations. Input does not need to be normalized, meaning
 alloc.proportions = c(3,1) produces the same result as the example above.}
 }
 \value{
-List of bounded and/or unbounded sanitized variances.
+A list of the sanitized variances based on the bounded and/or
+unbounded definitions of differential privacy.
 }
 \description{
 This function computes the differentially private variance(s) of a given
@@ -85,4 +87,9 @@ varDP(c(1,4,-2,8,-6),1,which.sensitivity='unbounded',
 varDP(matrix(c(1,4,-2,8,-6,0),ncol=2),1,which.sensitivity='bounded',
   lower.bounds=c(-10,-10),upper.bounds=c(10,10),alloc.proportions=c(1,2))
 
+}
+\references{
+\insertRef{Dwork2006a}{DPpack}
+
+\insertRef{Kifer2011}{DPpack}
 }

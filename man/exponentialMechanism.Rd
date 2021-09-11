@@ -19,27 +19,30 @@ exponentialMechanism(
 
 \item{eps}{Positive real number defining the epsilon privacy budget.}
 
-\item{bounded.sensitivities}{Real number corresponding to the bounded global
-sensitivity of the statistic. This is defined to be the greatest amount by
-which the statistic could change in value by changing one entry in the
+\item{bounded.sensitivities}{Real number corresponding to the global
+sensitivity(-ies) of the statistic based on bounded differential privacy
+\insertCite{Kifer2011}{DPpack}. This is defined to be the greatest amount
+by which the statistic could change in value by changing one entry in the
 dataset (i.e. the total number of elements in the dataset remain the same).
 This value can only be NULL if which.sensitivity is 'unbounded'.}
 
-\item{unbounded.sensitivities}{Real number corresponding to the unbounded
-global sensitivity of the statistic. This is defined to be the greatest
-amount by which the statistic could change in value by adding/removing one
-entry of the dataset (i.e. the total number of elements in the dataset
+\item{unbounded.sensitivities}{Real number corresponding to the global
+sensitivity(-ies) of the statistic based on unbounded differential privacy
+\insertCite{Kifer2011}{DPpack}. This is defined to be the greatest amount
+by which the statistic could change in value by adding/removing one entry
+of the dataset (i.e. the total number of elements in the dataset
 increases/decreases by one). This value can only be NULL if
 which.sensitivity is 'bounded'.}
 
 \item{which.sensitivity}{String indicating which type of sensitivity to use.
 Can be one of {'bounded', 'unbounded', 'both'}. If 'bounded' (default),
-returns result plus noise based on bounded sensitivities. If 'unbounded',
-returns result plus noise based on unbounded sensitivities. If 'both',
-returns result based on both methods. Note that if 'both' is chosen, each
-result individually satisfies differential privacy at level eps, but may
-not do so collectively. Care must be taken not to violate differential
-privacy in this case.}
+returns result plus noise based on bounded definition for differential
+privacy. If 'unbounded', returns result plus noise based on unbounded
+definition. If 'both', returns result based on both methods
+\insertCite{Kifer2011}{DPpack}. Note that if 'both' is chosen, each result
+individually satisfies differential privacy at level eps, but may not do so
+collectively. Care must be taken not to violate differential privacy in
+this case.}
 
 \item{measure}{Optional numeric vector of scaling measures for each element
 of utility. Should be same size as utility. Defaults to uniform scaling.}
@@ -49,11 +52,19 @@ given, the function returns the candidate at the selected index rather than
 the index itself.}
 }
 \value{
-List of indices (or values if candidates given) selected by the
-mechanism based on bounded and/or unbounded sensitivities.
+A list of indices (or values if candidates given) selected by the
+mechanism based on the bounded and/or unbounded definitions of differential
+privacy.
 }
 \description{
-TODO: Add description.
+This function implements the Exponential mechanism for differential privacy
+by selecting the index of a vector of candidates to return according to a
+user-specified vector of utility function values, epsilon, and global
+sensitivity. Sensitivity calculated based either on bounded or unbounded
+differential privacy can be used \insertCite{Kifer2011}{DPpack}. If measure
+is provided, the elements of the utility vector are scaled according to the
+values in measure. If candidates is provided, the function returns the value
+of candidates at the selected index, rather than the index itself.
 }
 \examples{
 exponentialMechanism(c(0,1,2,3,2,1,0), 1, bounded.sensitivities=1,
@@ -62,4 +73,9 @@ exponentialMechanism(c(0,1,2,3,2,1,0), 1, unbounded.sensitivities=.5,
   which.sensitivity='unbounded', measure=c(1,1,2,1,2,1,1),
   candidates=c('a','b','c','d','e','f','g'))
 
+}
+\references{
+\insertRef{Dwork2006a}{DPpack}
+
+\insertRef{Kifer2011}{DPpack}
 }

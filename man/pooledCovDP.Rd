@@ -26,12 +26,13 @@ the pooled covariance.}
 
 \item{which.sensitivity}{String indicating which type of sensitivity to use.
 Can be one of {'bounded', 'unbounded', 'both'}. If 'bounded' (default),
-returns result plus noise based on bounded sensitivities. If 'unbounded',
-returns result plus noise based on unbounded sensitivities. If 'both',
-returns result based on both methods. Note that if 'both' is chosen, each
-result individually satisfies differential privacy at level eps, but may
-not do so collectively. Care must be taken not to violate differential
-privacy in this case.}
+returns result plus noise based on bounded definition for differential
+privacy. If 'unbounded', returns result plus noise based on unbounded
+definition. If 'both', returns result based on both methods
+\insertCite{Kifer2011}{DPpack}. Note that if 'both' is chosen, each result
+individually satisfies differential privacy at level eps, but may not do so
+collectively. Care must be taken not to violate differential privacy in
+this case.}
 
 \item{lower.bound1, lower.bound2}{Real numbers giving the lower bounds over
 the first and second columns of all input data, respectively. If not given,
@@ -65,7 +66,8 @@ defined to be the length of the largest input vector. Approximation is best
 if n.max is very large.}
 }
 \value{
-List of bounded and/or unbounded sanitized pooled covariances.
+A list of the sanitized pooled covariances based on the bounded
+and/or unbounded definitions of differential privacy.
 }
 \description{
 This function computes the differentially private pooled covariance from two
@@ -82,4 +84,9 @@ pooledVarDP(x1,x2,eps=1,which.sensitivity='unbounded',
   lower.bound1=-10,upper.bound1=10,lower.bound2=-10,upper.bound2=10,
   mechanism='gaussian',delt=0.5,type.DP='aDP',approx.n.max=TRUE)
 
+}
+\references{
+\insertRef{Dwork2006a}{DPpack}
+
+\insertRef{Kifer2011}{DPpack}
 }

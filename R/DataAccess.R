@@ -2,8 +2,9 @@
 #'
 #' This function performs the data access step in the computation of a
 #' differentially private mean. The true values are computed using
-#' \code{\link[base]{mean}}, while the bounded and unbounded sensitivities are
-#' computed according to the theoretical values from [TODO: CITE PAPER HERE].
+#' \code{\link[base]{mean}}, while the sensitivities are calculated based on
+#' bounded and unbounded differential privacy \insertCite{Kifer2011}{DPpack}
+#' according to the theoretical values \insertCite{Liu2019b}{DPpack}.
 #'
 #' @param x Numeric vector, matrix, or data frame. Means taken over columns
 #'   (when applicable).
@@ -13,9 +14,14 @@
 #' @param upper.bounds Numeric vector of upper bounds on each column of x. The
 #'   length of upper.bounds must match the number of columns of x (length 1 if x
 #'   is a vector).
-#' @return List of the true mean, and the bounded and unbounded sensitivities.
+#' @return List of the true mean and the sensitivities calculated based on
+#'   bounded and unbounded differential privacy.
 #' @examples
 #' meanDataAccess(c(1,4,3,2), 0, 5)
+#'
+#' @references \insertRef{Liu2019b}{DPpack}
+#'
+#' \insertRef{Kifer2011}{DPpack}
 #'
 #' @keywords internal
 meanDataAccess <- function (x, lower.bounds, upper.bounds){
@@ -37,8 +43,9 @@ meanDataAccess <- function (x, lower.bounds, upper.bounds){
 #'
 #' This function performs the data access step in the computation of a
 #' differentially private variance. The true values are computed using
-#' \code{\link[stats]{var}}, while the bounded and unbounded sensitivities are
-#' computed according to the theoretical values from [TODO: CITE PAPER HERE].
+#' \code{\link[stats]{var}}, while the sensitivities are calculated based on
+#' bounded and unbounded differential privacy \insertCite{Kifer2011}{DPpack}
+#' according to the theoretical values \insertCite{Liu2019b}{DPpack}.
 #'
 #' @param x Numeric vector, matrix, or data frame. Variances taken over columns
 #'   (when applicable).
@@ -48,10 +55,14 @@ meanDataAccess <- function (x, lower.bounds, upper.bounds){
 #' @param upper.bounds Numeric vector of upper bounds on each column of x. The
 #'   length of upper.bounds must match the number of columns of x (length 1 if x
 #'   is a vector).
-#' @return List of the true variance, and the bounded and unbounded
-#'   sensitivities.
+#' @return List of the true variance and the sensitivities calculated based on
+#'   bounded and unbounded differential privacy.
 #' @examples
 #' varDataAccess(c(1,4,3,2), 0, 5)
+#'
+#' @references \insertRef{Liu2019b}{DPpack}
+#'
+#' \insertRef{Kifer2011}{DPpack}
 #'
 #' @keywords internal
 varDataAccess <- function (x, lower.bounds, upper.bounds){
@@ -73,18 +84,23 @@ varDataAccess <- function (x, lower.bounds, upper.bounds){
 #'
 #' This function performs the data access step in the computation of a
 #' differentially private covariance. The true values are computed using
-#' \code{\link[stats]{cov}}, while the bounded and unbounded sensitivities are
-#' computed according to the theoretical values from [TODO: CITE PAPER HERE].
+#' \code{\link[stats]{cov}}, while the sensitivities are calculated based on
+#' bounded and unbounded differential privacy \insertCite{Kifer2011}{DPpack}
+#' according to the theoretical values \insertCite{Liu2019b}{DPpack}.
 #'
 #' @param x1,x2 Numeric vectors.
 #' @param lower.bound1,lower.bound2 Real numbers giving the lower bounds of x1
 #'   and x2, respectively.
 #' @param upper.bound1,upper.bound2 Real numbers giving the upper bounds of x1
 #'   and x2, respectively.
-#' @return List of the true covariance, and the bounded and unbounded
-#'   sensitivities.
+#' @return List of the true covariance and the sensitivities calculated based on
+#'   bounded and unbounded differential privacy.
 #' @examples
 #' covDataAccess(c(1,4,3,2), c(-2,-3,-4,-1), 0, 5, -5, 0)
+#'
+#' @references \insertRef{Liu2019b}{DPpack}
+#'
+#' \insertRef{Kifer2011}{DPpack}
 #'
 #' @keywords internal
 covDataAccess <- function (x1, x2, lower.bound1, upper.bound1,
@@ -101,16 +117,21 @@ covDataAccess <- function (x1, x2, lower.bound1, upper.bound1,
 #'
 #' This function performs the data access step in the computation of a
 #' differentially private histogram. The true values are computed using
-#' \code{\link[graphics]{hist}}, while the bounded and unbounded sensitivities are
-#' computed according to the theoretical values from [TODO: CITE PAPER HERE].
+#' \code{\link[graphics]{hist}}, while the sensitivities are calculated based on
+#' bounded and unbounded differential privacy \insertCite{Kifer2011}{DPpack}
+#' according to the theoretical values \insertCite{Liu2019b}{DPpack}.
 #'
 #' @param x Numeric vector.
 #' @param breaks Identical to the argument with the same name from
 #'   \code{\link[graphics]{hist}}.
-#' @return List of the true histogram, and the bounded and unbounded
-#'   sensitivities.
+#' @return List of the true histogram and the sensitivities calculated based on
+#'   bounded and unbounded differential privacy.
 #' @examples
 #' histogramDataAccess(c(1,4,3,2,3), 'Sturges')
+#'
+#' @references \insertRef{Liu2019b}{DPpack}
+#'
+#' \insertRef{Kifer2011}{DPpack}
 #'
 #' @keywords internal
 histogramDataAccess <- function (x, breaks){
@@ -126,16 +147,21 @@ histogramDataAccess <- function (x, breaks){
 #'
 #' This function performs the data access step in the computation of a
 #' differentially private contingency table. The true values are computed using
-#' \code{\link[base]{table}}, while the bounded and unbounded sensitivities are
-#' computed according to the theoretical values from [TODO: CITE PAPER HERE].
+#' \code{\link[base]{table}},while the sensitivities are calculated based on
+#' bounded and unbounded differential privacy \insertCite{Kifer2011}{DPpack}
+#' according to the theoretical values \insertCite{Liu2019b}{DPpack}.
 #'
 #' @param x,y Vectors of data from which to create the contingency table.
-#' @return List of the true contingency table, and the bounded and unbounded
-#'   sensitivities.
+#' @return List of the true contingency table and the sensitivities calculated
+#'   based on bounded and unbounded differential privacy.
 #' @examples
 #' x <- MASS::Cars93$Type;
 #' y <- MASS::Cars93$Origin;
 #' tableDataAccess(x,y)
+#'
+#' @references \insertRef{Liu2019b}{DPpack}
+#'
+#' \insertRef{Kifer2011}{DPpack}
 #'
 #' @keywords internal
 tableDataAccess <- function(x, y){
@@ -150,9 +176,10 @@ tableDataAccess <- function(x, y){
 #'
 #' This function performs the data access step in the computation of a
 #' differentially private pooled variance. The true values are computed using
-#' the theoretical formula and \code{\link[stats]{var}}, while the bounded and
-#' unbounded sensitivities are computed according to the theoretical values from
-#' [TODO: CITE PAPER HERE].
+#' the theoretical formula and \code{\link[stats]{var}}, while the sensitivities
+#' are calculated based on bounded and unbounded differential privacy
+#' \insertCite{Kifer2011}{DPpack} according to the theoretical values
+#' \insertCite{Liu2019b}{DPpack}.
 #'
 #' @param samples List of vectors from which to compute the pooled variance.
 #' @param lower.bound Real number giving the lower bound of the input data.
@@ -160,10 +187,14 @@ tableDataAccess <- function(x, y){
 #' @param approx.n.max Logical indicating whether to approximate n.max, which is
 #'   defined to be the length of the largest input vector. Approximation is best
 #'   if n.max is very large.
-#' @return List of the true pooled variance, and the bounded and unbounded
-#'   sensitivities.
+#' @return List of the true pooled variance and the sensitivities calculated
+#'   based on bounded and unbounded differential privacy.
 #' @examples
 #' pooledVarDataAccess(list(c(1,4,-2,8,-6),c(1,2),c(-5,-7)),-10,10,FALSE)
+#'
+#' @references \insertRef{Liu2019b}{DPpack}
+#'
+#' \insertRef{Kifer2011}{DPpack}
 #'
 #' @keywords internal
 pooledVarDataAccess <- function(samples, lower.bound, upper.bound,approx.n.max){
@@ -212,9 +243,10 @@ pooledVarDataAccess <- function(samples, lower.bound, upper.bound,approx.n.max){
 #'
 #' This function performs the data access step in the computation of a
 #' differentially private pooled covariance. The true values are computed using
-#' the theoretical formula and \code{\link[stats]{cov}}, while the bounded and
-#' unbounded sensitivities are computed according to the theoretical values from
-#' [TODO: CITE PAPER HERE].
+#' the theoretical formula and \code{\link[stats]{cov}}, while the sensitivities
+#' are calculated based on bounded and unbounded differential privacy
+#' \insertCite{Kifer2011}{DPpack} according to the theoretical values
+#' \insertCite{Liu2019b}{DPpack}.
 #'
 #' @param samples List of two-column matrices from which to compute the pooled
 #'   covariance.
@@ -225,12 +257,16 @@ pooledVarDataAccess <- function(samples, lower.bound, upper.bound,approx.n.max){
 #' @param approx.n.max Logical indicating whether to approximate n.max, which is
 #'   defined to be the length of the largest input vector. Approximation is best
 #'   if n.max is very large.
-#' @return List of the true pooled covariance, and the bounded and unbounded
-#'   sensitivities.
+#' @return List of the true pooled covariance and the sensitivities calculated
+#'   based on bounded and unbounded differential privacy.
 #' @examples
 #' x1 <- matrix(c(1,4,-2,8,-6,-3),ncol=2)
 #' x2 <- matrix(c(1,2,-5,7),ncol=2)
 #' pooledCovDataAccess(list(x1,x2),-10,10,-10,10,FALSE)
+#'
+#' @references \insertRef{Liu2019b}{DPpack}
+#'
+#' \insertRef{Kifer2011}{DPpack}
 #'
 #' @keywords internal
 pooledCovDataAccess <- function(samples, lower.bound1, upper.bound1,
@@ -273,17 +309,23 @@ pooledCovDataAccess <- function(samples, lower.bound1, upper.bound1,
 #'
 #' This function performs the data access step in the computation of a
 #' differentially private quantile. The utility vector is computed as in
-#' [TODO:CITE THIS], while the bounded and unbounded sensitivities are computed
-#' according to the theoretical values from [TODO:PROVE THESE].
+#' \insertCite{Smith2011a}{DPpack}, while the sensitivities are calculated based
+#' on bounded and unbounded differential privacy \insertCite{Kifer2011}{DPpack}
+#' according to the theoretical values [TODO: PROVE THESE].
 #'
 #' @param x Numeric vector.
 #' @param quant Real number between 0 and 1 indicating which quantile to return.
 #' @param lower.bound Real number giving the lower bound of the input data.
 #' @param upper.bound Real number giving the upper bound of the input data.
 #' @return List of a vector corresponding to the utility function, the sorted
-#'   and clipped vector of inputs, and the bounded and unbounded sensitivities.
+#'   and clipped vector of inputs and the sensitivities calculated based on
+#'   bounded and unbounded differential privacy.
 #' @examples
 #' quantileDataAccess(c(1,1,-2,8,-6),.25,-10,10)
+#'
+#' @references \insertRef{Kifer2011}{DPpack}
+#'
+#' \insertRef{Smith2011a}{DPpack}
 #'
 #' @keywords internal
 quantileDataAccess <- function (x, quant, lower.bound, upper.bound){
@@ -295,8 +337,8 @@ quantileDataAccess <- function (x, quant, lower.bound, upper.bound){
   sorted[sorted>upper.bound] <- upper.bound;
   sorted <- c(lower.bound, sorted, upper.bound);
 
-  bs <- 1;
-  us <- 1;
+  bs <- 1; # Need to prove this in paper
+  us <- 1; # Need to prove this in paper
   return(list("Utility"=utility, "Sorted"=sorted, "Bounded.Sensitivities"=bs,
               "Unbounded.Sensitivities"=us));
 }

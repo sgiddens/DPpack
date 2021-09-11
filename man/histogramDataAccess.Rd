@@ -13,17 +13,23 @@ histogramDataAccess(x, breaks)
 \code{\link[graphics]{hist}}.}
 }
 \value{
-List of the true histogram, and the bounded and unbounded
-sensitivities.
+List of the true histogram and the sensitivities calculated based on
+bounded and unbounded differential privacy.
 }
 \description{
 This function performs the data access step in the computation of a
 differentially private histogram. The true values are computed using
-\code{\link[graphics]{hist}}, while the bounded and unbounded sensitivities are
-computed according to the theoretical values from \link{TODO: CITE PAPER HERE}.
+\code{\link[graphics]{hist}}, while the sensitivities are calculated based on
+bounded and unbounded differential privacy \insertCite{Kifer2011}{DPpack}
+according to the theoretical values \insertCite{Liu2019b}{DPpack}.
 }
 \examples{
 histogramDataAccess(c(1,4,3,2,3), 'Sturges')
 
+}
+\references{
+\insertRef{Liu2019b}{DPpack}
+
+\insertRef{Kifer2011}{DPpack}
 }
 \keyword{internal}

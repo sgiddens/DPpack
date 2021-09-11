@@ -24,12 +24,13 @@ quantileDP(
 
 \item{which.sensitivity}{String indicating which type of sensitivity to use.
 Can be one of {'bounded', 'unbounded', 'both'}. If 'bounded' (default),
-returns result plus noise based on bounded sensitivities. If 'unbounded',
-returns result plus noise based on unbounded sensitivities. If 'both',
-returns result based on both methods. Note that if 'both' is chosen, each
-result individually satisfies differential privacy at level eps, but may
-not do so collectively. Care must be taken not to violate differential
-privacy in this case.}
+returns result plus noise based on bounded definition for differential
+privacy. If 'unbounded', returns result plus noise based on unbounded
+definition. If 'both', returns result based on both methods
+\insertCite{Kifer2011}{DPpack}. Note that if 'both' is chosen, each result
+individually satisfies differential privacy at level eps, but may not do so
+collectively. Care must be taken not to violate differential privacy in
+this case.}
 
 \item{lower.bound}{Real number giving the lower bound of x. If not given, it
 is computed from the data to be the min value of x. Note this computation
@@ -48,11 +49,12 @@ mechanisms.}
 currently used).}
 }
 \value{
-List of bounded and/or unbounded sanitized quantiles.
+A list of the sanitized quantiles based on the bounded and/or
+unbounded definitions of differential privacy.
 }
 \description{
-This function computes the differentially private quantile of an input
-vector at user-specified levels of epsilon and delta.
+This function computes the differentially private quantile of an input vector
+at user-specified levels of epsilon and delta.
 }
 \examples{
 quantileDP(c(1,1,-2,8,-6),.25,1,which.sensitivity='bounded',
@@ -60,4 +62,11 @@ quantileDP(c(1,1,-2,8,-6),.25,1,which.sensitivity='bounded',
 quantileDP(c(1,1,-2,8,-6),.75,1,which.sensitivity='unbounded',
   lower.bound=-10,upper.bound=10,mechanism='exponential')
 
+}
+\references{
+\insertRef{Dwork2006a}{DPpack}
+
+\insertRef{Kifer2011}{DPpack}
+
+\insertRef{Smith2011a}{DPpack}
 }

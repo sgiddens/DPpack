@@ -20,27 +20,29 @@ value(s) of the desired statistic(s).}
 \item{eps}{Positive real number defining the epsilon privacy budget.}
 
 \item{bounded.sensitivities}{Real number or numeric vector corresponding to
-the bounded global sensitivity(-ies) of the statistic. This is defined to
-be the greatest amount by which the statistic could change in value by
-changing one entry in the dataset (i.e. the total number of elements in the
-dataset remain the same). This value can only be NULL if which.sensitivity
-is 'unbounded'.}
+the global sensitivity(-ies) of the statistic based on bounded differential
+privacy \insertCite{Kifer2011}{DPpack}. This is defined to be the greatest
+amount by which the statistic could change in value by changing one entry
+in the dataset (i.e. the total number of elements in the dataset remain the
+same). This value can only be NULL if which.sensitivity is 'unbounded'.}
 
 \item{unbounded.sensitivities}{Real number or numeric vector corresponding to
-the unbounded global sensitivity(-ies) of the statistic. This is defined to
-be the greatest amount by which the statistic could change in value by
+the global sensitivity(-ies) of the statistic based on unbounded
+differential privacy \insertCite{Kifer2011}{DPpack}. This is defined to be
+the greatest amount by which the statistic could change in value by
 adding/removing one entry of the dataset (i.e. the total number of elements
 in the dataset increases/decreases by one). This value can only be NULL if
 which.sensitivity is 'bounded'.}
 
 \item{which.sensitivity}{String indicating which type of sensitivity to use.
 Can be one of {'bounded', 'unbounded', 'both'}. If 'bounded' (default),
-returns result plus noise based on bounded sensitivities. If 'unbounded',
-returns result plus noise based on unbounded sensitivities. If 'both',
-returns result based on both methods. Note that if 'both' is chosen, each
-result individually satisfies differential privacy at level eps, but may
-not do so collectively. Care must be taken not to violate differential
-privacy in this case.}
+returns result plus noise based on bounded definition for differential
+privacy. If 'unbounded', returns result plus noise based on unbounded
+definition. If 'both', returns result based on both methods
+\insertCite{Kifer2011}{DPpack}. Note that if 'both' is chosen, each result
+individually satisfies differential privacy at level eps, but may not do so
+collectively. Care must be taken not to violate differential privacy in
+this case.}
 
 \item{alloc.proportions}{Numeric vector giving the allocation proportions of
 epsilon (and delta if relevant) to the statistics. For example, if
@@ -54,11 +56,19 @@ to be normalized, meaning alloc.proportions = c(3,1) produces the same
 result as the example above.}
 }
 \value{
-A list of the bounded and/or unbounded sanitized statistics,
-sanitized via the Laplace mechanism.
+A list of the sanitized statistics based on the bounded and/or
+unbounded definitions of differential privacy, sanitized via the Laplace
+mechanism.
 }
 \description{
-TODO: Add description.
+This function implements the Laplace mechanism for differential privacy by
+adding noise to the true value of a statistic according to specified values
+of epsilon and global sensitivity. Sensitivity calculated based either on
+bounded or unbounded differential privacy can be used
+\insertCite{Kifer2011}{DPpack}. If true.values is a vector, the provided
+epsilon is divided such that epsilon-level differential privacy is satisfied
+across all statistics. If desired, the user can specify how to divide epsilon
+among the statistics using alloc.proportions.
 }
 \examples{
 laplaceMechanism(5, 1, bounded.sensitivities=0.5,
@@ -66,4 +76,9 @@ laplaceMechanism(5, 1, bounded.sensitivities=0.5,
 laplaceMechanism(c(5,3), 1, unbounded.sensitivities=1,
   which.sensitivity='unbounded', alloc.proportions=c(.4,.6))
 
+}
+\references{
+\insertRef{Dwork2006a}{DPpack}
+
+\insertRef{Kifer2011}{DPpack}
 }

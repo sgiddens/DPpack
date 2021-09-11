@@ -16,17 +16,23 @@ and x2, respectively.}
 and x2, respectively.}
 }
 \value{
-List of the true covariance, and the bounded and unbounded
-sensitivities.
+List of the true covariance and the sensitivities calculated based on
+bounded and unbounded differential privacy.
 }
 \description{
 This function performs the data access step in the computation of a
 differentially private covariance. The true values are computed using
-\code{\link[stats]{cov}}, while the bounded and unbounded sensitivities are
-computed according to the theoretical values from \link{TODO: CITE PAPER HERE}.
+\code{\link[stats]{cov}}, while the sensitivities are calculated based on
+bounded and unbounded differential privacy \insertCite{Kifer2011}{DPpack}
+according to the theoretical values \insertCite{Liu2019b}{DPpack}.
 }
 \examples{
 covDataAccess(c(1,4,3,2), c(-2,-3,-4,-1), 0, 5, -5, 0)
 
+}
+\references{
+\insertRef{Liu2019b}{DPpack}
+
+\insertRef{Kifer2011}{DPpack}
 }
 \keyword{internal}

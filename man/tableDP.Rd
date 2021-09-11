@@ -22,12 +22,13 @@ tableDP(
 
 \item{which.sensitivity}{String indicating which type of sensitivity to use.
 Can be one of {'bounded', 'unbounded', 'both'}. If 'bounded' (default),
-returns result plus noise based on bounded sensitivities. If 'unbounded',
-returns result plus noise based on unbounded sensitivities. If 'both',
-returns result based on both methods. Note that if 'both' is chosen, each
-result individually satisfies differential privacy at level eps, but may
-not do so collectively. Care must be taken not to violate differential
-privacy in this case.}
+returns result plus noise based on bounded definition for differential
+privacy. If 'unbounded', returns result plus noise based on unbounded
+definition. If 'both', returns result based on both methods
+\insertCite{Kifer2011}{DPpack}. Note that if 'both' is chosen, each result
+individually satisfies differential privacy at level eps, but may not do so
+collectively. Care must be taken not to violate differential privacy in
+this case.}
 
 \item{mechanism}{String indicating which mechanism to use for differential
 privacy. Currently the following mechanisms are supported: {'laplace',
@@ -49,7 +50,8 @@ in the sanitized table due to the added noise will be set to 0. If TRUE,
 the negative values (if any) will be returned.}
 }
 \value{
-List of bounded and/or unbounded sanitized contingency tables.
+A list of the sanitized contingency tables based on the bounded
+and/or unbounded definitions of differential privacy.
 }
 \description{
 This function computes a differentially private contingency table from two
@@ -62,4 +64,9 @@ tableDP(x,y,1,which.sensitivity='bounded',mechanism='laplace')
 tableDP(x,y,1,which.sensitivity='unbounded',mechanism='gaussian',delt=0.5,
   type.DP='aDP',allow.negative=FALSE)
 
+}
+\references{
+\insertRef{Dwork2006a}{DPpack}
+
+\insertRef{Kifer2011}{DPpack}
 }

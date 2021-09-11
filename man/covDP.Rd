@@ -25,12 +25,13 @@ covDP(
 
 \item{which.sensitivity}{String indicating which type of sensitivity to use.
 Can be one of {'bounded', 'unbounded', 'both'}. If 'bounded' (default),
-returns result plus noise based on bounded sensitivities. If 'unbounded',
-returns result plus noise based on unbounded sensitivities. If 'both',
-returns result based on both methods. Note that if 'both' is chosen, each
-result individually satisfies differential privacy at level eps, but may
-not do so collectively. Care must be taken not to violate differential
-privacy in this case.}
+returns result plus noise based on bounded definition for differential
+privacy. If 'unbounded', returns result plus noise based on unbounded
+definition. If 'both', returns result based on both methods
+\insertCite{Kifer2011}{DPpack}. Note that if 'both' is chosen, each result
+individually satisfies differential privacy at level eps, but may not do so
+collectively. Care must be taken not to violate differential privacy in
+this case.}
 
 \item{lower.bound1, lower.bound2}{Real numbers giving the lower bounds of x1
 and x2, respectively. If not given, they are computed from the data to be
@@ -58,7 +59,8 @@ detailed description of this parameter. Only used if mechanism is
 'gaussian'.}
 }
 \value{
-List of bounded and/or unbounded sanitized covariances.
+A list of the sanitized covariances based on the bounded and/or
+unbounded definitions of differential privacy.
 }
 \description{
 This function computes the differentially private covariance of a pair of
@@ -72,4 +74,9 @@ covDP(c(1,4,-2,8,-6),c(1,3,2,2,4),1,which.sensitivity='unbounded',
   lower.bound1=-10,upper.bound110,lower.bound2=0,upper.bound2=5,
   mechanism='gaussian',delt=0.5,type.DP='aDP')
 
+}
+\references{
+\insertRef{Dwork2006a}{DPpack}
+
+\insertRef{Kifer2011}{DPpack}
 }

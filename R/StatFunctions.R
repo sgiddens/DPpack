@@ -10,12 +10,13 @@
 #' @param eps Positive real number defining the epsilon privacy budget.
 #' @param which.sensitivity String indicating which type of sensitivity to use.
 #'   Can be one of {'bounded', 'unbounded', 'both'}. If 'bounded' (default),
-#'   returns result plus noise based on bounded sensitivities. If 'unbounded',
-#'   returns result plus noise based on unbounded sensitivities. If 'both',
-#'   returns result based on both methods. Note that if 'both' is chosen, each
-#'   result individually satisfies differential privacy at level eps, but may
-#'   not do so collectively. Care must be taken not to violate differential
-#'   privacy in this case.
+#'   returns result plus noise based on bounded definition for differential
+#'   privacy. If 'unbounded', returns result plus noise based on unbounded
+#'   definition. If 'both', returns result based on both methods
+#'   \insertCite{Kifer2011}{DPpack}. Note that if 'both' is chosen, each result
+#'   individually satisfies differential privacy at level eps, but may not do so
+#'   collectively. Care must be taken not to violate differential privacy in
+#'   this case.
 #' @param lower.bounds Numeric vector of lower bounds on each column of x. The
 #'   length of lower.bounds must match the number of columns of x (length 1 if x
 #'   is a vector). If not given, it is computed from the data to be the min
@@ -47,7 +48,8 @@
 #'   computations. By default, it distributes eps and delt evenly among the
 #'   calculations. Input does not need to be normalized, meaning
 #'   alloc.proportions = c(3,1) produces the same result as the example above.
-#' @return List of bounded and/or unbounded sanitized means.
+#' @return A list of the sanitized means based on the bounded and/or
+#'   unbounded definitions of differential privacy.
 #' @examples
 #' meanDP(c(1,4,-2,8,-6),1,lower.bounds=-10,upper.bounds=10)
 #' meanDP(c(1,4,-2,8,-6),1,which.sensitivity='unbounded',
@@ -55,6 +57,10 @@
 #'   delt=0.5,type.DP='aDP')
 #' meanDP(matrix(c(1,4,-2,8,-6,0),ncol=2),1,which.sensitivity='bounded',
 #'   lower.bounds=c(-10,-10),upper.bounds=c(10,10),alloc.proportions=c(1,2))
+#'
+#' @references \insertRef{Dwork2006a}{DPpack}
+#'
+#' \insertRef{Kifer2011}{DPpack}
 #'
 #' @export
 meanDP <- function (x, eps, which.sensitivity='bounded', lower.bounds=NULL,
@@ -147,12 +153,13 @@ meanDP <- function (x, eps, which.sensitivity='bounded', lower.bounds=NULL,
 #' @param eps Positive real number defining the epsilon privacy budget.
 #' @param which.sensitivity String indicating which type of sensitivity to use.
 #'   Can be one of {'bounded', 'unbounded', 'both'}. If 'bounded' (default),
-#'   returns result plus noise based on bounded sensitivities. If 'unbounded',
-#'   returns result plus noise based on unbounded sensitivities. If 'both',
-#'   returns result based on both methods. Note that if 'both' is chosen, each
-#'   result individually satisfies differential privacy at level eps, but may
-#'   not do so collectively. Care must be taken not to violate differential
-#'   privacy in this case.
+#'   returns result plus noise based on bounded definition for differential
+#'   privacy. If 'unbounded', returns result plus noise based on unbounded
+#'   definition. If 'both', returns result based on both methods
+#'   \insertCite{Kifer2011}{DPpack}. Note that if 'both' is chosen, each result
+#'   individually satisfies differential privacy at level eps, but may not do so
+#'   collectively. Care must be taken not to violate differential privacy in
+#'   this case.
 #' @param lower.bounds Numeric vector of lower bounds on each column of x. The
 #'   length of lower.bounds must match the number of columns of x (length 1 if x
 #'   is a vector). If not given, it is computed from the data to be the min
@@ -184,7 +191,8 @@ meanDP <- function (x, eps, which.sensitivity='bounded', lower.bounds=NULL,
 #'   computations. By default, it distributes eps and delt evenly among the
 #'   calculations. Input does not need to be normalized, meaning
 #'   alloc.proportions = c(3,1) produces the same result as the example above.
-#' @return List of bounded and/or unbounded sanitized variances.
+#' @return A list of the sanitized variances based on the bounded and/or
+#'   unbounded definitions of differential privacy.
 #' @examples
 #' varDP(c(1,4,-2,8,-6),1,lower.bounds=-10,upper.bounds=10)
 #' varDP(c(1,4,-2,8,-6),1,which.sensitivity='unbounded',
@@ -192,6 +200,10 @@ meanDP <- function (x, eps, which.sensitivity='bounded', lower.bounds=NULL,
 #'   delt=0.5,type.DP='aDP')
 #' varDP(matrix(c(1,4,-2,8,-6,0),ncol=2),1,which.sensitivity='bounded',
 #'   lower.bounds=c(-10,-10),upper.bounds=c(10,10),alloc.proportions=c(1,2))
+#'
+#' @references \insertRef{Dwork2006a}{DPpack}
+#'
+#' \insertRef{Kifer2011}{DPpack}
 #'
 #' @export
 varDP <- function (x, eps, which.sensitivity='bounded', lower.bounds=NULL,
@@ -297,12 +309,13 @@ varDP <- function (x, eps, which.sensitivity='bounded', lower.bounds=NULL,
 #' @param eps Positive real number defining the epsilon privacy budget.
 #' @param which.sensitivity String indicating which type of sensitivity to use.
 #'   Can be one of {'bounded', 'unbounded', 'both'}. If 'bounded' (default),
-#'   returns result plus noise based on bounded sensitivities. If 'unbounded',
-#'   returns result plus noise based on unbounded sensitivities. If 'both',
-#'   returns result based on both methods. Note that if 'both' is chosen, each
-#'   result individually satisfies differential privacy at level eps, but may
-#'   not do so collectively. Care must be taken not to violate differential
-#'   privacy in this case.
+#'   returns result plus noise based on bounded definition for differential
+#'   privacy. If 'unbounded', returns result plus noise based on unbounded
+#'   definition. If 'both', returns result based on both methods
+#'   \insertCite{Kifer2011}{DPpack}. Note that if 'both' is chosen, each result
+#'   individually satisfies differential privacy at level eps, but may not do so
+#'   collectively. Care must be taken not to violate differential privacy in
+#'   this case.
 #' @param lower.bounds Numeric vector of lower bounds on each column of x. The
 #'   length of lower.bounds must match the number of columns of x (length 1 if x
 #'   is a vector). If not given, it is computed from the data to be the min
@@ -334,7 +347,8 @@ varDP <- function (x, eps, which.sensitivity='bounded', lower.bounds=NULL,
 #'   computations. By default, it distributes eps and delt evenly among the
 #'   calculations. Input does not need to be normalized, meaning
 #'   alloc.proportions = c(3,1) produces the same result as the example above.
-#' @return List of bounded and/or unbounded sanitized standard deviations.
+#' @return A list of the sanitized standard deviations based on the bounded
+#'   and/or unbounded definitions of differential privacy.
 #' @examples
 #' sdDP(c(1,4,-2,8,-6),1,lower.bounds=-10,upper.bounds=10)
 #' sdDP(c(1,4,-2,8,-6),1,which.sensitivity='unbounded',
@@ -342,6 +356,10 @@ varDP <- function (x, eps, which.sensitivity='bounded', lower.bounds=NULL,
 #'   delt=0.5,type.DP='aDP')
 #' sdDP(matrix(c(1,4,-2,8,-6,0),ncol=2),1,which.sensitivity='bounded',
 #'   lower.bounds=c(-10,-10),upper.bounds=c(10,10),alloc.proportions=c(1,2))
+#'
+#' @references \insertRef{Dwork2006a}{DPpack}
+#'
+#' \insertRef{Kifer2011}{DPpack}
 #'
 #' @export
 sdDP <- function (x, eps, which.sensitivity='bounded', lower.bounds=NULL,
@@ -378,12 +396,13 @@ sdDP <- function (x, eps, which.sensitivity='bounded', lower.bounds=NULL,
 #' @param eps Positive real number defining the epsilon privacy budget.
 #' @param which.sensitivity String indicating which type of sensitivity to use.
 #'   Can be one of {'bounded', 'unbounded', 'both'}. If 'bounded' (default),
-#'   returns result plus noise based on bounded sensitivities. If 'unbounded',
-#'   returns result plus noise based on unbounded sensitivities. If 'both',
-#'   returns result based on both methods. Note that if 'both' is chosen, each
-#'   result individually satisfies differential privacy at level eps, but may
-#'   not do so collectively. Care must be taken not to violate differential
-#'   privacy in this case.
+#'   returns result plus noise based on bounded definition for differential
+#'   privacy. If 'unbounded', returns result plus noise based on unbounded
+#'   definition. If 'both', returns result based on both methods
+#'   \insertCite{Kifer2011}{DPpack}. Note that if 'both' is chosen, each result
+#'   individually satisfies differential privacy at level eps, but may not do so
+#'   collectively. Care must be taken not to violate differential privacy in
+#'   this case.
 #' @param lower.bound1,lower.bound2 Real numbers giving the lower bounds of x1
 #'   and x2, respectively. If not given, they are computed from the data to be
 #'   the min value of x1 and x2, respectively. Note this computation may result
@@ -404,7 +423,8 @@ sdDP <- function (x, eps, which.sensitivity='bounded', lower.bounds=NULL,
 #'   approximate DP ('aDP'). See \code{\link{gaussianMechanism}} for a more
 #'   detailed description of this parameter. Only used if mechanism is
 #'   'gaussian'.
-#' @return List of bounded and/or unbounded sanitized covariances.
+#' @return A list of the sanitized covariances based on the bounded and/or
+#'   unbounded definitions of differential privacy.
 #' @examples
 #' covDP(c(1,4,-2,8,-6),c(1,3,2,2,4),1,which.sensitivity='bounded',
 #'   lower.bound1=-10,upper.bound1=10,lower.bound2=0,upper.bound2=5,
@@ -412,6 +432,10 @@ sdDP <- function (x, eps, which.sensitivity='bounded', lower.bounds=NULL,
 #' covDP(c(1,4,-2,8,-6),c(1,3,2,2,4),1,which.sensitivity='unbounded',
 #'   lower.bound1=-10,upper.bound110,lower.bound2=0,upper.bound2=5,
 #'   mechanism='gaussian',delt=0.5,type.DP='aDP')
+#'
+#' @references \insertRef{Dwork2006a}{DPpack}
+#'
+#' \insertRef{Kifer2011}{DPpack}
 #'
 #' @export
 covDP <- function (x1, x2, eps, which.sensitivity='bounded',
@@ -493,12 +517,13 @@ covDP <- function (x1, x2, eps, which.sensitivity='bounded',
 #'   densities (i.e. area of histogram is one).
 #' @param which.sensitivity String indicating which type of sensitivity to use.
 #'   Can be one of {'bounded', 'unbounded', 'both'}. If 'bounded' (default),
-#'   returns result plus noise based on bounded sensitivities. If 'unbounded',
-#'   returns result plus noise based on unbounded sensitivities. If 'both',
-#'   returns result based on both methods. Note that if 'both' is chosen, each
-#'   result individually satisfies differential privacy at level eps, but may
-#'   not do so collectively. Care must be taken not to violate differential
-#'   privacy in this case.
+#'   returns result plus noise based on bounded definition for differential
+#'   privacy. If 'unbounded', returns result plus noise based on unbounded
+#'   definition. If 'both', returns result based on both methods
+#'   \insertCite{Kifer2011}{DPpack}. Note that if 'both' is chosen, each result
+#'   individually satisfies differential privacy at level eps, but may not do so
+#'   collectively. Care must be taken not to violate differential privacy in
+#'   this case.
 #' @param lower.bound Real number giving the lower bound of x. If not given, it
 #'   is computed from the data to be the min value of x. Note this computation
 #'   may result in additional privacy loss.
@@ -520,7 +545,8 @@ covDP <- function (x1, x2, eps, which.sensitivity='bounded',
 #' @param allow.negative Logical value. If FALSE (default), any negative values
 #'   in the sanitized histogram due to the added noise will be set to 0. If
 #'   TRUE, the negative values (if any) will be returned.
-#' @return List of bounded and/or unbounded sanitized histograms.
+#' @return A list of the sanitized histograms based on the bounded and/or
+#'   unbounded definitions of differential privacy.
 #' @examples
 #' result <- histogramDP(c(1,1,-2,8,-6),1,which.sensitivity='bounded',
 #'   lower.bound=-10,upper.bound=10,mechanism='laplace')
@@ -529,6 +555,10 @@ covDP <- function (x1, x2, eps, which.sensitivity='bounded',
 #'   which.sensitivity='unbounded',lower.bound=-10,upper.bound=10,
 #'   mechanism='gaussian',delt=0.5,type.DP='aDP',allow.negative=FALSE)
 #' plot(result$Unbounded)
+#'
+#' @references \insertRef{Dwork2006a}{DPpack}
+#'
+#' \insertRef{Kifer2011}{DPpack}
 #'
 #' @export
 histogramDP <- function(x, eps, breaks="Sturges", normalize=FALSE,
@@ -621,12 +651,13 @@ histogramDP <- function(x, eps, breaks="Sturges", normalize=FALSE,
 #' @param eps Positive real number defining the epsilon privacy budget.
 #' @param which.sensitivity String indicating which type of sensitivity to use.
 #'   Can be one of {'bounded', 'unbounded', 'both'}. If 'bounded' (default),
-#'   returns result plus noise based on bounded sensitivities. If 'unbounded',
-#'   returns result plus noise based on unbounded sensitivities. If 'both',
-#'   returns result based on both methods. Note that if 'both' is chosen, each
-#'   result individually satisfies differential privacy at level eps, but may
-#'   not do so collectively. Care must be taken not to violate differential
-#'   privacy in this case.
+#'   returns result plus noise based on bounded definition for differential
+#'   privacy. If 'unbounded', returns result plus noise based on unbounded
+#'   definition. If 'both', returns result based on both methods
+#'   \insertCite{Kifer2011}{DPpack}. Note that if 'both' is chosen, each result
+#'   individually satisfies differential privacy at level eps, but may not do so
+#'   collectively. Care must be taken not to violate differential privacy in
+#'   this case.
 #' @param mechanism String indicating which mechanism to use for differential
 #'   privacy. Currently the following mechanisms are supported: {'laplace',
 #'   'gaussian'}. See \code{\link{laplaceMechanism}} and
@@ -642,13 +673,18 @@ histogramDP <- function(x, eps, breaks="Sturges", normalize=FALSE,
 #' @param allow.negative Logical value. If FALSE (default), any negative values
 #'   in the sanitized table due to the added noise will be set to 0. If TRUE,
 #'   the negative values (if any) will be returned.
-#' @return List of bounded and/or unbounded sanitized contingency tables.
+#' @return A list of the sanitized contingency tables based on the bounded
+#'   and/or unbounded definitions of differential privacy.
 #' @examples
 #' x <- MASS::Cars93$Type;
 #' y <- MASS::Cars93$Origin;
 #' tableDP(x,y,1,which.sensitivity='bounded',mechanism='laplace')
 #' tableDP(x,y,1,which.sensitivity='unbounded',mechanism='gaussian',delt=0.5,
 #'   type.DP='aDP',allow.negative=FALSE)
+#'
+#' @references \insertRef{Dwork2006a}{DPpack}
+#'
+#' \insertRef{Kifer2011}{DPpack}
 #'
 #' @export
 tableDP <- function(x, y, eps, which.sensitivity='bounded', mechanism='laplace',
@@ -728,12 +764,13 @@ tableDP <- function(x, y, eps, which.sensitivity='bounded', mechanism='laplace',
 #' @param eps Positive real number defining the epsilon privacy budget.
 #' @param which.sensitivity String indicating which type of sensitivity to use.
 #'   Can be one of {'bounded', 'unbounded', 'both'}. If 'bounded' (default),
-#'   returns result plus noise based on bounded sensitivities. If 'unbounded',
-#'   returns result plus noise based on unbounded sensitivities. If 'both',
-#'   returns result based on both methods. Note that if 'both' is chosen, each
-#'   result individually satisfies differential privacy at level eps, but may
-#'   not do so collectively. Care must be taken not to violate differential
-#'   privacy in this case.
+#'   returns result plus noise based on bounded definition for differential
+#'   privacy. If 'unbounded', returns result plus noise based on unbounded
+#'   definition. If 'both', returns result based on both methods
+#'   \insertCite{Kifer2011}{DPpack}. Note that if 'both' is chosen, each result
+#'   individually satisfies differential privacy at level eps, but may not do so
+#'   collectively. Care must be taken not to violate differential privacy in
+#'   this case.
 #' @param lower.bound Real number giving the lower bound of the input data. If
 #'   not given, it is computed from the data to be the min value over all given
 #'   data. Note this computation may result in additional privacy loss.
@@ -755,13 +792,18 @@ tableDP <- function(x, y, eps, which.sensitivity='bounded', mechanism='laplace',
 #' @param approx.n.max Logical indicating whether to approximate n.max, which is
 #'   defined to be the length of the largest input vector. Approximation is best
 #'   if n.max is very large.
-#' @return List of bounded and/or unbounded sanitized pooled variances.
+#' @return A list of the sanitized pooled variances based on the bounded and/or
+#'   unbounded definitions of differential privacy.
 #' @examples
 #' pooledVarDP(c(1,4,-2,8,-6),c(1,2),c(-5,-7),eps=1,which.sensitivity='bounded',
 #'   lower.bound=-10,upper.bound=10,mechanism='laplace')
 #' pooledVarDP(c(1,4,-2,8,-6),c(1,2),c(-5,-7),eps=1,
 #'   which.sensitivity='unbounded',lower.bound=-10,upper.bound=10,
 #'   mechanism='gaussian',delt=0.5,type.DP='aDP',approx.n.max=TRUE)
+#'
+#' @references \insertRef{Dwork2006a}{DPpack}
+#'
+#' \insertRef{Kifer2011}{DPpack}
 #'
 #' @export
 pooledVarDP <- function(..., eps=1, which.sensitivity='bounded',
@@ -856,12 +898,13 @@ pooledVarDP <- function(..., eps=1, which.sensitivity='bounded',
 #' @param eps Positive real number defining the epsilon privacy budget.
 #' @param which.sensitivity String indicating which type of sensitivity to use.
 #'   Can be one of {'bounded', 'unbounded', 'both'}. If 'bounded' (default),
-#'   returns result plus noise based on bounded sensitivities. If 'unbounded',
-#'   returns result plus noise based on unbounded sensitivities. If 'both',
-#'   returns result based on both methods. Note that if 'both' is chosen, each
-#'   result individually satisfies differential privacy at level eps, but may
-#'   not do so collectively. Care must be taken not to violate differential
-#'   privacy in this case.
+#'   returns result plus noise based on bounded definition for differential
+#'   privacy. If 'unbounded', returns result plus noise based on unbounded
+#'   definition. If 'both', returns result based on both methods
+#'   \insertCite{Kifer2011}{DPpack}. Note that if 'both' is chosen, each result
+#'   individually satisfies differential privacy at level eps, but may not do so
+#'   collectively. Care must be taken not to violate differential privacy in
+#'   this case.
 #' @param lower.bound1,lower.bound2 Real numbers giving the lower bounds over
 #'   the first and second columns of all input data, respectively. If not given,
 #'   they are computed from the data to be the min value over all first and
@@ -887,7 +930,8 @@ pooledVarDP <- function(..., eps=1, which.sensitivity='bounded',
 #' @param approx.n.max Logical indicating whether to approximate n.max, which is
 #'   defined to be the length of the largest input vector. Approximation is best
 #'   if n.max is very large.
-#' @return List of bounded and/or unbounded sanitized pooled covariances.
+#' @return A list of the sanitized pooled covariances based on the bounded
+#'   and/or unbounded definitions of differential privacy.
 #' @examples
 #' x1 <- matrix(c(1,4,-2,8,-6,-3),ncol=2)
 #' x2 <- matrix(c(1,2,-5,7),ncol=2)
@@ -897,6 +941,10 @@ pooledVarDP <- function(..., eps=1, which.sensitivity='bounded',
 #' pooledVarDP(x1,x2,eps=1,which.sensitivity='unbounded',
 #'   lower.bound1=-10,upper.bound1=10,lower.bound2=-10,upper.bound2=10,
 #'   mechanism='gaussian',delt=0.5,type.DP='aDP',approx.n.max=TRUE)
+#'
+#' @references \insertRef{Dwork2006a}{DPpack}
+#'
+#' \insertRef{Kifer2011}{DPpack}
 #'
 #' @export
 pooledCovDP <- function(..., eps=1, which.sensitivity='bounded',
@@ -1000,20 +1048,21 @@ pooledCovDP <- function(..., eps=1, which.sensitivity='bounded',
 
 #' Differentially Private Quantile
 #'
-#' This function computes the differentially private quantile of an input
-#' vector at user-specified levels of epsilon and delta.
+#' This function computes the differentially private quantile of an input vector
+#' at user-specified levels of epsilon and delta.
 #'
 #' @param x Numeric vector of which the quantile will be taken.
 #' @param quant Real number between 0 and 1 indicating which quantile to return.
 #' @param eps Positive real number defining the epsilon privacy budget.
 #' @param which.sensitivity String indicating which type of sensitivity to use.
 #'   Can be one of {'bounded', 'unbounded', 'both'}. If 'bounded' (default),
-#'   returns result plus noise based on bounded sensitivities. If 'unbounded',
-#'   returns result plus noise based on unbounded sensitivities. If 'both',
-#'   returns result based on both methods. Note that if 'both' is chosen, each
-#'   result individually satisfies differential privacy at level eps, but may
-#'   not do so collectively. Care must be taken not to violate differential
-#'   privacy in this case.
+#'   returns result plus noise based on bounded definition for differential
+#'   privacy. If 'unbounded', returns result plus noise based on unbounded
+#'   definition. If 'both', returns result based on both methods
+#'   \insertCite{Kifer2011}{DPpack}. Note that if 'both' is chosen, each result
+#'   individually satisfies differential privacy at level eps, but may not do so
+#'   collectively. Care must be taken not to violate differential privacy in
+#'   this case.
 #' @param lower.bound Real number giving the lower bound of x. If not given, it
 #'   is computed from the data to be the min value of x. Note this computation
 #'   may result in additional privacy loss.
@@ -1026,12 +1075,19 @@ pooledCovDP <- function(..., eps=1, which.sensitivity='bounded',
 #'   mechanisms.
 #' @param delt Positive real number defining the delta privacy parameter (not
 #'   currently used).
-#' @return List of bounded and/or unbounded sanitized quantiles.
+#' @return A list of the sanitized quantiles based on the bounded and/or
+#'   unbounded definitions of differential privacy.
 #' @examples
 #' quantileDP(c(1,1,-2,8,-6),.25,1,which.sensitivity='bounded',
 #'   lower.bound=-10,upper.bound=10,mechanism='exponential')
 #' quantileDP(c(1,1,-2,8,-6),.75,1,which.sensitivity='unbounded',
 #'   lower.bound=-10,upper.bound=10,mechanism='exponential')
+#'
+#' @references \insertRef{Dwork2006a}{DPpack}
+#'
+#' \insertRef{Kifer2011}{DPpack}
+#'
+#' \insertRef{Smith2011a}{DPpack}
 #'
 #' @export
 quantileDP <- function (x, quant, eps, which.sensitivity='bounded',
@@ -1106,19 +1162,20 @@ quantileDP <- function (x, quant, eps, which.sensitivity='bounded',
 
 #' Differentially Private Median
 #'
-#' This function computes the differentially private median of an input
-#' vector at user-specified levels of epsilon and delta.
+#' This function computes the differentially private median of an input vector
+#' at user-specified levels of epsilon and delta.
 #'
 #' @param x Numeric vector of which the median will be taken.
 #' @param eps Positive real number defining the epsilon privacy budget.
 #' @param which.sensitivity String indicating which type of sensitivity to use.
 #'   Can be one of {'bounded', 'unbounded', 'both'}. If 'bounded' (default),
-#'   returns result plus noise based on bounded sensitivities. If 'unbounded',
-#'   returns result plus noise based on unbounded sensitivities. If 'both',
-#'   returns result based on both methods. Note that if 'both' is chosen, each
-#'   result individually satisfies differential privacy at level eps, but may
-#'   not do so collectively. Care must be taken not to violate differential
-#'   privacy in this case.
+#'   returns result plus noise based on bounded definition for differential
+#'   privacy. If 'unbounded', returns result plus noise based on unbounded
+#'   definition. If 'both', returns result based on both methods
+#'   \insertCite{Kifer2011}{DPpack}. Note that if 'both' is chosen, each result
+#'   individually satisfies differential privacy at level eps, but may not do so
+#'   collectively. Care must be taken not to violate differential privacy in
+#'   this case.
 #' @param lower.bound Real number giving the lower bound of x. If not given, it
 #'   is computed from the data to be the min value of x. Note this computation
 #'   may result in additional privacy loss.
@@ -1131,12 +1188,19 @@ quantileDP <- function (x, quant, eps, which.sensitivity='bounded',
 #'   mechanisms.
 #' @param delt Positive real number defining the delta privacy parameter (not
 #'   currently used).
-#' @return List of bounded and/or unbounded sanitized medians.
+#' @return A list of the sanitized medians based on the bounded and/or
+#'   unbounded definitions of differential privacy.
 #' @examples
 #' medianDP(c(1,1,-2,8,-6),1,which.sensitivity='bounded',
 #'   lower.bound=-10,upper.bound=10,mechanism='exponential')
 #' medianDP(c(1,1,-2,8,-6),1,which.sensitivity='unbounded',
 #'   lower.bound=-10,upper.bound=10,mechanism='exponential')
+#'
+#' @references \insertRef{Dwork2006a}{DPpack}
+#'
+#' \insertRef{Kifer2011}{DPpack}
+#'
+#' \insertRef{Smith2011a}{DPpack}
 #'
 #' @export
 medianDP <- function (x, eps, which.sensitivity='bounded',

@@ -19,17 +19,23 @@ length of upper.bounds must match the number of columns of x (length 1 if x
 is a vector).}
 }
 \value{
-List of the true variance, and the bounded and unbounded
-sensitivities.
+List of the true variance and the sensitivities calculated based on
+bounded and unbounded differential privacy.
 }
 \description{
 This function performs the data access step in the computation of a
 differentially private variance. The true values are computed using
-\code{\link[stats]{var}}, while the bounded and unbounded sensitivities are
-computed according to the theoretical values from \link{TODO: CITE PAPER HERE}.
+\code{\link[stats]{var}}, while the sensitivities are calculated based on
+bounded and unbounded differential privacy \insertCite{Kifer2011}{DPpack}
+according to the theoretical values \insertCite{Liu2019b}{DPpack}.
 }
 \examples{
 varDataAccess(c(1,4,3,2), 0, 5)
 
+}
+\references{
+\insertRef{Liu2019b}{DPpack}
+
+\insertRef{Kifer2011}{DPpack}
 }
 \keyword{internal}
