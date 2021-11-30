@@ -1,5 +1,5 @@
 Package: DPpack
-Title: Differentially Private Statistical Functions
+Title: Differentially Private Statistical Functions and Machine Learning Algorithms
 Version: 0.0.0.9000
 Authors@R: c(
     person(given = "Spencer",
@@ -27,7 +27,8 @@ Imports:
     R6 (>= 2.5.1),
     dplyr (>= 1.0.1),
     MASS (>= 7.3-51.6),
-    nloptr (>= 1.2.2.2)
+    nloptr (>= 1.2.2.2),
+    e1071 (>= 1.7-9)
 RdMacros: Rdpack
 Suggests: 
     testthat (>= 3.0.0)
