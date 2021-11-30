@@ -272,9 +272,9 @@ ggplot() + geom_point(data = data, aes(x=x1, y=x2, color = as.character(label)),
 # error <- sum(abs(svmdp$predict(X,add.bias=TRUE)-y.new))/length(y)
 # ### END TESTING SVM CLASS ###
 #
-# ###############################################
-# ### TESTING ERMDP.KST VIA LINEAR REGRESSION ###
-# ###############################################
+###############################################
+### TESTING ERMDP.KST VIA LINEAR REGRESSION ###
+###############################################
 # Build dataset
 n <- 500
 p <- 2 # for easy visualization
