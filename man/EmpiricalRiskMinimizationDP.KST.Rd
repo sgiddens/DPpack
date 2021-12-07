@@ -13,12 +13,12 @@ building more specific models via inheritance. See
 \details{
 A new model object of this class accepts as inputs various functions
 and hyperparameters related to the specific regression problem. The model
-can then be fit with a dataset X (given as a data.frame), a set of binary
-labels y for each row of X, as well as upper and lower bounds on the
+can then be fit with a dataset X (given as a data.frame), a set of true
+values y for each row of X, as well as upper and lower bounds on the
 possible values for each column of X and for y. In fitting, the model
 stores a vector of coefficients coeff which satisfy epsilon-level
 differential privacy. These can be released directly, or used in
-conjunction with the predict method to predict the label of new datapoints.
+conjunction with the predict method to predict the value of new datapoints.
 
 Note that in order to guarantee epsilon-level privacy for the empirical
 risk minimization model, certain constraints must be satisfied for the
@@ -203,8 +203,7 @@ Eigenvalues must be bounded above by some value lambda.}
 \item{\code{regularizer}}{String or regularization function. If a string, must
 be 'l2', indicating to use l2 regularization. If a function, must have
 form as given in regularizer field description. Additionally, in order
-to ensure differential privacy, the function must be 1-strongly convex
-and doubly differentiable.}
+to ensure differential privacy, the function must be convex.}
 
 \item{\code{eps}}{Positive real number defining the epsilon privacy budget. If
 set to Inf, runs algorithm without differential privacy.}
@@ -309,7 +308,7 @@ coefficients are stored in coeff.
 \describe{
 \item{\code{X}}{Dataframe of data to be fit.}
 
-\item{\code{y}}{Vector or matrix of true labels for each row of X.}
+\item{\code{y}}{Vector or matrix of true values for each row of X.}
 
 \item{\code{upper.bounds}}{Optional vector of length ncol(X)+1 giving upper bounds
 on the values in each column of X and the values in y. The last value in

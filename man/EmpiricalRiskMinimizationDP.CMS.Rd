@@ -30,6 +30,7 @@ Specifically, the provided loss function must be convex and doubly
 differentiable w.r.t. y.hat with |loss'(y.hat,y)|<=1 and
 |loss''(y.hat,y)|<=c for some constant c and for all possible values of
 y.hat and y, where y.hat is the predicted label and y is the true label.
+The regularizer must be 1-strongly convex and doubly differentiable.
 Additionally, it is assumed that if x represents a single row of the
 dataset X, then ||x||<=1 for all x. Note that because of this, a bias term
 cannot be included without appropriate scaling/preprocessing of the
@@ -129,6 +130,38 @@ value of the second derivative of the loss function, as required to
 ensure differential privacy.}
 
 \item{\code{coeff}}{Numeric vector of coefficients for the model.}
+
+\item{\code{D}}{Value only used in child class
+\code{\link{KernelSupportVectorMachineDP}}. Nonnegative integer
+indicating the dimensionality of the transform space approximating the
+kernel. Higher values of D provide better kernel approximations at a cost
+of computational efficiency.}
+
+\item{\code{sampling}}{Value only used in child class
+\code{\link{KernelSupportVectorMachineDP}}. String or sampling function.
+If a string, must be 'Gaussian' (default), indicating to use the sampling
+function corresponding to the Gaussian (radial) kernel approximation. If
+a function, must be of the form sampling(d), where d is the input
+dimension, and return a (d+1)-dimensional vector of samples corresponding
+to the Fourier transform of the kernel to be approximated.}
+
+\item{\code{phi}}{Value only used in child class
+\code{\link{KernelSupportVectorMachineDP}}. Function or NULL (default).
+If sampling is given as one of the predefined strings, this input is
+unnecessary. If sampling is a function, this should also be a function of
+the form phi(x, theta), where x is an individual row of of the original
+dataset, and theta is a (d+1)-dimensional vector sampled from the Fourier
+transform of the kernel to be approximated, where d is the dimension of
+x. The function then returns a numeric scalar corresponding to the
+pre-filtered value at the given row with the given sampled vector.}
+
+\item{\code{gamma}}{Value only used in child class
+\code{\link{KernelSupportVectorMachineDP}}. Positive real number
+corresponding to the Gaussian kernel parameter.}
+
+\item{\code{prefilter}}{Value only used in child class
+\code{\link{KernelSupportVectorMachineDP}}. Matrix of pre-filter values
+used in converting data into transform space.}
 }
 \if{html}{\out{</div>}}
 }
