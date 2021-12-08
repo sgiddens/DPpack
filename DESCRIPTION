@@ -1,4 +1,5 @@
 Package: DPpack
+Type: Package
 Title: Differentially Private Statistical Functions and Machine Learning Algorithms
 Version: 0.0.0.9000
 Authors@R: c(
