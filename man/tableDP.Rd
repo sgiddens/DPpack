@@ -10,7 +10,7 @@ tableDP(
   eps,
   which.sensitivity = "bounded",
   mechanism = "laplace",
-  delt = NULL,
+  delta = NULL,
   type.DP = "pDP",
   allow.negative = FALSE
 )
@@ -27,23 +27,22 @@ privacy. If 'unbounded', returns result plus noise based on unbounded
 definition. If 'both', returns result based on both methods
 \insertCite{Kifer2011}{DPpack}. Note that if 'both' is chosen, each result
 individually satisfies differential privacy at level eps, but may not do so
-collectively. Care must be taken not to violate differential privacy in
-this case.}
+collectively and in composition. Care must be taken not to violate
+differential privacy in this case.}
 
 \item{mechanism}{String indicating which mechanism to use for differential
 privacy. Currently the following mechanisms are supported: {'laplace',
-'gaussian'}. See \code{\link{laplaceMechanism}} and
-\code{\link{gaussianMechanism}} for a description of the supported
+'gaussian'}. See \code{\link{LaplaceMechanism}} and
+\code{\link{GaussianMechanism}} for a description of the supported
 mechanisms.}
 
-\item{delt}{Positive real number defining the delta privacy parameter
-(necessary if using Gaussian mechanism).}
+\item{delta}{Nonnegative real number defining the delta privacy parameter. If
+0, reduces to eps-DP and the Laplace mechanism is used.}
 
 \item{type.DP}{String indicating the type of differential privacy desired for
-the Gaussian mechanism. Can be either probabilistic DP ('pDP') or
-approximate DP ('aDP'). See \code{\link{gaussianMechanism}} for a more
-detailed description of this parameter. Only used if mechanism is
-'gaussian'.}
+the Gaussian mechanism (if selected). Can be either 'pDP' for probabilistic
+DP \insertCite{Liu2019a}{DPpack} or 'aDP' for approximate DP
+\insertCite{DPtextbook}{DPpack}.}
 
 \item{allow.negative}{Logical value. If FALSE (default), any negative values
 in the sanitized table due to the added noise will be set to 0. If TRUE,
@@ -55,13 +54,13 @@ and/or unbounded definitions of differential privacy.
 }
 \description{
 This function computes a differentially private contingency table from two
-vectors of data at user-specified levels of epsilon and delta.
+vectors of data at user-specified privacy levels of epsilon and delta.
 }
 \examples{
 x <- MASS::Cars93$Type;
 y <- MASS::Cars93$Origin;
 tableDP(x,y,1,which.sensitivity='bounded',mechanism='laplace')
-tableDP(x,y,1,which.sensitivity='unbounded',mechanism='gaussian',delt=0.5,
+tableDP(x,y,1,which.sensitivity='unbounded',mechanism='gaussian',delta=0.5,
   type.DP='aDP',allow.negative=FALSE)
 
 }
@@ -69,4 +68,8 @@ tableDP(x,y,1,which.sensitivity='unbounded',mechanism='gaussian',delt=0.5,
 \insertRef{Dwork2006a}{DPpack}
 
 \insertRef{Kifer2011}{DPpack}
+
+\insertRef{Liu2019a}{DPpack}
+
+\insertRef{DPtextbook}{DPpack}
 }

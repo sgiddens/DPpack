@@ -272,7 +272,7 @@ regularizer.gr.l2 <- function(coeff) coeff
 #' validation group, and each of the other m groups are used to train each of
 #' the given m models. The number of errors on the validation set is counted for
 #' each model and used as the utility values in the exponential mechanism
-#' (\code{\link{exponentialMechanism}}) to select tuned model in a
+#' (\code{\link{ExponentialMechanism}}) to select tuned model in a
 #' privacy-preserving way.
 #'
 #' @param models Vector of model objects, each initialized with a different
@@ -283,22 +283,18 @@ regularizer.gr.l2 <- function(coeff) coeff
 #' @param X Dataframe of data to be used in tuning the model. Note it is assumed
 #'   the data rows and corresponding labels are randomly shuffled.
 #' @param y Vector or matrix of true labels for each row of X.
-#' @param upper.bounds Optional vector of length ncol(X)+1 giving upper bounds
-#'   on the values in each column of X and the values in y. The last value in
-#'   the vector is assumed to be the upper bound on y, while the first ncol(X)
+#' @param upper.bounds Numeric vector of length ncol(X)+1 giving upper bounds on
+#'   the values in each column of X and the values in y. The last value in the
+#'   vector is assumed to be the upper bound on y, while the first ncol(X)
 #'   values are assumed to be in the same order as the corresponding columns of
-#'   X. If NULL (default), the values are computed to be the maximum values in
-#'   the data, which results in additional privacy loss. Any value in the
-#'   columns of X and y larger than the corresponding upper bound is clipped at
-#'   the bound.
-#' @param lower.bounds Optional vector of length ncol(X)+1 giving lower bounds
-#'   on the values in each column of X and the values in y. The last value in
-#'   the vector is assumed to be the lower bound on y, while the first ncol(X)
+#'   X. Any value in the columns of X and y larger than the corresponding upper
+#'   bound is clipped at the bound.
+#' @param lower.bounds Numeric vector of length ncol(X)+1 giving lower bounds on
+#'   the values in each column of X and the values in y. The last value in the
+#'   vector is assumed to be the lower bound on y, while the first ncol(X)
 #'   values are assumed to be in the same order as the corresponding columns of
-#'   X. If NULL (default), the values are computed to be the minimum values in
-#'   the data, which results in additional privacy loss. Any value in the
-#'   columns of X and y smaller than the corresponding lower bound is clipped at
-#'   the bound.
+#'   X. Any value in the columns of X and y smaller than the corresponding lower
+#'   bound is clipped at the bound.
 #' @param add.bias Boolean indicating whether to add a bias term to X. Defaults
 #'   to FALSE.
 #' @return Single model object selected from the input list models with tuned
@@ -355,7 +351,7 @@ tune_model<- function(models, X, y, upper.bounds=NULL, lower.bounds=NULL,
     validatey.hat[validatey.hat<=0] <- 0
     z[i] <- sum(validatey!=validatey.hat)
   }
-  res <- exponentialMechanism(-z, models[[1]]$eps, 1, candidates=models)
+  res <- ExponentialMechanism(-z, models[[1]]$eps, 1, candidates=models)
   res$Bounded[[1]]
 }
 
@@ -395,6 +391,8 @@ tune_model<- function(models, X, y, upper.bounds=NULL, lower.bounds=NULL,
 #'   this class.
 #'
 #' @references \insertRef{chaudhuri2011}{DPpack}
+#'
+#' @keywords internal
 #'
 #' @export
 EmpiricalRiskMinimizationDP.CMS <- R6::R6Class("EmpiricalRiskMinimizationDP.CMS",
@@ -553,22 +551,18 @@ EmpiricalRiskMinimizationDP.CMS <- R6::R6Class("EmpiricalRiskMinimizationDP.CMS"
   #'   are stored in coeff.
   #' @param X Dataframe of data to be fit.
   #' @param y Vector or matrix of true labels for each row of X.
-  #' @param upper.bounds Optional vector of length ncol(X)+1 giving upper bounds
+  #' @param upper.bounds Numeric vector of length ncol(X)+1 giving upper bounds
   #'   on the values in each column of X and the values in y. The last value in
   #'   the vector is assumed to be the upper bound on y, while the first ncol(X)
   #'   values are assumed to be in the same order as the corresponding columns
-  #'   of X. If NULL (default), the values are computed to be the maximum values
-  #'   in the data, which results in additional privacy loss. Any value in the
-  #'   columns of X and y larger than the corresponding upper bound is clipped
-  #'   at the bound.
-  #' @param lower.bounds Optional vector of length ncol(X)+1 giving lower bounds
+  #'   of X. Any value in the columns of X and y larger than the corresponding
+  #'   upper bound is clipped at the bound.
+  #' @param lower.bounds Numeric vector of length ncol(X)+1 giving lower bounds
   #'   on the values in each column of X and the values in y. The last value in
   #'   the vector is assumed to be the lower bound on y, while the first ncol(X)
   #'   values are assumed to be in the same order as the corresponding columns
-  #'   of X. If NULL (default), the values are computed to be the minimum values
-  #'   in the data, which results in additional privacy loss. Any value in the
-  #'   columns of X and y smaller than the corresponding lower bound is clipped
-  #'   at the bound.
+  #'   of X. Any value in the columns of X and y smaller than the corresponding
+  #'   lower bound is clipped at the bound.
   #' @param add.bias Boolean indicating whether to add a bias term to X.
   #'   Defaults to FALSE.
   #'
@@ -642,22 +636,18 @@ EmpiricalRiskMinimizationDP.CMS <- R6::R6Class("EmpiricalRiskMinimizationDP.CMS"
   # param X Dataframe of data to be fit. Will be converted to a matrix.
   # param y Vector or matrix of true labels for each row of X. Will be
   #   converted to a matrix.
-  # param upper.bounds Vector of length ncol(X)+1 giving upper bounds on the
-  #   values in each column of X and the values in y. The last value in the
+  # param upper.bounds Numeric vector of length ncol(X)+1 giving upper bounds on
+  #   the values in each column of X and the values in y. The last value in the
   #   vector is assumed to be the upper bound on y, while the first ncol(X)
-  #   values are assumed to be in the same order as the corresponding columns
-  #   of X. If NULL, the values are computed to be the maximum values in the
-  #   data, which results in additional privacy loss. Any value in the columns
-  #   of X and y larger than the corresponding upper bound is clipped at the
-  #   bound.
-  # param lower.bounds Vector of length ncol(X)+1 giving lower bounds on the
-  #   values in each column of X and the values in y. The last value in the
+  #   values are assumed to be in the same order as the corresponding columns of
+  #   X. Any value in the columns of X and y larger than the corresponding
+  #   upper bound is clipped at the bound.
+  # param lower.bounds Numeric vector of length ncol(X)+1 giving lower bounds on
+  #   the values in each column of X and the values in y. The last value in the
   #   vector is assumed to be the lower bound on y, while the first ncol(X)
-  #   values are assumed to be in the same order as the corresponding columns
-  #   of X. If NULL, the values are computed to be the minimum values in the
-  #   data, which results in additional privacy loss. Any value in the columns
-  #   of X and y smaller than the corresponding lower bound is clipped at the
-  #   bound.
+  #   values are assumed to be in the same order as the corresponding columns of
+  #   X. Any value in the columns of X and y smaller than the corresponding
+  #   lower bound is clipped at the bound.
   # param add.bias Boolean indicating whether to add a bias term to X.
   # return A list of preprocessed values for X, y, upper.bounds, and
   #   lower.bounds for use in the privacy-preserving empirical risk
@@ -869,22 +859,18 @@ LogisticRegressionDP <- R6::R6Class("LogisticRegressionDP",
   # param X Dataframe of data to be fit. Will be converted to a matrix.
   # param y Vector or matrix of true labels for each row of X. Will be
   #   converted to a matrix.
-  # param upper.bounds Vector of length ncol(X)+1 giving upper bounds on the
-  #   values in each column of X and the values in y. The last value in the
+  # param upper.bounds Numeric vector of length ncol(X)+1 giving upper bounds on
+  #   the values in each column of X and the values in y. The last value in the
   #   vector is assumed to be the upper bound on y, while the first ncol(X)
-  #   values are assumed to be in the same order as the corresponding columns
-  #   of X. If NULL, the values are computed to be the maximum values in the
-  #   data, which results in additional privacy loss. Any value in the columns
-  #   of X and y larger than the corresponding upper bound is clipped at the
-  #   bound.
-  # param lower.bounds Vector of length ncol(X)+1 giving lower bounds on the
-  #   values in each column of X and the values in y. The last value in the
+  #   values are assumed to be in the same order as the corresponding columns of
+  #   X. Any value in the columns of X and y larger than the corresponding
+  #   upper bound is clipped at the bound.
+  # param lower.bounds Numeric vector of length ncol(X)+1 giving lower bounds on
+  #   the values in each column of X and the values in y. The last value in the
   #   vector is assumed to be the lower bound on y, while the first ncol(X)
-  #   values are assumed to be in the same order as the corresponding columns
-  #   of X. If NULL, the values are computed to be the minimum values in the
-  #   data, which results in additional privacy loss. Any value in the columns
-  #   of X and y smaller than the corresponding lower bound is clipped at the
-  #   bound.
+  #   values are assumed to be in the same order as the corresponding columns of
+  #   X. Any value in the columns of X and y smaller than the corresponding
+  #   lower bound is clipped at the bound.
   # param add.bias Boolean indicating whether to add a bias term to X.
   # return A list of preprocessed values for X, y, upper.bounds, and
   #   lower.bounds for use in the privacy-preserving logistic regression
@@ -1097,22 +1083,18 @@ SupportVectorMachineDP <- R6::R6Class("SupportVectorMachineDP",
   # param X Dataframe of data to be fit. Will be converted to a matrix.
   # param y Vector or matrix of true labels for each row of X. Will be
   #   converted to a matrix.
-  # param upper.bounds Vector of length ncol(X)+1 giving upper bounds on the
-  #   values in each column of X and the values in y. The last value in the
+  # param upper.bounds Numeric vector of length ncol(X)+1 giving upper bounds on
+  #   the values in each column of X and the values in y. The last value in the
   #   vector is assumed to be the upper bound on y, while the first ncol(X)
-  #   values are assumed to be in the same order as the corresponding columns
-  #   of X. If NULL, the values are computed to be the maximum values in the
-  #   data, which results in additional privacy loss. Any value in the columns
-  #   of X and y larger than the corresponding upper bound is clipped at the
-  #   bound.
-  # param lower.bounds Vector of length ncol(X)+1 giving lower bounds on the
-  #   values in each column of X and the values in y. The last value in the
+  #   values are assumed to be in the same order as the corresponding columns of
+  #   X. Any value in the columns of X and y larger than the corresponding
+  #   upper bound is clipped at the bound.
+  # param lower.bounds Numeric vector of length ncol(X)+1 giving lower bounds on
+  #   the values in each column of X and the values in y. The last value in the
   #   vector is assumed to be the lower bound on y, while the first ncol(X)
-  #   values are assumed to be in the same order as the corresponding columns
-  #   of X. If NULL, the values are computed to be the minimum values in the
-  #   data, which results in additional privacy loss. Any value in the columns
-  #   of X and y smaller than the corresponding lower bound is clipped at the
-  #   bound.
+  #   values are assumed to be in the same order as the corresponding columns of
+  #   X. Any value in the columns of X and y smaller than the corresponding
+  #   lower bound is clipped at the bound.
   # param add.bias Boolean indicating whether to add a bias term to X.
   # return A list of preprocessed values for X, y, upper.bounds, and
   #   lower.bounds for use in the privacy-preserving SVM algorithm.
@@ -1376,22 +1358,18 @@ KernelSupportVectorMachineDP <- R6::R6Class("KernelSupportVectorMachineDP",
   # param X Dataframe of data to be fit. Will be converted to a matrix.
   # param y Vector or matrix of true labels for each row of X. Will be
   #   converted to a matrix.
-  # param upper.bounds Vector of length ncol(X)+1 giving upper bounds on the
-  #   values in each column of X and the values in y. The last value in the
+  # param upper.bounds Numeric vector of length ncol(X)+1 giving upper bounds on
+  #   the values in each column of X and the values in y. The last value in the
   #   vector is assumed to be the upper bound on y, while the first ncol(X)
-  #   values are assumed to be in the same order as the corresponding columns
-  #   of X. If NULL, the values are computed to be the maximum values in the
-  #   data, which results in additional privacy loss. Any value in the columns
-  #   of X and y larger than the corresponding upper bound is clipped at the
-  #   bound.
-  # param lower.bounds Vector of length ncol(X)+1 giving lower bounds on the
-  #   values in each column of X and the values in y. The last value in the
+  #   values are assumed to be in the same order as the corresponding columns of
+  #   X. Any value in the columns of X and y larger than the corresponding
+  #   upper bound is clipped at the bound.
+  # param lower.bounds Numeric vector of length ncol(X)+1 giving lower bounds on
+  #   the values in each column of X and the values in y. The last value in the
   #   vector is assumed to be the lower bound on y, while the first ncol(X)
-  #   values are assumed to be in the same order as the corresponding columns
-  #   of X. If NULL, the values are computed to be the minimum values in the
-  #   data, which results in additional privacy loss. Any value in the columns
-  #   of X and y smaller than the corresponding lower bound is clipped at the
-  #   bound.
+  #   values are assumed to be in the same order as the corresponding columns of
+  #   X. Any value in the columns of X and y smaller than the corresponding
+  #   lower bound is clipped at the bound.
   # param add.bias Boolean indicating whether to add a bias term to X.
   # return A list of preprocessed values for V, y, upper.bounds, and
   #   lower.bounds for use in the privacy-preserving nonlinear SVM algorithm.
@@ -1455,6 +1433,8 @@ KernelSupportVectorMachineDP <- R6::R6Class("KernelSupportVectorMachineDP",
 #'   Eigenvalues must be bounded above by some value lambda. Finally, the
 #'   regularizer must be convex.
 #'
+#' @keywords internal
+#'
 #' @references \insertRef{Kifer2012}{DPpack}
 #'
 #' @export
@@ -1491,10 +1471,10 @@ EmpiricalRiskMinimizationDP.KST <- R6::R6Class("EmpiricalRiskMinimizationDP.KST"
   #' @field eps Positive real number defining the epsilon privacy budget. If
   #'   set to Inf, runs algorithm without differential privacy.
   eps = NULL,
-  #' @field delt Nonnegative real number defining the delta parameter for
+  #' @field delta Nonnegative real number defining the delta parameter for
   #'   approximate differential privacy. If set to 0, pure differential
   #'   privacy is used.
-  delt = NULL,
+  delta = NULL,
   #' @field domain List of functions representing the constraints on the
   #'   search space for the objective perturbation algorithm. Must contain two
   #'   function, labeled "constraints" and "jacobian", respectively. The
@@ -1538,7 +1518,7 @@ EmpiricalRiskMinimizationDP.KST <- R6::R6Class("EmpiricalRiskMinimizationDP.KST"
   #'   to ensure differential privacy, the function must be convex.
   #' @param eps Positive real number defining the epsilon privacy budget. If
   #'   set to Inf, runs algorithm without differential privacy.
-  #' @param delt Nonnegative real number defining the delta parameter for
+  #' @param delta Nonnegative real number defining the delta parameter for
   #'   approximate differential privacy. If set to 0, pure differential
   #'   privacy is used.
   #' @param domain List of functions representing the constraints on the
@@ -1572,7 +1552,7 @@ EmpiricalRiskMinimizationDP.KST <- R6::R6Class("EmpiricalRiskMinimizationDP.KST"
   #' loss <- function(y.hat, y) (y.hat-y)^2/2
   #' regularizer <- 'l2' # Alternatively, function(coeff) coeff%*%coeff/2
   #' eps <- 1
-  #' delt <- 1
+  #' delta <- 1
   #' domain <- list("constraints"=function(coeff) coeff%*%coeff-length(coeff),
   #'   "jacobian"=function(coeff) 2*coeff)
   #' # Set p to be the number of predictors desired including intercept term (length of coeff)
@@ -1583,13 +1563,13 @@ EmpiricalRiskMinimizationDP.KST <- R6::R6Class("EmpiricalRiskMinimizationDP.KST"
   #' loss.gr <- function(y.hat, y) y.hat-y
   #' regularizer.gr <- function(coeff) coeff
   #'
-  #' ermdp <- EmpiricalRiskMinimizationDP.KST$new(h, loss, 'l2', eps, delt,
+  #' ermdp <- EmpiricalRiskMinimizationDP.KST$new(h, loss, 'l2', eps, delta,
   #'                                              domain, zeta, lambda,
   #'                                              gamma, h.gr, loss.gr,
   #'                                              regularizer.gr)
   #'
   #' @return A new EmpiricalRiskMinimizationDP.KST object.
-  initialize = function(h, loss, regularizer, eps, delt, domain, zeta, lambda,
+  initialize = function(h, loss, regularizer, eps, delta, domain, zeta, lambda,
                         gamma, h.gr=NULL, loss.gr=NULL, regularizer.gr=NULL){
     self$h <- h # Must be of form h(X, coeff)
     self$h.gr <- h.gr
@@ -1607,7 +1587,7 @@ EmpiricalRiskMinimizationDP.KST <- R6::R6Class("EmpiricalRiskMinimizationDP.KST"
       self$regularizer.gr <- regularizer.gr
     }
     self$eps <- eps
-    self$delt <- delt
+    self$delta <- delta
     self$domain <- domain # of form list("constraints"=g(x) (<=0), "jacobian"=g'(x))
     self$zeta <- zeta
     self$lambda <- lambda
@@ -1627,22 +1607,18 @@ EmpiricalRiskMinimizationDP.KST <- R6::R6Class("EmpiricalRiskMinimizationDP.KST"
   #'   coefficients are stored in coeff.
   #' @param X Dataframe of data to be fit.
   #' @param y Vector or matrix of true values for each row of X.
-  #' @param upper.bounds Optional vector of length ncol(X)+1 giving upper bounds
+  #' @param upper.bounds Numeric vector of length ncol(X)+1 giving upper bounds
   #'   on the values in each column of X and the values in y. The last value in
   #'   the vector is assumed to be the upper bound on y, while the first ncol(X)
   #'   values are assumed to be in the same order as the corresponding columns
-  #'   of X. If NULL (default), the values are computed to be the maximum values
-  #'   in the data, which results in additional privacy loss. Any value in the
-  #'   columns of X and y larger than the corresponding upper bound is clipped
-  #'   at the bound.
-  #' @param lower.bounds Optional vector of length ncol(X)+1 giving lower bounds
+  #'   of X. Any value in the columns of X and y larger than the corresponding
+  #'   upper bound is clipped at the bound.
+  #' @param lower.bounds Numeric vector of length ncol(X)+1 giving lower bounds
   #'   on the values in each column of X and the values in y. The last value in
   #'   the vector is assumed to be the lower bound on y, while the first ncol(X)
   #'   values are assumed to be in the same order as the corresponding columns
-  #'   of X. If NULL (default), the values are computed to be the minimum values
-  #'   in the data, which results in additional privacy loss. Any value in the
-  #'   columns of X and y smaller than the corresponding lower bound is clipped
-  #'   at the bound.
+  #'   of X. Any value in the columns of X and y smaller than the corresponding
+  #'   lower bound is clipped at the bound.
   #' @param add.bias Boolean indicating whether to add a bias term to X.
   #'   Defaults to FALSE.
   #'
@@ -1669,14 +1645,14 @@ EmpiricalRiskMinimizationDP.KST <- R6::R6Class("EmpiricalRiskMinimizationDP.KST"
     p <- ncol(X)
     if (is.null(self$eps) || is.infinite(self$eps)) Delta <- 0
     else Delta <- 2*self$lambda/self$eps
-    if (is.null(self$delt) || self$delt==0){
+    if (is.null(self$delta) || self$delta==0){
       norm.b <- rgamma(1, p, rate=self$eps/(2*self$zeta))
       direction.b <- rnorm(p)
       direction.b <- direction.b/sqrt(sum(direction.b^2))
       b <- norm.b*direction.b
     } else{
       mu <- numeric(p)
-      Sigma <- ((self$zeta^2*(8*log(2/self$delt)+4*self$eps))/
+      Sigma <- ((self$zeta^2*(8*log(2/self$delta)+4*self$eps))/
                   (self$eps^2))*diag(p)
       b <- MASS::mvrnorm(n=1,mu,Sigma)
     }
@@ -1715,22 +1691,18 @@ EmpiricalRiskMinimizationDP.KST <- R6::R6Class("EmpiricalRiskMinimizationDP.KST"
   # param X Dataframe of data to be fit. Will be converted to a matrix.
   # param y Vector or matrix of true values for each row of X. Will be
   #   converted to a matrix.
-  # param upper.bounds Vector of length ncol(X)+1 giving upper bounds on the
-  #   values in each column of X and the values in y. The last value in the
+  # param upper.bounds Numeric vector of length ncol(X)+1 giving upper bounds on
+  #   the values in each column of X and the values in y. The last value in the
   #   vector is assumed to be the upper bound on y, while the first ncol(X)
-  #   values are assumed to be in the same order as the corresponding columns
-  #   of X. If NULL, the values are computed to be the maximum values in the
-  #   data, which results in additional privacy loss. Any value in the columns
-  #   of X and y larger than the corresponding upper bound is clipped at the
-  #   bound.
-  # param lower.bounds Vector of length ncol(X)+1 giving lower bounds on the
-  #   values in each column of X and the values in y. The last value in the
+  #   values are assumed to be in the same order as the corresponding columns of
+  #   X. Any value in the columns of X and y larger than the corresponding
+  #   upper bound is clipped at the bound.
+  # param lower.bounds Numeric vector of length ncol(X)+1 giving lower bounds on
+  #   the values in each column of X and the values in y. The last value in the
   #   vector is assumed to be the lower bound on y, while the first ncol(X)
-  #   values are assumed to be in the same order as the corresponding columns
-  #   of X. If NULL, the values are computed to be the minimum values in the
-  #   data, which results in additional privacy loss. Any value in the columns
-  #   of X and y smaller than the corresponding lower bound is clipped at the
-  #   bound.
+  #   values are assumed to be in the same order as the corresponding columns of
+  #   X. Any value in the columns of X and y smaller than the corresponding
+  #   lower bound is clipped at the bound.
   # param add.bias Boolean indicating whether to add a bias term to X.
   # return A list of preprocessed values for X, y, upper.bounds, and
   #   lower.bounds for use in the privacy-preserving empirical risk
@@ -1907,7 +1879,7 @@ LinearRegressionDP <- R6::R6Class("LinearRegressionDP",
   #'   to ensure differential privacy, the function must be convex.
   #' @param eps Positive real number defining the epsilon privacy budget. If
   #'   set to Inf, runs algorithm without differential privacy.
-  #' @param delt Nonnegative real number defining the delta parameter for
+  #' @param delta Nonnegative real number defining the delta parameter for
   #'   approximate differential privacy. If set to 0, pure differential
   #'   privacy is used.
   #' @param gamma Nonnegative real number representing the regularization
@@ -1921,18 +1893,18 @@ LinearRegressionDP <- R6::R6Class("LinearRegressionDP",
   #' # Construct object for linear regression
   #' regularizer <- 'l2' # Alternatively, function(coeff) coeff%*%coeff/2
   #' eps <- 1
-  #' delt <- 1
+  #' delta <- 1
   #' gamma <- 1
   #' regularizer.gr <- function(coeff) coeff
   #'
-  #' lrdp <- LinearRegressionDP$new('l2', eps, delt, gamma,
+  #' lrdp <- LinearRegressionDP$new('l2', eps, delta, gamma,
   #'                                              regularizer.gr)
   #'
   #' @return A new LinearRegressionDP object.
-  initialize = function(regularizer, eps, delt, gamma, regularizer.gr=NULL){
+  initialize = function(regularizer, eps, delta, gamma, regularizer.gr=NULL){
       domain.linear <- list("constraints"=function(coeff) coeff%*%coeff-length(coeff),
                             "jacobian"=function(coeff) 2*coeff)
-      super$initialize(h.linear, loss.squared.error, regularizer, eps, delt,
+      super$initialize(h.linear, loss.squared.error, regularizer, eps, delta,
                        domain.linear, NULL, NULL, gamma,
                        h.gr=h.gr.linear, loss.gr=loss.gr.squared.error,
                        regularizer.gr=regularizer.gr)
@@ -1944,22 +1916,18 @@ LinearRegressionDP <- R6::R6Class("LinearRegressionDP",
   # param X Dataframe of data to be fit. Will be converted to a matrix.
   # param y Vector or matrix of true values for each row of X. Will be
   #   converted to a matrix.
-  # param upper.bounds Vector of length ncol(X)+1 giving upper bounds on the
-  #   values in each column of X and the values in y. The last value in the
+  # param upper.bounds Numeric vector of length ncol(X)+1 giving upper bounds on
+  #   the values in each column of X and the values in y. The last value in the
   #   vector is assumed to be the upper bound on y, while the first ncol(X)
-  #   values are assumed to be in the same order as the corresponding columns
-  #   of X. If NULL, the values are computed to be the maximum values in the
-  #   data, which results in additional privacy loss. Any value in the columns
-  #   of X and y larger than the corresponding upper bound is clipped at the
-  #   bound.
-  # param lower.bounds Vector of length ncol(X)+1 giving lower bounds on the
-  #   values in each column of X and the values in y. The last value in the
+  #   values are assumed to be in the same order as the corresponding columns of
+  #   X. Any value in the columns of X and y larger than the corresponding
+  #   upper bound is clipped at the bound.
+  # param lower.bounds Numeric vector of length ncol(X)+1 giving lower bounds on
+  #   the values in each column of X and the values in y. The last value in the
   #   vector is assumed to be the lower bound on y, while the first ncol(X)
-  #   values are assumed to be in the same order as the corresponding columns
-  #   of X. If NULL, the values are computed to be the minimum values in the
-  #   data, which results in additional privacy loss. Any value in the columns
-  #   of X and y smaller than the corresponding lower bound is clipped at the
-  #   bound.
+  #   values are assumed to be in the same order as the corresponding columns of
+  #   X. Any value in the columns of X and y smaller than the corresponding
+  #   lower bound is clipped at the bound.
   # param add.bias Boolean indicating whether to add a bias term to X.
   # return A list of preprocessed values for X, y, upper.bounds, and
   #   lower.bounds for use in the privacy-preserving empirical risk

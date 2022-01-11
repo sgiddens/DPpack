@@ -44,7 +44,7 @@ h <- function(X, coeff) X\%*\%coeff
 loss <- function(y.hat, y) (y.hat-y)^2/2
 regularizer <- 'l2' # Alternatively, function(coeff) coeff\%*\%coeff/2
 eps <- 1
-delt <- 1
+delta <- 1
 domain <- list("constraints"=function(coeff) coeff\%*\%coeff-length(coeff),
   "jacobian"=function(coeff) 2*coeff)
 # Set p to be the number of predictors desired including intercept term (length of coeff)
@@ -55,7 +55,7 @@ h.gr <- function(X, coeff) t(X)
 loss.gr <- function(y.hat, y) y.hat-y
 regularizer.gr <- function(coeff) coeff
 
-ermdp <- EmpiricalRiskMinimizationDP.KST$new(h, loss, 'l2', eps, delt,
+ermdp <- EmpiricalRiskMinimizationDP.KST$new(h, loss, 'l2', eps, delta,
                                              domain, zeta, lambda,
                                              gamma, h.gr, loss.gr,
                                              regularizer.gr)
@@ -89,6 +89,7 @@ predicted.y <- ermdp$predict(Xtest)
 \references{
 \insertRef{Kifer2012}{DPpack}
 }
+\keyword{internal}
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
 \describe{
@@ -123,7 +124,7 @@ value is ignored.}
 \item{\code{eps}}{Positive real number defining the epsilon privacy budget. If
 set to Inf, runs algorithm without differential privacy.}
 
-\item{\code{delt}}{Nonnegative real number defining the delta parameter for
+\item{\code{delta}}{Nonnegative real number defining the delta parameter for
 approximate differential privacy. If set to 0, pure differential
 privacy is used.}
 
@@ -176,7 +177,7 @@ Create a new EmpiricalRiskMinimizationDP.KST object.
   loss,
   regularizer,
   eps,
-  delt,
+  delta,
   domain,
   zeta,
   lambda,
@@ -208,7 +209,7 @@ to ensure differential privacy, the function must be convex.}
 \item{\code{eps}}{Positive real number defining the epsilon privacy budget. If
 set to Inf, runs algorithm without differential privacy.}
 
-\item{\code{delt}}{Nonnegative real number defining the delta parameter for
+\item{\code{delta}}{Nonnegative real number defining the delta parameter for
 approximate differential privacy. If set to 0, pure differential
 privacy is used.}
 
@@ -255,7 +256,7 @@ h <- function(X, coeff) X\%*\%coeff
 loss <- function(y.hat, y) (y.hat-y)^2/2
 regularizer <- 'l2' # Alternatively, function(coeff) coeff\%*\%coeff/2
 eps <- 1
-delt <- 1
+delta <- 1
 domain <- list("constraints"=function(coeff) coeff\%*\%coeff-length(coeff),
   "jacobian"=function(coeff) 2*coeff)
 # Set p to be the number of predictors desired including intercept term (length of coeff)
@@ -266,7 +267,7 @@ h.gr <- function(X, coeff) t(X)
 loss.gr <- function(y.hat, y) y.hat-y
 regularizer.gr <- function(coeff) coeff
 
-ermdp <- EmpiricalRiskMinimizationDP.KST$new(h, loss, 'l2', eps, delt,
+ermdp <- EmpiricalRiskMinimizationDP.KST$new(h, loss, 'l2', eps, delta,
                                              domain, zeta, lambda,
                                              gamma, h.gr, loss.gr,
                                              regularizer.gr)
@@ -310,23 +311,19 @@ coefficients are stored in coeff.
 
 \item{\code{y}}{Vector or matrix of true values for each row of X.}
 
-\item{\code{upper.bounds}}{Optional vector of length ncol(X)+1 giving upper bounds
+\item{\code{upper.bounds}}{Numeric vector of length ncol(X)+1 giving upper bounds
 on the values in each column of X and the values in y. The last value in
 the vector is assumed to be the upper bound on y, while the first ncol(X)
 values are assumed to be in the same order as the corresponding columns
-of X. If NULL (default), the values are computed to be the maximum values
-in the data, which results in additional privacy loss. Any value in the
-columns of X and y larger than the corresponding upper bound is clipped
-at the bound.}
+of X. Any value in the columns of X and y larger than the corresponding
+upper bound is clipped at the bound.}
 
-\item{\code{lower.bounds}}{Optional vector of length ncol(X)+1 giving lower bounds
+\item{\code{lower.bounds}}{Numeric vector of length ncol(X)+1 giving lower bounds
 on the values in each column of X and the values in y. The last value in
 the vector is assumed to be the lower bound on y, while the first ncol(X)
 values are assumed to be in the same order as the corresponding columns
-of X. If NULL (default), the values are computed to be the minimum values
-in the data, which results in additional privacy loss. Any value in the
-columns of X and y smaller than the corresponding lower bound is clipped
-at the bound.}
+of X. Any value in the columns of X and y smaller than the corresponding
+lower bound is clipped at the bound.}
 
 \item{\code{add.bias}}{Boolean indicating whether to add a bias term to X.
 Defaults to FALSE.}

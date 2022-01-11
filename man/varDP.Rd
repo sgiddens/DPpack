@@ -11,7 +11,7 @@ varDP(
   lower.bounds = NULL,
   upper.bounds = NULL,
   mechanism = "laplace",
-  delt = NULL,
+  delta = NULL,
   type.DP = "pDP",
   alloc.proportions = NULL
 )
@@ -29,43 +29,38 @@ privacy. If 'unbounded', returns result plus noise based on unbounded
 definition. If 'both', returns result based on both methods
 \insertCite{Kifer2011}{DPpack}. Note that if 'both' is chosen, each result
 individually satisfies differential privacy at level eps, but may not do so
-collectively. Care must be taken not to violate differential privacy in
-this case.}
+collectively and in composition. Care must be taken not to violate
+differential privacy in this case.}
 
-\item{lower.bounds}{Numeric vector of lower bounds on each column of x. The
-length of lower.bounds must match the number of columns of x (length 1 if x
-is a vector). If not given, it is computed from the data to be the min
-value of each column of x (or the min of x if x is a vector). Note this
-computation may result in additional privacy loss.}
+\item{lower.bounds}{Numeric vector of global or public lower bounds on each
+column of x. The length of lower.bounds must match the number of columns of
+x (length 1 if x is a vector).}
 
-\item{upper.bounds}{Numeric vector of upper bounds on each column of x. The
-length of upper.bounds must match the number of columns of x (length 1 if x
-is a vector). If not given, it is computed from the data to be the max
-value of each column of x (or the max of x if x is a vector). Note this
-computation may result in additional privacy loss.}
+\item{upper.bounds}{Numeric vector of global or public upper bounds on each
+column of x. The length of upper.bounds must match the number of columns of
+x (length 1 if x is a vector).}
 
 \item{mechanism}{String indicating which mechanism to use for differential
 privacy. Currently the following mechanisms are supported: {'laplace',
-'gaussian'}. See \code{\link{laplaceMechanism}} and
-\code{\link{gaussianMechanism}} for a description of the supported
+'gaussian'}. See \code{\link{LaplaceMechanism}} and
+\code{\link{GaussianMechanism}} for a description of the supported
 mechanisms.}
 
-\item{delt}{Positive real number defining the delta privacy parameter
-(necessary if using Gaussian mechanism).}
+\item{delta}{Nonnegative real number defining the delta privacy parameter. If
+0, reduces to eps-DP and the Laplace mechanism is used.}
 
 \item{type.DP}{String indicating the type of differential privacy desired for
-the Gaussian mechanism. Can be either probabilistic DP ('pDP') or
-approximate DP ('aDP'). See \code{\link{gaussianMechanism}} for a more
-detailed description of this parameter. Only used if mechanism is
-'gaussian'.}
+the Gaussian mechanism (if selected). Can be either 'pDP' for probabilistic
+DP \insertCite{Liu2019a}{DPpack} or 'aDP' for approximate DP
+\insertCite{DPtextbook}{DPpack}.}
 
 \item{alloc.proportions}{Numeric vector giving the allocation proportions of
 epsilon (and delta) to the statistics. For example, if this function is run
 on a two-column matrix and alloc.proportions = c(.75, .25), then 75\% of the
-privacy budget eps (and delt) is allocated to the statistical computation
+privacy budget eps (and delta) is allocated to the statistical computation
 for column 1, and the remaining 25\% is allocated to the statistical
-computation for column 2. This ensures (eps, delt)-level privacy across all
-computations. By default, it distributes eps and delt evenly among the
+computation for column 2. This ensures (eps, delta)-level privacy across all
+computations. By default, it distributes eps and delta evenly among the
 calculations. Input does not need to be normalized, meaning
 alloc.proportions = c(3,1) produces the same result as the example above.}
 }
@@ -75,15 +70,16 @@ unbounded definitions of differential privacy.
 }
 \description{
 This function computes the differentially private variance(s) of a given
-dataset at user-specified levels of epsilon and delta. If the given dataset
-is a matrix or data frame, differentially private variances are computed over
-columns and collectively satisfy differential privacy at the specified level.
+dataset at user-specified privacy levels of epsilon and delta. If the given
+dataset is a matrix or data frame, differentially private variances are
+computed over columns and collectively satisfy differential privacy at the
+specified level.
 }
 \examples{
 varDP(c(1,4,-2,8,-6),1,lower.bounds=-10,upper.bounds=10)
 varDP(c(1,4,-2,8,-6),1,which.sensitivity='unbounded',
   lower.bounds=-10,upper.bounds=10,mechanism='gaussian',
-  delt=0.5,type.DP='aDP')
+  delta=0.5,type.DP='aDP')
 varDP(matrix(c(1,4,-2,8,-6,0),ncol=2),1,which.sensitivity='bounded',
   lower.bounds=c(-10,-10),upper.bounds=c(10,10),alloc.proportions=c(1,2))
 
@@ -92,4 +88,8 @@ varDP(matrix(c(1,4,-2,8,-6,0),ncol=2),1,which.sensitivity='bounded',
 \insertRef{Dwork2006a}{DPpack}
 
 \insertRef{Kifer2011}{DPpack}
+
+\insertRef{Liu2019a}{DPpack}
+
+\insertRef{DPtextbook}{DPpack}
 }

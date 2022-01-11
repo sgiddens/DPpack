@@ -14,7 +14,7 @@ covDP(
   lower.bound2 = NULL,
   upper.bound2 = NULL,
   mechanism = "laplace",
-  delt = NULL,
+  delta = NULL,
   type.DP = "pDP"
 )
 }
@@ -30,33 +30,28 @@ privacy. If 'unbounded', returns result plus noise based on unbounded
 definition. If 'both', returns result based on both methods
 \insertCite{Kifer2011}{DPpack}. Note that if 'both' is chosen, each result
 individually satisfies differential privacy at level eps, but may not do so
-collectively. Care must be taken not to violate differential privacy in
-this case.}
+collectively and in composition. Care must be taken not to violate
+differential privacy in this case.}
 
-\item{lower.bound1, lower.bound2}{Real numbers giving the lower bounds of x1
-and x2, respectively. If not given, they are computed from the data to be
-the min value of x1 and x2, respectively. Note this computation may result
-in additional privacy loss.}
+\item{lower.bound1, lower.bound2}{Real numbers giving the global or public
+lower bounds of x1 and x2, respectively.}
 
-\item{upper.bound1, upper.bound2}{Real numbers giving the upper bounds of x1
-and x2, respectively. If not given, they are computed from the data to be
-the max value of x1 and x2, respectively. Note this computation may result
-in additional privacy loss.}
+\item{upper.bound1, upper.bound2}{Real numbers giving the global or public
+upper bounds of x1 and x2, respectively.}
 
 \item{mechanism}{String indicating which mechanism to use for differential
 privacy. Currently the following mechanisms are supported: {'laplace',
-'gaussian'}. See \code{\link{laplaceMechanism}} and
-\code{\link{gaussianMechanism}} for a description of the supported
+'gaussian'}. See \code{\link{LaplaceMechanism}} and
+\code{\link{GaussianMechanism}} for a description of the supported
 mechanisms.}
 
-\item{delt}{Positive real number defining the delta privacy parameter
-(necessary if using Gaussian mechanism).}
+\item{delta}{Nonnegative real number defining the delta privacy parameter. If
+0, reduces to eps-DP and the Laplace mechanism is used.}
 
 \item{type.DP}{String indicating the type of differential privacy desired for
-the Gaussian mechanism. Can be either probabilistic DP ('pDP') or
-approximate DP ('aDP'). See \code{\link{gaussianMechanism}} for a more
-detailed description of this parameter. Only used if mechanism is
-'gaussian'.}
+the Gaussian mechanism (if selected). Can be either 'pDP' for probabilistic
+DP \insertCite{Liu2019a}{DPpack} or 'aDP' for approximate DP
+\insertCite{DPtextbook}{DPpack}.}
 }
 \value{
 A list of the sanitized covariances based on the bounded and/or
@@ -64,7 +59,7 @@ unbounded definitions of differential privacy.
 }
 \description{
 This function computes the differentially private covariance of a pair of
-vectors at user-specified levels of epsilon and delta.
+vectors at user-specified privacy levels of epsilon and delta.
 }
 \examples{
 covDP(c(1,4,-2,8,-6),c(1,3,2,2,4),1,which.sensitivity='bounded',
@@ -72,11 +67,15 @@ covDP(c(1,4,-2,8,-6),c(1,3,2,2,4),1,which.sensitivity='bounded',
   mechanism='laplace')
 covDP(c(1,4,-2,8,-6),c(1,3,2,2,4),1,which.sensitivity='unbounded',
   lower.bound1=-10,upper.bound110,lower.bound2=0,upper.bound2=5,
-  mechanism='gaussian',delt=0.5,type.DP='aDP')
+  mechanism='gaussian',delta=0.5,type.DP='aDP')
 
 }
 \references{
 \insertRef{Dwork2006a}{DPpack}
 
 \insertRef{Kifer2011}{DPpack}
+
+\insertRef{Liu2019a}{DPpack}
+
+\insertRef{DPtextbook}{DPpack}
 }

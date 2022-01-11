@@ -25,23 +25,19 @@ the data rows and corresponding labels are randomly shuffled.}
 
 \item{y}{Vector or matrix of true labels for each row of X.}
 
-\item{upper.bounds}{Optional vector of length ncol(X)+1 giving upper bounds
-on the values in each column of X and the values in y. The last value in
-the vector is assumed to be the upper bound on y, while the first ncol(X)
+\item{upper.bounds}{Numeric vector of length ncol(X)+1 giving upper bounds on
+the values in each column of X and the values in y. The last value in the
+vector is assumed to be the upper bound on y, while the first ncol(X)
 values are assumed to be in the same order as the corresponding columns of
-X. If NULL (default), the values are computed to be the maximum values in
-the data, which results in additional privacy loss. Any value in the
-columns of X and y larger than the corresponding upper bound is clipped at
-the bound.}
+X. Any value in the columns of X and y larger than the corresponding upper
+bound is clipped at the bound.}
 
-\item{lower.bounds}{Optional vector of length ncol(X)+1 giving lower bounds
-on the values in each column of X and the values in y. The last value in
-the vector is assumed to be the lower bound on y, while the first ncol(X)
+\item{lower.bounds}{Numeric vector of length ncol(X)+1 giving lower bounds on
+the values in each column of X and the values in y. The last value in the
+vector is assumed to be the lower bound on y, while the first ncol(X)
 values are assumed to be in the same order as the corresponding columns of
-X. If NULL (default), the values are computed to be the minimum values in
-the data, which results in additional privacy loss. Any value in the
-columns of X and y smaller than the corresponding lower bound is clipped at
-the bound.}
+X. Any value in the columns of X and y smaller than the corresponding lower
+bound is clipped at the bound.}
 
 \item{add.bias}{Boolean indicating whether to add a bias term to X. Defaults
 to FALSE.}
@@ -61,7 +57,7 @@ where m is the number of models being compared. One group is set aside as the
 validation group, and each of the other m groups are used to train each of
 the given m models. The number of errors on the validation set is counted for
 each model and used as the utility values in the exponential mechanism
-(\code{\link{exponentialMechanism}}) to select tuned model in a
+(\code{\link{ExponentialMechanism}}) to select tuned model in a
 privacy-preserving way.
 }
 \examples{

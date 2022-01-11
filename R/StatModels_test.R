@@ -410,7 +410,7 @@ ggplot(data) + geom_point(aes(x=X, y=y), size = 2) +
   theme_bw(base_size = 12)
 
 eps <- 1
-delt <- 1
+delta <- 1
 domain <- list("constraints"=function(coeff) coeff%*%coeff - length(coeff),
                "jacobian"=function(coeff) 2*coeff)
 zeta <- 2*p^(3/2)
@@ -418,7 +418,7 @@ lambda <- p
 gamma <- 1
 
 ermdp.kst <- EmpiricalRiskMinimizationDP.KST$new(h.linear, loss.squared.error,
-                                                 'l2', eps, delt, domain, zeta,
+                                                 'l2', eps, delta, domain, zeta,
                                                  lambda, gamma, h.gr.linear,
                                                  loss.gr.squared.error)
 ermdp.kst$fit(X,y,ub,lb)
@@ -468,10 +468,10 @@ ggplot(data) + geom_point(aes(x=X, y=y), size = 2) +
 regularizer <- function(coeff) coeff%*%coeff/2
 regularizer.gr <- function(coeff) coeff
 eps <- 1
-delt <- 1
+delta <- 1
 gamma <- 1
 
-linrdp <- LinearRegressionDP$new(regularizer, eps, delt, gamma,
+linrdp <- LinearRegressionDP$new(regularizer, eps, delta, gamma,
                                                  regularizer.gr)
 linrdp$fit(X,y,ub,lb)
 

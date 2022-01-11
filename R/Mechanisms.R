@@ -37,20 +37,20 @@
 #' @param alloc.proportions Numeric vector giving the allocation proportions of
 #'   epsilon (and delta if relevant) to the statistics. For example, if
 #'   true.values is of length two and alloc.proportions = c(.75, .25), then 75%
-#'   of the privacy budget eps (and delt) is allocated to the noise computation
+#'   of the privacy budget eps (and delta) is allocated to the noise computation
 #'   for the first element of true.values, and the remaining 25% is allocated to
 #'   the noise computation for the second element of true.values. This ensures
-#'   (eps, delt)-level privacy across all computations. By default, it
-#'   distributes eps and delt evenly among the calculations. Input does not need
+#'   (eps, delta)-level privacy across all computations. By default, it
+#'   distributes eps and delta evenly among the calculations. Input does not need
 #'   to be normalized, meaning alloc.proportions = c(3,1) produces the same
 #'   result as the example above.
 #' @return A list of the sanitized statistics based on the bounded and/or
 #'   unbounded definitions of differential privacy, sanitized via the Laplace
 #'   mechanism.
 #' @examples
-#' laplaceMechanism(5, 1, bounded.sensitivities=0.5,
+#' LaplaceMechanism(5, 1, bounded.sensitivities=0.5,
 #'   which.sensitivity='bounded')
-#' laplaceMechanism(c(5,3), 1, unbounded.sensitivities=1,
+#' LaplaceMechanism(c(5,3), 1, unbounded.sensitivities=1,
 #'   which.sensitivity='unbounded', alloc.proportions=c(.4,.6))
 #'
 #' @references \insertRef{Dwork2006a}{DPpack}
@@ -58,7 +58,7 @@
 #' \insertRef{Kifer2011}{DPpack}
 #'
 #' @export
-laplaceMechanism <- function (true.values, eps, bounded.sensitivities=NULL,
+LaplaceMechanism <- function (true.values, eps, bounded.sensitivities=NULL,
                               unbounded.sensitivities=NULL,
                               which.sensitivity='bounded',
                               alloc.proportions=NULL) {
@@ -177,7 +177,7 @@ laplaceMechanism <- function (true.values, eps, bounded.sensitivities=NULL,
 #' @param true.values Real number or numeric vector corresponding to the true
 #'   value(s) of the desired statistic(s).
 #' @param eps Positive real number defining the epsilon privacy budget.
-#' @param delt Positive real number defining the delta privacy parameter.
+#' @param delta Positive real number defining the delta privacy parameter.
 #' @param bounded.sensitivities Real number or numeric vector corresponding to
 #'   the global sensitivity(-ies) of the statistic based on bounded differential
 #'   privacy \insertCite{Kifer2011}{DPpack}. This is defined to be the greatest
@@ -201,40 +201,40 @@ laplaceMechanism <- function (true.values, eps, bounded.sensitivities=NULL,
 #'   collectively. Care must be taken not to violate differential privacy in
 #'   this case.
 #' @param type.DP String indicating the type of differential privacy desired for
-#'   the Gaussian mechanism. Can be either probabilistic DP ('pDP') or
-#'   approximate DP ('aDP'). The computation of the standard deviation for each
-#'   is performed via the theoretical formulas \insertCite{Liu2019a}{DPpack}.
-#'   See equations (17) and (18), respectively, in that reference.
+#'   the Gaussian mechanism. Can be either 'pDP' for probabilistic DP
+#'   \insertCite{Liu2019a}{DPpack} or 'aDP' for approximate DP
+#'   \insertCite{DPtextbook}{DPpack}.
 #' @param alloc.proportions Numeric vector giving the allocation proportions of
 #'   epsilon (and delta if relevant) to the statistics. For example, if
 #'   true.values is of length two and alloc.proportions = c(.75, .25), then 75%
-#'   of the privacy budget eps (and delt) is allocated to the noise computation
+#'   of the privacy budget eps (and delta) is allocated to the noise computation
 #'   for the first element of true.values, and the remaining 25% is allocated to
 #'   the noise computation for the second element of true.values. This ensures
-#'   (eps, delt)-level privacy across all computations. By default, it
-#'   distributes eps and delt evenly among the calculations. Input does not need
-#'   to be normalized, meaning alloc.proportions = c(3,1) produces the same
+#'   (eps, delta)-level privacy across all computations. By default, it
+#'   distributes eps and delta evenly among the calculations. Input does not
+#'   need to be normalized, meaning alloc.proportions = c(3,1) produces the same
 #'   result as the example above.
 #' @return A list of the sanitized statistics based on the bounded and/or
 #'   unbounded definitions of differential privacy, sanitized via the Gaussian
 #'   mechanism.
 #' @examples
-#' gaussianMechanism(5, 1, .5, bounded.sensitivities=0.5,
+#' GaussianMechanism(5, 1, .5, bounded.sensitivities=0.5,
 #'   which.sensitivity='bounded')
-#' gaussianMechanism(c(5,3), 1, .5, unbounded.sensitivities=1,
+#' GaussianMechanism(c(5,3), 1, .5, unbounded.sensitivities=1,
 #'   which.sensitivity='unbounded', type.DP='aDP', alloc.proportions=c(.4,.6))
 #'
 #' @importFrom Rdpack reprompt
 #'
-#' @references
-#'   \insertRef{Dwork2006a}{DPpack}
+#' @references \insertRef{Dwork2006a}{DPpack}
 #'
-#'   \insertRef{Kifer2011}{DPpack}
+#' \insertRef{Kifer2011}{DPpack}
 #'
-#'   \insertRef{Liu2019a}{DPpack}
+#' \insertRef{Liu2019a}{DPpack}
+#'
+#' \insertRef{DPtextbook}{DPpack}
 #'
 #' @export
-gaussianMechanism <- function (true.values, eps, delt, bounded.sensitivities=NULL,
+GaussianMechanism <- function (true.values, eps, delta, bounded.sensitivities=NULL,
                                unbounded.sensitivities=NULL,
                                which.sensitivity='bounded',
                                type.DP='pDP', alloc.proportions=NULL){
@@ -244,7 +244,7 @@ gaussianMechanism <- function (true.values, eps, delt, bounded.sensitivities=NUL
   }
     if (!is.numeric(eps) || length(eps)>1 || eps<=0) stop("eps must be a
                                                           scalar > 0");
-    if (!is.numeric(delt) || length(delt)>1 || delt<=0) stop("delt must be a
+    if (!is.numeric(delta) || length(delta)>1 || delta<=0) stop("delta must be a
                                                              scalar > 0");
     if (which.sensitivity=='bounded') {
       out.bound = TRUE;
@@ -324,7 +324,7 @@ gaussianMechanism <- function (true.values, eps, delt, bounded.sensitivities=NUL
   ########
   n <- length(true.values);
   alloc.eps <- eps*alloc.proportions;
-  alloc.delt <- delt*alloc.proportions;
+  alloc.delta <- delta*alloc.proportions;
 
   out <- list();
   if (out.bound){
@@ -333,14 +333,14 @@ gaussianMechanism <- function (true.values, eps, delt, bounded.sensitivities=NUL
     if (type.DP == 'pDP'){ # Equation 17 from Gaussian paper
       for (i in 1:n){
         bounded.param <- bounded.sensitivities[i]*
-          (sqrt(qnorm(alloc.delt[i]/2)^2+2*alloc.eps[i])-
-             qnorm(alloc.delt[i]/2))/(2*alloc.eps[i]);
+          (sqrt(qnorm(alloc.delta[i]/2)^2+2*alloc.eps[i])-
+             qnorm(alloc.delta[i]/2))/(2*alloc.eps[i]);
         bounded.noise[i] <- rnorm(1,sd=bounded.param);
       }
     } else if (type.DP == 'aDP'){ # Equation 18 from Gaussian paper
       for (i in 1:n){
         bounded.param <- bounded.sensitivities[i]*
-          (sqrt(2*log(1.25/alloc.delt[i])))/alloc.eps[i];
+          (sqrt(2*log(1.25/alloc.delta[i])))/alloc.eps[i];
         bounded.noise[i] <- rnorm(1,sd=bounded.param);
       }
     }
@@ -353,15 +353,15 @@ gaussianMechanism <- function (true.values, eps, delt, bounded.sensitivities=NUL
     if (type.DP == 'pDP'){ # Equation 17 from Gaussian paper
       for (i in 1:n){
         unbounded.param <- unbounded.sensitivities[i]*
-          (sqrt(qnorm(alloc.delt[i]/2)^2+2*alloc.eps[i])-
-             qnorm(alloc.delt[i]/2))/(2*alloc.eps[i]);
+          (sqrt(qnorm(alloc.delta[i]/2)^2+2*alloc.eps[i])-
+             qnorm(alloc.delta[i]/2))/(2*alloc.eps[i]);
         unbounded.noise[i] <- rnorm(1,sd=unbounded.param);
       }
     } else if (type.DP == 'aDP'){ # Equation 18 from Gaussian paper
       # unbounded.l2.approx <- sqrt(sum(unbounded.sensitivities^2)); # Lemma 2 from Gaussian paper
       for (i in 1:n){
         unbounded.param <- unbounded.sensitivities[i]*
-          (sqrt(2*log(1.25/alloc.delt[i])))/alloc.eps[i];
+          (sqrt(2*log(1.25/alloc.delta[i])))/alloc.eps[i];
         unbounded.noise[i] <- rnorm(1,sd=unbounded.param);
       }
     }
@@ -415,9 +415,9 @@ gaussianMechanism <- function (true.values, eps, delt, bounded.sensitivities=NUL
 #'   mechanism based on the bounded and/or unbounded definitions of differential
 #'   privacy.
 #' @examples
-#' exponentialMechanism(c(0,1,2,3,2,1,0), 1, bounded.sensitivities=1,
+#' ExponentialMechanism(c(0,1,2,3,2,1,0), 1, bounded.sensitivities=1,
 #'   which.sensitivity='bounded')
-#' exponentialMechanism(c(0,1,2,3,2,1,0), 1, unbounded.sensitivities=.5,
+#' ExponentialMechanism(c(0,1,2,3,2,1,0), 1, unbounded.sensitivities=.5,
 #'   which.sensitivity='unbounded', measure=c(1,1,2,1,2,1,1),
 #'   candidates=c('a','b','c','d','e','f','g'))
 #'
@@ -427,7 +427,7 @@ gaussianMechanism <- function (true.values, eps, delt, bounded.sensitivities=NUL
 #'   \insertRef{Kifer2011}{DPpack}
 #'
 #' @export
-exponentialMechanism <- function (utility, eps, bounded.sensitivities=NULL,
+ExponentialMechanism <- function (utility, eps, bounded.sensitivities=NULL,
                                unbounded.sensitivities=NULL,
                                which.sensitivity='bounded',measure=NULL,
                                candidates=NULL){

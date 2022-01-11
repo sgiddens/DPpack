@@ -48,7 +48,7 @@ test_meanDP <- function(){
   if (!is.character(a)) print("FAIL");
   print("")
 
-  print("         Bad delt:")
+  print("         Bad delta:")
   a = tryCatch(meanDP(data2d,1,mechanism='gaussian'),
                error=function(e) print(paste("PASS --",e)));
   if (!is.character(a)) print("FAIL");
@@ -63,13 +63,13 @@ test_meanDP <- function(){
   lb = NULL
   ub = NULL
   mech = 'laplace'
-  delt = NULL
+  delta = NULL
   tdp = 'pDp'
   ap = NULL
   n = 10000;
   data <- numeric(n);
   for (i in 1:n){
-    data[i] <- meanDP(x, eps, ws, lb, ub, mech, delt, tdp, ap)$Bounded
+    data[i] <- meanDP(x, eps, ws, lb, ub, mech, delta, tdp, ap)$Bounded
   }
 
   tv = mean(x)
@@ -85,13 +85,13 @@ test_meanDP <- function(){
   lb = NULL
   ub = NULL
   mech = 'laplace'
-  delt = NULL
+  delta = NULL
   tdp = 'pDp'
   ap = NULL
   n = 10000;
   data <- numeric(n);
   for (i in 1:n){
-    data[i] <- meanDP(x, eps, ws, lb, ub, mech, delt, tdp, ap)$Unbounded
+    data[i] <- meanDP(x, eps, ws, lb, ub, mech, delta, tdp, ap)$Unbounded
   }
 
   tv = mean(x)
@@ -107,13 +107,13 @@ test_meanDP <- function(){
   lb = -.5
   ub = NULL
   mech = 'laplace'
-  delt = NULL
+  delta = NULL
   tdp = 'pDp'
   ap = NULL
   n = 10000;
   data <- numeric(n);
   for (i in 1:n){
-    data[i] <- meanDP(x, eps, ws, lb, ub, mech, delt, tdp, ap)$Bounded
+    data[i] <- meanDP(x, eps, ws, lb, ub, mech, delta, tdp, ap)$Bounded
   }
 
   tv = mean(x)
@@ -129,13 +129,13 @@ test_meanDP <- function(){
   lb = NULL
   ub = .5
   mech = 'laplace'
-  delt = NULL
+  delta = NULL
   tdp = 'pDp'
   ap = NULL
   n = 10000;
   data <- numeric(n);
   for (i in 1:n){
-    data[i] <- meanDP(x, eps, ws, lb, ub, mech, delt, tdp, ap)$Bounded
+    data[i] <- meanDP(x, eps, ws, lb, ub, mech, delta, tdp, ap)$Bounded
   }
 
   tv = mean(x)
@@ -151,13 +151,13 @@ test_meanDP <- function(){
   lb = NULL
   ub = NULL
   mech = 'gaussian'
-  delt = .5
+  delta = .5
   tdp = 'pDP'
   ap = NULL
   n = 10000;
   data <- numeric(n);
   for (i in 1:n){
-    data[i] <- meanDP(x, eps, ws, lb, ub, mech, delt, tdp, ap)$Bounded
+    data[i] <- meanDP(x, eps, ws, lb, ub, mech, delta, tdp, ap)$Bounded
   }
 
   tv = mean(x)
@@ -173,13 +173,13 @@ test_meanDP <- function(){
   lb = NULL
   ub = NULL
   mech = 'gaussian'
-  delt = .5
+  delta = .5
   tdp = 'aDP'
   ap = NULL
   n = 10000;
   data <- numeric(n);
   for (i in 1:n){
-    data[i] <- meanDP(x, eps, ws, lb, ub, mech, delt, tdp, ap)$Bounded
+    data[i] <- meanDP(x, eps, ws, lb, ub, mech, delta, tdp, ap)$Bounded
   }
 
   tv = mean(x)
@@ -200,15 +200,15 @@ test_meanDP <- function(){
   #   lb = -4
   #   ub = 4
   #   mech = 'laplace'
-  #   delt = NULL
+  #   delta = NULL
   #   tdp = 'pDP'
   #   ap = NULL
   #   n = 10000
   #   data.x = numeric(n)
   #   data.y = numeric(n)
   #   for (i in 1:n){
-  #     data.x[i] <- meanDP(x,eps,ws,lb,ub,mech,delt,tdp,ap)$Bounded;
-  #     data.y[i] <- meanDP(y,eps,ws,lb,ub,mech,delt,tdp,ap)$Bounded;
+  #     data.x[i] <- meanDP(x,eps,ws,lb,ub,mech,delta,tdp,ap)$Bounded;
+  #     data.y[i] <- meanDP(y,eps,ws,lb,ub,mech,delta,tdp,ap)$Bounded;
   #   }
   #   S = c(-.5,0)
   #   p.M.x = sum(data.x>S[1] & data.x<S[2])/n
@@ -266,7 +266,7 @@ test_varDP <- function(){
   if (!is.character(a)) print("FAIL");
   print("")
 
-  print("         Bad delt:")
+  print("         Bad delta:")
   a = tryCatch(varDP(data2d,1,mechanism='gaussian'),
                error=function(e) print(paste("PASS --",e)));
   if (!is.character(a)) print("FAIL");
@@ -281,13 +281,13 @@ test_varDP <- function(){
   lb = NULL
   ub = NULL
   mech = 'laplace'
-  delt = NULL
+  delta = NULL
   tdp = 'pDp'
   ap = NULL
   n = 10000;
   data <- numeric(n);
   for (i in 1:n){
-    data[i] <- varDP(x, eps, ws, lb, ub, mech, delt, tdp, ap)$Bounded
+    data[i] <- varDP(x, eps, ws, lb, ub, mech, delta, tdp, ap)$Bounded
   }
 
   tv = var(x)
@@ -303,13 +303,13 @@ test_varDP <- function(){
   lb = NULL
   ub = NULL
   mech = 'laplace'
-  delt = NULL
+  delta = NULL
   tdp = 'pDp'
   ap = NULL
   n = 10000;
   data <- numeric(n);
   for (i in 1:n){
-    data[i] <- varDP(x, eps, ws, lb, ub, mech, delt, tdp, ap)$Unbounded
+    data[i] <- varDP(x, eps, ws, lb, ub, mech, delta, tdp, ap)$Unbounded
   }
 
   tv = var(x)
@@ -325,13 +325,13 @@ test_varDP <- function(){
   lb = -.5
   ub = NULL
   mech = 'laplace'
-  delt = NULL
+  delta = NULL
   tdp = 'pDp'
   ap = NULL
   n = 10000;
   data <- numeric(n);
   for (i in 1:n){
-    data[i] <- varDP(x, eps, ws, lb, ub, mech, delt, tdp, ap)$Bounded
+    data[i] <- varDP(x, eps, ws, lb, ub, mech, delta, tdp, ap)$Bounded
   }
 
   tv = var(x)
@@ -347,13 +347,13 @@ test_varDP <- function(){
   lb = NULL
   ub = .5
   mech = 'laplace'
-  delt = NULL
+  delta = NULL
   tdp = 'pDp'
   ap = NULL
   n = 10000;
   data <- numeric(n);
   for (i in 1:n){
-    data[i] <- varDP(x, eps, ws, lb, ub, mech, delt, tdp, ap)$Bounded
+    data[i] <- varDP(x, eps, ws, lb, ub, mech, delta, tdp, ap)$Bounded
   }
 
   tv = var(x)
@@ -369,13 +369,13 @@ test_varDP <- function(){
   lb = NULL
   ub = NULL
   mech = 'gaussian'
-  delt = .5
+  delta = .5
   tdp = 'pDP'
   ap = NULL
   n = 10000;
   data <- numeric(n);
   for (i in 1:n){
-    data[i] <- varDP(x, eps, ws, lb, ub, mech, delt, tdp, ap)$Bounded
+    data[i] <- varDP(x, eps, ws, lb, ub, mech, delta, tdp, ap)$Bounded
   }
 
   tv = var(x)
@@ -391,13 +391,13 @@ test_varDP <- function(){
   lb = NULL
   ub = NULL
   mech = 'gaussian'
-  delt = .5
+  delta = .5
   tdp = 'aDP'
   ap = NULL
   n = 10000;
   data <- numeric(n);
   for (i in 1:n){
-    data[i] <- varDP(x, eps, ws, lb, ub, mech, delt, tdp, ap)$Bounded
+    data[i] <- varDP(x, eps, ws, lb, ub, mech, delta, tdp, ap)$Bounded
   }
 
   tv = var(x)
@@ -456,7 +456,7 @@ test_sdDP <- function(){
   if (!is.character(a)) print("FAIL");
   print("")
 
-  print("         Bad delt:")
+  print("         Bad delta:")
   a = tryCatch(sdDP(data2d,1,mechanism='gaussian'),
                error=function(e) print(paste("PASS --",e)));
   if (!is.character(a)) print("FAIL");
@@ -471,13 +471,13 @@ test_sdDP <- function(){
   lb = NULL
   ub = NULL
   mech = 'laplace'
-  delt = NULL
+  delta = NULL
   tdp = 'pDp'
   ap = NULL
   n = 10000;
   data <- numeric(n);
   for (i in 1:n){
-    data[i] <- sdDP(x, eps, ws, lb, ub, mech, delt, tdp, ap)$Bounded
+    data[i] <- sdDP(x, eps, ws, lb, ub, mech, delta, tdp, ap)$Bounded
   }
 
   tv = sd(x)
@@ -493,13 +493,13 @@ test_sdDP <- function(){
   lb = NULL
   ub = NULL
   mech = 'laplace'
-  delt = NULL
+  delta = NULL
   tdp = 'pDp'
   ap = NULL
   n = 10000;
   data <- numeric(n);
   for (i in 1:n){
-    data[i] <- sdDP(x, eps, ws, lb, ub, mech, delt, tdp, ap)$Unbounded
+    data[i] <- sdDP(x, eps, ws, lb, ub, mech, delta, tdp, ap)$Unbounded
   }
 
   tv = sd(x)
@@ -515,13 +515,13 @@ test_sdDP <- function(){
   lb = -.5
   ub = NULL
   mech = 'laplace'
-  delt = NULL
+  delta = NULL
   tdp = 'pDp'
   ap = NULL
   n = 10000;
   data <- numeric(n);
   for (i in 1:n){
-    data[i] <- sdDP(x, eps, ws, lb, ub, mech, delt, tdp, ap)$Bounded
+    data[i] <- sdDP(x, eps, ws, lb, ub, mech, delta, tdp, ap)$Bounded
   }
 
   tv = sd(x)
@@ -537,13 +537,13 @@ test_sdDP <- function(){
   lb = NULL
   ub = .5
   mech = 'laplace'
-  delt = NULL
+  delta = NULL
   tdp = 'pDp'
   ap = NULL
   n = 10000;
   data <- numeric(n);
   for (i in 1:n){
-    data[i] <- sdDP(x, eps, ws, lb, ub, mech, delt, tdp, ap)$Bounded
+    data[i] <- sdDP(x, eps, ws, lb, ub, mech, delta, tdp, ap)$Bounded
   }
 
   tv = sd(x)
@@ -559,13 +559,13 @@ test_sdDP <- function(){
   lb = NULL
   ub = NULL
   mech = 'gaussian'
-  delt = .5
+  delta = .5
   tdp = 'pDP'
   ap = NULL
   n = 10000;
   data <- numeric(n);
   for (i in 1:n){
-    data[i] <- sdDP(x, eps, ws, lb, ub, mech, delt, tdp, ap)$Bounded
+    data[i] <- sdDP(x, eps, ws, lb, ub, mech, delta, tdp, ap)$Bounded
   }
 
   tv = sd(x)
@@ -581,13 +581,13 @@ test_sdDP <- function(){
   lb = NULL
   ub = NULL
   mech = 'gaussian'
-  delt = .5
+  delta = .5
   tdp = 'aDP'
   ap = NULL
   n = 10000;
   data <- numeric(n);
   for (i in 1:n){
-    data[i] <- sdDP(x, eps, ws, lb, ub, mech, delt, tdp, ap)$Bounded
+    data[i] <- sdDP(x, eps, ws, lb, ub, mech, delta, tdp, ap)$Bounded
   }
 
   tv = sd(x)
@@ -634,7 +634,7 @@ test_covDP <- function(){
   if (!is.character(a)) print("FAIL");
   print("")
 
-  print("         Bad delt:")
+  print("         Bad delta:")
   a = tryCatch(covDP(data1d,data1d+1,1,mechanism='gaussian'),
                error=function(e) print(paste("PASS --",e)));
   if (!is.character(a)) print("FAIL");
@@ -652,12 +652,12 @@ test_covDP <- function(){
   lb2 = NULL
   ub2 = NULL
   mech = 'laplace'
-  delt = NULL
+  delta = NULL
   tdp = 'pDp'
   n = 10000;
   data <- numeric(n);
   for (i in 1:n){
-    data[i] <- covDP(x1, x2, eps, ws, lb1, ub1, lb2, ub2, mech, delt, tdp)$Bounded
+    data[i] <- covDP(x1, x2, eps, ws, lb1, ub1, lb2, ub2, mech, delta, tdp)$Bounded
   }
 
   tv = cov(x1,x2)
@@ -676,13 +676,13 @@ test_covDP <- function(){
   lb2 = NULL
   ub2 = NULL
   mech = 'laplace'
-  delt = NULL
+  delta = NULL
   tdp = 'pDp'
   ap = NULL
   n = 10000;
   data <- numeric(n);
   for (i in 1:n){
-    data[i] <- covDP(x1, x2, eps, ws, lb1, ub1, lb2, ub2, mech, delt, tdp)$Unbounded
+    data[i] <- covDP(x1, x2, eps, ws, lb1, ub1, lb2, ub2, mech, delta, tdp)$Unbounded
   }
 
   tv = cov(x1,x2)
@@ -701,13 +701,13 @@ test_covDP <- function(){
   lb2 = NULL
   ub2 = NULL
   mech = 'laplace'
-  delt = NULL
+  delta = NULL
   tdp = 'pDp'
   ap = NULL
   n = 10000;
   data <- numeric(n);
   for (i in 1:n){
-    data[i] <- covDP(x1, x2, eps, ws, lb1, ub1, lb2, ub2, mech, delt, tdp)$Bounded
+    data[i] <- covDP(x1, x2, eps, ws, lb1, ub1, lb2, ub2, mech, delta, tdp)$Bounded
   }
 
   tv = cov(x1,x2)
@@ -726,13 +726,13 @@ test_covDP <- function(){
   lb2 = NULL
   ub2 = NULL
   mech = 'laplace'
-  delt = NULL
+  delta = NULL
   tdp = 'pDp'
   ap = NULL
   n = 10000;
   data <- numeric(n);
   for (i in 1:n){
-    data[i] <- covDP(x1, x2, eps, ws, lb1, ub1, lb2, ub2, mech, delt, tdp)$Bounded
+    data[i] <- covDP(x1, x2, eps, ws, lb1, ub1, lb2, ub2, mech, delta, tdp)$Bounded
   }
 
   tv = cov(x1,x2)
@@ -751,13 +751,13 @@ test_covDP <- function(){
   lb2 = NULL
   ub2 = NULL
   mech = 'gaussian'
-  delt = .5
+  delta = .5
   tdp = 'pDP'
   ap = NULL
   n = 10000;
   data <- numeric(n);
   for (i in 1:n){
-    data[i] <- covDP(x1, x2, eps, ws, lb1, ub1, lb2, ub2, mech, delt, tdp)$Bounded
+    data[i] <- covDP(x1, x2, eps, ws, lb1, ub1, lb2, ub2, mech, delta, tdp)$Bounded
   }
 
   tv = cov(x1,x2)
@@ -776,13 +776,13 @@ test_covDP <- function(){
   lb2 = NULL
   ub2 = NULL
   mech = 'gaussian'
-  delt = .5
+  delta = .5
   tdp = 'aDP'
   ap = NULL
   n = 10000;
   data <- numeric(n);
   for (i in 1:n){
-    data[i] <- covDP(x1, x2, eps, ws, lb1, ub1, lb2, ub2, mech, delt, tdp)$Bounded
+    data[i] <- covDP(x1, x2, eps, ws, lb1, ub1, lb2, ub2, mech, delta, tdp)$Bounded
   }
 
   tv = cov(x1,x2)
@@ -828,7 +828,7 @@ test_histogramDP <- function(){
   if (!is.character(a)) print("FAIL");
   print("")
 
-  print("         Bad delt:")
+  print("         Bad delta:")
   a = tryCatch(histogramDP(data1d,1,mechanism='gaussian'),
                error=function(e) print(paste("PASS --",e)));
   if (!is.character(a)) print("FAIL");
@@ -844,11 +844,11 @@ test_histogramDP <- function(){
   lb = -10
   ub = 15
   mech = 'laplace'
-  delt = NULL
+  delta = NULL
   tdp = 'pDP'
   an = FALSE;
 
-  result <- histogramDP(x, eps, "Sturges",normal, ws, lb, ub, mech, delt, tdp, an)$Bounded
+  result <- histogramDP(x, eps, "Sturges",normal, ws, lb, ub, mech, delta, tdp, an)$Bounded
 
   par(mfrow=c(1,2))
   plot(result,main="Simple bounded Laplace");
@@ -864,11 +864,11 @@ test_histogramDP <- function(){
   lb = -10
   ub = 15
   mech = 'laplace'
-  delt = NULL
+  delta = NULL
   tdp = 'pDP'
   an = FALSE;
 
-  result <- histogramDP(x, eps, "Sturges",normal, ws, lb, ub, mech, delt, tdp, an)$Unbounded
+  result <- histogramDP(x, eps, "Sturges",normal, ws, lb, ub, mech, delta, tdp, an)$Unbounded
 
   par(mfrow=c(1,2))
   plot(result,main="Simple unbounded Laplace");
@@ -884,11 +884,11 @@ test_histogramDP <- function(){
   lb = 1
   ub = 15
   mech = 'laplace'
-  delt = NULL
+  delta = NULL
   tdp = 'pDP'
   an = FALSE;
 
-  result <- histogramDP(x, eps, "Sturges",normal, ws, lb, ub, mech, delt, tdp, an)$Bounded
+  result <- histogramDP(x, eps, "Sturges",normal, ws, lb, ub, mech, delta, tdp, an)$Bounded
 
   par(mfrow=c(1,2))
   plot(result,main="Laplace with lower.bounds");
@@ -904,11 +904,11 @@ test_histogramDP <- function(){
   lb = -9
   ub = 5
   mech = 'laplace'
-  delt = NULL
+  delta = NULL
   tdp = 'pDP'
   an = FALSE;
 
-  result <- histogramDP(x, eps, "Sturges",normal, ws, lb, ub, mech, delt, tdp, an)$Bounded
+  result <- histogramDP(x, eps, "Sturges",normal, ws, lb, ub, mech, delta, tdp, an)$Bounded
 
   par(mfrow=c(1,2))
   plot(result,main="Laplace with upper.bounds");
@@ -924,11 +924,11 @@ test_histogramDP <- function(){
   lb = -9
   ub = 15
   mech = 'gaussian'
-  delt = .5
+  delta = .5
   tdp = 'pDP'
   an = FALSE;
 
-  result <- histogramDP(x, eps, "Sturges",normal, ws, lb, ub, mech, delt, tdp, an)$Bounded
+  result <- histogramDP(x, eps, "Sturges",normal, ws, lb, ub, mech, delta, tdp, an)$Bounded
 
   par(mfrow=c(1,2))
   plot(result,main="Gaussian pDP");
@@ -944,11 +944,11 @@ test_histogramDP <- function(){
   lb = -9
   ub = 15
   mech = 'gaussian'
-  delt = .5
+  delta = .5
   tdp = 'aDP'
   an = FALSE;
 
-  result <- histogramDP(x, eps, "Sturges",normal, ws, lb, ub, mech, delt, tdp, an)$Bounded
+  result <- histogramDP(x, eps, "Sturges",normal, ws, lb, ub, mech, delta, tdp, an)$Bounded
 
   par(mfrow=c(1,2))
   plot(result,main="Gaussian aDP");
@@ -964,11 +964,11 @@ test_histogramDP <- function(){
   lb = -9
   ub = 15
   mech = 'laplace'
-  delt = NULL
+  delta = NULL
   tdp = 'pDP'
   an = FALSE;
 
-  result <- histogramDP(x, eps, "Sturges",normal, ws, lb, ub, mech, delt, tdp, an)$Bounded
+  result <- histogramDP(x, eps, "Sturges",normal, ws, lb, ub, mech, delta, tdp, an)$Bounded
 
   par(mfrow=c(1,2))
   plot(result,main="Normalized");
@@ -984,11 +984,11 @@ test_histogramDP <- function(){
   lb = -9
   ub = 15
   mech = 'laplace'
-  delt = NULL
+  delta = NULL
   tdp = 'pDP'
   an = TRUE;
 
-  result <- histogramDP(x, eps, "Sturges",normal, ws, lb, ub, mech, delt, tdp, an)$Bounded
+  result <- histogramDP(x, eps, "Sturges",normal, ws, lb, ub, mech, delta, tdp, an)$Bounded
 
   par(mfrow=c(1,2))
   plot(result,main="Allow Negative");
@@ -1022,7 +1022,7 @@ test_tableDP <- function(){
   if (!is.character(a)) print("FAIL");
   print("")
 
-  print("         Bad delt:")
+  print("         Bad delta:")
   a = tryCatch(tableDP(x,y,1,mechanism='gaussian'),
                error=function(e) print(paste("PASS --",e)));
   if (!is.character(a)) print("FAIL");
@@ -1036,7 +1036,7 @@ test_tableDP <- function(){
   eps <- 1;
   ws = 'bounded'
   mech = 'laplace'
-  delt = NULL
+  delta = NULL
   tdp = 'pDP'
   an = FALSE;
 
@@ -1044,7 +1044,7 @@ test_tableDP <- function(){
   print("Original:")
   print(table(x,y))
   print("Sanitized:")
-  print(tableDP(x,y,eps,ws,mech,delt,tdp,an)$Bounded);
+  print(tableDP(x,y,eps,ws,mech,delta,tdp,an)$Bounded);
   Sys.sleep(5)
 
   print("         Simple unbounded Laplace:")
@@ -1053,7 +1053,7 @@ test_tableDP <- function(){
   eps <- 1;
   ws = 'unbounded'
   mech = 'laplace'
-  delt = NULL
+  delta = NULL
   tdp = 'pDP'
   an = FALSE;
 
@@ -1061,7 +1061,7 @@ test_tableDP <- function(){
   print("Original:")
   print(table(x,y))
   print("Sanitized:")
-  print(tableDP(x,y,eps,ws,mech,delt,tdp,an)$Unbounded);
+  print(tableDP(x,y,eps,ws,mech,delta,tdp,an)$Unbounded);
   Sys.sleep(5)
 
   print("         Gaussian pDP:")
@@ -1070,7 +1070,7 @@ test_tableDP <- function(){
   eps <- 1;
   ws = 'bounded'
   mech = 'gaussian'
-  delt = .5
+  delta = .5
   tdp = 'pDP'
   an = FALSE;
 
@@ -1078,7 +1078,7 @@ test_tableDP <- function(){
   print("Original:")
   print(table(x,y))
   print("Sanitized:")
-  print(tableDP(x,y,eps,ws,mech,delt,tdp,an)$Bounded);
+  print(tableDP(x,y,eps,ws,mech,delta,tdp,an)$Bounded);
   Sys.sleep(5)
 
   print("         Gaussian aDP:")
@@ -1087,7 +1087,7 @@ test_tableDP <- function(){
   eps <- 1;
   ws = 'bounded'
   mech = 'gaussian'
-  delt = .5
+  delta = .5
   tdp = 'aDP'
   an = FALSE;
 
@@ -1095,7 +1095,7 @@ test_tableDP <- function(){
   print("Original:")
   print(table(x,y))
   print("Sanitized:")
-  print(tableDP(x,y,eps,ws,mech,delt,tdp,an)$Bounded);
+  print(tableDP(x,y,eps,ws,mech,delta,tdp,an)$Bounded);
   Sys.sleep(5)
 
   print("         Allow Negative:")
@@ -1104,7 +1104,7 @@ test_tableDP <- function(){
   eps <- 1;
   ws = 'bounded'
   mech = 'laplace'
-  delt = NULL
+  delta = NULL
   tdp = 'pDP'
   an = TRUE;
 
@@ -1112,7 +1112,7 @@ test_tableDP <- function(){
   print("Original:")
   print(table(x,y))
   print("Sanitized:")
-  print(tableDP(x,y,eps,ws,mech,delt,tdp,an)$Bounded);
+  print(tableDP(x,y,eps,ws,mech,delta,tdp,an)$Bounded);
   Sys.sleep(5)
 
   ### END TEST FUNCTIONALITY ###
@@ -1154,7 +1154,7 @@ test_pooledVarDP <- function(){
   if (!is.character(a)) print("FAIL");
   print("")
 
-  print("         Bad delt:")
+  print("         Bad delta:")
   a = tryCatch(pooledVarDP(x,y,z,eps=1,mechanism='gaussian'),
                error=function(e) print(paste("PASS --",e)));
   if (!is.character(a)) print("FAIL");
@@ -1174,7 +1174,7 @@ test_pooledVarDP <- function(){
   lb = NULL
   ub = NULL
   mech = 'laplace'
-  delt = NULL
+  delta = NULL
   tdp = 'pDP'
   anm = FALSE
   n = 10000;
@@ -1182,7 +1182,7 @@ test_pooledVarDP <- function(){
   for (i in 1:n){
     data[i] <- pooledVarDP(x,y,z, eps=eps, which.sensitivity=ws,
                            lower.bound=lb, upper.bound=ub,
-                           mechanism=mech, delt=delt, type.DP=tdp,
+                           mechanism=mech, delta=delta, type.DP=tdp,
                            approx.n.max=anm)$Bounded
   }
 
@@ -1204,7 +1204,7 @@ test_pooledVarDP <- function(){
   lb = NULL
   ub = NULL
   mech = 'laplace'
-  delt = NULL
+  delta = NULL
   tdp = 'pDP'
   anm = FALSE
   n = 10000;
@@ -1212,7 +1212,7 @@ test_pooledVarDP <- function(){
   for (i in 1:n){
     data[i] <- pooledVarDP(x,y,z, eps=eps, which.sensitivity=ws,
                            lower.bound=lb, upper.bound=ub,
-                           mechanism=mech, delt=delt, type.DP=tdp,
+                           mechanism=mech, delta=delta, type.DP=tdp,
                            approx.n.max=anm)$Unbounded
   }
 
@@ -1234,7 +1234,7 @@ test_pooledVarDP <- function(){
   lb = -2
   ub = NULL
   mech = 'laplace'
-  delt = NULL
+  delta = NULL
   tdp = 'pDP'
   anm = FALSE
   n = 10000;
@@ -1242,7 +1242,7 @@ test_pooledVarDP <- function(){
   for (i in 1:n){
     data[i] <- pooledVarDP(x,y,z, eps=eps, which.sensitivity=ws,
                            lower.bound=lb, upper.bound=ub,
-                           mechanism=mech, delt=delt, type.DP=tdp,
+                           mechanism=mech, delta=delta, type.DP=tdp,
                            approx.n.max=anm)$Bounded
   }
 
@@ -1264,7 +1264,7 @@ test_pooledVarDP <- function(){
   lb = NULL
   ub = 2
   mech = 'laplace'
-  delt = NULL
+  delta = NULL
   tdp = 'pDP'
   anm = FALSE
   n = 10000;
@@ -1272,7 +1272,7 @@ test_pooledVarDP <- function(){
   for (i in 1:n){
     data[i] <- pooledVarDP(x,y,z, eps=eps, which.sensitivity=ws,
                            lower.bound=lb, upper.bound=ub,
-                           mechanism=mech, delt=delt, type.DP=tdp,
+                           mechanism=mech, delta=delta, type.DP=tdp,
                            approx.n.max=anm)$Bounded
   }
 
@@ -1294,7 +1294,7 @@ test_pooledVarDP <- function(){
   lb = NULL
   ub = NULL
   mech = 'gaussian'
-  delt = .5
+  delta = .5
   tdp = 'pDP'
   anm = FALSE
   n = 10000;
@@ -1302,7 +1302,7 @@ test_pooledVarDP <- function(){
   for (i in 1:n){
     data[i] <- pooledVarDP(x,y,z, eps=eps, which.sensitivity=ws,
                            lower.bound=lb, upper.bound=ub,
-                           mechanism=mech, delt=delt, type.DP=tdp,
+                           mechanism=mech, delta=delta, type.DP=tdp,
                            approx.n.max=anm)$Bounded
   }
 
@@ -1324,7 +1324,7 @@ test_pooledVarDP <- function(){
   lb = NULL
   ub = NULL
   mech = 'gaussian'
-  delt = .5
+  delta = .5
   tdp = 'aDP'
   anm = FALSE
   n = 10000;
@@ -1332,7 +1332,7 @@ test_pooledVarDP <- function(){
   for (i in 1:n){
     data[i] <- pooledVarDP(x,y,z, eps=eps, which.sensitivity=ws,
                            lower.bound=lb, upper.bound=ub,
-                           mechanism=mech, delt=delt, type.DP=tdp,
+                           mechanism=mech, delta=delta, type.DP=tdp,
                            approx.n.max=anm)$Bounded
   }
 
@@ -1354,7 +1354,7 @@ test_pooledVarDP <- function(){
   lb = NULL
   ub = NULL
   mech = 'laplace'
-  delt = NULL
+  delta = NULL
   tdp = 'pDP'
   anm = TRUE
   n = 10000;
@@ -1362,7 +1362,7 @@ test_pooledVarDP <- function(){
   for (i in 1:n){
     data[i] <- pooledVarDP(x,y,z, eps=eps, which.sensitivity=ws,
                            lower.bound=lb, upper.bound=ub,
-                           mechanism=mech, delt=delt, type.DP=tdp,
+                           mechanism=mech, delta=delta, type.DP=tdp,
                            approx.n.max=anm)$Bounded
   }
 
@@ -1422,7 +1422,7 @@ test_pooledCovDP <- function(){
   if (!is.character(a)) print("FAIL");
   print("")
 
-  print("         Bad delt:")
+  print("         Bad delta:")
   a = tryCatch(pooledCovDP(x,y,z,eps=1,mechanism='gaussian'),
                error=function(e) print(paste("PASS --",e)));
   if (!is.character(a)) print("FAIL");
@@ -1444,7 +1444,7 @@ test_pooledCovDP <- function(){
   lb2 = NULL
   ub2 = NULL
   mech = 'laplace'
-  delt = NULL
+  delta = NULL
   tdp = 'pDP'
   anm = FALSE;
   n = 10000;
@@ -1453,7 +1453,7 @@ test_pooledCovDP <- function(){
     data[i] <- pooledCovDP(x,y,z, eps=eps, which.sensitivity=ws,
                            lower.bound1=lb1, upper.bound1=ub1,
                            lower.bound2=lb2, upper.bound2=ub2,
-                           mechanism=mech, delt=delt, type.DP=tdp,
+                           mechanism=mech, delta=delta, type.DP=tdp,
                            approx.n.max=anm)$Bounded
   }
 
@@ -1478,7 +1478,7 @@ test_pooledCovDP <- function(){
   lb2 = NULL
   ub2 = NULL
   mech = 'laplace'
-  delt = NULL
+  delta = NULL
   tdp = 'pDP'
   anm = FALSE;
   n = 10000;
@@ -1487,7 +1487,7 @@ test_pooledCovDP <- function(){
     data[i] <- pooledCovDP(x,y,z, eps=eps, which.sensitivity=ws,
                            lower.bound1=lb1, upper.bound1=ub1,
                            lower.bound2=lb2, upper.bound2=ub2,
-                           mechanism=mech, delt=delt, type.DP=tdp,
+                           mechanism=mech, delta=delta, type.DP=tdp,
                            approx.n.max=anm)$Unbounded
   }
 
@@ -1512,7 +1512,7 @@ test_pooledCovDP <- function(){
   lb2 = -2
   ub2 = NULL
   mech = 'laplace'
-  delt = NULL
+  delta = NULL
   tdp = 'pDP'
   anm = FALSE;
   n = 10000;
@@ -1521,7 +1521,7 @@ test_pooledCovDP <- function(){
     data[i] <- pooledCovDP(x,y,z, eps=eps, which.sensitivity=ws,
                            lower.bound1=lb1, upper.bound1=ub1,
                            lower.bound2=lb2, upper.bound2=ub2,
-                           mechanism=mech, delt=delt, type.DP=tdp,
+                           mechanism=mech, delta=delta, type.DP=tdp,
                            approx.n.max=anm)$Bounded
   }
 
@@ -1546,7 +1546,7 @@ test_pooledCovDP <- function(){
   lb2 = NULL
   ub2 = 2
   mech = 'laplace'
-  delt = NULL
+  delta = NULL
   tdp = 'pDP'
   anm = FALSE;
   n = 10000;
@@ -1555,7 +1555,7 @@ test_pooledCovDP <- function(){
     data[i] <- pooledCovDP(x,y,z, eps=eps, which.sensitivity=ws,
                            lower.bound1=lb1, upper.bound1=ub1,
                            lower.bound2=lb2, upper.bound2=ub2,
-                           mechanism=mech, delt=delt, type.DP=tdp,
+                           mechanism=mech, delta=delta, type.DP=tdp,
                            approx.n.max=anm)$Bounded
   }
 
@@ -1580,7 +1580,7 @@ test_pooledCovDP <- function(){
   lb2 = NULL
   ub2 = NULL
   mech = 'gaussian'
-  delt = .5
+  delta = .5
   tdp = 'pDP'
   anm = FALSE;
   n = 10000;
@@ -1589,7 +1589,7 @@ test_pooledCovDP <- function(){
     data[i] <- pooledCovDP(x,y,z, eps=eps, which.sensitivity=ws,
                            lower.bound1=lb1, upper.bound1=ub1,
                            lower.bound2=lb2, upper.bound2=ub2,
-                           mechanism=mech, delt=delt, type.DP=tdp,
+                           mechanism=mech, delta=delta, type.DP=tdp,
                            approx.n.max=anm)$Bounded
   }
 
@@ -1614,7 +1614,7 @@ test_pooledCovDP <- function(){
   lb2 = NULL
   ub2 = NULL
   mech = 'gaussian'
-  delt = .5
+  delta = .5
   tdp = 'aDP'
   anm = FALSE;
   n = 10000;
@@ -1623,7 +1623,7 @@ test_pooledCovDP <- function(){
     data[i] <- pooledCovDP(x,y,z, eps=eps, which.sensitivity=ws,
                            lower.bound1=lb1, upper.bound1=ub1,
                            lower.bound2=lb2, upper.bound2=ub2,
-                           mechanism=mech, delt=delt, type.DP=tdp,
+                           mechanism=mech, delta=delta, type.DP=tdp,
                            approx.n.max=anm)$Bounded
   }
 
@@ -1648,7 +1648,7 @@ test_pooledCovDP <- function(){
   lb2 = NULL
   ub2 = NULL
   mech = 'laplace'
-  delt = NULL
+  delta = NULL
   tdp = 'pDP'
   anm = TRUE;
   n = 10000;
@@ -1657,7 +1657,7 @@ test_pooledCovDP <- function(){
     data[i] <- pooledCovDP(x,y,z, eps=eps, which.sensitivity=ws,
                            lower.bound1=lb1, upper.bound1=ub1,
                            lower.bound2=lb2, upper.bound2=ub2,
-                           mechanism=mech, delt=delt, type.DP=tdp,
+                           mechanism=mech, delta=delta, type.DP=tdp,
                            approx.n.max=anm)$Bounded
   }
 
@@ -1721,11 +1721,11 @@ test_quantileDP <- function(){
   lb = NULL
   ub = NULL
   mech = 'exponential'
-  delt = NULL
+  delta = NULL
   n = 10000;
   data <- numeric(n);
   for (i in 1:n){
-    data[i] <- quantileDP(x, quant, eps, ws, lb, ub, mech, delt)$Bounded
+    data[i] <- quantileDP(x, quant, eps, ws, lb, ub, mech, delta)$Bounded
   }
 
   tv = quantile(x,quant)
@@ -1742,11 +1742,11 @@ test_quantileDP <- function(){
   lb = NULL
   ub = NULL
   mech = 'exponential'
-  delt = NULL
+  delta = NULL
   n = 10000;
   data <- numeric(n);
   for (i in 1:n){
-    data[i] <- quantileDP(x, quant, eps, ws, lb, ub, mech, delt)$Unbounded
+    data[i] <- quantileDP(x, quant, eps, ws, lb, ub, mech, delta)$Unbounded
   }
 
   tv = quantile(x,quant)
@@ -1763,11 +1763,11 @@ test_quantileDP <- function(){
   lb = -2
   ub = NULL
   mech = 'exponential'
-  delt = NULL
+  delta = NULL
   n = 10000;
   data <- numeric(n);
   for (i in 1:n){
-    data[i] <- quantileDP(x, quant, eps, ws, lb, ub, mech, delt)$Bounded
+    data[i] <- quantileDP(x, quant, eps, ws, lb, ub, mech, delta)$Bounded
   }
 
   tv = quantile(x,quant)
@@ -1784,11 +1784,11 @@ test_quantileDP <- function(){
   lb = NULL
   ub = 2
   mech = 'exponential'
-  delt = NULL
+  delta = NULL
   n = 10000;
   data <- numeric(n);
   for (i in 1:n){
-    data[i] <- quantileDP(x, quant, eps, ws, lb, ub, mech, delt)$Bounded
+    data[i] <- quantileDP(x, quant, eps, ws, lb, ub, mech, delta)$Bounded
   }
 
   tv = quantile(x,quant)
@@ -1805,11 +1805,11 @@ test_quantileDP <- function(){
   lb = NULL
   ub = NULL
   mech = 'exponential'
-  delt = NULL
+  delta = NULL
   n = 10000;
   data <- numeric(n);
   for (i in 1:n){
-    data[i] <- quantileDP(x, quant, eps, ws, lb, ub, mech, delt)$Bounded
+    data[i] <- quantileDP(x, quant, eps, ws, lb, ub, mech, delta)$Bounded
   }
 
   tv = quantile(x,quant)
@@ -1826,11 +1826,11 @@ test_quantileDP <- function(){
   lb = NULL
   ub = NULL
   mech = 'exponential'
-  delt = NULL
+  delta = NULL
   n = 10000;
   data <- numeric(n);
   for (i in 1:n){
-    data[i] <- quantileDP(x, quant, eps, ws, lb, ub, mech, delt)$Bounded
+    data[i] <- quantileDP(x, quant, eps, ws, lb, ub, mech, delta)$Bounded
   }
 
   tv = quantile(x,quant)
@@ -1847,11 +1847,11 @@ test_quantileDP <- function(){
   lb = NULL
   ub = NULL
   mech = 'exponential'
-  delt = NULL
+  delta = NULL
   n = 10000;
   data <- numeric(n);
   for (i in 1:n){
-    data[i] <- quantileDP(x, quant, eps, ws, lb, ub, mech, delt)$Bounded
+    data[i] <- quantileDP(x, quant, eps, ws, lb, ub, mech, delta)$Bounded
   }
 
   tv = quantile(x,quant)
@@ -1884,11 +1884,11 @@ test_medianDP <- function(){
   lb = NULL
   ub = NULL
   mech = 'exponential'
-  delt = NULL
+  delta = NULL
   n = 10000;
   data <- numeric(n);
   for (i in 1:n){
-    data[i] <- medianDP(x, eps, ws, lb, ub, mech, delt)$Bounded
+    data[i] <- medianDP(x, eps, ws, lb, ub, mech, delta)$Bounded
   }
 
   tv = median(x)

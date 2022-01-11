@@ -11,7 +11,7 @@ pooledVarDP(
   lower.bound = NULL,
   upper.bound = NULL,
   mechanism = "laplace",
-  delt = NULL,
+  delta = NULL,
   type.DP = "pDP",
   approx.n.max = FALSE
 )
@@ -28,31 +28,28 @@ privacy. If 'unbounded', returns result plus noise based on unbounded
 definition. If 'both', returns result based on both methods
 \insertCite{Kifer2011}{DPpack}. Note that if 'both' is chosen, each result
 individually satisfies differential privacy at level eps, but may not do so
-collectively. Care must be taken not to violate differential privacy in
-this case.}
+collectively and in composition. Care must be taken not to violate
+differential privacy in this case.}
 
-\item{lower.bound}{Real number giving the lower bound of the input data. If
-not given, it is computed from the data to be the min value over all given
-data. Note this computation may result in additional privacy loss.}
+\item{lower.bound}{Real number giving the global or public lower bound of the
+input data.}
 
-\item{upper.bound}{Real number giving the upper bound of the input data. If
-not given, it is computed from the data to be the max value over all given
-data. Note this computation may result in additional privacy loss.}
+\item{upper.bound}{Real number giving the global or public upper bound of the
+input data.}
 
 \item{mechanism}{String indicating which mechanism to use for differential
 privacy. Currently the following mechanisms are supported: {'laplace',
-'gaussian'}. See \code{\link{laplaceMechanism}} and
-\code{\link{gaussianMechanism}} for a description of the supported
+'gaussian'}. See \code{\link{LaplaceMechanism}} and
+\code{\link{GaussianMechanism}} for a description of the supported
 mechanisms.}
 
-\item{delt}{Positive real number defining the delta privacy parameter
-(necessary if using Gaussian mechanism).}
+\item{delta}{Nonnegative real number defining the delta privacy parameter. If
+0, reduces to eps-DP and the Laplace mechanism is used.}
 
 \item{type.DP}{String indicating the type of differential privacy desired for
-the Gaussian mechanism. Can be either probabilistic DP ('pDP') or
-approximate DP ('aDP'). See \code{\link{gaussianMechanism}} for a more
-detailed description of this parameter. Only used if mechanism is
-'gaussian'.}
+the Gaussian mechanism (if selected). Can be either 'pDP' for probabilistic
+DP \insertCite{Liu2019a}{DPpack} or 'aDP' for approximate DP
+\insertCite{DPtextbook}{DPpack}.}
 
 \item{approx.n.max}{Logical indicating whether to approximate n.max, which is
 defined to be the length of the largest input vector. Approximation is best
@@ -64,18 +61,22 @@ unbounded definitions of differential privacy.
 }
 \description{
 This function computes the differentially private pooled variance from two or
-more vectors of data at user-specified levels of epsilon and delta.
+more vectors of data at user-specified privacy levels of epsilon and delta.
 }
 \examples{
 pooledVarDP(c(1,4,-2,8,-6),c(1,2),c(-5,-7),eps=1,which.sensitivity='bounded',
   lower.bound=-10,upper.bound=10,mechanism='laplace')
 pooledVarDP(c(1,4,-2,8,-6),c(1,2),c(-5,-7),eps=1,
   which.sensitivity='unbounded',lower.bound=-10,upper.bound=10,
-  mechanism='gaussian',delt=0.5,type.DP='aDP',approx.n.max=TRUE)
+  mechanism='gaussian',delta=0.5,type.DP='aDP',approx.n.max=TRUE)
 
 }
 \references{
 \insertRef{Dwork2006a}{DPpack}
 
 \insertRef{Kifer2011}{DPpack}
+
+\insertRef{Liu2019a}{DPpack}
+
+\insertRef{DPtextbook}{DPpack}
 }

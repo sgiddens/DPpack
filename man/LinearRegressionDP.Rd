@@ -58,11 +58,11 @@ be within this range.
 # Construct object for linear regression
 regularizer <- 'l2' # Alternatively, function(coeff) coeff\%*\%coeff/2
 eps <- 1
-delt <- 1
+delta <- 1
 gamma <- 1
 regularizer.gr <- function(coeff) coeff
 
-lrdp <- LinearRegressionDP$new('l2', eps, delt, gamma,
+lrdp <- LinearRegressionDP$new('l2', eps, delta, gamma,
                                              regularizer.gr)
 
 }
@@ -93,7 +93,7 @@ lrdp <- LinearRegressionDP$new('l2', eps, delt, gamma,
 \subsection{Method \code{new()}}{
 Create a new LinearRegressionDP object.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{LinearRegressionDP$new(regularizer, eps, delt, gamma, regularizer.gr = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{LinearRegressionDP$new(regularizer, eps, delta, gamma, regularizer.gr = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -107,7 +107,7 @@ to ensure differential privacy, the function must be convex.}
 \item{\code{eps}}{Positive real number defining the epsilon privacy budget. If
 set to Inf, runs algorithm without differential privacy.}
 
-\item{\code{delt}}{Nonnegative real number defining the delta parameter for
+\item{\code{delta}}{Nonnegative real number defining the delta parameter for
 approximate differential privacy. If set to 0, pure differential
 privacy is used.}
 
@@ -129,11 +129,11 @@ A new LinearRegressionDP object.
 \preformatted{# Construct object for linear regression
 regularizer <- 'l2' # Alternatively, function(coeff) coeff\%*\%coeff/2
 eps <- 1
-delt <- 1
+delta <- 1
 gamma <- 1
 regularizer.gr <- function(coeff) coeff
 
-lrdp <- LinearRegressionDP$new('l2', eps, delt, gamma,
+lrdp <- LinearRegressionDP$new('l2', eps, delta, gamma,
                                              regularizer.gr)
 
 }

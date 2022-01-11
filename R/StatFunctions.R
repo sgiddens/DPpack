@@ -1,9 +1,9 @@
 #' Differentially Private Mean
 #'
 #' This function computes the differentially private mean(s) of a given dataset
-#' at user-specified levels of epsilon and delta. If the given dataset is a
-#' matrix or data frame, differentially private means are computed over columns
-#' and collectively satisfy differential privacy at the specified level.
+#' at user-specified privacy levels of epsilon and delta. If the given dataset
+#' is a matrix or data frame, differentially private means are computed over
+#' columns and collectively satisfy differential privacy at the specified level.
 #'
 #' @param x Numeric vector, matrix, or data frame. Means taken over columns
 #'   (when applicable).
@@ -15,46 +15,41 @@
 #'   definition. If 'both', returns result based on both methods
 #'   \insertCite{Kifer2011}{DPpack}. Note that if 'both' is chosen, each result
 #'   individually satisfies differential privacy at level eps, but may not do so
-#'   collectively. Care must be taken not to violate differential privacy in
-#'   this case.
-#' @param lower.bounds Numeric vector of lower bounds on each column of x. The
-#'   length of lower.bounds must match the number of columns of x (length 1 if x
-#'   is a vector). If not given, it is computed from the data to be the min
-#'   value of each column of x (or the min of x if x is a vector). Note this
-#'   computation may result in additional privacy loss.
-#' @param upper.bounds Numeric vector of upper bounds on each column of x. The
-#'   length of upper.bounds must match the number of columns of x (length 1 if x
-#'   is a vector). If not given, it is computed from the data to be the max
-#'   value of each column of x (or the max of x if x is a vector). Note this
-#'   computation may result in additional privacy loss.
+#'   collectively and in composition. Care must be taken not to violate
+#'   differential privacy in this case.
+#' @param lower.bounds Numeric vector of global or public lower bounds on each
+#'   column of x. The length of lower.bounds must match the number of columns of
+#'   x (length 1 if x is a vector).
+#' @param upper.bounds Numeric vector of global or public upper bounds on each
+#'   column of x. The length of upper.bounds must match the number of columns of
+#'   x (length 1 if x is a vector).
 #' @param mechanism String indicating which mechanism to use for differential
 #'   privacy. Currently the following mechanisms are supported: {'laplace',
-#'   'gaussian'}. See \code{\link{laplaceMechanism}} and
-#'   \code{\link{gaussianMechanism}} for a description of the supported
+#'   'gaussian'}. See \code{\link{LaplaceMechanism}} and
+#'   \code{\link{GaussianMechanism}} for a description of the supported
 #'   mechanisms.
-#' @param delt Positive real number defining the delta privacy parameter
-#'   (necessary if using Gaussian mechanism).
+#' @param delta Nonnegative real number defining the delta privacy parameter. If
+#'   0, reduces to eps-DP and the Laplace mechanism is used.
 #' @param type.DP String indicating the type of differential privacy desired for
-#'   the Gaussian mechanism. Can be either probabilistic DP ('pDP') or
-#'   approximate DP ('aDP'). See \code{\link{gaussianMechanism}} for a more
-#'   detailed description of this parameter. Only used if mechanism is
-#'   'gaussian'.
+#'   the Gaussian mechanism (if selected). Can be either 'pDP' for probabilistic
+#'   DP \insertCite{Liu2019a}{DPpack} or 'aDP' for approximate DP
+#'   \insertCite{DPtextbook}{DPpack}.
 #' @param alloc.proportions Numeric vector giving the allocation proportions of
 #'   epsilon (and delta) to the statistics. For example, if this function is run
 #'   on a two-column matrix and alloc.proportions = c(.75, .25), then 75% of the
-#'   privacy budget eps (and delt) is allocated to the statistical computation
+#'   privacy budget eps (and delta) is allocated to the statistical computation
 #'   for column 1, and the remaining 25% is allocated to the statistical
-#'   computation for column 2. This ensures (eps, delt)-level privacy across all
-#'   computations. By default, it distributes eps and delt evenly among the
+#'   computation for column 2. This ensures (eps, delta)-level privacy across
+#'   all computations. By default, it distributes eps and delta evenly among the
 #'   calculations. Input does not need to be normalized, meaning
 #'   alloc.proportions = c(3,1) produces the same result as the example above.
-#' @return A list of the sanitized means based on the bounded and/or
-#'   unbounded definitions of differential privacy.
+#' @return A list of the sanitized means based on the bounded and/or unbounded
+#'   definitions of differential privacy.
 #' @examples
 #' meanDP(c(1,4,-2,8,-6),1,lower.bounds=-10,upper.bounds=10)
 #' meanDP(c(1,4,-2,8,-6),1,which.sensitivity='unbounded',
 #'   lower.bounds=-10,upper.bounds=10,mechanism='gaussian',
-#'   delt=0.5,type.DP='aDP')
+#'   delta=0.5,type.DP='aDP')
 #' meanDP(matrix(c(1,4,-2,8,-6,0),ncol=2),1,which.sensitivity='bounded',
 #'   lower.bounds=c(-10,-10),upper.bounds=c(10,10),alloc.proportions=c(1,2))
 #'
@@ -62,9 +57,13 @@
 #'
 #' \insertRef{Kifer2011}{DPpack}
 #'
+#' \insertRef{Liu2019a}{DPpack}
+#'
+#' \insertRef{DPtextbook}{DPpack}
+#'
 #' @export
 meanDP <- function (x, eps, which.sensitivity='bounded', lower.bounds=NULL,
-                    upper.bounds=NULL, mechanism='laplace', delt=NULL,
+                    upper.bounds=NULL, mechanism='laplace', delta=NULL,
                     type.DP='pDP', alloc.proportions=NULL){
   #### INPUT CHECKING ####
   {if (is.null(dim(x))){
@@ -108,7 +107,7 @@ meanDP <- function (x, eps, which.sensitivity='bounded', lower.bounds=NULL,
     }
   }
   if (mechanism=='gaussian'){
-    if (is.null(delt)){
+    if (is.null(delta)){
       print("Must specify delta for Gaussian mechanism.");
     }
   } else if (mechanism!='laplace'){
@@ -127,10 +126,10 @@ meanDP <- function (x, eps, which.sensitivity='bounded', lower.bounds=NULL,
 
   ########## Privacy layer
   if (mechanism=='laplace'){
-    sanitized.means <- laplaceMechanism(tv,eps,bs,us,which.sensitivity,
+    sanitized.means <- LaplaceMechanism(tv,eps,bs,us,which.sensitivity,
                                         alloc.proportions);
   } else if (mechanism=='gaussian'){
-    sanitized.means <- gaussianMechanism(tv,eps,delt,bs,us,which.sensitivity,
+    sanitized.means <- GaussianMechanism(tv,eps,delta,bs,us,which.sensitivity,
                                          type.DP,alloc.proportions);
   }
   ##########
@@ -144,9 +143,10 @@ meanDP <- function (x, eps, which.sensitivity='bounded', lower.bounds=NULL,
 #' Differentially Private Variance
 #'
 #' This function computes the differentially private variance(s) of a given
-#' dataset at user-specified levels of epsilon and delta. If the given dataset
-#' is a matrix or data frame, differentially private variances are computed over
-#' columns and collectively satisfy differential privacy at the specified level.
+#' dataset at user-specified privacy levels of epsilon and delta. If the given
+#' dataset is a matrix or data frame, differentially private variances are
+#' computed over columns and collectively satisfy differential privacy at the
+#' specified level.
 #'
 #' @param x Numeric vector, matrix, or data frame. Variances taken over columns
 #'   (when applicable).
@@ -158,37 +158,32 @@ meanDP <- function (x, eps, which.sensitivity='bounded', lower.bounds=NULL,
 #'   definition. If 'both', returns result based on both methods
 #'   \insertCite{Kifer2011}{DPpack}. Note that if 'both' is chosen, each result
 #'   individually satisfies differential privacy at level eps, but may not do so
-#'   collectively. Care must be taken not to violate differential privacy in
-#'   this case.
-#' @param lower.bounds Numeric vector of lower bounds on each column of x. The
-#'   length of lower.bounds must match the number of columns of x (length 1 if x
-#'   is a vector). If not given, it is computed from the data to be the min
-#'   value of each column of x (or the min of x if x is a vector). Note this
-#'   computation may result in additional privacy loss.
-#' @param upper.bounds Numeric vector of upper bounds on each column of x. The
-#'   length of upper.bounds must match the number of columns of x (length 1 if x
-#'   is a vector). If not given, it is computed from the data to be the max
-#'   value of each column of x (or the max of x if x is a vector). Note this
-#'   computation may result in additional privacy loss.
+#'   collectively and in composition. Care must be taken not to violate
+#'   differential privacy in this case.
+#' @param lower.bounds Numeric vector of global or public lower bounds on each
+#'   column of x. The length of lower.bounds must match the number of columns of
+#'   x (length 1 if x is a vector).
+#' @param upper.bounds Numeric vector of global or public upper bounds on each
+#'   column of x. The length of upper.bounds must match the number of columns of
+#'   x (length 1 if x is a vector).
 #' @param mechanism String indicating which mechanism to use for differential
 #'   privacy. Currently the following mechanisms are supported: {'laplace',
-#'   'gaussian'}. See \code{\link{laplaceMechanism}} and
-#'   \code{\link{gaussianMechanism}} for a description of the supported
+#'   'gaussian'}. See \code{\link{LaplaceMechanism}} and
+#'   \code{\link{GaussianMechanism}} for a description of the supported
 #'   mechanisms.
-#' @param delt Positive real number defining the delta privacy parameter
-#'   (necessary if using Gaussian mechanism).
+#' @param delta Nonnegative real number defining the delta privacy parameter. If
+#'   0, reduces to eps-DP and the Laplace mechanism is used.
 #' @param type.DP String indicating the type of differential privacy desired for
-#'   the Gaussian mechanism. Can be either probabilistic DP ('pDP') or
-#'   approximate DP ('aDP'). See \code{\link{gaussianMechanism}} for a more
-#'   detailed description of this parameter. Only used if mechanism is
-#'   'gaussian'.
+#'   the Gaussian mechanism (if selected). Can be either 'pDP' for probabilistic
+#'   DP \insertCite{Liu2019a}{DPpack} or 'aDP' for approximate DP
+#'   \insertCite{DPtextbook}{DPpack}.
 #' @param alloc.proportions Numeric vector giving the allocation proportions of
 #'   epsilon (and delta) to the statistics. For example, if this function is run
 #'   on a two-column matrix and alloc.proportions = c(.75, .25), then 75% of the
-#'   privacy budget eps (and delt) is allocated to the statistical computation
+#'   privacy budget eps (and delta) is allocated to the statistical computation
 #'   for column 1, and the remaining 25% is allocated to the statistical
-#'   computation for column 2. This ensures (eps, delt)-level privacy across all
-#'   computations. By default, it distributes eps and delt evenly among the
+#'   computation for column 2. This ensures (eps, delta)-level privacy across all
+#'   computations. By default, it distributes eps and delta evenly among the
 #'   calculations. Input does not need to be normalized, meaning
 #'   alloc.proportions = c(3,1) produces the same result as the example above.
 #' @return A list of the sanitized variances based on the bounded and/or
@@ -197,7 +192,7 @@ meanDP <- function (x, eps, which.sensitivity='bounded', lower.bounds=NULL,
 #' varDP(c(1,4,-2,8,-6),1,lower.bounds=-10,upper.bounds=10)
 #' varDP(c(1,4,-2,8,-6),1,which.sensitivity='unbounded',
 #'   lower.bounds=-10,upper.bounds=10,mechanism='gaussian',
-#'   delt=0.5,type.DP='aDP')
+#'   delta=0.5,type.DP='aDP')
 #' varDP(matrix(c(1,4,-2,8,-6,0),ncol=2),1,which.sensitivity='bounded',
 #'   lower.bounds=c(-10,-10),upper.bounds=c(10,10),alloc.proportions=c(1,2))
 #'
@@ -205,9 +200,13 @@ meanDP <- function (x, eps, which.sensitivity='bounded', lower.bounds=NULL,
 #'
 #' \insertRef{Kifer2011}{DPpack}
 #'
+#' \insertRef{Liu2019a}{DPpack}
+#'
+#' \insertRef{DPtextbook}{DPpack}
+#'
 #' @export
 varDP <- function (x, eps, which.sensitivity='bounded', lower.bounds=NULL,
-                   upper.bounds=NULL, mechanism='laplace', delt=NULL,
+                   upper.bounds=NULL, mechanism='laplace', delta=NULL,
                    type.DP='pDP', alloc.proportions=NULL){
   #### INPUT CHECKING ####
   {if (is.null(dim(x))){
@@ -251,7 +250,7 @@ varDP <- function (x, eps, which.sensitivity='bounded', lower.bounds=NULL,
     }
   }
     if (mechanism=='gaussian'){
-      if (is.null(delt)){
+      if (is.null(delta)){
         print("Must specify delta for Gaussian mechanism.");
       }
     } else if (mechanism!='laplace'){
@@ -271,7 +270,7 @@ varDP <- function (x, eps, which.sensitivity='bounded', lower.bounds=NULL,
   ########## Privacy layer
   if (mechanism=='laplace'){
     while (TRUE){ # Make sure variance is > 0 after noise
-      sanitized.vars <- laplaceMechanism(tv,eps,bs,us,which.sensitivity,
+      sanitized.vars <- LaplaceMechanism(tv,eps,bs,us,which.sensitivity,
                                          alloc.proportions);
       done = TRUE;
       if (!is.null(sanitized.vars$Bounded) && any(sanitized.vars$Bounded<=0)) done=FALSE;
@@ -280,7 +279,7 @@ varDP <- function (x, eps, which.sensitivity='bounded', lower.bounds=NULL,
     }
   }  else if (mechanism=='gaussian'){
     while (TRUE){
-      sanitized.vars <- gaussianMechanism(tv,eps,delt,bs,us,which.sensitivity,
+      sanitized.vars <- GaussianMechanism(tv,eps,delta,bs,us,which.sensitivity,
                                           type.DP,alloc.proportions);
       done = TRUE;
       if (!is.null(sanitized.vars$Bounded) && any(sanitized.vars$Bounded<=0)) done=FALSE;
@@ -299,10 +298,10 @@ varDP <- function (x, eps, which.sensitivity='bounded', lower.bounds=NULL,
 #' Differentially Private Standard Deviation
 #'
 #' This function computes the differentially private standard deviation(s) of a
-#' given dataset at user-specified levels of epsilon and delta. If the given
-#' dataset is a matrix or data frame, differentially private standard deviations
-#' are computed over columns and collectively satisfy differential privacy at
-#' the specified level.
+#' given dataset at user-specified privacy levels of epsilon and delta. If the
+#' given dataset is a matrix or data frame, differentially private standard
+#' deviations are computed over columns and collectively satisfy differential
+#' privacy at the specified level.
 #'
 #' @param x Numeric vector, matrix, or data frame. Standard deviations taken
 #'   over columns (when applicable).
@@ -314,37 +313,32 @@ varDP <- function (x, eps, which.sensitivity='bounded', lower.bounds=NULL,
 #'   definition. If 'both', returns result based on both methods
 #'   \insertCite{Kifer2011}{DPpack}. Note that if 'both' is chosen, each result
 #'   individually satisfies differential privacy at level eps, but may not do so
-#'   collectively. Care must be taken not to violate differential privacy in
-#'   this case.
-#' @param lower.bounds Numeric vector of lower bounds on each column of x. The
-#'   length of lower.bounds must match the number of columns of x (length 1 if x
-#'   is a vector). If not given, it is computed from the data to be the min
-#'   value of each column of x (or the min of x if x is a vector). Note this
-#'   computation may result in additional privacy loss.
-#' @param upper.bounds Numeric vector of upper bounds on each column of x. The
-#'   length of upper.bounds must match the number of columns of x (length 1 if x
-#'   is a vector). If not given, it is computed from the data to be the max
-#'   value of each column of x (or the max of x if x is a vector). Note this
-#'   computation may result in additional privacy loss.
+#'   collectively and in composition. Care must be taken not to violate
+#'   differential privacy in this case.
+#' @param lower.bounds Numeric vector of global or public lower bounds on each
+#'   column of x. The length of lower.bounds must match the number of columns of
+#'   x (length 1 if x is a vector).
+#' @param upper.bounds Numeric vector of global or public upper bounds on each
+#'   column of x. The length of upper.bounds must match the number of columns of
+#'   x (length 1 if x is a vector).
 #' @param mechanism String indicating which mechanism to use for differential
 #'   privacy. Currently the following mechanisms are supported: {'laplace',
-#'   'gaussian'}. See \code{\link{laplaceMechanism}} and
-#'   \code{\link{gaussianMechanism}} for a description of the supported
+#'   'gaussian'}. See \code{\link{LaplaceMechanism}} and
+#'   \code{\link{GaussianMechanism}} for a description of the supported
 #'   mechanisms.
-#' @param delt Positive real number defining the delta privacy parameter
-#'   (necessary if using Gaussian mechanism).
+#' @param delta Nonnegative real number defining the delta privacy parameter. If
+#'   0, reduces to eps-DP and the Laplace mechanism is used.
 #' @param type.DP String indicating the type of differential privacy desired for
-#'   the Gaussian mechanism. Can be either probabilistic DP ('pDP') or
-#'   approximate DP ('aDP'). See \code{\link{gaussianMechanism}} for a more
-#'   detailed description of this parameter. Only used if mechanism is
-#'   'gaussian'.
+#'   the Gaussian mechanism (if selected). Can be either 'pDP' for probabilistic
+#'   DP \insertCite{Liu2019a}{DPpack} or 'aDP' for approximate DP
+#'   \insertCite{DPtextbook}{DPpack}.
 #' @param alloc.proportions Numeric vector giving the allocation proportions of
 #'   epsilon (and delta) to the statistics. For example, if this function is run
 #'   on a two-column matrix and alloc.proportions = c(.75, .25), then 75% of the
-#'   privacy budget eps (and delt) is allocated to the statistical computation
+#'   privacy budget eps (and delta) is allocated to the statistical computation
 #'   for column 1, and the remaining 25% is allocated to the statistical
-#'   computation for column 2. This ensures (eps, delt)-level privacy across all
-#'   computations. By default, it distributes eps and delt evenly among the
+#'   computation for column 2. This ensures (eps, delta)-level privacy across all
+#'   computations. By default, it distributes eps and delta evenly among the
 #'   calculations. Input does not need to be normalized, meaning
 #'   alloc.proportions = c(3,1) produces the same result as the example above.
 #' @return A list of the sanitized standard deviations based on the bounded
@@ -353,7 +347,7 @@ varDP <- function (x, eps, which.sensitivity='bounded', lower.bounds=NULL,
 #' sdDP(c(1,4,-2,8,-6),1,lower.bounds=-10,upper.bounds=10)
 #' sdDP(c(1,4,-2,8,-6),1,which.sensitivity='unbounded',
 #'   lower.bounds=-10,upper.bounds=10,mechanism='gaussian',
-#'   delt=0.5,type.DP='aDP')
+#'   delta=0.5,type.DP='aDP')
 #' sdDP(matrix(c(1,4,-2,8,-6,0),ncol=2),1,which.sensitivity='bounded',
 #'   lower.bounds=c(-10,-10),upper.bounds=c(10,10),alloc.proportions=c(1,2))
 #'
@@ -361,9 +355,13 @@ varDP <- function (x, eps, which.sensitivity='bounded', lower.bounds=NULL,
 #'
 #' \insertRef{Kifer2011}{DPpack}
 #'
+#' \insertRef{Liu2019a}{DPpack}
+#'
+#' \insertRef{DPtextbook}{DPpack}
+#'
 #' @export
 sdDP <- function (x, eps, which.sensitivity='bounded', lower.bounds=NULL,
-                  upper.bounds=NULL, mechanism='laplace', delt=NULL,
+                  upper.bounds=NULL, mechanism='laplace', delta=NULL,
                   type.DP='pDP', alloc.proportions=NULL){
   ########## Input checking
 
@@ -371,7 +369,7 @@ sdDP <- function (x, eps, which.sensitivity='bounded', lower.bounds=NULL,
 
   ########## Data Access/privacy layer
   sanitized.variances <- varDP(x,eps,which.sensitivity,lower.bounds,upper.bounds,
-                               mechanism,delt,type.DP,alloc.proportions);
+                               mechanism,delta,type.DP,alloc.proportions);
   ##########
 
   ########## Postprocessing layer
@@ -390,7 +388,7 @@ sdDP <- function (x, eps, which.sensitivity='bounded', lower.bounds=NULL,
 #' Differentially Private Covariance
 #'
 #' This function computes the differentially private covariance of a pair of
-#' vectors at user-specified levels of epsilon and delta.
+#' vectors at user-specified privacy levels of epsilon and delta.
 #'
 #' @param x1,x2 Numeric vectors.
 #' @param eps Positive real number defining the epsilon privacy budget.
@@ -401,28 +399,23 @@ sdDP <- function (x, eps, which.sensitivity='bounded', lower.bounds=NULL,
 #'   definition. If 'both', returns result based on both methods
 #'   \insertCite{Kifer2011}{DPpack}. Note that if 'both' is chosen, each result
 #'   individually satisfies differential privacy at level eps, but may not do so
-#'   collectively. Care must be taken not to violate differential privacy in
-#'   this case.
-#' @param lower.bound1,lower.bound2 Real numbers giving the lower bounds of x1
-#'   and x2, respectively. If not given, they are computed from the data to be
-#'   the min value of x1 and x2, respectively. Note this computation may result
-#'   in additional privacy loss.
-#' @param upper.bound1,upper.bound2 Real numbers giving the upper bounds of x1
-#'   and x2, respectively. If not given, they are computed from the data to be
-#'   the max value of x1 and x2, respectively. Note this computation may result
-#'   in additional privacy loss.
+#'   collectively and in composition. Care must be taken not to violate
+#'   differential privacy in this case.
+#' @param lower.bound1,lower.bound2 Real numbers giving the global or public
+#'   lower bounds of x1 and x2, respectively.
+#' @param upper.bound1,upper.bound2 Real numbers giving the global or public
+#'   upper bounds of x1 and x2, respectively.
 #' @param mechanism String indicating which mechanism to use for differential
 #'   privacy. Currently the following mechanisms are supported: {'laplace',
-#'   'gaussian'}. See \code{\link{laplaceMechanism}} and
-#'   \code{\link{gaussianMechanism}} for a description of the supported
+#'   'gaussian'}. See \code{\link{LaplaceMechanism}} and
+#'   \code{\link{GaussianMechanism}} for a description of the supported
 #'   mechanisms.
-#' @param delt Positive real number defining the delta privacy parameter
-#'   (necessary if using Gaussian mechanism).
+#' @param delta Nonnegative real number defining the delta privacy parameter. If
+#'   0, reduces to eps-DP and the Laplace mechanism is used.
 #' @param type.DP String indicating the type of differential privacy desired for
-#'   the Gaussian mechanism. Can be either probabilistic DP ('pDP') or
-#'   approximate DP ('aDP'). See \code{\link{gaussianMechanism}} for a more
-#'   detailed description of this parameter. Only used if mechanism is
-#'   'gaussian'.
+#'   the Gaussian mechanism (if selected). Can be either 'pDP' for probabilistic
+#'   DP \insertCite{Liu2019a}{DPpack} or 'aDP' for approximate DP
+#'   \insertCite{DPtextbook}{DPpack}.
 #' @return A list of the sanitized covariances based on the bounded and/or
 #'   unbounded definitions of differential privacy.
 #' @examples
@@ -431,17 +424,21 @@ sdDP <- function (x, eps, which.sensitivity='bounded', lower.bounds=NULL,
 #'   mechanism='laplace')
 #' covDP(c(1,4,-2,8,-6),c(1,3,2,2,4),1,which.sensitivity='unbounded',
 #'   lower.bound1=-10,upper.bound110,lower.bound2=0,upper.bound2=5,
-#'   mechanism='gaussian',delt=0.5,type.DP='aDP')
+#'   mechanism='gaussian',delta=0.5,type.DP='aDP')
 #'
 #' @references \insertRef{Dwork2006a}{DPpack}
 #'
 #' \insertRef{Kifer2011}{DPpack}
 #'
+#' \insertRef{Liu2019a}{DPpack}
+#'
+#' \insertRef{DPtextbook}{DPpack}
+#'
 #' @export
 covDP <- function (x1, x2, eps, which.sensitivity='bounded',
                   lower.bound1=NULL, upper.bound1=NULL,
                   lower.bound2=NULL, upper.bound2=NULL,
-                  mechanism='laplace', delt=NULL, type.DP='pDP'){
+                  mechanism='laplace', delta=NULL, type.DP='pDP'){
   #### INPUT CHECKING ####
   {
   if (is.null(upper.bound1)){
@@ -469,7 +466,7 @@ covDP <- function (x1, x2, eps, which.sensitivity='bounded',
   x2[x2<lower.bound2] <- lower.bound2;
   x2[x2>upper.bound2] <- upper.bound2;
   if (mechanism=='gaussian'){
-    if (is.null(delt)){
+    if (is.null(delta)){
       print("Must specify delta for Gaussian mechanism.");
     }
   } else if (mechanism!='laplace'){
@@ -488,9 +485,9 @@ covDP <- function (x1, x2, eps, which.sensitivity='bounded',
 
   ########## Privacy layer
   if (mechanism=='laplace'){
-    sanitized.cov <- laplaceMechanism(tv,eps,bs,us,which.sensitivity);
+    sanitized.cov <- LaplaceMechanism(tv,eps,bs,us,which.sensitivity);
   } else if (mechanism=='gaussian'){
-    sanitized.cov <- gaussianMechanism(tv,eps,delt,bs,us,which.sensitivity,
+    sanitized.cov <- GaussianMechanism(tv,eps,delta,bs,us,which.sensitivity,
                                        type.DP);
   }
 
@@ -505,8 +502,9 @@ covDP <- function (x1, x2, eps, which.sensitivity='bounded',
 #' Differentially Private Histogram
 #'
 #' This function computes a differentially private histogram from a vector at
-#' user-specified levels of epsilon and delta. A histogram object is returned
-#' with sanitized values for the counts for easy plotting (see examples).
+#' user-specified privacy levels of epsilon and delta. A histogram object is
+#' returned with sanitized values for the counts for easy plotting (see
+#' examples).
 #'
 #' @param x Numeric vector from which the histogram will be formed.
 #' @param eps Positive real number defining the epsilon privacy budget.
@@ -522,26 +520,21 @@ covDP <- function (x1, x2, eps, which.sensitivity='bounded',
 #'   definition. If 'both', returns result based on both methods
 #'   \insertCite{Kifer2011}{DPpack}. Note that if 'both' is chosen, each result
 #'   individually satisfies differential privacy at level eps, but may not do so
-#'   collectively. Care must be taken not to violate differential privacy in
-#'   this case.
-#' @param lower.bound Real number giving the lower bound of x. If not given, it
-#'   is computed from the data to be the min value of x. Note this computation
-#'   may result in additional privacy loss.
-#' @param upper.bound Real number giving the upper bound of x. If not given, it
-#'   is computed from the data to be the max value of x. Note this computation
-#'   may result in additional privacy loss.
+#'   collectively and in composition. Care must be taken not to violate
+#'   differential privacy in this case.
+#' @param lower.bound Real number giving the global or public lower bound of x.
+#' @param upper.bound Real number giving the global or public upper bound of x.
 #' @param mechanism String indicating which mechanism to use for differential
 #'   privacy. Currently the following mechanisms are supported: {'laplace',
-#'   'gaussian'}. See \code{\link{laplaceMechanism}} and
-#'   \code{\link{gaussianMechanism}} for a description of the supported
+#'   'gaussian'}. See \code{\link{LaplaceMechanism}} and
+#'   \code{\link{GaussianMechanism}} for a description of the supported
 #'   mechanisms.
-#' @param delt Positive real number defining the delta privacy parameter
-#'   (necessary if using Gaussian mechanism).
+#' @param delta Nonnegative real number defining the delta privacy parameter. If
+#'   0, reduces to eps-DP and the Laplace mechanism is used.
 #' @param type.DP String indicating the type of differential privacy desired for
-#'   the Gaussian mechanism. Can be either probabilistic DP ('pDP') or
-#'   approximate DP ('aDP'). See \code{\link{gaussianMechanism}} for a more
-#'   detailed description of this parameter. Only used if mechanism is
-#'   'gaussian'.
+#'   the Gaussian mechanism (if selected). Can be either 'pDP' for probabilistic
+#'   DP \insertCite{Liu2019a}{DPpack} or 'aDP' for approximate DP
+#'   \insertCite{DPtextbook}{DPpack}.
 #' @param allow.negative Logical value. If FALSE (default), any negative values
 #'   in the sanitized histogram due to the added noise will be set to 0. If
 #'   TRUE, the negative values (if any) will be returned.
@@ -553,18 +546,22 @@ covDP <- function (x1, x2, eps, which.sensitivity='bounded',
 #' plot(result$Bounded)
 #' result <- histogramDP(c(1,1,-2,8,-6),1,normalize=TRUE,
 #'   which.sensitivity='unbounded',lower.bound=-10,upper.bound=10,
-#'   mechanism='gaussian',delt=0.5,type.DP='aDP',allow.negative=FALSE)
+#'   mechanism='gaussian',delta=0.5,type.DP='aDP',allow.negative=FALSE)
 #' plot(result$Unbounded)
 #'
 #' @references \insertRef{Dwork2006a}{DPpack}
 #'
 #' \insertRef{Kifer2011}{DPpack}
 #'
+#' \insertRef{Liu2019a}{DPpack}
+#'
+#' \insertRef{DPtextbook}{DPpack}
+#'
 #' @export
 histogramDP <- function(x, eps, breaks="Sturges", normalize=FALSE,
                         which.sensitivity='bounded',
                         lower.bound=NULL, upper.bound=NULL,
-                        mechanism='laplace', delt=NULL, type.DP='pDP',
+                        mechanism='laplace', delta=NULL, type.DP='pDP',
                         allow.negative=FALSE){
   #### INPUT CHECKING ####
   {
@@ -581,7 +578,7 @@ histogramDP <- function(x, eps, breaks="Sturges", normalize=FALSE,
     x[x<lower.bound] <- lower.bound;
     x[x>upper.bound] <- upper.bound;
     if (mechanism=='gaussian'){
-      if (is.null(delt)){
+      if (is.null(delta)){
         print("Must specify delta for Gaussian mechanism.");
       }
     } else if (mechanism!='laplace'){
@@ -605,9 +602,9 @@ histogramDP <- function(x, eps, breaks="Sturges", normalize=FALSE,
   bs <- rep(bs, length(counts))/length(counts);
   us <- rep(us, length(counts))/length(counts);
   if (mechanism=='laplace'){
-    sanitized.counts <- laplaceMechanism(counts,eps,bs,us,which.sensitivity);
+    sanitized.counts <- LaplaceMechanism(counts,eps,bs,us,which.sensitivity);
   } else if (mechanism=='gaussian'){
-    sanitized.counts <- gaussianMechanism(counts,eps,delt,bs,us,which.sensitivity,
+    sanitized.counts <- GaussianMechanism(counts,eps,delta,bs,us,which.sensitivity,
                                           type.DP);
   }
   ##########
@@ -645,7 +642,7 @@ histogramDP <- function(x, eps, breaks="Sturges", normalize=FALSE,
 #' Differentially Private Contingency Table
 #'
 #' This function computes a differentially private contingency table from two
-#' vectors of data at user-specified levels of epsilon and delta.
+#' vectors of data at user-specified privacy levels of epsilon and delta.
 #'
 #' @param x,y Vectors of data from which to create the contingency table.
 #' @param eps Positive real number defining the epsilon privacy budget.
@@ -656,20 +653,19 @@ histogramDP <- function(x, eps, breaks="Sturges", normalize=FALSE,
 #'   definition. If 'both', returns result based on both methods
 #'   \insertCite{Kifer2011}{DPpack}. Note that if 'both' is chosen, each result
 #'   individually satisfies differential privacy at level eps, but may not do so
-#'   collectively. Care must be taken not to violate differential privacy in
-#'   this case.
+#'   collectively and in composition. Care must be taken not to violate
+#'   differential privacy in this case.
 #' @param mechanism String indicating which mechanism to use for differential
 #'   privacy. Currently the following mechanisms are supported: {'laplace',
-#'   'gaussian'}. See \code{\link{laplaceMechanism}} and
-#'   \code{\link{gaussianMechanism}} for a description of the supported
+#'   'gaussian'}. See \code{\link{LaplaceMechanism}} and
+#'   \code{\link{GaussianMechanism}} for a description of the supported
 #'   mechanisms.
-#' @param delt Positive real number defining the delta privacy parameter
-#'   (necessary if using Gaussian mechanism).
+#' @param delta Nonnegative real number defining the delta privacy parameter. If
+#'   0, reduces to eps-DP and the Laplace mechanism is used.
 #' @param type.DP String indicating the type of differential privacy desired for
-#'   the Gaussian mechanism. Can be either probabilistic DP ('pDP') or
-#'   approximate DP ('aDP'). See \code{\link{gaussianMechanism}} for a more
-#'   detailed description of this parameter. Only used if mechanism is
-#'   'gaussian'.
+#'   the Gaussian mechanism (if selected). Can be either 'pDP' for probabilistic
+#'   DP \insertCite{Liu2019a}{DPpack} or 'aDP' for approximate DP
+#'   \insertCite{DPtextbook}{DPpack}.
 #' @param allow.negative Logical value. If FALSE (default), any negative values
 #'   in the sanitized table due to the added noise will be set to 0. If TRUE,
 #'   the negative values (if any) will be returned.
@@ -679,20 +675,24 @@ histogramDP <- function(x, eps, breaks="Sturges", normalize=FALSE,
 #' x <- MASS::Cars93$Type;
 #' y <- MASS::Cars93$Origin;
 #' tableDP(x,y,1,which.sensitivity='bounded',mechanism='laplace')
-#' tableDP(x,y,1,which.sensitivity='unbounded',mechanism='gaussian',delt=0.5,
+#' tableDP(x,y,1,which.sensitivity='unbounded',mechanism='gaussian',delta=0.5,
 #'   type.DP='aDP',allow.negative=FALSE)
 #'
 #' @references \insertRef{Dwork2006a}{DPpack}
 #'
 #' \insertRef{Kifer2011}{DPpack}
 #'
+#' \insertRef{Liu2019a}{DPpack}
+#'
+#' \insertRef{DPtextbook}{DPpack}
+#'
 #' @export
 tableDP <- function(x, y, eps, which.sensitivity='bounded', mechanism='laplace',
-                    delt=NULL, type.DP='pDP', allow.negative=FALSE){
+                    delta=NULL, type.DP='pDP', allow.negative=FALSE){
   #### INPUT CHECKING ####
   {
     if (mechanism=='gaussian'){
-      if (is.null(delt)){
+      if (is.null(delta)){
         print("Must specify delta for Gaussian mechanism.");
       }
     } else if (mechanism!='laplace'){
@@ -721,9 +721,9 @@ tableDP <- function(x, y, eps, which.sensitivity='bounded', mechanism='laplace',
   bs <- rep(bs, length(tv))/length(tv);
   us <- rep(us, length(tv))/length(tv);
   if (mechanism=='laplace'){
-    sanitized.tables <- laplaceMechanism(tv,eps,bs,us,which.sensitivity);
+    sanitized.tables <- LaplaceMechanism(tv,eps,bs,us,which.sensitivity);
   } else if (mechanism=='gaussian'){
-    sanitized.tables <- gaussianMechanism(tv,eps,delt,bs,us,which.sensitivity,
+    sanitized.tables <- GaussianMechanism(tv,eps,delta,bs,us,which.sensitivity,
                                           type.DP);
   }
   ##########
@@ -758,7 +758,7 @@ tableDP <- function(x, y, eps, which.sensitivity='bounded', mechanism='laplace',
 #' Differentially Private Pooled Variance
 #'
 #' This function computes the differentially private pooled variance from two or
-#' more vectors of data at user-specified levels of epsilon and delta.
+#' more vectors of data at user-specified privacy levels of epsilon and delta.
 #'
 #' @param ... Two or more vectors from which to compute the pooled variance.
 #' @param eps Positive real number defining the epsilon privacy budget.
@@ -769,26 +769,23 @@ tableDP <- function(x, y, eps, which.sensitivity='bounded', mechanism='laplace',
 #'   definition. If 'both', returns result based on both methods
 #'   \insertCite{Kifer2011}{DPpack}. Note that if 'both' is chosen, each result
 #'   individually satisfies differential privacy at level eps, but may not do so
-#'   collectively. Care must be taken not to violate differential privacy in
-#'   this case.
-#' @param lower.bound Real number giving the lower bound of the input data. If
-#'   not given, it is computed from the data to be the min value over all given
-#'   data. Note this computation may result in additional privacy loss.
-#' @param upper.bound Real number giving the upper bound of the input data. If
-#'   not given, it is computed from the data to be the max value over all given
-#'   data. Note this computation may result in additional privacy loss.
+#'   collectively and in composition. Care must be taken not to violate
+#'   differential privacy in this case.
+#' @param lower.bound Real number giving the global or public lower bound of the
+#'   input data.
+#' @param upper.bound Real number giving the global or public upper bound of the
+#'   input data.
 #' @param mechanism String indicating which mechanism to use for differential
 #'   privacy. Currently the following mechanisms are supported: {'laplace',
-#'   'gaussian'}. See \code{\link{laplaceMechanism}} and
-#'   \code{\link{gaussianMechanism}} for a description of the supported
+#'   'gaussian'}. See \code{\link{LaplaceMechanism}} and
+#'   \code{\link{GaussianMechanism}} for a description of the supported
 #'   mechanisms.
-#' @param delt Positive real number defining the delta privacy parameter
-#'   (necessary if using Gaussian mechanism).
+#' @param delta Nonnegative real number defining the delta privacy parameter. If
+#'   0, reduces to eps-DP and the Laplace mechanism is used.
 #' @param type.DP String indicating the type of differential privacy desired for
-#'   the Gaussian mechanism. Can be either probabilistic DP ('pDP') or
-#'   approximate DP ('aDP'). See \code{\link{gaussianMechanism}} for a more
-#'   detailed description of this parameter. Only used if mechanism is
-#'   'gaussian'.
+#'   the Gaussian mechanism (if selected). Can be either 'pDP' for probabilistic
+#'   DP \insertCite{Liu2019a}{DPpack} or 'aDP' for approximate DP
+#'   \insertCite{DPtextbook}{DPpack}.
 #' @param approx.n.max Logical indicating whether to approximate n.max, which is
 #'   defined to be the length of the largest input vector. Approximation is best
 #'   if n.max is very large.
@@ -799,16 +796,20 @@ tableDP <- function(x, y, eps, which.sensitivity='bounded', mechanism='laplace',
 #'   lower.bound=-10,upper.bound=10,mechanism='laplace')
 #' pooledVarDP(c(1,4,-2,8,-6),c(1,2),c(-5,-7),eps=1,
 #'   which.sensitivity='unbounded',lower.bound=-10,upper.bound=10,
-#'   mechanism='gaussian',delt=0.5,type.DP='aDP',approx.n.max=TRUE)
+#'   mechanism='gaussian',delta=0.5,type.DP='aDP',approx.n.max=TRUE)
 #'
 #' @references \insertRef{Dwork2006a}{DPpack}
 #'
 #' \insertRef{Kifer2011}{DPpack}
 #'
+#' \insertRef{Liu2019a}{DPpack}
+#'
+#' \insertRef{DPtextbook}{DPpack}
+#'
 #' @export
 pooledVarDP <- function(..., eps=1, which.sensitivity='bounded',
                         lower.bound=NULL, upper.bound=NULL,
-                        mechanism='laplace', delt=NULL, type.DP='pDP',
+                        mechanism='laplace', delta=NULL, type.DP='pDP',
                         approx.n.max=FALSE){
   samples <- list(...);
   #### INPUT CHECKING ####
@@ -842,7 +843,7 @@ pooledVarDP <- function(..., eps=1, which.sensitivity='bounded',
   }
 
   if (mechanism=='gaussian'){
-    if (is.null(delt)){
+    if (is.null(delta)){
       print("Must specify delta for Gaussian mechanism.");
     }
   } else if (mechanism!='laplace'){
@@ -863,7 +864,7 @@ pooledVarDP <- function(..., eps=1, which.sensitivity='bounded',
   ########## Privacy layer
   if (mechanism=='laplace'){
     while (TRUE){ # Make sure variance is > 0 after noise
-      sanitized.vars <- laplaceMechanism(tv,eps,bs,us,which.sensitivity);
+      sanitized.vars <- LaplaceMechanism(tv,eps,bs,us,which.sensitivity);
       done = TRUE;
       if (!is.null(sanitized.vars$Bounded) && any(sanitized.vars$Bounded<=0)) done=FALSE;
       if (!is.null(sanitized.vars$Unbounded) && any(sanitized.vars$Unbounded<=0)) done=FALSE;
@@ -871,7 +872,7 @@ pooledVarDP <- function(..., eps=1, which.sensitivity='bounded',
     }
   } else if (mechanism=='gaussian'){
     while (TRUE){ # Make sure variance is > 0 after noise
-      sanitized.vars <- gaussianMechanism(tv,eps,delt,bs,us,which.sensitivity,
+      sanitized.vars <- GaussianMechanism(tv,eps,delta,bs,us,which.sensitivity,
                                           type.DP);
       done = TRUE;
       if (!is.null(sanitized.vars$Bounded) && any(sanitized.vars$Bounded<=0)) done=FALSE;
@@ -890,8 +891,8 @@ pooledVarDP <- function(..., eps=1, which.sensitivity='bounded',
 #' Differentially Private Pooled Covariance
 #'
 #' This function computes the differentially private pooled covariance from two
-#' or more two-column matrices of data at user-specified levels of epsilon and
-#' delta.
+#' or more two-column matrices of data at user-specified privacy levels of
+#' epsilon and delta.
 #'
 #' @param ... Two or more matrices, each with two columns from which to compute
 #'   the pooled covariance.
@@ -903,30 +904,25 @@ pooledVarDP <- function(..., eps=1, which.sensitivity='bounded',
 #'   definition. If 'both', returns result based on both methods
 #'   \insertCite{Kifer2011}{DPpack}. Note that if 'both' is chosen, each result
 #'   individually satisfies differential privacy at level eps, but may not do so
-#'   collectively. Care must be taken not to violate differential privacy in
-#'   this case.
-#' @param lower.bound1,lower.bound2 Real numbers giving the lower bounds over
-#'   the first and second columns of all input data, respectively. If not given,
-#'   they are computed from the data to be the min value over all first and
-#'   second columns of the given data, respectively. Note this computation may
-#'   result in additional privacy loss.
-#' @param upper.bound1,upper.bound2 Real numbers giving the upper bounds over
-#'   the first and second columns of all input data, respectively. If not given,
-#'   they are computed from the data to be the max value over all first and
-#'   second columns of the given data, respectively. Note this computation may
-#'   result in additional privacy loss.
+#'   collectively and in composition. Care must be taken not to violate
+#'   differential privacy in this case.
+#' @param lower.bound1,lower.bound2 Real numbers giving the global or public
+#'   lower bounds over the first and second columns of all input data,
+#'   respectively.
+#' @param upper.bound1,upper.bound2 Real numbers giving the global or public
+#'   upper bounds over the first and second columns of all input data,
+#'   respectively.
 #' @param mechanism String indicating which mechanism to use for differential
 #'   privacy. Currently the following mechanisms are supported: {'laplace',
-#'   'gaussian'}. See \code{\link{laplaceMechanism}} and
-#'   \code{\link{gaussianMechanism}} for a description of the supported
+#'   'gaussian'}. See \code{\link{LaplaceMechanism}} and
+#'   \code{\link{GaussianMechanism}} for a description of the supported
 #'   mechanisms.
-#' @param delt Positive real number defining the delta privacy parameter
-#'   (necessary if using Gaussian mechanism).
+#' @param delta Nonnegative real number defining the delta privacy parameter. If
+#'   0, reduces to eps-DP and the Laplace mechanism is used.
 #' @param type.DP String indicating the type of differential privacy desired for
-#'   the Gaussian mechanism. Can be either probabilistic DP ('pDP') or
-#'   approximate DP ('aDP'). See \code{\link{gaussianMechanism}} for a more
-#'   detailed description of this parameter. Only used if mechanism is
-#'   'gaussian'.
+#'   the Gaussian mechanism (if selected). Can be either 'pDP' for probabilistic
+#'   DP \insertCite{Liu2019a}{DPpack} or 'aDP' for approximate DP
+#'   \insertCite{DPtextbook}{DPpack}.
 #' @param approx.n.max Logical indicating whether to approximate n.max, which is
 #'   defined to be the length of the largest input vector. Approximation is best
 #'   if n.max is very large.
@@ -940,17 +936,21 @@ pooledVarDP <- function(..., eps=1, which.sensitivity='bounded',
 #'   mechanism='laplace')
 #' pooledVarDP(x1,x2,eps=1,which.sensitivity='unbounded',
 #'   lower.bound1=-10,upper.bound1=10,lower.bound2=-10,upper.bound2=10,
-#'   mechanism='gaussian',delt=0.5,type.DP='aDP',approx.n.max=TRUE)
+#'   mechanism='gaussian',delta=0.5,type.DP='aDP',approx.n.max=TRUE)
 #'
 #' @references \insertRef{Dwork2006a}{DPpack}
 #'
 #' \insertRef{Kifer2011}{DPpack}
 #'
+#' \insertRef{Liu2019a}{DPpack}
+#'
+#' \insertRef{DPtextbook}{DPpack}
+#'
 #' @export
 pooledCovDP <- function(..., eps=1, which.sensitivity='bounded',
                         lower.bound1=NULL, upper.bound1=NULL,
                         lower.bound2=NULL, upper.bound2=NULL,
-                        mechanism='laplace', delt=NULL, type.DP='pDP',
+                        mechanism='laplace', delta=NULL, type.DP='pDP',
                         approx.n.max=FALSE){
   samples <- list(...);
   #### INPUT CHECKING ####
@@ -1011,7 +1011,7 @@ pooledCovDP <- function(..., eps=1, which.sensitivity='bounded',
   # }
 
   if (mechanism=='gaussian'){
-    if (is.null(delt)){
+    if (is.null(delta)){
       print("Must specify delta for Gaussian mechanism.");
     }
   } else if (mechanism!='laplace'){
@@ -1033,9 +1033,9 @@ pooledCovDP <- function(..., eps=1, which.sensitivity='bounded',
 
   ########## Privacy layer
   if (mechanism=='laplace'){
-    sanitized.cov <- laplaceMechanism(tv,eps,bs,us,which.sensitivity);
+    sanitized.cov <- LaplaceMechanism(tv,eps,bs,us,which.sensitivity);
   } else if (mechanism=='gaussian'){
-    sanitized.cov <- gaussianMechanism(tv,eps,delt,bs,us,which.sensitivity,
+    sanitized.cov <- GaussianMechanism(tv,eps,delta,bs,us,which.sensitivity,
                                        type.DP);
   }
   ##########
@@ -1049,7 +1049,7 @@ pooledCovDP <- function(..., eps=1, which.sensitivity='bounded',
 #' Differentially Private Quantile
 #'
 #' This function computes the differentially private quantile of an input vector
-#' at user-specified levels of epsilon and delta.
+#' at user-specified privacy levels of epsilon and delta.
 #'
 #' @param x Numeric vector of which the quantile will be taken.
 #' @param quant Real number between 0 and 1 indicating which quantile to return.
@@ -1061,20 +1061,16 @@ pooledCovDP <- function(..., eps=1, which.sensitivity='bounded',
 #'   definition. If 'both', returns result based on both methods
 #'   \insertCite{Kifer2011}{DPpack}. Note that if 'both' is chosen, each result
 #'   individually satisfies differential privacy at level eps, but may not do so
-#'   collectively. Care must be taken not to violate differential privacy in
-#'   this case.
-#' @param lower.bound Real number giving the lower bound of x. If not given, it
-#'   is computed from the data to be the min value of x. Note this computation
-#'   may result in additional privacy loss.
-#' @param upper.bound Real number giving the upper bound of x. If not given, it
-#'   is computed from the data to be the max value of x. Note this computation
-#'   may result in additional privacy loss.
+#'   collectively and in composition. Care must be taken not to violate
+#'   differential privacy in this case.
+#' @param lower.bound Real number giving the global or public lower bound of x.
+#' @param upper.bound Real number giving the global or public upper bound of x.
 #' @param mechanism String indicating which mechanism to use for differential
 #'   privacy. Currently the following mechanisms are supported: {'exponential'}.
-#'   See \code{\link{exponentialMechanism}} for a description of the supported
+#'   See \code{\link{ExponentialMechanism}} for a description of the supported
 #'   mechanisms.
-#' @param delt Positive real number defining the delta privacy parameter (not
-#'   currently used).
+#' @param delta Nonnegative real number defining the delta privacy parameter. If
+#'   0, reduces to eps-DP and the Laplace mechanism is used.
 #' @return A list of the sanitized quantiles based on the bounded and/or
 #'   unbounded definitions of differential privacy.
 #' @examples
@@ -1085,14 +1081,14 @@ pooledCovDP <- function(..., eps=1, which.sensitivity='bounded',
 #'
 #' @references \insertRef{Dwork2006a}{DPpack}
 #'
-#' \insertRef{Kifer2011}{DPpack}
+#'   \insertRef{Kifer2011}{DPpack}
 #'
-#' \insertRef{Smith2011a}{DPpack}
+#'   \insertRef{Smith2011a}{DPpack}
 #'
 #' @export
 quantileDP <- function (x, quant, eps, which.sensitivity='bounded',
                         lower.bound=NULL, upper.bound=NULL,
-                        mechanism='exponential', delt=NULL){
+                        mechanism='exponential', delta=NULL){
   # NOTE: See
   # https://github.com/IBM/differential-privacy-library/blob/main/diffprivlib/tools/quantiles.py
   #
@@ -1135,7 +1131,7 @@ quantileDP <- function (x, quant, eps, which.sensitivity='bounded',
 
   ########## Privacy layer
   if (mechanism=='exponential'){
-    sanitized.indices <- exponentialMechanism(utility, eps, bs, us,
+    sanitized.indices <- ExponentialMechanism(utility, eps, bs, us,
                                               which.sensitivity,
                                               measure=diff(sorted));
     sanitized.quantile <- list();
@@ -1163,7 +1159,7 @@ quantileDP <- function (x, quant, eps, which.sensitivity='bounded',
 #' Differentially Private Median
 #'
 #' This function computes the differentially private median of an input vector
-#' at user-specified levels of epsilon and delta.
+#' at user-specified privacy levels of epsilon and delta.
 #'
 #' @param x Numeric vector of which the median will be taken.
 #' @param eps Positive real number defining the epsilon privacy budget.
@@ -1174,22 +1170,18 @@ quantileDP <- function (x, quant, eps, which.sensitivity='bounded',
 #'   definition. If 'both', returns result based on both methods
 #'   \insertCite{Kifer2011}{DPpack}. Note that if 'both' is chosen, each result
 #'   individually satisfies differential privacy at level eps, but may not do so
-#'   collectively. Care must be taken not to violate differential privacy in
-#'   this case.
-#' @param lower.bound Real number giving the lower bound of x. If not given, it
-#'   is computed from the data to be the min value of x. Note this computation
-#'   may result in additional privacy loss.
-#' @param upper.bound Real number giving the upper bound of x. If not given, it
-#'   is computed from the data to be the max value of x. Note this computation
-#'   may result in additional privacy loss.
+#'   collectively and in composition. Care must be taken not to violate
+#'   differential privacy in this case.
+#' @param lower.bound Real number giving the global or public lower bound of x.
+#' @param upper.bound Real number giving the global or public upper bound of x.
 #' @param mechanism String indicating which mechanism to use for differential
 #'   privacy. Currently the following mechanisms are supported: {'exponential'}.
-#'   See \code{\link{exponentialMechanism}} for a description of the supported
+#'   See \code{\link{ExponentialMechanism}} for a description of the supported
 #'   mechanisms.
-#' @param delt Positive real number defining the delta privacy parameter (not
-#'   currently used).
-#' @return A list of the sanitized medians based on the bounded and/or
-#'   unbounded definitions of differential privacy.
+#' @param delta Nonnegative real number defining the delta privacy parameter. If
+#'   0, reduces to eps-DP and the Laplace mechanism is used.
+#' @return A list of the sanitized medians based on the bounded and/or unbounded
+#'   definitions of differential privacy.
 #' @examples
 #' medianDP(c(1,1,-2,8,-6),1,which.sensitivity='bounded',
 #'   lower.bound=-10,upper.bound=10,mechanism='exponential')
@@ -1198,16 +1190,16 @@ quantileDP <- function (x, quant, eps, which.sensitivity='bounded',
 #'
 #' @references \insertRef{Dwork2006a}{DPpack}
 #'
-#' \insertRef{Kifer2011}{DPpack}
+#'   \insertRef{Kifer2011}{DPpack}
 #'
-#' \insertRef{Smith2011a}{DPpack}
+#'   \insertRef{Smith2011a}{DPpack}
 #'
 #' @export
 medianDP <- function (x, eps, which.sensitivity='bounded',
                       lower.bound=NULL, upper.bound=NULL,
-                      mechanism='exponential', delt=NULL){
+                      mechanism='exponential', delta=NULL){
   sanitized.median <- quantileDP(x,.5,eps,which.sensitivity,lower.bound,
-                                 upper.bound,mechanism,delt);
+                                 upper.bound,mechanism,delta);
   class(sanitized.median)<-"Sanitized Median";
   return(sanitized.median);
   ##########

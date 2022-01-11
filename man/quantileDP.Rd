@@ -12,7 +12,7 @@ quantileDP(
   lower.bound = NULL,
   upper.bound = NULL,
   mechanism = "exponential",
-  delt = NULL
+  delta = NULL
 )
 }
 \arguments{
@@ -29,24 +29,20 @@ privacy. If 'unbounded', returns result plus noise based on unbounded
 definition. If 'both', returns result based on both methods
 \insertCite{Kifer2011}{DPpack}. Note that if 'both' is chosen, each result
 individually satisfies differential privacy at level eps, but may not do so
-collectively. Care must be taken not to violate differential privacy in
-this case.}
+collectively and in composition. Care must be taken not to violate
+differential privacy in this case.}
 
-\item{lower.bound}{Real number giving the lower bound of x. If not given, it
-is computed from the data to be the min value of x. Note this computation
-may result in additional privacy loss.}
+\item{lower.bound}{Real number giving the global or public lower bound of x.}
 
-\item{upper.bound}{Real number giving the upper bound of x. If not given, it
-is computed from the data to be the max value of x. Note this computation
-may result in additional privacy loss.}
+\item{upper.bound}{Real number giving the global or public upper bound of x.}
 
 \item{mechanism}{String indicating which mechanism to use for differential
 privacy. Currently the following mechanisms are supported: {'exponential'}.
-See \code{\link{exponentialMechanism}} for a description of the supported
+See \code{\link{ExponentialMechanism}} for a description of the supported
 mechanisms.}
 
-\item{delt}{Positive real number defining the delta privacy parameter (not
-currently used).}
+\item{delta}{Nonnegative real number defining the delta privacy parameter. If
+0, reduces to eps-DP and the Laplace mechanism is used.}
 }
 \value{
 A list of the sanitized quantiles based on the bounded and/or
@@ -54,7 +50,7 @@ unbounded definitions of differential privacy.
 }
 \description{
 This function computes the differentially private quantile of an input vector
-at user-specified levels of epsilon and delta.
+at user-specified privacy levels of epsilon and delta.
 }
 \examples{
 quantileDP(c(1,1,-2,8,-6),.25,1,which.sensitivity='bounded',
