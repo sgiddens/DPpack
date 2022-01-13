@@ -956,10 +956,64 @@ LogisticRegressionDP <- R6::R6Class("LogisticRegressionDP",
   }
 ))
 
+#' Generator for Sampling Distribution Function for Gaussian Kernel
+#'
+#' This function generates and returns a sampling function corresponding to the
+#' Fourier transform of a Gaussian kernel with parameter gamma
+#' \insertCite{chaudhuri2011}{DPpack} of form needed for
+#' \code{\link{KernelSupportVectorMachineDP}}.
+#'
+#' @param gamma Positive real number for the Gaussian (radial) kernel parameter.
+#' @return Sampling function for the Gaussian kernel of form required by
+#'   \code{\link{KernelSupportVectorMachineDP}}.
+#' @examples
+#'   gamma <- 1
+#'   sample <- generate.sampling(gamma)
+#'   d <- 5
+#'   sample(d)
+#'
+#' @keywords internal
+#'
+#' @references \insertRef{chaudhuri2011}{DPpack}
+#'
+#' @export
+generate.sampling <- function(gamma){
+  function(d){
+    omega <- rnorm(d,sd=sqrt(2*gamma))
+    phi <- runif(1,-pi,pi)
+    c(omega,phi)
+  }
+}
+
+#' Transform Function for Gaussian Kernel Approximation
+#'
+#' This function maps an input data row x with a given prefilter to an output
+#' value in such a way as to approximate the Gaussian kernel
+#' \insertCite{chaudhuri2011}{DPpack}.
+#'
+#' @param x Vector or matrix corresponding to one row of the dataset X.
+#' @param theta Randomly sampled prefilter vector of length n+1, where n is the
+#'   length of x.
+#' @return Mapped value corresponding to one element of the transformed space.
+#' @examples
+#'   x <- c(1,2,3)
+#'   theta <- c(0.1, 1.1, -0.8, 3)
+#'   phi.gaussian(x, theta)
+#'
+#' @keywords internal
+#'
+#' @references \insertRef{chaudhuri2011}{DPpack}
+#'
+#' @export
+phi.gaussian <- function(x, theta){
+  d <- length(x)
+  cos(x%*%theta[1:d] + theta[d+1])
+}
+
 #' Privacy-preserving Linear Support Vector Machine
 #'
-#' @description This class implements differentially private linear support
-#'   vector machine using the objective perturbation technique
+#' @description This class implements a differentially private support vector
+#'   machine (SVM) using the objective perturbation technique
 #'   \insertCite{chaudhuri2011}{DPpack}.
 #'
 #' @details A new model object of this class accepts as inputs a regularizer, an
@@ -980,22 +1034,22 @@ LogisticRegressionDP <- R6::R6Class("LogisticRegressionDP",
 #'   differentiable at 1. Thus, to satisfy this constraint, this class utilizes
 #'   the Huber loss, a smooth approximation to the hinge loss. The level of
 #'   approximation to the hinge loss is determined by a user-specified constant,
-#'   h, which defaults to 1. Additionally, the regularizer must be 1-strongly convex and
-#'   doubly differentiable. Finally, it is assumed that if x represents a single
-#'   row of the dataset X, then \eqn{||x||\le 1} for all \eqn{x}. In order to
-#'   ensure this constraint is satisfied, the dataset is preprocessed using
-#'   provided upper and lower bounds on the columns of X to scale the values in
-#'   such a way that this constraint is met. After the private coefficients are
-#'   generated, these are then postprocessed and un-scaled so that the stored
-#'   coefficients correspond to the original data. This does not result in
-#'   additional privacy loss as long as the upper and lower bounds provided when
-#'   fitting the model do not depend directly on the data. Due to this
-#'   constraint on \eqn{x}, it is best to avoid using a bias term in the model
-#'   whenever possible. If a bias term must be used, the issue can be partially
-#'   circumvented by adding a constant column to X before fitting the model,
-#'   which will be scaled along with the rest of X. The \code{fit} method
-#'   contains functionality to add a column of constant 1s to X before scaling,
-#'   if desired.
+#'   h, which defaults to 1. Additionally, the regularizer must be 1-strongly
+#'   convex and doubly differentiable. Finally, it is assumed that if x
+#'   represents a single row of the dataset X, then \eqn{||x||\le 1} for all
+#'   \eqn{x}. In order to ensure this constraint is satisfied, the dataset is
+#'   preprocessed using provided upper and lower bounds on the columns of X to
+#'   scale the values in such a way that this constraint is met. After the
+#'   private coefficients are generated, these are then postprocessed and
+#'   un-scaled so that the stored coefficients correspond to the original data.
+#'   This does not result in additional privacy loss as long as the upper and
+#'   lower bounds provided when fitting the model do not depend directly on the
+#'   data. Due to this constraint on \eqn{x}, it is best to avoid using a bias
+#'   term in the model whenever possible. If a bias term must be used, the issue
+#'   can be partially circumvented by adding a constant column to X before
+#'   fitting the model, which will be scaled along with the rest of X. The
+#'   \code{fit} method contains functionality to add a column of constant 1s to
+#'   X before scaling, if desired.
 #'
 #'   The preprocessing of X is done as follows. First, the largest in absolute
 #'   value of the upper and lower bounds on each column are used to scale each
@@ -1003,11 +1057,11 @@ LogisticRegressionDP <- R6::R6Class("LogisticRegressionDP",
 #'   in absolute value. Second, each value in X is divided by the square root of
 #'   the number of predictors of X (including bias term). These two scalings
 #'   ensure that each row of X satisfies the necessary constraints for
-#'   differential privacy. Additionally, the labels y are assumed to be either -1
-#'   or 1. If different values are provided, they are coerced to be either -1 or
-#'   1 prior to fitting the model. Values in y that are \eqn{\le} 0 are assigned
-#'   to be -1, while values in y \eqn{>} 0 are assigned to be 1. Accordingly, new
-#'   predicted labels are output as either -1 or 1.
+#'   differential privacy. Additionally, the labels y are assumed to be either
+#'   -1 or 1. If different values are provided, they are coerced to be either -1
+#'   or 1 prior to fitting the model. Values in y that are \eqn{\le} 0 are
+#'   assigned to be -1, while values in y \eqn{>} 0 are assigned to be 1.
+#'   Accordingly, new predicted labels are output as either -1 or 1.
 #'
 #' @references \insertRef{chaudhuri2011}{DPpack}
 #'
@@ -1136,60 +1190,6 @@ SupportVectorMachineDP <- R6::R6Class("SupportVectorMachineDP",
     coeff/(preprocess$scale1*preprocess$scale2)
   }
 ))
-
-#' Generator for Sampling Distribution Function for Gaussian Kernel
-#'
-#' This function generates and returns a sampling function corresponding to the
-#' Fourier transform of a Gaussian kernel with parameter gamma
-#' \insertCite{chaudhuri2011}{DPpack} of form needed for
-#' \code{\link{KernelSupportVectorMachineDP}}.
-#'
-#' @param gamma Positive real number for the Gaussian (radial) kernel parameter.
-#' @return Sampling function for the Gaussian kernel of form required by
-#'   \code{\link{KernelSupportVectorMachineDP}}.
-#' @examples
-#'   gamma <- 1
-#'   sample <- generate.sampling(gamma)
-#'   d <- 5
-#'   sample(d)
-#'
-#' @keywords internal
-#'
-#' @references \insertRef{chaudhuri2011}{DPpack}
-#'
-#' @export
-generate.sampling <- function(gamma){
-  function(d){
-    omega <- rnorm(d,sd=sqrt(2*gamma))
-    phi <- runif(1,-pi,pi)
-    c(omega,phi)
-  }
-}
-
-#' Transform Function for Gaussian Kernel Approximation
-#'
-#' This function maps an input data row x with a given prefilter to an output
-#' value in such a way as to approximate the Gaussian kernel
-#' \insertCite{chaudhuri2011}{DPpack}.
-#'
-#' @param x Vector or matrix corresponding to one row of the dataset X.
-#' @param theta Randomly sampled prefilter vector of length n+1, where n is the
-#'   length of x.
-#' @return Mapped value corresponding to one element of the transformed space.
-#' @examples
-#'   x <- c(1,2,3)
-#'   theta <- c(0.1, 1.1, -0.8, 3)
-#'   phi.gaussian(x, theta)
-#'
-#' @keywords internal
-#'
-#' @references \insertRef{chaudhuri2011}{DPpack}
-#'
-#' @export
-phi.gaussian <- function(x, theta){
-  d <- length(x)
-  cos(x%*%theta[1:d] + theta[d+1])
-}
 
 #' Privacy-preserving Nonlinear Kernel Support Vector Machine
 #'
