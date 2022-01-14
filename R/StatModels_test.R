@@ -236,7 +236,7 @@ ggplot() + geom_point(data = data, aes(x=x1, y=x2, color = as.character(label)),
 ### END TESTING LOGISTIC REGRESSION CLASS ###
 
 #########################################
-### TESTING SVM CLASS ###
+### TESTING SVM CLASS (LINEAR CASE) ###
 #########################################
 ### Build dataset (no bias, satisfies constraints)
 N <- 200
@@ -336,7 +336,7 @@ eps <- 1
 
 set.seed(round(runif(1,0,100)))
 
-svmdp <- SupportVectorMachineDP$new('l2', eps, lambda)
+svmdp <- SupportVectorMachineDP$new('l2', eps, lambda, kernel='linear')
 
 ### No bias, satisfies constraints
 svmdp$fit(X,y,upper.bounds=upper.bounds,lower.bounds=lower.bounds)
@@ -380,6 +380,274 @@ ggplot() + geom_point(data = data, aes(x=x1, y=x2, color = as.character(label)),
 #   coord_fixed(ratio = 1) +
 #   theme_bw(base_size = 12)
 ### END TESTING SVM CLASS ###
+
+#######################################################
+### TESTING GAUSSIAN KERNEL SVM AND COMPARING TO REGULAR SVM ### (Linear)
+#######################################################
+# Build dataset
+N <- 200
+D <- 2
+K <- 2
+X <- data.frame()
+y <- data.frame()
+
+set.seed(56)
+
+for (j in (1:K)){
+  t <- seq(-.25,.25,length.out = N)
+  # add randomness
+  if (j==1) m <- rnorm(N,-.2,.1) # Soft margin
+  if (j==2) m <- rnorm(N, .2,.1)
+  # if (j==1) m <- rnorm(N,-.2, .05) # Hard margin
+  # if (j==2) m <- rnorm(N, .2, .05)
+  Xtemp <- data.frame(x1 = 3*t , x2 = m - t)
+  ytemp <- data.frame(matrix(j-1, N, 1))
+  X <- rbind(X, Xtemp)
+  y <- rbind(y, ytemp)
+}
+y[y==0] <- -1
+
+upper.bounds <- c(1,1,1)
+lower.bounds <- c(-1,-1,0)
+
+data <- cbind(X,y)
+y <- as.matrix(data[,3])
+colnames(data) <- c(colnames(X), 'label')
+
+# To verify in unit circle
+# circleFun <- function(center = c(0,0),diameter = 1, npoints = 100){
+#   r = diameter / 2
+#   tt <- seq(0,2*pi,length.out = npoints)
+#   xx <- center[1] + r * cos(tt)
+#   yy <- center[2] + r * sin(tt)
+#   return(data.frame(x = xx, y = yy))
+# }
+# cir <- circleFun(c(0,0),2,npoints = 100)
+
+ggplot(data) + geom_point(aes(x=x1, y=x2, color = as.character(label)),
+                          size = 2, show.legend = F) +
+  scale_colour_discrete(name  ="Label") + #ylim(-3, 3) +
+  coord_fixed(ratio = 1) +
+  theme_bw(base_size = 12) + xlim(-.8,.8) + ylim(-.7,.7)
+
+# Hard-margin
+# eps <- Inf
+# # lambda <- 1
+# lambda <- 0
+# D <- 20
+
+# Soft-margin
+# eps <- Inf
+# lambda <- .01
+# D <- 20
+
+# With DP
+eps <- 1
+lambda <- .01
+D <- 5
+
+set.seed(round(runif(1,0,100)))
+
+ksvmdp <- SupportVectorMachineDP$new('l2', eps, lambda, kernel='Gaussian', D)
+
+ksvmdp$fit(X,y,upper.bounds=upper.bounds,lower.bounds=lower.bounds)
+
+theta <- ksvmdp$coeff
+
+# Grid
+grid <- expand.grid(seq(-.8, .8, length.out = 100), seq(-.7,.7, length.out = 100))
+Z <- ksvmdp$predict(grid)
+gridPred = cbind(grid, Z)
+colnames(gridPred)[3] <- 'label'
+gridPred <- data.frame(gridPred)
+
+# decision boundary visualization
+ggplot() +   geom_point(data = data,
+                        aes(x=x1, y=x2, color = as.character(label)),
+                        size = 2, show.legend = F) +
+  geom_tile(data = gridPred,
+            aes(x = grid[, 1],y = grid[, 2], fill=as.character(Z)),
+            alpha = 0.3, show.legend = F)+
+  coord_fixed(ratio = 1) +
+  theme_bw(base_size = 12) + xlim(-.8,.8) + ylim(-.7,.7)
+
+# Standard SVM
+stdSVM <- svm(as.matrix(X),y,kernel="radial")
+
+# Grid
+grid <- expand.grid(seq(-.8, .8, length.out = 100), seq(-.7,.7, length.out = 100))
+Z <- sign(predict(stdSVM, newdata=grid,decision.values=TRUE))
+gridPred = cbind(grid, Z)
+colnames(gridPred)[3] <- 'label'
+gridPred <- data.frame(gridPred)
+
+# decision boundary visualization
+ggplot() +   geom_point(data = data,
+                        aes(x=x1, y=x2, color = as.character(label)),
+                        size = 2, show.legend = F) +
+  geom_tile(data = gridPred,
+            aes(x = grid[, 1],y = grid[, 2], fill=as.character(Z)),
+            alpha = 0.3, show.legend = F)+
+  coord_fixed(ratio = 1) +
+  theme_bw(base_size = 12) + xlim(-.8,.8) + ylim(-.7,.7)
+
+### END TESTING AND COMPARING KERNEL SVM ###
+
+#######################################################
+### TESTING GAUSSIAN KERNEL SVM ON NONLINEAR DATASET ### (Nonlinear)
+#######################################################
+# Build dataset
+N <- 400 # number of points
+D <- 2 # dimensionality, we use 2D data for easy visulization
+K <- 2 # number of classes, binary for logistic regression
+X <- data.frame() # data matrix (each row = single example, can view as xy coordinates)
+y <- data.frame() # class labels
+
+set.seed(56)
+
+for (i in (1:N)){
+  Xtemp <- data.frame(x1 = rnorm(1,sd=.28) , x2 = rnorm(1,sd=.28))
+  if (sum(Xtemp^2)<.15) ytemp <- data.frame(y=0)
+  else ytemp <- data.frame(y=1)
+  X <- rbind(X, Xtemp)
+  y <- rbind(y, ytemp)
+}
+y[y==0] <- -1
+
+upper.bounds <- c(1,1,1)
+lower.bounds <- c(-1,-1,0)
+
+data <- cbind(X,y)
+y <- as.matrix(data[,3])
+colnames(data) <- c(colnames(X), 'label')
+
+# To verify in unit circle
+# circleFun <- function(center = c(0,0),diameter = 1, npoints = 100){
+#   r = diameter / 2
+#   tt <- seq(0,2*pi,length.out = npoints)
+#   xx <- center[1] + r * cos(tt)
+#   yy <- center[2] + r * sin(tt)
+#   return(data.frame(x = xx, y = yy))
+# }
+# cir <- circleFun(c(0,0),2,npoints = 100)
+
+ggplot(data) + geom_point(aes(x=x1, y=x2, color = as.character(label)), size = 2,
+                          show.legend = F) +
+  ylim(-1, 1) + xlim(-1,1)+
+  coord_fixed(ratio = 1) +
+  theme_bw(base_size = 12)
+
+eps <- 5
+lambda <- 0.01
+D <- 20
+gamma<-1
+
+set.seed(round(runif(1,0,100)))
+
+ksvmdp <- SupportVectorMachineDP$new('l2', eps, lambda, kernel='Gaussian',
+                                     D, gamma=gamma)
+
+ksvmdp$fit(X,y,upper.bounds=upper.bounds,lower.bounds=lower.bounds)
+
+theta <- ksvmdp$coeff
+
+# Grid
+grid <- expand.grid(seq(-1, 1, length.out = 100), seq(-1, 1, length.out = 100))
+Z <- ksvmdp$predict(grid)
+gridPred = cbind(grid, Z)
+colnames(gridPred)[3] <- 'label'
+gridPred <- data.frame(gridPred)
+
+# decision boundary visualization
+ggplot() +   geom_point(data = data,
+                        aes(x=x1, y=x2, color = as.character(label)),
+                        size = 2, show.legend = F) + ylim(-1, 1) + xlim(-1,1)+
+  geom_tile(data = gridPred,
+            aes(x = grid[, 1],y = grid[, 2], fill=as.character(Z)),
+            alpha = 0.3, show.legend = F)+
+  coord_fixed(ratio = 1) +
+  theme_bw(base_size = 12)
+### END TESTING KERNEL SVM ON NONLINEAR DATASET ###
+
+
+#########################################
+### TESTING PARAMETER TUNING FUNCTION ###
+#########################################
+# Build dataset
+N <- 200 # number of points per class
+D <- 2 # dimensionality, we use 2D data for easy visulization
+K <- 2 # number of classes, binary for logistic regression
+X <- data.frame() # data matrix (each row = single example, can view as xy coordinates)
+y <- data.frame() # class labels
+
+set.seed(56)
+
+for (j in (1:K)){
+  # t, m are parameters of parametric equations x1, x2
+  t <- seq(-.25,.25,length.out = N)
+  # add randomness
+  if (j==1) m <- rnorm(N,-.2,.1)
+  if (j==2) m <- rnorm(N, .2,.1)
+  Xtemp <- data.frame(x1 = 3*t , x2 = m - t)
+  ytemp <- data.frame(matrix(j-1, N, 1))
+  X <- rbind(X, Xtemp)
+  y <- rbind(y, ytemp)
+}
+
+upper.bounds <- c(1,1,1)
+lower.bounds <- c(-1,-1,0)
+
+data <- cbind(X,y)
+y <- as.matrix(data[,3])
+colnames(data) <- c(colnames(X), 'label')
+
+# To verify in unit circle
+# circleFun <- function(center = c(0,0),diameter = 1, npoints = 100){
+#   r = diameter / 2
+#   tt <- seq(0,2*pi,length.out = npoints)
+#   xx <- center[1] + r * cos(tt)
+#   yy <- center[2] + r * sin(tt)
+#   return(data.frame(x = xx, y = yy))
+# }
+# cir <- circleFun(c(0,0),2,npoints = 100)
+
+ggplot(data) + geom_point(aes(x=x1, y=x2, color = as.character(label)), size = 2) +
+  scale_colour_discrete(name  ="Label") +
+  coord_fixed(ratio = 1) +
+  theme_bw(base_size = 12) +
+  theme(legend.position=c(0.85, 0.87))
+
+set.seed(round(runif(1,0,100)))
+
+eps <- 1
+
+lrdp1 <- LogisticRegressionDP$new("l2", eps, 100)
+lrdp2 <- LogisticRegressionDP$new("l2", eps, 1)
+lrdp3 <- LogisticRegressionDP$new("l2", eps, .0001)
+
+models <- c(lrdp1, lrdp2, lrdp3)
+model <- tune_model(models, X, y, upper.bounds, lower.bounds)
+theta <- model$coeff
+
+# Grid
+grid <- expand.grid(seq(-.8, .8, length.out = 100), seq(-.7,.7, length.out = 100))
+Z <- model$predict(grid)
+gridPred = cbind(grid, Z)
+colnames(gridPred)[3] <- 'label'
+gridPred <- data.frame(gridPred)
+
+# decision boundary
+ggplot() +   geom_point(data = data,
+                        aes(x=x1, y=x2, color = as.character(label)),
+                        size = 2, show.legend = F) +
+  geom_tile(data = gridPred,
+            aes(x = grid[, 1],y = grid[, 2], fill=as.character(Z)),
+            alpha = 0.3, show.legend = F)+
+  coord_fixed(ratio = 1) +
+  theme_bw(base_size = 12)
+
+### END TESTING PARAMETER TUNING FUNCTION ###
+
 
 ###############################################
 ### TESTING ERMDP.KST VIA LINEAR REGRESSION ###
@@ -491,269 +759,3 @@ ggplot() + geom_point(data = data,
 theta
 
 ### END TESTING LINEAR REGRESSION ###
-
-#######################################################
-### TESTING KERNEL SVM AND COMPARING TO REGULAR SVM ### (Linear)
-#######################################################
-# Build dataset
-N <- 200
-D <- 2
-K <- 2
-X <- data.frame()
-y <- data.frame()
-
-set.seed(56)
-
-for (j in (1:K)){
-  t <- seq(-.25,.25,length.out = N)
-  # add randomness
-  if (j==1) m <- rnorm(N,-.2,.1) # Soft margin
-  if (j==2) m <- rnorm(N, .2,.1)
-  # if (j==1) m <- rnorm(N,-.2, .05) # Hard margin
-  # if (j==2) m <- rnorm(N, .2, .05)
-  Xtemp <- data.frame(x1 = 3*t , x2 = m - t)
-  ytemp <- data.frame(matrix(j-1, N, 1))
-  X <- rbind(X, Xtemp)
-  y <- rbind(y, ytemp)
-}
-y[y==0] <- -1
-
-upper.bounds <- c(1,1,1)
-lower.bounds <- c(-1,-1,0)
-
-data <- cbind(X,y)
-y <- as.matrix(data[,3])
-colnames(data) <- c(colnames(X), 'label')
-
-# To verify in unit circle
-# circleFun <- function(center = c(0,0),diameter = 1, npoints = 100){
-#   r = diameter / 2
-#   tt <- seq(0,2*pi,length.out = npoints)
-#   xx <- center[1] + r * cos(tt)
-#   yy <- center[2] + r * sin(tt)
-#   return(data.frame(x = xx, y = yy))
-# }
-# cir <- circleFun(c(0,0),2,npoints = 100)
-
-ggplot(data) + geom_point(aes(x=x1, y=x2, color = as.character(label)),
-                          size = 2, show.legend = F) +
-  scale_colour_discrete(name  ="Label") + #ylim(-3, 3) +
-  coord_fixed(ratio = 1) +
-  theme_bw(base_size = 12) + xlim(-.8,.8) + ylim(-.7,.7)
-
-# Hard-margin
-# eps <- Inf
-# # lambda <- 1
-# lambda <- 0
-# D <- 20
-
-# Soft-margin
-# eps <- Inf
-# lambda <- .01
-# D <- 20
-
-# With DP
-eps <- 1
-lambda <- .01
-D <- 5
-
-set.seed(round(runif(1,0,100)))
-
-ksvmdp <- KernelSupportVectorMachineDP$new('l2', eps, lambda, D)
-
-ksvmdp$fit(X,y,upper.bounds=upper.bounds,lower.bounds=lower.bounds)
-
-theta <- ksvmdp$coeff
-
-# Grid
-grid <- expand.grid(seq(-.8, .8, length.out = 100), seq(-.7,.7, length.out = 100))
-Z <- ksvmdp$predict(grid)
-gridPred = cbind(grid, Z)
-colnames(gridPred)[3] <- 'label'
-gridPred <- data.frame(gridPred)
-
-# decision boundary visualization
-ggplot() +   geom_point(data = data,
-                        aes(x=x1, y=x2, color = as.character(label)),
-                        size = 2, show.legend = F) +
-  geom_tile(data = gridPred,
-            aes(x = grid[, 1],y = grid[, 2], fill=as.character(Z)),
-            alpha = 0.3, show.legend = F)+
-  coord_fixed(ratio = 1) +
-  theme_bw(base_size = 12) + xlim(-.8,.8) + ylim(-.7,.7)
-
-# Standard SVM
-stdSVM <- svm(as.matrix(X),y,kernel="radial")
-
-# Grid
-grid <- expand.grid(seq(-.8, .8, length.out = 100), seq(-.7,.7, length.out = 100))
-Z <- sign(predict(stdSVM, newdata=grid,decision.values=TRUE))
-gridPred = cbind(grid, Z)
-colnames(gridPred)[3] <- 'label'
-gridPred <- data.frame(gridPred)
-
-# decision boundary visualization
-ggplot() +   geom_point(data = data,
-                        aes(x=x1, y=x2, color = as.character(label)),
-                        size = 2, show.legend = F) +
-  geom_tile(data = gridPred,
-            aes(x = grid[, 1],y = grid[, 2], fill=as.character(Z)),
-            alpha = 0.3, show.legend = F)+
-  coord_fixed(ratio = 1) +
-  theme_bw(base_size = 12) + xlim(-.8,.8) + ylim(-.7,.7)
-
-### END TESTING AND COMPARING KERNEL SVM ###
-
-#######################################################
-### TESTING KERNEL SVM ON NONLINEAR DATASET ### (Nonlinear)
-#######################################################
-# Build dataset
-N <- 400 # number of points
-D <- 2 # dimensionality, we use 2D data for easy visulization
-K <- 2 # number of classes, binary for logistic regression
-X <- data.frame() # data matrix (each row = single example, can view as xy coordinates)
-y <- data.frame() # class labels
-
-set.seed(56)
-
-for (i in (1:N)){
-  Xtemp <- data.frame(x1 = rnorm(1,sd=.28) , x2 = rnorm(1,sd=.28))
-  if (sum(Xtemp^2)<.15) ytemp <- data.frame(y=0)
-  else ytemp <- data.frame(y=1)
-  X <- rbind(X, Xtemp)
-  y <- rbind(y, ytemp)
-}
-y[y==0] <- -1
-
-upper.bounds <- c(1,1,1)
-lower.bounds <- c(-1,-1,0)
-
-data <- cbind(X,y)
-y <- as.matrix(data[,3])
-colnames(data) <- c(colnames(X), 'label')
-
-# To verify in unit circle
-# circleFun <- function(center = c(0,0),diameter = 1, npoints = 100){
-#   r = diameter / 2
-#   tt <- seq(0,2*pi,length.out = npoints)
-#   xx <- center[1] + r * cos(tt)
-#   yy <- center[2] + r * sin(tt)
-#   return(data.frame(x = xx, y = yy))
-# }
-# cir <- circleFun(c(0,0),2,npoints = 100)
-
-ggplot(data) + geom_point(aes(x=x1, y=x2, color = as.character(label)), size = 2,
-                          show.legend = F) +
-  ylim(-1, 1) + xlim(-1,1)+
-  coord_fixed(ratio = 1) +
-  theme_bw(base_size = 12)
-
-eps <- 5
-lambda <- 0.01
-D <- 20
-gamma<-1
-
-set.seed(round(runif(1,0,100)))
-
-ksvmdp <- KernelSupportVectorMachineDP$new('l2', eps, lambda, D, gamma=gamma)
-
-ksvmdp$fit(X,y,upper.bounds=upper.bounds,lower.bounds=lower.bounds)
-
-theta <- ksvmdp$coeff
-
-# Grid
-grid <- expand.grid(seq(-1, 1, length.out = 100), seq(-1, 1, length.out = 100))
-Z <- ksvmdp$predict(grid)
-gridPred = cbind(grid, Z)
-colnames(gridPred)[3] <- 'label'
-gridPred <- data.frame(gridPred)
-
-# decision boundary visualization
-ggplot() +   geom_point(data = data,
-                        aes(x=x1, y=x2, color = as.character(label)),
-                        size = 2, show.legend = F) + ylim(-1, 1) + xlim(-1,1)+
-  geom_tile(data = gridPred,
-            aes(x = grid[, 1],y = grid[, 2], fill=as.character(Z)),
-            alpha = 0.3, show.legend = F)+
-  coord_fixed(ratio = 1) +
-  theme_bw(base_size = 12)
-### END TESTING KERNEL SVM ON NONLINEAR DATASET ###
-
-
-#########################################
-### TESTING PARAMETER TUNING FUNCTION ###
-#########################################
-# Build dataset
-N <- 200 # number of points per class
-D <- 2 # dimensionality, we use 2D data for easy visulization
-K <- 2 # number of classes, binary for logistic regression
-X <- data.frame() # data matrix (each row = single example, can view as xy coordinates)
-y <- data.frame() # class labels
-
-set.seed(56)
-
-for (j in (1:K)){
-  # t, m are parameters of parametric equations x1, x2
-  t <- seq(-.25,.25,length.out = N)
-  # add randomness
-  if (j==1) m <- rnorm(N,-.2,.1)
-  if (j==2) m <- rnorm(N, .2,.1)
-  Xtemp <- data.frame(x1 = 3*t , x2 = m - t)
-  ytemp <- data.frame(matrix(j-1, N, 1))
-  X <- rbind(X, Xtemp)
-  y <- rbind(y, ytemp)
-}
-
-upper.bounds <- c(1,1,1)
-lower.bounds <- c(-1,-1,0)
-
-data <- cbind(X,y)
-y <- as.matrix(data[,3])
-colnames(data) <- c(colnames(X), 'label')
-
-# To verify in unit circle
-# circleFun <- function(center = c(0,0),diameter = 1, npoints = 100){
-#   r = diameter / 2
-#   tt <- seq(0,2*pi,length.out = npoints)
-#   xx <- center[1] + r * cos(tt)
-#   yy <- center[2] + r * sin(tt)
-#   return(data.frame(x = xx, y = yy))
-# }
-# cir <- circleFun(c(0,0),2,npoints = 100)
-
-ggplot(data) + geom_point(aes(x=x1, y=x2, color = as.character(label)), size = 2) +
-  scale_colour_discrete(name  ="Label") +
-  coord_fixed(ratio = 1) +
-  theme_bw(base_size = 12) +
-  theme(legend.position=c(0.85, 0.87))
-
-set.seed(round(runif(1,0,100)))
-
-eps <- 1
-
-lrdp1 <- LogisticRegressionDP$new("l2", eps, 100)
-lrdp2 <- LogisticRegressionDP$new("l2", eps, 1)
-lrdp3 <- LogisticRegressionDP$new("l2", eps, .0001)
-
-models <- c(lrdp1, lrdp2, lrdp3)
-model <- tune_model(models, X, y, upper.bounds, lower.bounds)
-theta <- model$coeff
-
-# Grid
-grid <- expand.grid(seq(-.8, .8, length.out = 100), seq(-.7,.7, length.out = 100))
-Z <- model$predict(grid)
-gridPred = cbind(grid, Z)
-colnames(gridPred)[3] <- 'label'
-gridPred <- data.frame(gridPred)
-
-# decision boundary
-ggplot() +   geom_point(data = data,
-                        aes(x=x1, y=x2, color = as.character(label)),
-                        size = 2, show.legend = F) +
-  geom_tile(data = gridPred,
-            aes(x = grid[, 1],y = grid[, 2], fill=as.character(Z)),
-            alpha = 0.3, show.legend = F)+
-  coord_fixed(ratio = 1) +
-  theme_bw(base_size = 12)
-
-### END TESTING PARAMETER TUNING FUNCTION ###

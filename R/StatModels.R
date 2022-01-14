@@ -437,14 +437,19 @@ EmpiricalRiskMinimizationDP.CMS <- R6::R6Class("EmpiricalRiskMinimizationDP.CMS"
   c = NULL,
   #' @field coeff Numeric vector of coefficients for the model.
   coeff = NULL,
+  #' @field kernel String indicating which kernel to use for SVM. Must be one of
+  #'   {'linear', 'Gaussian'}. If 'linear' (default), linear SVM is used. If
+  #'   'Gaussian,' uses the sampling function corresponding to the Gaussian
+  #'   (radial) kernel approximation.
+  kernel = NULL,
   #' @field D Value only used in child class
-  #'   \code{\link{KernelSupportVectorMachineDP}}. Nonnegative integer
+  #'   \code{\link{SupportVectorMachineDP}}. Nonnegative integer
   #'   indicating the dimensionality of the transform space approximating the
   #'   kernel. Higher values of D provide better kernel approximations at a cost
   #'   of computational efficiency.
   D = NULL,
   #' @field sampling Value only used in child class
-  #'   \code{\link{KernelSupportVectorMachineDP}}. String or sampling function.
+  #'   \code{\link{SupportVectorMachineDP}}. String or sampling function.
   #'   If a string, must be 'Gaussian' (default), indicating to use the sampling
   #'   function corresponding to the Gaussian (radial) kernel approximation. If
   #'   a function, must be of the form sampling(d), where d is the input
@@ -452,7 +457,7 @@ EmpiricalRiskMinimizationDP.CMS <- R6::R6Class("EmpiricalRiskMinimizationDP.CMS"
   #'   to the Fourier transform of the kernel to be approximated.
   sampling=NULL,
   #' @field phi Value only used in child class
-  #'   \code{\link{KernelSupportVectorMachineDP}}. Function or NULL (default).
+  #'   \code{\link{SupportVectorMachineDP}}. Function or NULL (default).
   #'   If sampling is given as one of the predefined strings, this input is
   #'   unnecessary. If sampling is a function, this should also be a function of
   #'   the form phi(x, theta), where x is an individual row of of the original
@@ -462,11 +467,11 @@ EmpiricalRiskMinimizationDP.CMS <- R6::R6Class("EmpiricalRiskMinimizationDP.CMS"
   #'   pre-filtered value at the given row with the given sampled vector.
   phi=NULL,
   #' @field gamma Value only used in child class
-  #'   \code{\link{KernelSupportVectorMachineDP}}. Positive real number
+  #'   \code{\link{SupportVectorMachineDP}}. Positive real number
   #'   corresponding to the Gaussian kernel parameter.
   gamma=NULL,
   #' @field prefilter Value only used in child class
-  #'   \code{\link{KernelSupportVectorMachineDP}}. Matrix of pre-filter values
+  #'   \code{\link{SupportVectorMachineDP}}. Matrix of pre-filter values
   #'   used in converting data into transform space.
   prefilter=NULL,
   #' @description Create a new EmpiricalRiskMinimizationDP.CMS object.
@@ -961,11 +966,11 @@ LogisticRegressionDP <- R6::R6Class("LogisticRegressionDP",
 #' This function generates and returns a sampling function corresponding to the
 #' Fourier transform of a Gaussian kernel with parameter gamma
 #' \insertCite{chaudhuri2011}{DPpack} of form needed for
-#' \code{\link{KernelSupportVectorMachineDP}}.
+#' \code{\link{SupportVectorMachineDP}}.
 #'
 #' @param gamma Positive real number for the Gaussian (radial) kernel parameter.
 #' @return Sampling function for the Gaussian kernel of form required by
-#'   \code{\link{KernelSupportVectorMachineDP}}.
+#'   \code{\link{SupportVectorMachineDP}}.
 #' @examples
 #'   gamma <- 1
 #'   sample <- generate.sampling(gamma)
@@ -1010,7 +1015,7 @@ phi.gaussian <- function(x, theta){
   cos(x%*%theta[1:d] + theta[d+1])
 }
 
-#' Privacy-preserving Linear Support Vector Machine
+#' Privacy-preserving Support Vector Machine
 #'
 #' @description This class implements a differentially private support vector
 #'   machine (SVM) using the objective perturbation technique
@@ -1079,6 +1084,16 @@ SupportVectorMachineDP <- R6::R6Class("SupportVectorMachineDP",
   #'   to Inf, runs algorithm without differential privacy.
   #' @param lambda Nonnegative real number representing the regularization
   #'   constant.
+  #' @param kernel String indicating which kernel to use for SVM. Must be one of
+  #'   {'linear', 'Gaussian'}. If 'linear' (default), linear SVM is used. If
+  #'   'Gaussian,' uses the sampling function corresponding to the Gaussian
+  #'   (radial) kernel approximation.
+  #' @param D Nonnegative integer indicating the dimensionality of the transform
+  #'   space approximating the kernel if a nonlinear kernel is used. Higher
+  #'   values of D provide better kernel approximations at a cost of
+  #'   computational efficiency. Defaults to NULL.
+  #' @param gamma Positive real number corresponding to the Gaussian kernel
+  #'   parameter. Defaults to 1.
   #' @param regularizer.gr Optional function representing the gradient of the
   #'   regularizer function function with respect to coeff. Must have form as
   #'   given in regularizer.gr field description for parent class. If not given,
@@ -1100,13 +1115,41 @@ SupportVectorMachineDP <- R6::R6Class("SupportVectorMachineDP",
   #' regularizer.gr <- function(coeff) coeff # If function given for regularizer
   #' huber.h <- 1
   #' svmdp <- SupportVectorMachineDP$new(regularizer, eps, lambda,
-  #'                                   regularizer.gr, huber.h)
+  #'                                   regularizer.gr=regularizer.gr,
+  #'                                   huber.h=huber.h)
   #'
   #' @return A new SupportVectorMachineDP object.
-  initialize = function(regularizer, eps, lambda, regularizer.gr=NULL, huber.h=1){
+  initialize = function(regularizer, eps, lambda, kernel='linear', D=NULL,
+                        gamma=1, regularizer.gr=NULL, huber.h=1){
     super$initialize(h.linear, generate.loss.huber(huber.h), regularizer, eps,
                      lambda, 1/(2*huber.h), h.gr.linear,
                      generate.loss.gr.huber(huber.h), regularizer.gr)
+    self$kernel <- kernel
+    if (kernel=="Gaussian"){
+      self$sampling <- generate.sampling(gamma)
+      self$phi <- phi.gaussian
+      if (is.null(D)) stop("D must be specified for nonlinear kernel.")
+      self$D <- D
+    } else if (kernel!="linear") stop("kernel must be one of {'linear',
+                                      Gaussian'}")
+  },
+  #' @description Convert input data X into transformed data V. Uses sampled
+  #'   pre-filter values and the provided mapping function to produce
+  #'   D-dimensional data V on which to train the model or predict future
+  #'   values.
+  #' @param X Matrix corresponding to the original dataset.
+  #' @return Matrix V of size n by D representing the transformed dataset, where
+  #'   n is the number of rows of X, and D is the provided transformed space
+  #'   dimension.
+  XtoV = function(X){
+    # Get V (higher dimensional X)
+    V <- matrix(NaN, nrow=nrow(X), ncol=self$D)
+    for (i in 1:nrow(X)){
+      for (j in 1:self$D){
+        V[i,j] <- sqrt(1/self$D)*self$phi(X[i,],self$prefilter[j,])
+      }
+    }
+    V
   },
   #' @description Predict label(s) for given X using the fitted coefficients.
   #' @param X Dataframe of data on which to make predictions. Must be of same
@@ -1127,9 +1170,19 @@ SupportVectorMachineDP <- R6::R6Class("SupportVectorMachineDP",
   #'
   #' @return Matrix of predicted labels corresponding to each row of X.
   predict = function(X, add.bias=FALSE, raw.value=FALSE){
+    if (self$kernel!="linear"){
+      if (add.bias){
+        X <- dplyr::mutate(X, bias =1)
+        X <- X[, c(ncol(X), 1:(ncol(X)-1))]
+      }
+      V <- self$XtoV(as.matrix(X))
+      if (raw.value) super$predict(V, FALSE)
+      else sign(super$predict(V, FALSE))
+    } else{
       if (raw.value) super$predict(X, add.bias)
       else sign(super$predict(X, add.bias))
     }
+  }
 ), private=list(
   # description Preprocess input data and bounds to ensure they meet the
   #   assumptions necessary for fitting the model. If desired, a bias term can
@@ -1153,7 +1206,35 @@ SupportVectorMachineDP <- R6::R6Class("SupportVectorMachineDP",
   # return A list of preprocessed values for X, y, upper.bounds, and
   #   lower.bounds for use in the privacy-preserving SVM algorithm.
   preprocess_data = function(X, y, upper.bounds, lower.bounds, add.bias){
-    res <- super$preprocess_data(X,y,upper.bounds,lower.bounds, add.bias)
+    # Add bias if needed (highly recommended to not do this due to unwanted
+    #       regularization of bias term)
+    if (self$kernel!="linear"){
+      if (add.bias){
+        X <- dplyr::mutate(X, bias =1)
+        X <- X[, c(ncol(X), 1:(ncol(X)-1))]
+        upper.bounds <- c(1,upper.bounds)
+        lower.bounds <- c(1,lower.bounds)
+      }
+
+      # Make matrices for multiplication purposes
+      X <- as.matrix(X,nrow=length(y))
+      y <- as.matrix(y,ncol=1)
+
+      # Get prefilter
+      d <- ncol(X)
+      prefilter <- matrix(NaN, nrow=self$D, ncol=(d+1))
+      for (i in 1:self$D){
+        prefilter[i,] <- self$sampling(d)
+      }
+      self$prefilter <- prefilter
+
+      V <- self$XtoV(X)
+
+      lbs <- c(numeric(ncol(V)) - sqrt(1/D), -1)
+      ubs <- c(numeric(ncol(V)) + sqrt(1/D), 1)
+      res <- super$preprocess_data(V, y, ubs, lbs, add.bias=FALSE)
+    } else res <- super$preprocess_data(X,y,upper.bounds,lower.bounds, add.bias)
+
     X <- res$X
     y <- res$y
     upper.bounds <- res$upper.bounds
@@ -1188,218 +1269,6 @@ SupportVectorMachineDP <- R6::R6Class("SupportVectorMachineDP",
   # return The processed coefficient vector.
   postprocess_coeff = function(coeff, preprocess){
     coeff/(preprocess$scale1*preprocess$scale2)
-  }
-))
-
-#' Privacy-preserving Nonlinear Kernel Support Vector Machine
-#'
-#' @description This class implements a differentially private support vector
-#'   machine with a nonlinear kernel using the objective perturbation technique
-#'   \insertCite{chaudhuri2011}{DPpack}.
-#'
-#' @details A new model object of this class accepts as inputs various functions
-#'   and hyperparameters related to the specific regression problem. The model
-#'   can then be fit with a dataset X (given as a data.frame), a set of binary
-#'   labels y for each row of X, as well as upper and lower bounds on the
-#'   possible values for each column of X and for y. The algorithm first
-#'   transforms the data using a kernel approximation method, then runs the
-#'   privacy-preserving linear SVM model on the results
-#'   (\code{\link{SupportVectorMachineDP}}). In fitting the model, the class
-#'   stores a method \code{XtoV} that transforms additional input data X into
-#'   the new dimension, as well as a vector of coefficients coeff for the
-#'   transformed data V which satisfy epsilon-level differential privacy. These
-#'   can be released directly, or used in conjunction with the predict method to
-#'   predict the label of new datapoints.
-#'
-#'   Note that in order to guarantee epsilon-level privacy for the empirical
-#'   risk minimization model, certain constraints must be satisfied for the
-#'   values used to construct the object, as well as for the data used to fit.
-#'   First, the loss function is assumed to be doubly differentiable. The hinge
-#'   loss, which is typically used for linear support vector machines, is not
-#'   differentiable at 1. Thus, to satisfy this constraint, this class utilizes
-#'   the Huber loss, a smooth approximation to the hinge loss. The level of
-#'   approximation to the hinge loss is determined by a user-specified constant,
-#'   h, which defaults to 1. Additionally, the regularizer must be 1-strongly
-#'   convex and doubly differentiable.
-#'
-#'   The labels y are assumed to be either -1 or 1. If different values are
-#'   provided, they are coerced to be either -1 or 1 prior to fitting the model.
-#'   Values in y that are \eqn{\le} 0 are assigned to be -1, while values in y
-#'   \eqn{>} 0 are assigned to be 1. Accordingly, new predicted labels are
-#'   output as either -1 or 1.
-#'
-#' @references \insertRef{chaudhuri2011}{DPpack}
-#'
-#' @export
-KernelSupportVectorMachineDP <- R6::R6Class("KernelSupportVectorMachineDP",
-  inherit=SupportVectorMachineDP,
-  public=list(
-  #' @description Create a new KernelSupportVectorMachineDP object.
-  #' @param regularizer String or regularization function. If a string, must be
-  #'   'l2', indicating to use l2 regularization. If a function, must have form
-  #'   as given in regularizer field description. Additionally, in order to
-  #'   ensure differential privacy, the function must be 1-strongly convex and
-  #'   doubly differentiable.
-  #' @param eps Positive real number defining the epsilon privacy budget. If set
-  #'   to Inf, runs algorithm without differential privacy.
-  #' @param lambda Nonnegative real number representing the regularization
-  #'   constant.
-  #' @param D Nonnegative integer indicating the dimensionality of the transform
-  #'   space approximating the kernel. Higher values of D provide better kernel
-  #'   approximations at a cost of computational efficiency.
-  #' @param sampling String or sampling function. If a string, must be
-  #'   'Gaussian' (default), indicating to use the sampling function
-  #'   corresponding to the Gaussian (radial) kernel approximation. If a
-  #'   function, must take as input a dimension d and return a (d+1)-dimensional
-  #'   vector of samples corresponding to the Fourier transform of the kernel to
-  #'   be approximated.
-  #' @param regularizer.gr Optional function representing the gradient of the
-  #'   regularizer function function with respect to coeff. Must have form as
-  #'   given in regularizer.gr field description for parent class. If not given,
-  #'   gradients are not used to compute the coefficient values in fitting the
-  #'   model.
-  #' @param huber.h Positive real number indicating the degree to which the
-  #'   Huber loss approximates the hinge loss. A smaller value indicates closer
-  #'   resemblance to the hinge loss, but a larger value of the constant c used
-  #'   in the objective perturbation algorithm, meaning more noise needs to be
-  #'   added to ensure differential privacy. Conversely, larger values for this
-  #'   parameter represent looser approximations to the hinge loss, but smaller
-  #'   c values and less noise to ensure privacy. Defaults to 1.
-  #' @param phi Function or NULL (default). If sampling is given as one of the
-  #'   predefined strings, this input is unnecessary. If sampling is a function,
-  #'   this should also be a function that takes as inputs an individual row of
-  #'   of the original dataset x, and a (d+1)-dimensional vector theta sampled
-  #'   from the Fourier transform of the kernel to be approximated, where d is
-  #'   the dimension of x. The function then outputs a numeric scalar
-  #'   corresponding to the pre-filtered value at the given row with the given
-  #'   sampled vector.
-  #' @param gamma Positive real number corresponding to the Gaussian kernel
-  #'   parameter.
-  #'
-  #' @examples
-  #' # Construct object for nonlinear SVM
-  #' regularizer <- 'l2' # Alternatively, function(coeff) coeff%*%coeff/2
-  #' eps <- 1
-  #' lambda <- 0.1
-  #' D <- 20
-  #' sampling <- "Gaussian"
-  #' regularizer.gr <- function(coeff) coeff # If function given for regularizer
-  #' huber.h <- 1
-  #' ksvmdp <- KernelSupportVectorMachineDP$new(regularizer, eps, lambda, D,
-  #'                                   sampling, regularizer.gr, huber.h)
-  #'
-  #' @return A new KernelSupportVectorMachineDP object.
-  initialize = function(regularizer, eps, lambda, D, sampling="Gaussian",
-                        regularizer.gr=NULL, huber.h=1, phi=NULL, gamma=1){
-    super$initialize(regularizer, eps, lambda, regularizer.gr, huber.h)
-    self$D <- D
-    if (is.character(sampling)){
-      if (sampling=="Gaussian"){
-        self$sampling <- generate.sampling(gamma)
-        self$phi <- phi.gaussian
-      } else stop("sampling must be one of {'Gaussian'}, or a function.")
-    } else {
-      if (is.null(phi)) stop("phi must be specified if samping is a function.")
-      self$sampling <- sampling
-      self$phi <- phi
-    }
-  },
-  #' @description Convert input data X into transformed data V. Uses sampled
-  #'   pre-filter values and the provided mapping function to produce
-  #'   D-dimensional data V on which to train the model or predict future
-  #'   values.
-  #' @param X Matrix corresponding to the original dataset.
-  #' @return Matrix V of size n by D representing the transformed dataset, where
-  #'   n is the number of rows of X, and D is the provided transformed space
-  #'   dimension.
-  XtoV = function(X){
-    # Get V (higher dimensional X)
-    V <- matrix(NaN, nrow=nrow(X), ncol=self$D)
-    for (i in 1:nrow(X)){
-      for (j in 1:self$D){
-        V[i,j] <- sqrt(1/self$D)*self$phi(X[i,],self$prefilter[j,])
-      }
-    }
-    V
-  },
-  #' @description Predict label(s) for given X using the XtoV method and fitted
-  #'   coefficients.
-  #' @param X Dataframe of data on which to make predictions. Must be of same
-  #'   form as X used to fit coefficients.
-  #' @param add.bias Boolean indicating whether to add a bias term to X.
-  #'   Defaults to FALSE. If add.bias was set to TRUE when fitting the
-  #'   coefficients, add.bias should be set to TRUE for predictions.
-  #' @param raw.value Boolean indicating whether to return the raw predicted
-  #'   value or the rounded class label. If FALSE (default), rounds the values
-  #'   to -1 or 1. If TRUE, returns the raw score from the SVM model.
-  #'
-  #' @examples
-  #' # Assume Xtest is a new dataframe of the same form as X from fit
-  #' # method example, with true labels ytest
-  #' # Also assume ksvmdp$fit() has already been run on training data
-  #' predicted.y <- ksvmdp$predict(Xtest)
-  #' n.errors <- sum(predicted.y!=ytest)
-  #'
-  #' @return Matrix of predicted labels corresponding to each row of X.
-  predict = function(X, add.bias=FALSE, raw.value=FALSE){
-      if (add.bias){
-        X <- dplyr::mutate(X, bias =1)
-        X <- X[, c(ncol(X), 1:(ncol(X)-1))]
-      }
-      V <- self$XtoV(as.matrix(X))
-      super$predict(V, add.bias=FALSE, raw.value)
-    }
-), private=list(
-  # description Preprocess input data and bounds to convert to kernel
-  #   approximation dimension. Converts original dataset X to transformed datset
-  #   V, then preprocesses V and y. Additionally, ensures V and y meet the
-  #   assumptions necessary for fitting the model. If desired, a bias term can
-  #   also be added.
-  # param X Dataframe of data to be fit. Will be converted to a matrix.
-  # param y Vector or matrix of true labels for each row of X. Will be
-  #   converted to a matrix.
-  # param upper.bounds Numeric vector of length ncol(X)+1 giving upper bounds on
-  #   the values in each column of X and the values in y. The last value in the
-  #   vector is assumed to be the upper bound on y, while the first ncol(X)
-  #   values are assumed to be in the same order as the corresponding columns of
-  #   X. Any value in the columns of X and y larger than the corresponding
-  #   upper bound is clipped at the bound.
-  # param lower.bounds Numeric vector of length ncol(X)+1 giving lower bounds on
-  #   the values in each column of X and the values in y. The last value in the
-  #   vector is assumed to be the lower bound on y, while the first ncol(X)
-  #   values are assumed to be in the same order as the corresponding columns of
-  #   X. Any value in the columns of X and y smaller than the corresponding
-  #   lower bound is clipped at the bound.
-  # param add.bias Boolean indicating whether to add a bias term to X.
-  # return A list of preprocessed values for V, y, upper.bounds, and
-  #   lower.bounds for use in the privacy-preserving nonlinear SVM algorithm.
-  preprocess_data = function(X, y, upper.bounds, lower.bounds, add.bias){
-    # Add bias if needed (highly recommended to not do this due to unwanted
-    #       regularization of bias term)
-    if (add.bias){
-      X <- dplyr::mutate(X, bias =1)
-      X <- X[, c(ncol(X), 1:(ncol(X)-1))]
-      upper.bounds <- c(1,upper.bounds)
-      lower.bounds <- c(1,lower.bounds)
-    }
-
-    # Make matrices for multiplication purposes
-    X <- as.matrix(X,nrow=length(y))
-    y <- as.matrix(y,ncol=1)
-
-    # Get prefilter
-    d <- ncol(X)
-    prefilter <- matrix(NaN, nrow=self$D, ncol=(d+1))
-    for (i in 1:self$D){
-      prefilter[i,] <- self$sampling(d)
-    }
-    self$prefilter <- prefilter
-
-    V <- self$XtoV(X)
-
-    lbs <- c(numeric(ncol(V)) - sqrt(1/D), -1)
-    ubs <- c(numeric(ncol(V)) + sqrt(1/D), 1)
-    super$preprocess_data(V, y, ubs, lbs, add.bias=FALSE)
   }
 ))
 

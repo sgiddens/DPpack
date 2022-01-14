@@ -2,10 +2,10 @@
 % Please edit documentation in R/StatModels.R
 \name{SupportVectorMachineDP}
 \alias{SupportVectorMachineDP}
-\title{Privacy-preserving Linear Support Vector Machine}
+\title{Privacy-preserving Support Vector Machine}
 \description{
-This class implements differentially private linear support
-vector machine using the objective perturbation technique
+This class implements a differentially private support vector
+machine (SVM) using the objective perturbation technique
 \insertCite{chaudhuri2011}{DPpack}.
 }
 \details{
@@ -27,22 +27,22 @@ loss, which is typically used for linear support vector machines, is not
 differentiable at 1. Thus, to satisfy this constraint, this class utilizes
 the Huber loss, a smooth approximation to the hinge loss. The level of
 approximation to the hinge loss is determined by a user-specified constant,
-h, which defaults to 1. Additionally, the regularizer must be 1-strongly convex and
-doubly differentiable. Finally, it is assumed that if x represents a single
-row of the dataset X, then \eqn{||x||\le 1} for all \eqn{x}. In order to
-ensure this constraint is satisfied, the dataset is preprocessed using
-provided upper and lower bounds on the columns of X to scale the values in
-such a way that this constraint is met. After the private coefficients are
-generated, these are then postprocessed and un-scaled so that the stored
-coefficients correspond to the original data. This does not result in
-additional privacy loss as long as the upper and lower bounds provided when
-fitting the model do not depend directly on the data. Due to this
-constraint on \eqn{x}, it is best to avoid using a bias term in the model
-whenever possible. If a bias term must be used, the issue can be partially
-circumvented by adding a constant column to X before fitting the model,
-which will be scaled along with the rest of X. The \code{fit} method
-contains functionality to add a column of constant 1s to X before scaling,
-if desired.
+h, which defaults to 1. Additionally, the regularizer must be 1-strongly
+convex and doubly differentiable. Finally, it is assumed that if x
+represents a single row of the dataset X, then \eqn{||x||\le 1} for all
+\eqn{x}. In order to ensure this constraint is satisfied, the dataset is
+preprocessed using provided upper and lower bounds on the columns of X to
+scale the values in such a way that this constraint is met. After the
+private coefficients are generated, these are then postprocessed and
+un-scaled so that the stored coefficients correspond to the original data.
+This does not result in additional privacy loss as long as the upper and
+lower bounds provided when fitting the model do not depend directly on the
+data. Due to this constraint on \eqn{x}, it is best to avoid using a bias
+term in the model whenever possible. If a bias term must be used, the issue
+can be partially circumvented by adding a constant column to X before
+fitting the model, which will be scaled along with the rest of X. The
+\code{fit} method contains functionality to add a column of constant 1s to
+X before scaling, if desired.
 
 The preprocessing of X is done as follows. First, the largest in absolute
 value of the upper and lower bounds on each column are used to scale each
@@ -50,11 +50,11 @@ column individually such that the largest value in each column is at most 1
 in absolute value. Second, each value in X is divided by the square root of
 the number of predictors of X (including bias term). These two scalings
 ensure that each row of X satisfies the necessary constraints for
-differential privacy. Additionally, the labels y are assumed to be either -1
-or 1. If different values are provided, they are coerced to be either -1 or
-1 prior to fitting the model. Values in y that are \eqn{\le} 0 are assigned
-to be -1, while values in y \eqn{>} 0 are assigned to be 1. Accordingly, new
-predicted labels are output as either -1 or 1.
+differential privacy. Additionally, the labels y are assumed to be either
+-1 or 1. If different values are provided, they are coerced to be either -1
+or 1 prior to fitting the model. Values in y that are \eqn{\le} 0 are
+assigned to be -1, while values in y \eqn{>} 0 are assigned to be 1.
+Accordingly, new predicted labels are output as either -1 or 1.
 }
 \examples{
 
@@ -69,7 +69,8 @@ lambda <- 0.1
 regularizer.gr <- function(coeff) coeff # If function given for regularizer
 huber.h <- 1
 svmdp <- SupportVectorMachineDP$new(regularizer, eps, lambda,
-                                  regularizer.gr, huber.h)
+                                  regularizer.gr=regularizer.gr,
+                                  huber.h=huber.h)
 
 
 ## ------------------------------------------------
@@ -93,6 +94,7 @@ n.errors <- sum(predicted.y!=ytest)
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-new}{\code{SupportVectorMachineDP$new()}}
+\item \href{#method-XtoV}{\code{SupportVectorMachineDP$XtoV()}}
 \item \href{#method-predict}{\code{SupportVectorMachineDP$predict()}}
 \item \href{#method-clone}{\code{SupportVectorMachineDP$clone()}}
 }
@@ -114,6 +116,9 @@ Create a new SupportVectorMachineDP object.
   regularizer,
   eps,
   lambda,
+  kernel = "linear",
+  D = NULL,
+  gamma = 1,
   regularizer.gr = NULL,
   huber.h = 1
 )}\if{html}{\out{</div>}}
@@ -133,6 +138,19 @@ to Inf, runs algorithm without differential privacy.}
 
 \item{\code{lambda}}{Nonnegative real number representing the regularization
 constant.}
+
+\item{\code{kernel}}{String indicating which kernel to use for SVM. Must be one of
+{'linear', 'Gaussian'}. If 'linear' (default), linear SVM is used. If
+'Gaussian,' uses the sampling function corresponding to the Gaussian
+(radial) kernel approximation.}
+
+\item{\code{D}}{Nonnegative integer indicating the dimensionality of the transform
+space approximating the kernel if a nonlinear kernel is used. Higher
+values of D provide better kernel approximations at a cost of
+computational efficiency. Defaults to NULL.}
+
+\item{\code{gamma}}{Positive real number corresponding to the Gaussian kernel
+parameter. Defaults to 1.}
 
 \item{\code{regularizer.gr}}{Optional function representing the gradient of the
 regularizer function function with respect to coeff. Must have form as
@@ -162,13 +180,39 @@ lambda <- 0.1
 regularizer.gr <- function(coeff) coeff # If function given for regularizer
 huber.h <- 1
 svmdp <- SupportVectorMachineDP$new(regularizer, eps, lambda,
-                                  regularizer.gr, huber.h)
+                                  regularizer.gr=regularizer.gr,
+                                  huber.h=huber.h)
 
 }
 \if{html}{\out{</div>}}
 
 }
 
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-XtoV"></a>}}
+\if{latex}{\out{\hypertarget{method-XtoV}{}}}
+\subsection{Method \code{XtoV()}}{
+Convert input data X into transformed data V. Uses sampled
+pre-filter values and the provided mapping function to produce
+D-dimensional data V on which to train the model or predict future
+values.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{SupportVectorMachineDP$XtoV(X)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{X}}{Matrix corresponding to the original dataset.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+Matrix V of size n by D representing the transformed dataset, where
+n is the number of rows of X, and D is the provided transformed space
+dimension.
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-predict"></a>}}
