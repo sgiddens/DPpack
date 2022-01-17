@@ -24,8 +24,8 @@ for (j in (1:K)){
   y <- rbind(y, ytemp)
 }
 
-upper.bounds <- c(1, 1, 1)
-lower.bounds <- c(-1,-1,0)
+upper.bounds <- c(1, 1)
+lower.bounds <- c(-1,-1)
 
 data <- cbind(X, y)
 y <- as.matrix(data[,3])
@@ -114,8 +114,8 @@ for (j in (1:K)){
   y <- rbind(y, ytemp)
 }
 
-upper.bounds <- c(1, 1, 1)
-lower.bounds <- c(-1,-1,0)
+upper.bounds <- c(1, 1)
+lower.bounds <- c(-1,-1)
 
 data <- cbind(X, y)
 y <- as.matrix(data[,3])
@@ -157,8 +157,8 @@ ggplot(data) + geom_point(aes(x=x1, y=x2, color = as.character(label)),
 #   y <- rbind(y, ytemp)
 # }
 #
-# upper.bounds <- c(3,3,1)
-# lower.bounds <- c(0,0,0)
+# upper.bounds <- c(3,3)
+# lower.bounds <- c(0,0)
 #
 # data <- cbind(X,y)
 # y <- as.matrix(data[,3])
@@ -234,7 +234,7 @@ ggplot() + geom_point(data = data, aes(x=x1, y=x2, color = as.character(label)),
 #   coord_fixed(ratio = 1) +
 #   theme_bw(base_size = 12)
 ### END TESTING LOGISTIC REGRESSION CLASS ###
-
+#
 #########################################
 ### TESTING SVM CLASS (LINEAR CASE) ###
 #########################################
@@ -257,10 +257,9 @@ for (j in (1:K)){
   X <- rbind(X, Xtemp)
   y <- rbind(y, ytemp)
 }
-y[y==0] <- -1
 
-upper.bounds <- c(1, 1, 1)
-lower.bounds <- c(-1,-1,-1)
+upper.bounds <- c(1, 1)
+lower.bounds <- c(-1,-1)
 
 data <- cbind(X, y)
 y <- as.matrix(data[,3])
@@ -301,10 +300,9 @@ ggplot(data) + geom_point(aes(x=x1, y=x2, color = as.character(label)),
 #   X <- rbind(X, Xtemp)
 #   y <- rbind(y, ytemp)
 # }
-# y[y==0] <- -1
 #
-# upper.bounds <- c(3,3,1)
-# lower.bounds <- c(0,0,-1)
+# upper.bounds <- c(3,3)
+# lower.bounds <- c(0,0)
 #
 # data <- cbind(X,y)
 # y <- as.matrix(data[,3])
@@ -405,10 +403,9 @@ for (j in (1:K)){
   X <- rbind(X, Xtemp)
   y <- rbind(y, ytemp)
 }
-y[y==0] <- -1
 
-upper.bounds <- c(1,1,1)
-lower.bounds <- c(-1,-1,0)
+upper.bounds <- c(1,1)
+lower.bounds <- c(-1,-1)
 
 data <- cbind(X,y)
 y <- as.matrix(data[,3])
@@ -512,10 +509,9 @@ for (i in (1:N)){
   X <- rbind(X, Xtemp)
   y <- rbind(y, ytemp)
 }
-y[y==0] <- -1
 
-upper.bounds <- c(1,1,1)
-lower.bounds <- c(-1,-1,0)
+upper.bounds <- c(1,1)
+lower.bounds <- c(-1,-1)
 
 data <- cbind(X,y)
 y <- as.matrix(data[,3])
@@ -594,8 +590,8 @@ for (j in (1:K)){
   y <- rbind(y, ytemp)
 }
 
-upper.bounds <- c(1,1,1)
-lower.bounds <- c(-1,-1,0)
+upper.bounds <- c(1,1)
+lower.bounds <- c(-1,-1)
 
 data <- cbind(X,y)
 y <- as.matrix(data[,3])

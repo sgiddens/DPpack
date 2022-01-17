@@ -300,19 +300,17 @@ are stored in coeff.
 
 \item{\code{y}}{Vector or matrix of true labels for each row of X.}
 
-\item{\code{upper.bounds}}{Numeric vector of length ncol(X)+1 giving upper bounds
-on the values in each column of X and the values in y. The last value in
-the vector is assumed to be the upper bound on y, while the first ncol(X)
-values are assumed to be in the same order as the corresponding columns
-of X. Any value in the columns of X and y larger than the corresponding
-upper bound is clipped at the bound.}
+\item{\code{upper.bounds}}{Numeric vector of length ncol(X) giving upper bounds on
+the values in each column of X. The ncol(X) values are assumed to be in
+the same order as the corresponding columns of X. Any value in the
+columns of X larger than the corresponding upper bound is clipped at the
+bound.}
 
-\item{\code{lower.bounds}}{Numeric vector of length ncol(X)+1 giving lower bounds
-on the values in each column of X and the values in y. The last value in
-the vector is assumed to be the lower bound on y, while the first ncol(X)
-values are assumed to be in the same order as the corresponding columns
-of X. Any value in the columns of X and y smaller than the corresponding
-lower bound is clipped at the bound.}
+\item{\code{lower.bounds}}{Numeric vector of length ncol(X) giving lower bounds on
+the values in each column of X. The ncol(X) values are assumed to be in
+the same order as the corresponding columns of X. Any value in the
+columns of X larger than the corresponding upper bound is clipped at the
+bound.}
 
 \item{\code{add.bias}}{Boolean indicating whether to add a bias term to X.
 Defaults to FALSE.}

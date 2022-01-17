@@ -556,18 +556,16 @@ EmpiricalRiskMinimizationDP.CMS <- R6::R6Class("EmpiricalRiskMinimizationDP.CMS"
   #'   are stored in coeff.
   #' @param X Dataframe of data to be fit.
   #' @param y Vector or matrix of true labels for each row of X.
-  #' @param upper.bounds Numeric vector of length ncol(X)+1 giving upper bounds
-  #'   on the values in each column of X and the values in y. The last value in
-  #'   the vector is assumed to be the upper bound on y, while the first ncol(X)
-  #'   values are assumed to be in the same order as the corresponding columns
-  #'   of X. Any value in the columns of X and y larger than the corresponding
-  #'   upper bound is clipped at the bound.
-  #' @param lower.bounds Numeric vector of length ncol(X)+1 giving lower bounds
-  #'   on the values in each column of X and the values in y. The last value in
-  #'   the vector is assumed to be the lower bound on y, while the first ncol(X)
-  #'   values are assumed to be in the same order as the corresponding columns
-  #'   of X. Any value in the columns of X and y smaller than the corresponding
-  #'   lower bound is clipped at the bound.
+  #' @param upper.bounds Numeric vector of length ncol(X) giving upper bounds on
+  #'   the values in each column of X. The ncol(X) values are assumed to be in
+  #'   the same order as the corresponding columns of X. Any value in the
+  #'   columns of X larger than the corresponding upper bound is clipped at the
+  #'   bound.
+  #' @param lower.bounds Numeric vector of length ncol(X) giving lower bounds on
+  #'   the values in each column of X. The ncol(X) values are assumed to be in
+  #'   the same order as the corresponding columns of X. Any value in the
+  #'   columns of X larger than the corresponding upper bound is clipped at the
+  #'   bound.
   #' @param add.bias Boolean indicating whether to add a bias term to X.
   #'   Defaults to FALSE.
   #'
@@ -641,18 +639,16 @@ EmpiricalRiskMinimizationDP.CMS <- R6::R6Class("EmpiricalRiskMinimizationDP.CMS"
   # param X Dataframe of data to be fit. Will be converted to a matrix.
   # param y Vector or matrix of true labels for each row of X. Will be
   #   converted to a matrix.
-  # param upper.bounds Numeric vector of length ncol(X)+1 giving upper bounds on
-  #   the values in each column of X and the values in y. The last value in the
-  #   vector is assumed to be the upper bound on y, while the first ncol(X)
-  #   values are assumed to be in the same order as the corresponding columns of
-  #   X. Any value in the columns of X and y larger than the corresponding
-  #   upper bound is clipped at the bound.
-  # param lower.bounds Numeric vector of length ncol(X)+1 giving lower bounds on
-  #   the values in each column of X and the values in y. The last value in the
-  #   vector is assumed to be the lower bound on y, while the first ncol(X)
-  #   values are assumed to be in the same order as the corresponding columns of
-  #   X. Any value in the columns of X and y smaller than the corresponding
-  #   lower bound is clipped at the bound.
+  # param upper.bounds Numeric vector of length ncol(X) giving upper bounds on
+  #   the values in each column of X. The ncol(X) values are assumed to be in
+  #   the same order as the corresponding columns of X. Any value in the
+  #   columns of X larger than the corresponding upper bound is clipped at the
+  #   bound.
+  # param lower.bounds Numeric vector of length ncol(X) giving lower bounds on
+  #   the values in each column of X. The ncol(X) values are assumed to be in
+  #   the same order as the corresponding columns of X. Any value in the
+  #   columns of X larger than the corresponding upper bound is clipped at the
+  #   bound.
   # param add.bias Boolean indicating whether to add a bias term to X.
   # return A list of preprocessed values for X, y, upper.bounds, and
   #   lower.bounds for use in the privacy-preserving empirical risk
@@ -664,16 +660,16 @@ EmpiricalRiskMinimizationDP.CMS <- R6::R6Class("EmpiricalRiskMinimizationDP.CMS"
                     "This may represent additional privacy loss."));
       upper.bounds <- c(apply(X,2,max),max(y));
     } else{
-      if (length(upper.bounds)!=(ncol(X)+1)) stop("Length of upper.bounds
-                  must be equal to the number of columns of X plus 1 (for y).");
+      if (length(upper.bounds)!=ncol(X)) stop("Length of upper.bounds
+                  must be equal to the number of columns of X.");
     }
     if (is.null(lower.bounds)){
       warning(paste("Lower bounds missing and will be calculated from the data.",
                     "This may represent additional privacy loss."));
       lower.bounds <- c(apply(X,2,min),min(y));
     } else{
-      if (length(lower.bounds)!=(ncol(X)+1)) stop("Length of lower.bounds
-                  must be equal to the number of columns of X plus 1 (for y).");
+      if (length(lower.bounds)!=ncol(X)) stop("Length of lower.bounds
+                  must be equal to the number of columns of X.");
     }
 
     # Add bias if needed (highly recommended to not do this due to unwanted
@@ -690,12 +686,10 @@ EmpiricalRiskMinimizationDP.CMS <- R6::R6Class("EmpiricalRiskMinimizationDP.CMS"
     y <- as.matrix(y,ncol=1)
 
     # Clip based on provided bounds
-    for (i in 1:(length(upper.bounds)-1)){
+    for (i in 1:length(upper.bounds)){
       X[X[,i]>upper.bounds[i],i] <- upper.bounds[i]
       X[X[,i]<lower.bounds[i],i] <- lower.bounds[i]
     }
-    y[y>upper.bounds[length(upper.bounds)]] <- upper.bounds[length(upper.bounds)]
-    y[y<lower.bounds[length(lower.bounds)]] <- lower.bounds[length(lower.bounds)]
     list(X=X, y=y, upper.bounds=upper.bounds, lower.bounds=lower.bounds)
   },
   # description Postprocess coefficients obtained by fitting the model using
@@ -864,18 +858,16 @@ LogisticRegressionDP <- R6::R6Class("LogisticRegressionDP",
   # param X Dataframe of data to be fit. Will be converted to a matrix.
   # param y Vector or matrix of true labels for each row of X. Will be
   #   converted to a matrix.
-  # param upper.bounds Numeric vector of length ncol(X)+1 giving upper bounds on
-  #   the values in each column of X and the values in y. The last value in the
-  #   vector is assumed to be the upper bound on y, while the first ncol(X)
-  #   values are assumed to be in the same order as the corresponding columns of
-  #   X. Any value in the columns of X and y larger than the corresponding
-  #   upper bound is clipped at the bound.
-  # param lower.bounds Numeric vector of length ncol(X)+1 giving lower bounds on
-  #   the values in each column of X and the values in y. The last value in the
-  #   vector is assumed to be the lower bound on y, while the first ncol(X)
-  #   values are assumed to be in the same order as the corresponding columns of
-  #   X. Any value in the columns of X and y smaller than the corresponding
-  #   lower bound is clipped at the bound.
+  # param upper.bounds Numeric vector of length ncol(X) giving upper bounds on
+  #   the values in each column of X. The ncol(X) values are assumed to be in
+  #   the same order as the corresponding columns of X. Any value in the
+  #   columns of X larger than the corresponding upper bound is clipped at the
+  #   bound.
+  # param lower.bounds Numeric vector of length ncol(X) giving lower bounds on
+  #   the values in each column of X. The ncol(X) values are assumed to be in
+  #   the same order as the corresponding columns of X. Any value in the
+  #   columns of X larger than the corresponding upper bound is clipped at the
+  #   bound.
   # param add.bias Boolean indicating whether to add a bias term to X.
   # return A list of preprocessed values for X, y, upper.bounds, and
   #   lower.bounds for use in the privacy-preserving logistic regression
@@ -888,22 +880,16 @@ LogisticRegressionDP <- R6::R6Class("LogisticRegressionDP",
     lower.bounds <- res$lower.bounds
 
     # Process X
-    p <- length(lower.bounds)-1
-    lb <- lower.bounds[1:p]
-    ub <- upper.bounds[1:p]
-    tmp <- matrix(c(lb,ub),ncol=2)
+    p <- length(lower.bounds)
+    tmp <- matrix(c(lower.bounds,upper.bounds),ncol=2)
     scale1 <- apply(abs(tmp),1,max)
     scale2 <- sqrt(p)
     X.norm <- t(t(X)/scale1)/scale2
 
     # Process y.
-    # We need labels to be 0 or 1. Any nonnegative value is considered 1,
-    #     while any negative or 0 value is considered 0.
-    if (any((y!=1) & (y!=0))) warning("Positive values in y will be coerced
-                                        to 1, and non-positive values in y
-                                        will be coerced to 0.")
-    y[y>0] <- 1
-    y[y<=0] <- 0
+    # Labels must be 0 and 1
+    if (any((y!=1) & (y!=0))) stop("y must be a numeric vector of binary labels
+                                    0 and 1.")
 
     list(X=X.norm, y=y, scale1=scale1, scale2=scale2)
   },
@@ -1177,10 +1163,18 @@ SupportVectorMachineDP <- R6::R6Class("SupportVectorMachineDP",
       }
       V <- self$XtoV(as.matrix(X))
       if (raw.value) super$predict(V, FALSE)
-      else sign(super$predict(V, FALSE))
+      else {
+        vals <- sign(super$predict(V, FALSE))
+        vals[vals==-1] <- 0
+        vals
+      }
     } else{
       if (raw.value) super$predict(X, add.bias)
-      else sign(super$predict(X, add.bias))
+      else {
+        vals <- sign(super$predict(X, add.bias))
+        vals[vals==-1] <- 0
+        vals
+      }
     }
   }
 ), private=list(
@@ -1190,18 +1184,16 @@ SupportVectorMachineDP <- R6::R6Class("SupportVectorMachineDP",
   # param X Dataframe of data to be fit. Will be converted to a matrix.
   # param y Vector or matrix of true labels for each row of X. Will be
   #   converted to a matrix.
-  # param upper.bounds Numeric vector of length ncol(X)+1 giving upper bounds on
-  #   the values in each column of X and the values in y. The last value in the
-  #   vector is assumed to be the upper bound on y, while the first ncol(X)
-  #   values are assumed to be in the same order as the corresponding columns of
-  #   X. Any value in the columns of X and y larger than the corresponding
-  #   upper bound is clipped at the bound.
-  # param lower.bounds Numeric vector of length ncol(X)+1 giving lower bounds on
-  #   the values in each column of X and the values in y. The last value in the
-  #   vector is assumed to be the lower bound on y, while the first ncol(X)
-  #   values are assumed to be in the same order as the corresponding columns of
-  #   X. Any value in the columns of X and y smaller than the corresponding
-  #   lower bound is clipped at the bound.
+  # param upper.bounds Numeric vector of length ncol(X) giving upper bounds on
+  #   the values in each column of X. The ncol(X) values are assumed to be in
+  #   the same order as the corresponding columns of X. Any value in the
+  #   columns of X larger than the corresponding upper bound is clipped at the
+  #   bound.
+  # param lower.bounds Numeric vector of length ncol(X) giving lower bounds on
+  #   the values in each column of X. The ncol(X) values are assumed to be in
+  #   the same order as the corresponding columns of X. Any value in the
+  #   columns of X larger than the corresponding upper bound is clipped at the
+  #   bound.
   # param add.bias Boolean indicating whether to add a bias term to X.
   # return A list of preprocessed values for X, y, upper.bounds, and
   #   lower.bounds for use in the privacy-preserving SVM algorithm.
@@ -1230,8 +1222,8 @@ SupportVectorMachineDP <- R6::R6Class("SupportVectorMachineDP",
 
       V <- self$XtoV(X)
 
-      lbs <- c(numeric(ncol(V)) - sqrt(1/D), -1)
-      ubs <- c(numeric(ncol(V)) + sqrt(1/D), 1)
+      lbs <- c(numeric(ncol(V)) - sqrt(1/D))
+      ubs <- c(numeric(ncol(V)) + sqrt(1/D))
       res <- super$preprocess_data(V, y, ubs, lbs, add.bias=FALSE)
     } else res <- super$preprocess_data(X,y,upper.bounds,lower.bounds, add.bias)
 
@@ -1241,22 +1233,19 @@ SupportVectorMachineDP <- R6::R6Class("SupportVectorMachineDP",
     lower.bounds <- res$lower.bounds
 
     # Process X
-    p <- length(lower.bounds)-1
-    lb <- lower.bounds[1:p]
-    ub <- upper.bounds[1:p]
-    tmp <- matrix(c(lb,ub),ncol=2)
+    p <- length(lower.bounds)
+    tmp <- matrix(c(lower.bounds,upper.bounds),ncol=2)
     scale1 <- apply(abs(tmp),1,max)
     scale2 <- sqrt(p)
     X.norm <- t(t(X)/scale1)/scale2
 
     # Process y.
-    # We need labels to be -1 or 1. Any nonnegative value is considered 1,
-    #     while any negative or 0 value is considered -1.
-    if (any((y!=1) & (y!=-1))) warning("Positive values in y will be coerced
-                                      to 1, and non-positive values in y
-                                      will be coerced to -1.")
-    y[y>0] <- 1
-    y[y<=0] <- -1
+    # Labels must be 0 and 1
+    if (any((y!=1) & (y!=0))) stop("y must be a numeric vector of binary labels
+                                    0 and 1.")
+
+    # Convert to 1 and -1 for SVM algorithm
+    y[y==0] <- -1
 
     list(X=X.norm, y=y, scale1=scale1, scale2=scale2)
   },
