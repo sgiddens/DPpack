@@ -138,13 +138,13 @@ ensure differential privacy.}
 (radial) kernel approximation.}
 
 \item{\code{D}}{Value only used in child class
-\code{\link{SupportVectorMachineDP}}. Nonnegative integer
+\code{\link{svmDP}}. Nonnegative integer
 indicating the dimensionality of the transform space approximating the
 kernel. Higher values of D provide better kernel approximations at a cost
 of computational efficiency.}
 
 \item{\code{sampling}}{Value only used in child class
-\code{\link{SupportVectorMachineDP}}. String or sampling function.
+\code{\link{svmDP}}. String or sampling function.
 If a string, must be 'Gaussian' (default), indicating to use the sampling
 function corresponding to the Gaussian (radial) kernel approximation. If
 a function, must be of the form sampling(d), where d is the input
@@ -152,7 +152,7 @@ dimension, and return a (d+1)-dimensional vector of samples corresponding
 to the Fourier transform of the kernel to be approximated.}
 
 \item{\code{phi}}{Value only used in child class
-\code{\link{SupportVectorMachineDP}}. Function or NULL (default).
+\code{\link{svmDP}}. Function or NULL (default).
 If sampling is given as one of the predefined strings, this input is
 unnecessary. If sampling is a function, this should also be a function of
 the form phi(x, theta), where x is an individual row of of the original
@@ -162,11 +162,11 @@ x. The function then returns a numeric scalar corresponding to the
 pre-filtered value at the given row with the given sampled vector.}
 
 \item{\code{gamma}}{Value only used in child class
-\code{\link{SupportVectorMachineDP}}. Positive real number
+\code{\link{svmDP}}. Positive real number
 corresponding to the Gaussian kernel parameter.}
 
 \item{\code{prefilter}}{Value only used in child class
-\code{\link{SupportVectorMachineDP}}. Matrix of pre-filter values
+\code{\link{svmDP}}. Matrix of pre-filter values
 used in converting data into transform space.}
 }
 \if{html}{\out{</div>}}

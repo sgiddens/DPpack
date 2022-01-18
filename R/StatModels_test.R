@@ -334,7 +334,7 @@ eps <- 1
 
 set.seed(round(runif(1,0,100)))
 
-svmdp <- SupportVectorMachineDP$new('l2', eps, lambda, kernel='linear')
+svmdp <- svmDP$new('l2', eps, lambda, kernel='linear')
 
 ### No bias, satisfies constraints
 svmdp$fit(X,y,upper.bounds=upper.bounds,lower.bounds=lower.bounds)
@@ -445,7 +445,7 @@ D <- 5
 
 set.seed(round(runif(1,0,100)))
 
-ksvmdp <- SupportVectorMachineDP$new('l2', eps, lambda, kernel='Gaussian', D)
+ksvmdp <- svmDP$new('l2', eps, lambda, kernel='Gaussian', D)
 
 ksvmdp$fit(X,y,upper.bounds=upper.bounds,lower.bounds=lower.bounds)
 
@@ -540,7 +540,7 @@ gamma<-1
 
 set.seed(round(runif(1,0,100)))
 
-ksvmdp <- SupportVectorMachineDP$new('l2', eps, lambda, kernel='Gaussian',
+ksvmdp <- svmDP$new('l2', eps, lambda, kernel='Gaussian',
                                      D, gamma=gamma)
 
 ksvmdp$fit(X,y,upper.bounds=upper.bounds,lower.bounds=lower.bounds)

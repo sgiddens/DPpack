@@ -443,13 +443,13 @@ EmpiricalRiskMinimizationDP.CMS <- R6::R6Class("EmpiricalRiskMinimizationDP.CMS"
   #'   (radial) kernel approximation.
   kernel = NULL,
   #' @field D Value only used in child class
-  #'   \code{\link{SupportVectorMachineDP}}. Nonnegative integer
+  #'   \code{\link{svmDP}}. Nonnegative integer
   #'   indicating the dimensionality of the transform space approximating the
   #'   kernel. Higher values of D provide better kernel approximations at a cost
   #'   of computational efficiency.
   D = NULL,
   #' @field sampling Value only used in child class
-  #'   \code{\link{SupportVectorMachineDP}}. String or sampling function.
+  #'   \code{\link{svmDP}}. String or sampling function.
   #'   If a string, must be 'Gaussian' (default), indicating to use the sampling
   #'   function corresponding to the Gaussian (radial) kernel approximation. If
   #'   a function, must be of the form sampling(d), where d is the input
@@ -457,7 +457,7 @@ EmpiricalRiskMinimizationDP.CMS <- R6::R6Class("EmpiricalRiskMinimizationDP.CMS"
   #'   to the Fourier transform of the kernel to be approximated.
   sampling=NULL,
   #' @field phi Value only used in child class
-  #'   \code{\link{SupportVectorMachineDP}}. Function or NULL (default).
+  #'   \code{\link{svmDP}}. Function or NULL (default).
   #'   If sampling is given as one of the predefined strings, this input is
   #'   unnecessary. If sampling is a function, this should also be a function of
   #'   the form phi(x, theta), where x is an individual row of of the original
@@ -467,11 +467,11 @@ EmpiricalRiskMinimizationDP.CMS <- R6::R6Class("EmpiricalRiskMinimizationDP.CMS"
   #'   pre-filtered value at the given row with the given sampled vector.
   phi=NULL,
   #' @field gamma Value only used in child class
-  #'   \code{\link{SupportVectorMachineDP}}. Positive real number
+  #'   \code{\link{svmDP}}. Positive real number
   #'   corresponding to the Gaussian kernel parameter.
   gamma=NULL,
   #' @field prefilter Value only used in child class
-  #'   \code{\link{SupportVectorMachineDP}}. Matrix of pre-filter values
+  #'   \code{\link{svmDP}}. Matrix of pre-filter values
   #'   used in converting data into transform space.
   prefilter=NULL,
   #' @description Create a new EmpiricalRiskMinimizationDP.CMS object.
@@ -952,11 +952,11 @@ LogisticRegressionDP <- R6::R6Class("LogisticRegressionDP",
 #' This function generates and returns a sampling function corresponding to the
 #' Fourier transform of a Gaussian kernel with parameter gamma
 #' \insertCite{chaudhuri2011}{DPpack} of form needed for
-#' \code{\link{SupportVectorMachineDP}}.
+#' \code{\link{svmDP}}.
 #'
 #' @param gamma Positive real number for the Gaussian (radial) kernel parameter.
 #' @return Sampling function for the Gaussian kernel of form required by
-#'   \code{\link{SupportVectorMachineDP}}.
+#'   \code{\link{svmDP}}.
 #' @examples
 #'   gamma <- 1
 #'   sample <- generate.sampling(gamma)
@@ -1057,10 +1057,10 @@ phi.gaussian <- function(x, theta){
 #' @references \insertRef{chaudhuri2011}{DPpack}
 #'
 #' @export
-SupportVectorMachineDP <- R6::R6Class("SupportVectorMachineDP",
+svmDP <- R6::R6Class("svmDP",
   inherit=EmpiricalRiskMinimizationDP.CMS,
   public=list(
-  #' @description Create a new SupportVectorMachineDP object.
+  #' @description Create a new svmDP object.
   #' @param regularizer String or regularization function. If a string, must be
   #'   'l2', indicating to use l2 regularization. If a function, must have form
   #'   as given in regularizer field description. Additionally, in order to
@@ -1100,11 +1100,11 @@ SupportVectorMachineDP <- R6::R6Class("SupportVectorMachineDP",
   #' lambda <- 0.1
   #' regularizer.gr <- function(coeff) coeff # If function given for regularizer
   #' huber.h <- 1
-  #' svmdp <- SupportVectorMachineDP$new(regularizer, eps, lambda,
+  #' svmdp <- svmDP$new(regularizer, eps, lambda,
   #'                                   regularizer.gr=regularizer.gr,
   #'                                   huber.h=huber.h)
   #'
-  #' @return A new SupportVectorMachineDP object.
+  #' @return A new svmDP object.
   initialize = function(regularizer, eps, lambda, kernel='linear', D=NULL,
                         gamma=1, regularizer.gr=NULL, huber.h=1){
     super$initialize(h.linear, generate.loss.huber(huber.h), regularizer, eps,
