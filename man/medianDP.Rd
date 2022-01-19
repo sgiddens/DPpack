@@ -7,9 +7,9 @@
 medianDP(
   x,
   eps,
+  lower.bound,
+  upper.bound,
   which.sensitivity = "bounded",
-  lower.bound = NULL,
-  upper.bound = NULL,
   mechanism = "exponential",
   delta = NULL
 )
@@ -18,6 +18,10 @@ medianDP(
 \item{x}{Numeric vector of which the median will be taken.}
 
 \item{eps}{Positive real number defining the epsilon privacy budget.}
+
+\item{lower.bound}{Real number giving the global or public lower bound of x.}
+
+\item{upper.bound}{Real number giving the global or public upper bound of x.}
 
 \item{which.sensitivity}{String indicating which type of sensitivity to use.
 Can be one of {'bounded', 'unbounded', 'both'}. If 'bounded' (default),
@@ -28,10 +32,6 @@ definition. If 'both', returns result based on both methods
 individually satisfies differential privacy at level eps, but may not do so
 collectively and in composition. Care must be taken not to violate
 differential privacy in this case.}
-
-\item{lower.bound}{Real number giving the global or public lower bound of x.}
-
-\item{upper.bound}{Real number giving the global or public upper bound of x.}
 
 \item{mechanism}{String indicating which mechanism to use for differential
 privacy. Currently the following mechanisms are supported: {'exponential'}.
@@ -50,10 +50,10 @@ This function computes the differentially private median of an input vector
 at user-specified privacy levels of epsilon and delta.
 }
 \examples{
-medianDP(c(1,1,-2,8,-6),1,which.sensitivity='bounded',
-  lower.bound=-10,upper.bound=10,mechanism='exponential')
-medianDP(c(1,1,-2,8,-6),1,which.sensitivity='unbounded',
-  lower.bound=-10,upper.bound=10,mechanism='exponential')
+medianDP(c(1,1,-2,8,-6),1,lower.bound=-10,upper.bound=10,
+  which.sensitivity='bounded',mechanism='exponential')
+medianDP(c(1,1,-2,8,-6),1,lower.bound=-10,upper.bound=10,
+  which.sensitivity='unbounded',mechanism='exponential')
 
 }
 \references{

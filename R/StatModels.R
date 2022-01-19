@@ -283,18 +283,22 @@ regularizer.gr.l2 <- function(coeff) coeff
 #' @param X Dataframe of data to be used in tuning the model. Note it is assumed
 #'   the data rows and corresponding labels are randomly shuffled.
 #' @param y Vector or matrix of true labels for each row of X.
-#' @param upper.bounds Numeric vector of length ncol(X)+1 giving upper bounds on
-#'   the values in each column of X and the values in y. The last value in the
-#'   vector is assumed to be the upper bound on y, while the first ncol(X)
-#'   values are assumed to be in the same order as the corresponding columns of
-#'   X. Any value in the columns of X and y larger than the corresponding upper
-#'   bound is clipped at the bound.
-#' @param lower.bounds Numeric vector of length ncol(X)+1 giving lower bounds on
-#'   the values in each column of X and the values in y. The last value in the
-#'   vector is assumed to be the lower bound on y, while the first ncol(X)
-#'   values are assumed to be in the same order as the corresponding columns of
-#'   X. Any value in the columns of X and y smaller than the corresponding lower
-#'   bound is clipped at the bound.
+#' @param upper.bounds Numeric vector giving upper bounds on the values in each
+#'   column of X (and the values in y for regression model tuning). For binary
+#'   classification models, should be length ncol(X). For regression models,
+#'   should be length ncol(X)+1. The first ncol(X) values are assumed to be in
+#'   the same order as the corresponding columns of X, while the last value in
+#'   the vector is assumed to be the upper bound on y (if given). Any value in
+#'   the columns of X and y larger than the corresponding upper bound is clipped
+#'   at the bound.
+#' @param lower.bounds Numeric vector giving lower bounds on the values in each
+#'   column of X (and the values in y for regression model tuning). For binary
+#'   classification models, should be length ncol(X). For regression models,
+#'   should be length ncol(X)+1. The first ncol(X) values are assumed to be in
+#'   the same order as the corresponding columns of X, while the last value in
+#'   the vector is assumed to be the lower bound on y (if given). Any value in
+#'   the columns of X and y smaller than the corresponding lower bound is clipped
+#'   at the bound.
 #' @param add.bias Boolean indicating whether to add a bias term to X. Defaults
 #'   to FALSE.
 #' @return Single model object selected from the input list models with tuned
@@ -303,8 +307,8 @@ regularizer.gr.l2 <- function(coeff) coeff
 #' # Assume X is dataframe meeting assumptions for privacy
 #' # Assume 2 columns of X each bounded between -1 and 1
 #' # Assume y is 0 or 1 labels for each row of X
-#' upper.bounds <- c( 1, 1, 1) # Bounds for X and y
-#' lower.bounds <- c(-1,-1, 0) # Bounds for X and y
+#' upper.bounds <- c( 1, 1) # Bounds for X
+#' lower.bounds <- c(-1,-1) # Bounds for X
 #' eps <- 1
 #'
 #' # Grid of possible lambda values for tuning logistric regression model
@@ -320,19 +324,9 @@ regularizer.gr.l2 <- function(coeff) coeff
 #' @references \insertRef{chaudhuri2011}{DPpack}
 #'
 #' @export
-tune_model<- function(models, X, y, upper.bounds=NULL, lower.bounds=NULL,
+tune_model<- function(models, X, y, upper.bounds, lower.bounds,
                       add.bias=FALSE){
   # Make sure values are correct
-  if (is.null(upper.bounds)){
-    warning(paste("Upper bounds missing and will be calculated from the data.",
-                  "This may represent additional privacy loss."));
-    upper.bounds <- c(apply(X,2,max),max(y));
-  }
-  if (is.null(lower.bounds)){
-    warning(paste("Lower bounds missing and will be calculated from the data.",
-                  "This may represent additional privacy loss."));
-    lower.bounds <- c(apply(X,2,min),min(y));
-  }
   m <- length(models)
   n <- length(y)
   # Split data into m+1 groups
@@ -344,11 +338,6 @@ tune_model<- function(models, X, y, upper.bounds=NULL, lower.bounds=NULL,
     suby <- y[seq(i,n,m+1)]
     models[[i]]$fit(subX,suby,upper.bounds,lower.bounds,add.bias)
     validatey.hat <- models[[i]]$predict(validateX,add.bias,raw.value=FALSE)
-    # Ensure predicted values match validation values (SVM uses (1,-1), LR uses (1,0))
-    validatey[validatey>0] <- 1
-    validatey[validatey<=0] <- 0
-    validatey.hat[validatey.hat>0] <- 1
-    validatey.hat[validatey.hat<=0] <- 0
     z[i] <- sum(validatey!=validatey.hat)
   }
   res <- ExponentialMechanism(-z, models[[1]]$eps, 1, candidates=models)
@@ -574,12 +563,12 @@ EmpiricalRiskMinimizationDP.CMS <- R6::R6Class("EmpiricalRiskMinimizationDP.CMS"
   #' # Assume 2 columns of X each bounded between -1 and 1
   #' # Assume y is 0 or 1 labels for each row of X
   #' # Assume ermdp is previously constructed object as in $new example
-  #' upper.bounds <- c( 1, 1, 1) # Bounds for X and y
-  #' lower.bounds <- c(-1,-1, 0) # Bounds for X and y
+  #' upper.bounds <- c( 1, 1) # Bounds for X and y
+  #' lower.bounds <- c(-1,-1) # Bounds for X and y
   #' ermdp$fit(X, y, upper.bounds, lower.bounds)
   #' ermdp$coeff # Gets private coefficients
   #'
-  fit = function(X, y, upper.bounds=NULL, lower.bounds=NULL, add.bias=FALSE){
+  fit = function(X, y, upper.bounds, lower.bounds, add.bias=FALSE){
     preprocess <- private$preprocess_data(X,y,upper.bounds,lower.bounds,add.bias)
     X <- preprocess$X
     y <- preprocess$y
@@ -655,21 +644,11 @@ EmpiricalRiskMinimizationDP.CMS <- R6::R6Class("EmpiricalRiskMinimizationDP.CMS"
   #   minimization algorithm.
   preprocess_data = function(X, y, upper.bounds, lower.bounds, add.bias){
     # Make sure values are correct
-    if (is.null(upper.bounds)){
-      warning(paste("Upper bounds missing and will be calculated from the data.",
-                    "This may represent additional privacy loss."));
-      upper.bounds <- c(apply(X,2,max),max(y));
-    } else{
-      if (length(upper.bounds)!=ncol(X)) stop("Length of upper.bounds
-                  must be equal to the number of columns of X.");
+    if (length(upper.bounds)!=ncol(X)) {
+      stop("Length of upper.bounds must be equal to the number of columns of X.");
     }
-    if (is.null(lower.bounds)){
-      warning(paste("Lower bounds missing and will be calculated from the data.",
-                    "This may represent additional privacy loss."));
-      lower.bounds <- c(apply(X,2,min),min(y));
-    } else{
-      if (length(lower.bounds)!=ncol(X)) stop("Length of lower.bounds
-                  must be equal to the number of columns of X.");
+    if (length(lower.bounds)!=ncol(X)) {
+      stop("Length of lower.bounds must be equal to the number of columns of X.");
     }
 
     # Add bias if needed (highly recommended to not do this due to unwanted
@@ -1486,12 +1465,12 @@ EmpiricalRiskMinimizationDP.KST <- R6::R6Class("EmpiricalRiskMinimizationDP.KST"
   #' #   the second being between -1 and 1
   #' # Assume y is a matrix with values between -2 and 2
   #' # Assume ermdp is previously constructed object as in $new example
-  #' upper.bounds <- c( 1, 1, 2) # Bounds for X and y
-  #' lower.bounds <- c(1,-1, -2) # Bounds for X and y
+  #' upper.bounds <- c(1, 1, 2) # Bounds for X and y
+  #' lower.bounds <- c(1,-1,-2) # Bounds for X and y
   #' ermdp$fit(X, y, upper.bounds, lower.bounds)
   #' ermdp$coeff # Gets private coefficients
   #'
-  fit = function(X, y, upper.bounds=NULL, lower.bounds=NULL, add.bias=FALSE){
+  fit = function(X, y, upper.bounds, lower.bounds, add.bias=FALSE){
     # Assumptions:
     # If assumptions are not met in child class, implement
     #     preprocess/postprocess data functions so they are
@@ -1567,21 +1546,11 @@ EmpiricalRiskMinimizationDP.KST <- R6::R6Class("EmpiricalRiskMinimizationDP.KST"
   #   minimization algorithm.
   preprocess_data = function(X, y, upper.bounds, lower.bounds, add.bias){
     # Make sure values are correct
-    if (is.null(upper.bounds)){
-      warning(paste("Upper bounds missing and will be calculated from the data.",
-                    "This may represent additional privacy loss."));
-      upper.bounds <- c(apply(X,2,max),max(y));
-    } else{
-      if (length(upper.bounds)!=(ncol(X)+1)) stop("Length of upper.bounds
-                  must be equal to the number of columns of X plus 1 (for y).");
+    if (length(upper.bounds)!=(ncol(X)+1)){
+      stop("Length of upper.bounds must be equal to the number of columns of X plus 1 (for y).");
     }
-    if (is.null(lower.bounds)){
-      warning(paste("Lower bounds missing and will be calculated from the data.",
-                    "This may represent additional privacy loss."));
-      lower.bounds <- c(apply(X,2,min),min(y));
-    } else{
-      if (length(lower.bounds)!=(ncol(X)+1)) stop("Length of lower.bounds
-                  must be equal to the number of columns of X plus 1 (for y).");
+    if (length(lower.bounds)!=(ncol(X)+1)) {
+      stop("Length of lower.bounds must be equal to the number of columns of X plus 1 (for y).");
     }
 
     # Add bias if needed

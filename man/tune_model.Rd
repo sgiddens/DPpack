@@ -4,14 +4,7 @@
 \alias{tune_model}
 \title{Privacy-preserving Hyperparameter Tuning}
 \usage{
-tune_model(
-  models,
-  X,
-  y,
-  upper.bounds = NULL,
-  lower.bounds = NULL,
-  add.bias = FALSE
-)
+tune_model(models, X, y, upper.bounds, lower.bounds, add.bias = FALSE)
 }
 \arguments{
 \item{models}{Vector of model objects, each initialized with a different
@@ -25,19 +18,23 @@ the data rows and corresponding labels are randomly shuffled.}
 
 \item{y}{Vector or matrix of true labels for each row of X.}
 
-\item{upper.bounds}{Numeric vector of length ncol(X)+1 giving upper bounds on
-the values in each column of X and the values in y. The last value in the
-vector is assumed to be the upper bound on y, while the first ncol(X)
-values are assumed to be in the same order as the corresponding columns of
-X. Any value in the columns of X and y larger than the corresponding upper
-bound is clipped at the bound.}
+\item{upper.bounds}{Numeric vector giving upper bounds on the values in each
+column of X (and the values in y for regression model tuning). For binary
+classification models, should be length ncol(X). For regression models,
+should be length ncol(X)+1. The first ncol(X) values are assumed to be in
+the same order as the corresponding columns of X, while the last value in
+the vector is assumed to be the upper bound on y (if given). Any value in
+the columns of X and y larger than the corresponding upper bound is clipped
+at the bound.}
 
-\item{lower.bounds}{Numeric vector of length ncol(X)+1 giving lower bounds on
-the values in each column of X and the values in y. The last value in the
-vector is assumed to be the lower bound on y, while the first ncol(X)
-values are assumed to be in the same order as the corresponding columns of
-X. Any value in the columns of X and y smaller than the corresponding lower
-bound is clipped at the bound.}
+\item{lower.bounds}{Numeric vector giving lower bounds on the values in each
+column of X (and the values in y for regression model tuning). For binary
+classification models, should be length ncol(X). For regression models,
+should be length ncol(X)+1. The first ncol(X) values are assumed to be in
+the same order as the corresponding columns of X, while the last value in
+the vector is assumed to be the lower bound on y (if given). Any value in
+the columns of X and y smaller than the corresponding lower bound is clipped
+at the bound.}
 
 \item{add.bias}{Boolean indicating whether to add a bias term to X. Defaults
 to FALSE.}
@@ -64,8 +61,8 @@ privacy-preserving way.
 # Assume X is dataframe meeting assumptions for privacy
 # Assume 2 columns of X each bounded between -1 and 1
 # Assume y is 0 or 1 labels for each row of X
-upper.bounds <- c( 1, 1, 1) # Bounds for X and y
-lower.bounds <- c(-1,-1, 0) # Bounds for X and y
+upper.bounds <- c( 1, 1) # Bounds for X
+lower.bounds <- c(-1,-1) # Bounds for X
 eps <- 1
 
 # Grid of possible lambda values for tuning logistric regression model

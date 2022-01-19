@@ -10,8 +10,6 @@ histogramDP(
   breaks = "Sturges",
   normalize = FALSE,
   which.sensitivity = "bounded",
-  lower.bound = NULL,
-  upper.bound = NULL,
   mechanism = "laplace",
   delta = NULL,
   type.DP = "pDP",
@@ -39,10 +37,6 @@ definition. If 'both', returns result based on both methods
 individually satisfies differential privacy at level eps, but may not do so
 collectively and in composition. Care must be taken not to violate
 differential privacy in this case.}
-
-\item{lower.bound}{Real number giving the global or public lower bound of x.}
-
-\item{upper.bound}{Real number giving the global or public upper bound of x.}
 
 \item{mechanism}{String indicating which mechanism to use for differential
 privacy. Currently the following mechanisms are supported: {'laplace',
@@ -74,11 +68,11 @@ examples).
 }
 \examples{
 result <- histogramDP(c(1,1,-2,8,-6),1,which.sensitivity='bounded',
-  lower.bound=-10,upper.bound=10,mechanism='laplace')
+  mechanism='laplace')
 plot(result$Bounded)
 result <- histogramDP(c(1,1,-2,8,-6),1,normalize=TRUE,
-  which.sensitivity='unbounded',lower.bound=-10,upper.bound=10,
-  mechanism='gaussian',delta=0.5,type.DP='aDP',allow.negative=FALSE)
+  which.sensitivity='unbounded',mechanism='gaussian',delta=0.5,type.DP='aDP',
+  allow.negative=FALSE)
 plot(result$Unbounded)
 
 }

@@ -7,11 +7,11 @@
 pooledCovDP(
   ...,
   eps = 1,
+  lower.bound1,
+  upper.bound1,
+  lower.bound2,
+  upper.bound2,
   which.sensitivity = "bounded",
-  lower.bound1 = NULL,
-  upper.bound1 = NULL,
-  lower.bound2 = NULL,
-  upper.bound2 = NULL,
   mechanism = "laplace",
   delta = NULL,
   type.DP = "pDP",
@@ -24,6 +24,14 @@ the pooled covariance.}
 
 \item{eps}{Positive real number defining the epsilon privacy budget.}
 
+\item{lower.bound1, lower.bound2}{Real numbers giving the global or public
+lower bounds over the first and second columns of all input data,
+respectively.}
+
+\item{upper.bound1, upper.bound2}{Real numbers giving the global or public
+upper bounds over the first and second columns of all input data,
+respectively.}
+
 \item{which.sensitivity}{String indicating which type of sensitivity to use.
 Can be one of {'bounded', 'unbounded', 'both'}. If 'bounded' (default),
 returns result plus noise based on bounded definition for differential
@@ -33,14 +41,6 @@ definition. If 'both', returns result based on both methods
 individually satisfies differential privacy at level eps, but may not do so
 collectively and in composition. Care must be taken not to violate
 differential privacy in this case.}
-
-\item{lower.bound1, lower.bound2}{Real numbers giving the global or public
-lower bounds over the first and second columns of all input data,
-respectively.}
-
-\item{upper.bound1, upper.bound2}{Real numbers giving the global or public
-upper bounds over the first and second columns of all input data,
-respectively.}
 
 \item{mechanism}{String indicating which mechanism to use for differential
 privacy. Currently the following mechanisms are supported: {'laplace',
@@ -72,12 +72,11 @@ epsilon and delta.
 \examples{
 x1 <- matrix(c(1,4,-2,8,-6,-3),ncol=2)
 x2 <- matrix(c(1,2,-5,7),ncol=2)
-pooledVarDP(x1,x2,eps=1,which.sensitivity='bounded',
-  lower.bound1=-10,upper.bound1=10,lower.bound2=-10,upper.bound2=10,
-  mechanism='laplace')
-pooledVarDP(x1,x2,eps=1,which.sensitivity='unbounded',
-  lower.bound1=-10,upper.bound1=10,lower.bound2=-10,upper.bound2=10,
-  mechanism='gaussian',delta=0.5,type.DP='aDP',approx.n.max=TRUE)
+pooledVarDP(x1,x2,eps=1,lower.bound1=-10,upper.bound1=10,lower.bound2=-10,
+  upper.bound2=10,which.sensitivity='bounded',mechanism='laplace')
+pooledVarDP(x1,x2,eps=1,lower.bound1=-10,upper.bound1=10,lower.bound2=-10,
+  upper.bound2=10,which.sensitivity='unbounded',mechanism='gaussian',
+  delta=0.5,type.DP='aDP',approx.n.max=TRUE)
 
 }
 \references{

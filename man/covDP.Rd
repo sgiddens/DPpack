@@ -8,11 +8,11 @@ covDP(
   x1,
   x2,
   eps,
+  lower.bound1,
+  upper.bound1,
+  lower.bound2,
+  upper.bound2,
   which.sensitivity = "bounded",
-  lower.bound1 = NULL,
-  upper.bound1 = NULL,
-  lower.bound2 = NULL,
-  upper.bound2 = NULL,
   mechanism = "laplace",
   delta = NULL,
   type.DP = "pDP"
@@ -23,6 +23,12 @@ covDP(
 
 \item{eps}{Positive real number defining the epsilon privacy budget.}
 
+\item{lower.bound1, lower.bound2}{Real numbers giving the global or public
+lower bounds of x1 and x2, respectively.}
+
+\item{upper.bound1, upper.bound2}{Real numbers giving the global or public
+upper bounds of x1 and x2, respectively.}
+
 \item{which.sensitivity}{String indicating which type of sensitivity to use.
 Can be one of {'bounded', 'unbounded', 'both'}. If 'bounded' (default),
 returns result plus noise based on bounded definition for differential
@@ -32,12 +38,6 @@ definition. If 'both', returns result based on both methods
 individually satisfies differential privacy at level eps, but may not do so
 collectively and in composition. Care must be taken not to violate
 differential privacy in this case.}
-
-\item{lower.bound1, lower.bound2}{Real numbers giving the global or public
-lower bounds of x1 and x2, respectively.}
-
-\item{upper.bound1, upper.bound2}{Real numbers giving the global or public
-upper bounds of x1 and x2, respectively.}
 
 \item{mechanism}{String indicating which mechanism to use for differential
 privacy. Currently the following mechanisms are supported: {'laplace',
@@ -62,11 +62,11 @@ This function computes the differentially private covariance of a pair of
 vectors at user-specified privacy levels of epsilon and delta.
 }
 \examples{
-covDP(c(1,4,-2,8,-6),c(1,3,2,2,4),1,which.sensitivity='bounded',
-  lower.bound1=-10,upper.bound1=10,lower.bound2=0,upper.bound2=5,
+covDP(c(1,4,-2,8,-6),c(1,3,2,2,4),1,lower.bound1=-10,upper.bound1=10,
+  lower.bound2=0,upper.bound2=5,which.sensitivity='bounded',
   mechanism='laplace')
-covDP(c(1,4,-2,8,-6),c(1,3,2,2,4),1,which.sensitivity='unbounded',
-  lower.bound1=-10,upper.bound110,lower.bound2=0,upper.bound2=5,
+covDP(c(1,4,-2,8,-6),c(1,3,2,2,4),1,lower.bound1=-10,upper.bound110,
+  lower.bound2=0,upper.bound2=5,which.sensitivity='unbounded',
   mechanism='gaussian',delta=0.5,type.DP='aDP')
 
 }

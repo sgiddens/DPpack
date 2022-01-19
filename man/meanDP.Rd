@@ -7,9 +7,9 @@
 meanDP(
   x,
   eps,
+  lower.bounds,
+  upper.bounds,
   which.sensitivity = "bounded",
-  lower.bounds = NULL,
-  upper.bounds = NULL,
   mechanism = "laplace",
   delta = NULL,
   type.DP = "pDP",
@@ -22,6 +22,14 @@ meanDP(
 
 \item{eps}{Positive real number defining the epsilon privacy budget.}
 
+\item{lower.bounds}{Numeric vector of global or public lower bounds on each
+column of x. The length of lower.bounds must match the number of columns of
+x (length 1 if x is a vector).}
+
+\item{upper.bounds}{Numeric vector of global or public upper bounds on each
+column of x. The length of upper.bounds must match the number of columns of
+x (length 1 if x is a vector).}
+
 \item{which.sensitivity}{String indicating which type of sensitivity to use.
 Can be one of {'bounded', 'unbounded', 'both'}. If 'bounded' (default),
 returns result plus noise based on bounded definition for differential
@@ -31,14 +39,6 @@ definition. If 'both', returns result based on both methods
 individually satisfies differential privacy at level eps, but may not do so
 collectively and in composition. Care must be taken not to violate
 differential privacy in this case.}
-
-\item{lower.bounds}{Numeric vector of global or public lower bounds on each
-column of x. The length of lower.bounds must match the number of columns of
-x (length 1 if x is a vector).}
-
-\item{upper.bounds}{Numeric vector of global or public upper bounds on each
-column of x. The length of upper.bounds must match the number of columns of
-x (length 1 if x is a vector).}
 
 \item{mechanism}{String indicating which mechanism to use for differential
 privacy. Currently the following mechanisms are supported: {'laplace',
@@ -76,11 +76,12 @@ columns and collectively satisfy differential privacy at the specified level.
 }
 \examples{
 meanDP(c(1,4,-2,8,-6),1,lower.bounds=-10,upper.bounds=10)
-meanDP(c(1,4,-2,8,-6),1,which.sensitivity='unbounded',
-  lower.bounds=-10,upper.bounds=10,mechanism='gaussian',
+meanDP(c(1,4,-2,8,-6),1,lower.bounds=-10,upper.bounds=10,
+  which.sensitivity='unbounded',mechanism='gaussian',
   delta=0.5,type.DP='aDP')
-meanDP(matrix(c(1,4,-2,8,-6,0),ncol=2),1,which.sensitivity='bounded',
-  lower.bounds=c(-10,-10),upper.bounds=c(10,10),alloc.proportions=c(1,2))
+meanDP(matrix(c(1,4,-2,8,-6,0),ncol=2),1,lower.bounds=c(-10,-10),
+  upper.bounds=c(10,10),which.sensitivity='bounded',
+  alloc.proportions=c(1,2))
 
 }
 \references{

@@ -66,14 +66,12 @@ LaplaceMechanism <- function (true.values, eps, bounded.sensitivities=NULL,
   {if (!is.numeric(true.values) || !is.atomic(true.values)){
     stop("true.values must be numeric atomic vectors or scalars.");
   }
-  if (!is.numeric(eps) || length(eps)>1 || eps<=0) stop("eps
-                                                        must be a scalar > 0");
+  if (!is.numeric(eps) || length(eps)>1 || eps<=0) stop("eps must be a scalar > 0");
   if (which.sensitivity=='bounded') {
     out.bound = TRUE;
     out.unbound = FALSE;
     if (is.null(bounded.sensitivities)) {
-      stop("Must provide bounded.sensitivities if
-           which.sensitivity is 'bounded' or 'both'.")
+      stop("Must provide bounded.sensitivities if which.sensitivity is 'bounded' or 'both'.")
     }
     if (length(bounded.sensitivities)!=length(true.values)){
       stop("Length of bounded.sensitivities must match length of true.values.");
@@ -86,12 +84,10 @@ LaplaceMechanism <- function (true.values, eps, bounded.sensitivities=NULL,
     out.unbound = TRUE;
     out.bound = FALSE;
     if (is.null(unbounded.sensitivities)) {
-      stop("Must provide unbounded.sensitivities if
-           which.sensitivity is 'unbounded' or 'both'.")
+      stop("Must provide unbounded.sensitivities if which.sensitivity is 'unbounded' or 'both'.")
     }
     if (length(unbounded.sensitivities)!=length(true.values)){
-      stop("Length of unbounded.sensitivities
-           must match length of true.values.");
+      stop("Length of unbounded.sensitivities must match length of true.values.");
     }
     if (any(unbounded.sensitivities<=0)){
       stop("Sensitivities must be > 0.");
@@ -101,8 +97,7 @@ LaplaceMechanism <- function (true.values, eps, bounded.sensitivities=NULL,
     out.bound = TRUE;
     out.unbound = TRUE;
     if (is.null(bounded.sensitivities)) {
-      stop("Must provide bounded.sensitivities if
-           which.sensitivity is 'bounded' or 'both'.")
+      stop("Must provide bounded.sensitivities if which.sensitivity is 'bounded' or 'both'.")
     }
     if (length(bounded.sensitivities)!=length(true.values)){
       stop("Length of bounded.sensitivities must match length of true.values.");
@@ -111,8 +106,7 @@ LaplaceMechanism <- function (true.values, eps, bounded.sensitivities=NULL,
       stop("Sensitivities must be > 0.");
     }
     if (is.null(unbounded.sensitivities)) {
-      stop("Must provide unbounded.sensitivities if
-           which.sensitivity is 'unbounded' or 'both'.")
+      stop("Must provide unbounded.sensitivities if which.sensitivity is 'unbounded' or 'both'.")
     }
     if (length(unbounded.sensitivities)!=length(true.values)){
       stop("Length of unbounded.sensitivities
@@ -122,13 +116,11 @@ LaplaceMechanism <- function (true.values, eps, bounded.sensitivities=NULL,
       stop("Sensitivities must be > 0.");
     }
     if (all(bounded.sensitivities==unbounded.sensitivities)){
-      message("Bounded and unbounded sensitivities are identical.
-              Only bounded will be returned.")
+      message("Bounded and unbounded sensitivities are identical. Only bounded will be returned.")
       out.unbound = FALSE;
     }
   }
-  else stop("which.sensitivity must be one of
-            {'bounded', 'unbounded', 'both'}");
+  else stop("which.sensitivity must be one of {'bounded', 'unbounded', 'both'}");
   n <- length(true.values);
   if (is.null(alloc.proportions)) alloc.proportions <- rep(1,n);
   if (length(alloc.proportions)!=length(true.values)) {
@@ -242,20 +234,16 @@ GaussianMechanism <- function (true.values, eps, delta, bounded.sensitivities=NU
   {if (!is.numeric(true.values) || !is.atomic(true.values)){
     stop("true.values must be numeric atomic vectors or scalars.");
   }
-    if (!is.numeric(eps) || length(eps)>1 || eps<=0) stop("eps must be a
-                                                          scalar > 0");
-    if (!is.numeric(delta) || length(delta)>1 || delta<=0) stop("delta must be a
-                                                             scalar > 0");
+    if (!is.numeric(eps) || length(eps)>1 || eps<=0) stop("eps must be a scalar > 0");
+    if (!is.numeric(delta) || length(delta)>1 || delta<=0) stop("delta must be a scalar > 0");
     if (which.sensitivity=='bounded') {
       out.bound = TRUE;
       out.unbound = FALSE;
       if (is.null(bounded.sensitivities)) {
-        stop("Must provide bounded.sensitivities if
-             which.sensitivity is 'bounded' or 'both'.")
+        stop("Must provide bounded.sensitivities if which.sensitivity is 'bounded' or 'both'.")
       }
       if (length(bounded.sensitivities)!=length(true.values)){
-        stop("Length of bounded.sensitivities must
-             match length of true.values.");
+        stop("Length of bounded.sensitivities must match length of true.values.");
       }
       if (any(bounded.sensitivities<=0)){
         stop("Sensitivities must be > 0.");
@@ -265,12 +253,10 @@ GaussianMechanism <- function (true.values, eps, delta, bounded.sensitivities=NU
       out.unbound = TRUE;
       out.bound = FALSE;
       if (is.null(unbounded.sensitivities)) {
-        stop("Must provide unbounded.sensitivities if
-             which.sensitivity is 'unbounded' or 'both'.")
+        stop("Must provide unbounded.sensitivities if which.sensitivity is 'unbounded' or 'both'.")
       }
       if (length(unbounded.sensitivities)!=length(true.values)){
-        stop("Length of unbounded.sensitivities must
-             match length of true.values.");
+        stop("Length of unbounded.sensitivities must match length of true.values.");
       }
       if (any(unbounded.sensitivities<=0)){
         stop("Sensitivities must be > 0.");
@@ -280,37 +266,30 @@ GaussianMechanism <- function (true.values, eps, delta, bounded.sensitivities=NU
       out.bound = TRUE;
       out.unbound = TRUE;
       if (is.null(bounded.sensitivities)) {
-        stop("Must provide bounded.sensitivities if
-             which.sensitivity is 'bounded' or 'both'.")
+        stop("Must provide bounded.sensitivities if which.sensitivity is 'bounded' or 'both'.")
       }
       if (length(bounded.sensitivities)!=length(true.values)){
-        stop("Length of bounded.sensitivities must
-             match length of true.values.");
+        stop("Length of bounded.sensitivities must match length of true.values.");
       }
       if (any(bounded.sensitivities<=0)){
         stop("Sensitivities must be > 0.");
       }
       if (is.null(unbounded.sensitivities)) {
-        stop("Must provide unbounded.sensitivities if
-             which.sensitivity is 'unbounded' or 'both'.")
+        stop("Must provide unbounded.sensitivities if which.sensitivity is 'unbounded' or 'both'.")
       }
       if (length(unbounded.sensitivities)!=length(true.values)){
-        stop("Length of unbounded.sensitivities must
-             match length of true.values.");
+        stop("Length of unbounded.sensitivities must match length of true.values.");
       }
       if (any(unbounded.sensitivities<=0)){
         stop("Sensitivities must be > 0.");
       }
       if (all(bounded.sensitivities==unbounded.sensitivities)){
-        message("Bounded and unbounded sensitivities are identical.
-                Only bounded will be returned.")
+        message("Bounded and unbounded sensitivities are identical. Only bounded will be returned.")
         out.unbound = FALSE;
       }
     }
-    else stop("which.sensitivity must be one of
-              {'bounded', 'unbounded', 'both'}");
-    if (type.DP!='pDP' && type.DP!='aDP') stop("type.DP must be one of
-                                               {'pDP', 'aDP'}.");
+    else stop("which.sensitivity must be one of {'bounded', 'unbounded', 'both'}");
+    if (type.DP!='pDP' && type.DP!='aDP') stop("type.DP must be one of {'pDP', 'aDP'}.");
     n <- length(true.values);
     if (is.null(alloc.proportions)) alloc.proportions <- rep(1,n);
     if (length(alloc.proportions)!=length(true.values)) {
@@ -440,8 +419,7 @@ ExponentialMechanism <- function (utility, eps, bounded.sensitivities=NULL,
       out.bound = TRUE;
       out.unbound = FALSE;
       if (is.null(bounded.sensitivities)) {
-        stop("Must provide bounded.sensitivities if
-             which.sensitivity is 'bounded' or 'both'.")
+        stop("Must provide bounded.sensitivities if which.sensitivity is 'bounded' or 'both'.")
       }
       if (length(bounded.sensitivities)!=1){
         stop("Length of bounded.sensitivities cannot be greater than 1.");
@@ -454,8 +432,7 @@ ExponentialMechanism <- function (utility, eps, bounded.sensitivities=NULL,
       out.unbound = TRUE;
       out.bound = FALSE;
       if (is.null(unbounded.sensitivities)) {
-        stop("Must provide unbounded.sensitivities if
-             which.sensitivity is 'unbounded' or 'both'.")
+        stop("Must provide unbounded.sensitivities if which.sensitivity is 'unbounded' or 'both'.")
       }
       if (length(unbounded.sensitivities)!=1){
         stop("Length of unbounded.sensitivities cannot be greater than 1.");
@@ -468,8 +445,7 @@ ExponentialMechanism <- function (utility, eps, bounded.sensitivities=NULL,
       out.bound = TRUE;
       out.unbound = TRUE;
       if (is.null(bounded.sensitivities)) {
-        stop("Must provide bounded.sensitivities if
-             which.sensitivity is 'bounded' or 'both'.")
+        stop("Must provide bounded.sensitivities if which.sensitivity is 'bounded' or 'both'.")
       }
       if (length(bounded.sensitivities)!=1){
         stop("Length of bounded.sensitivities cannot be greater than 1.");
@@ -478,8 +454,7 @@ ExponentialMechanism <- function (utility, eps, bounded.sensitivities=NULL,
         stop("Sensitivities must be > 0.");
       }
       if (is.null(unbounded.sensitivities)) {
-        stop("Must provide unbounded.sensitivities if
-             which.sensitivity is 'unbounded' or 'both'.")
+        stop("Must provide unbounded.sensitivities if which.sensitivity is 'unbounded' or 'both'.")
       }
       if (length(unbounded.sensitivities)!=1){
         stop("Length of unbounded.sensitivities cannot be greater than 1.");
@@ -488,22 +463,18 @@ ExponentialMechanism <- function (utility, eps, bounded.sensitivities=NULL,
         stop("Sensitivities must be > 0.");
       }
       if (all(bounded.sensitivities==unbounded.sensitivities)){
-        message("Bounded and unbounded sensitivities are identical.
-                Only bounded will be returned.")
+        message("Bounded and unbounded sensitivities are identical. Only bounded will be returned.")
         out.unbound = FALSE;
       }
     }
-    else stop("which.sensitivity must be one of
-              {'bounded', 'unbounded', 'both'}");
+    else stop("which.sensitivity must be one of {'bounded', 'unbounded', 'both'}");
     n <- length(utility);
     if (is.null(measure)) measure <- rep(1,n);
-    if (length(measure)!=n) stop("Length of measure must
-                                 match length of utility.");
+    if (length(measure)!=n) stop("Length of measure must match length of utility.");
     if (any(measure<0)) stop("Values in measure cannot be negative.");
 
     if (!is.null(candidates)){
-      if (length(candidates)!=n) stop("Length of candidates must
-                                      match length of utility");
+      if (length(candidates)!=n) stop("Length of candidates must match length of utility");
     }
   }
   ########

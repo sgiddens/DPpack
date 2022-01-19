@@ -8,6 +8,12 @@
 #' @param x Numeric vector, matrix, or data frame. Means taken over columns
 #'   (when applicable).
 #' @param eps Positive real number defining the epsilon privacy budget.
+#' @param lower.bounds Numeric vector of global or public lower bounds on each
+#'   column of x. The length of lower.bounds must match the number of columns of
+#'   x (length 1 if x is a vector).
+#' @param upper.bounds Numeric vector of global or public upper bounds on each
+#'   column of x. The length of upper.bounds must match the number of columns of
+#'   x (length 1 if x is a vector).
 #' @param which.sensitivity String indicating which type of sensitivity to use.
 #'   Can be one of {'bounded', 'unbounded', 'both'}. If 'bounded' (default),
 #'   returns result plus noise based on bounded definition for differential
@@ -17,12 +23,6 @@
 #'   individually satisfies differential privacy at level eps, but may not do so
 #'   collectively and in composition. Care must be taken not to violate
 #'   differential privacy in this case.
-#' @param lower.bounds Numeric vector of global or public lower bounds on each
-#'   column of x. The length of lower.bounds must match the number of columns of
-#'   x (length 1 if x is a vector).
-#' @param upper.bounds Numeric vector of global or public upper bounds on each
-#'   column of x. The length of upper.bounds must match the number of columns of
-#'   x (length 1 if x is a vector).
 #' @param mechanism String indicating which mechanism to use for differential
 #'   privacy. Currently the following mechanisms are supported: {'laplace',
 #'   'gaussian'}. See \code{\link{LaplaceMechanism}} and
@@ -47,11 +47,12 @@
 #'   definitions of differential privacy.
 #' @examples
 #' meanDP(c(1,4,-2,8,-6),1,lower.bounds=-10,upper.bounds=10)
-#' meanDP(c(1,4,-2,8,-6),1,which.sensitivity='unbounded',
-#'   lower.bounds=-10,upper.bounds=10,mechanism='gaussian',
+#' meanDP(c(1,4,-2,8,-6),1,lower.bounds=-10,upper.bounds=10,
+#'   which.sensitivity='unbounded',mechanism='gaussian',
 #'   delta=0.5,type.DP='aDP')
-#' meanDP(matrix(c(1,4,-2,8,-6,0),ncol=2),1,which.sensitivity='bounded',
-#'   lower.bounds=c(-10,-10),upper.bounds=c(10,10),alloc.proportions=c(1,2))
+#' meanDP(matrix(c(1,4,-2,8,-6,0),ncol=2),1,lower.bounds=c(-10,-10),
+#'   upper.bounds=c(10,10),which.sensitivity='bounded',
+#'   alloc.proportions=c(1,2))
 #'
 #' @references \insertRef{Dwork2006a}{DPpack}
 #'
@@ -62,44 +63,22 @@
 #' \insertRef{DPtextbook}{DPpack}
 #'
 #' @export
-meanDP <- function (x, eps, which.sensitivity='bounded', lower.bounds=NULL,
-                    upper.bounds=NULL, mechanism='laplace', delta=NULL,
-                    type.DP='pDP', alloc.proportions=NULL){
+meanDP <- function (x, eps, lower.bounds, upper.bounds,
+                    which.sensitivity='bounded', mechanism='laplace',
+                    delta=NULL, type.DP='pDP', alloc.proportions=NULL){
   #### INPUT CHECKING ####
   {if (is.null(dim(x))){
-    if (is.null(upper.bounds)){
-      warning(paste("Upper bound missing and will be calculated from the data.",
-              "This may represent additional privacy loss."));
-      upper.bounds <- max(x);
-    } else{
-      if (length(upper.bounds)!=1) stop("Length of upper.bounds must be 1.");
-    }
-    if (is.null(lower.bounds)){
-      warning(paste("Lower bound missing and will be calculated from the data.",
-                    "This may represent additional privacy loss."));
-      lower.bounds <- min(x);
-    } else{
-      if (length(lower.bounds)!=1) stop("Length of lower.bounds must be 1.");
-    }
+    if (length(upper.bounds)!=1) stop("Length of upper.bounds must be 1.");
+    if (length(lower.bounds)!=1) stop("Length of lower.bounds must be 1.");
+
     x[x<lower.bounds] <- lower.bounds;
     x[x>upper.bounds] <- upper.bounds;
-
   } else{
-    if (is.null(upper.bounds)){
-      warning(paste("Upper bounds missing and will be calculated from the data.",
-                    "This may represent additional privacy loss."));
-      upper.bounds <- apply(x,2,max);
-    } else{
-      if (length(upper.bounds)!=ncol(x)) stop("Length of upper.bounds must be
-                                              equal to the number of columns of x.");
+    if (length(upper.bounds)!=ncol(x)) {
+      stop("Length of upper.bounds must be equal to the number of columns of x.");
     }
-    if (is.null(lower.bounds)){
-      warning(paste("Lower bounds missing and will be calculated from the data.",
-                    "This may represent additional privacy loss."));
-      lower.bounds <- apply(x,2,min);
-    } else{
-      if (length(lower.bounds)!=ncol(x)) stop("Length of lower.bounds must be
-                                              equal to the number of columns of x.");
+    if (length(lower.bounds)!=ncol(x)) {
+      stop("Length of lower.bounds must be equal to the number of columns of x.");
     }
     for (i in 1:length(upper.bounds)){
       x[x[,i]<lower.bounds[i]] <- lower.bounds[i];
@@ -151,6 +130,12 @@ meanDP <- function (x, eps, which.sensitivity='bounded', lower.bounds=NULL,
 #' @param x Numeric vector, matrix, or data frame. Variances taken over columns
 #'   (when applicable).
 #' @param eps Positive real number defining the epsilon privacy budget.
+#' @param lower.bounds Numeric vector of global or public lower bounds on each
+#'   column of x. The length of lower.bounds must match the number of columns of
+#'   x (length 1 if x is a vector).
+#' @param upper.bounds Numeric vector of global or public upper bounds on each
+#'   column of x. The length of upper.bounds must match the number of columns of
+#'   x (length 1 if x is a vector).
 #' @param which.sensitivity String indicating which type of sensitivity to use.
 #'   Can be one of {'bounded', 'unbounded', 'both'}. If 'bounded' (default),
 #'   returns result plus noise based on bounded definition for differential
@@ -160,12 +145,6 @@ meanDP <- function (x, eps, which.sensitivity='bounded', lower.bounds=NULL,
 #'   individually satisfies differential privacy at level eps, but may not do so
 #'   collectively and in composition. Care must be taken not to violate
 #'   differential privacy in this case.
-#' @param lower.bounds Numeric vector of global or public lower bounds on each
-#'   column of x. The length of lower.bounds must match the number of columns of
-#'   x (length 1 if x is a vector).
-#' @param upper.bounds Numeric vector of global or public upper bounds on each
-#'   column of x. The length of upper.bounds must match the number of columns of
-#'   x (length 1 if x is a vector).
 #' @param mechanism String indicating which mechanism to use for differential
 #'   privacy. Currently the following mechanisms are supported: {'laplace',
 #'   'gaussian'}. See \code{\link{LaplaceMechanism}} and
@@ -190,11 +169,10 @@ meanDP <- function (x, eps, which.sensitivity='bounded', lower.bounds=NULL,
 #'   unbounded definitions of differential privacy.
 #' @examples
 #' varDP(c(1,4,-2,8,-6),1,lower.bounds=-10,upper.bounds=10)
-#' varDP(c(1,4,-2,8,-6),1,which.sensitivity='unbounded',
-#'   lower.bounds=-10,upper.bounds=10,mechanism='gaussian',
-#'   delta=0.5,type.DP='aDP')
-#' varDP(matrix(c(1,4,-2,8,-6,0),ncol=2),1,which.sensitivity='bounded',
-#'   lower.bounds=c(-10,-10),upper.bounds=c(10,10),alloc.proportions=c(1,2))
+#' varDP(c(1,4,-2,8,-6),1,lower.bounds=-10,upper.bounds=10,
+#'   which.sensitivity='unbounded',mechanism='gaussian',delta=0.5,type.DP='aDP')
+#' varDP(matrix(c(1,4,-2,8,-6,0),ncol=2),1,lower.bounds=c(-10,-10),
+#'   upper.bounds=c(10,10),which.sensitivity='bounded',alloc.proportions=c(1,2))
 #'
 #' @references \insertRef{Dwork2006a}{DPpack}
 #'
@@ -205,57 +183,34 @@ meanDP <- function (x, eps, which.sensitivity='bounded', lower.bounds=NULL,
 #' \insertRef{DPtextbook}{DPpack}
 #'
 #' @export
-varDP <- function (x, eps, which.sensitivity='bounded', lower.bounds=NULL,
-                   upper.bounds=NULL, mechanism='laplace', delta=NULL,
+varDP <- function (x, eps, lower.bounds, upper.bounds,
+                   which.sensitivity='bounded', mechanism='laplace', delta=NULL,
                    type.DP='pDP', alloc.proportions=NULL){
   #### INPUT CHECKING ####
   {if (is.null(dim(x))){
-    if (is.null(upper.bounds)){
-      warning(paste("Upper bound missing and will be calculated from the data.",
-                    "This may represent additional privacy loss."));
-      upper.bounds <- max(x);
-    } else{
-      if (length(upper.bounds)!=1) stop("Length of upper.bounds must be 1.");
-    }
-    if (is.null(lower.bounds)){
-      warning(paste("Lower bound missing and will be calculated from the data.",
-                    "This may represent additional privacy loss."));
-      lower.bounds <- min(x);
-    } else{
-      if (length(lower.bounds)!=1) stop("Length of lower.bounds must be 1.");
-    }
+    if (length(upper.bounds)!=1) stop("Length of upper.bounds must be 1.");
+    if (length(lower.bounds)!=1) stop("Length of lower.bounds must be 1.");
     x[x<lower.bounds] <- lower.bounds;
     x[x>upper.bounds] <- upper.bounds;
-
   } else{
-    if (is.null(upper.bounds)){
-      warning(paste("Upper bounds missing and will be calculated from the data.",
-                    "This may represent additional privacy loss."));
-      upper.bounds <- apply(x,2,max);
-    } else{
-      if (length(upper.bounds)!=ncol(x)) stop("Length of upper.bounds must be
-                                              equal to the number of columns of x.");
+    if (length(upper.bounds)!=ncol(x)) {
+      stop("Length of upper.bounds must be equal to the number of columns of x.");
     }
-    if (is.null(lower.bounds)){
-      warning(paste("Lower bounds missing and will be calculated from the data.",
-                    "This may represent additional privacy loss."));
-      lower.bounds <- apply(x,2,min);
-    } else{
-      if (length(lower.bounds)!=ncol(x)) stop("Length of lower.bounds must be
-                                              equal to the number of columns of x.");
+    if (length(lower.bounds)!=ncol(x)) {
+      stop("Length of lower.bounds must be equal to the number of columns of x.");
     }
     for (i in 1:length(upper.bounds)){
       x[x[,i]<lower.bounds[i]] <- lower.bounds[i];
       x[x[,i]>upper.bounds[i]] <- upper.bounds[i];
     }
   }
-    if (mechanism=='gaussian'){
-      if (is.null(delta)){
-        print("Must specify delta for Gaussian mechanism.");
-      }
-    } else if (mechanism!='laplace'){
-      stop("Mechanism must be one of {'laplace', 'gaussian'}.");
+  if (mechanism=='gaussian'){
+    if (is.null(delta)){
+      print("Must specify delta for Gaussian mechanism.");
     }
+  } else if (mechanism!='laplace'){
+    stop("Mechanism must be one of {'laplace', 'gaussian'}.");
+  }
   }
   ##########
 
@@ -306,6 +261,12 @@ varDP <- function (x, eps, which.sensitivity='bounded', lower.bounds=NULL,
 #' @param x Numeric vector, matrix, or data frame. Standard deviations taken
 #'   over columns (when applicable).
 #' @param eps Positive real number defining the epsilon privacy budget.
+#' @param lower.bounds Numeric vector of global or public lower bounds on each
+#'   column of x. The length of lower.bounds must match the number of columns of
+#'   x (length 1 if x is a vector).
+#' @param upper.bounds Numeric vector of global or public upper bounds on each
+#'   column of x. The length of upper.bounds must match the number of columns of
+#'   x (length 1 if x is a vector).
 #' @param which.sensitivity String indicating which type of sensitivity to use.
 #'   Can be one of {'bounded', 'unbounded', 'both'}. If 'bounded' (default),
 #'   returns result plus noise based on bounded definition for differential
@@ -315,12 +276,6 @@ varDP <- function (x, eps, which.sensitivity='bounded', lower.bounds=NULL,
 #'   individually satisfies differential privacy at level eps, but may not do so
 #'   collectively and in composition. Care must be taken not to violate
 #'   differential privacy in this case.
-#' @param lower.bounds Numeric vector of global or public lower bounds on each
-#'   column of x. The length of lower.bounds must match the number of columns of
-#'   x (length 1 if x is a vector).
-#' @param upper.bounds Numeric vector of global or public upper bounds on each
-#'   column of x. The length of upper.bounds must match the number of columns of
-#'   x (length 1 if x is a vector).
 #' @param mechanism String indicating which mechanism to use for differential
 #'   privacy. Currently the following mechanisms are supported: {'laplace',
 #'   'gaussian'}. See \code{\link{LaplaceMechanism}} and
@@ -345,11 +300,10 @@ varDP <- function (x, eps, which.sensitivity='bounded', lower.bounds=NULL,
 #'   and/or unbounded definitions of differential privacy.
 #' @examples
 #' sdDP(c(1,4,-2,8,-6),1,lower.bounds=-10,upper.bounds=10)
-#' sdDP(c(1,4,-2,8,-6),1,which.sensitivity='unbounded',
-#'   lower.bounds=-10,upper.bounds=10,mechanism='gaussian',
-#'   delta=0.5,type.DP='aDP')
-#' sdDP(matrix(c(1,4,-2,8,-6,0),ncol=2),1,which.sensitivity='bounded',
-#'   lower.bounds=c(-10,-10),upper.bounds=c(10,10),alloc.proportions=c(1,2))
+#' sdDP(c(1,4,-2,8,-6),1,lower.bounds=-10,upper.bounds=10,
+#'   which.sensitivity='unbounded',mechanism='gaussian',delta=0.5,type.DP='aDP')
+#' sdDP(matrix(c(1,4,-2,8,-6,0),ncol=2),1,lower.bounds=c(-10,-10),
+#'   upper.bounds=c(10,10),which.sensitivity='bounded',alloc.proportions=c(1,2))
 #'
 #' @references \insertRef{Dwork2006a}{DPpack}
 #'
@@ -360,15 +314,15 @@ varDP <- function (x, eps, which.sensitivity='bounded', lower.bounds=NULL,
 #' \insertRef{DPtextbook}{DPpack}
 #'
 #' @export
-sdDP <- function (x, eps, which.sensitivity='bounded', lower.bounds=NULL,
-                  upper.bounds=NULL, mechanism='laplace', delta=NULL,
+sdDP <- function (x, eps, lower.bounds, upper.bounds,
+                  which.sensitivity='bounded', mechanism='laplace', delta=NULL,
                   type.DP='pDP', alloc.proportions=NULL){
   ########## Input checking
 
   ##########
 
   ########## Data Access/privacy layer
-  sanitized.variances <- varDP(x,eps,which.sensitivity,lower.bounds,upper.bounds,
+  sanitized.variances <- varDP(x,eps,lower.bounds,upper.bounds,which.sensitivity,
                                mechanism,delta,type.DP,alloc.proportions);
   ##########
 
@@ -392,6 +346,10 @@ sdDP <- function (x, eps, which.sensitivity='bounded', lower.bounds=NULL,
 #'
 #' @param x1,x2 Numeric vectors.
 #' @param eps Positive real number defining the epsilon privacy budget.
+#' @param lower.bound1,lower.bound2 Real numbers giving the global or public
+#'   lower bounds of x1 and x2, respectively.
+#' @param upper.bound1,upper.bound2 Real numbers giving the global or public
+#'   upper bounds of x1 and x2, respectively.
 #' @param which.sensitivity String indicating which type of sensitivity to use.
 #'   Can be one of {'bounded', 'unbounded', 'both'}. If 'bounded' (default),
 #'   returns result plus noise based on bounded definition for differential
@@ -401,10 +359,6 @@ sdDP <- function (x, eps, which.sensitivity='bounded', lower.bounds=NULL,
 #'   individually satisfies differential privacy at level eps, but may not do so
 #'   collectively and in composition. Care must be taken not to violate
 #'   differential privacy in this case.
-#' @param lower.bound1,lower.bound2 Real numbers giving the global or public
-#'   lower bounds of x1 and x2, respectively.
-#' @param upper.bound1,upper.bound2 Real numbers giving the global or public
-#'   upper bounds of x1 and x2, respectively.
 #' @param mechanism String indicating which mechanism to use for differential
 #'   privacy. Currently the following mechanisms are supported: {'laplace',
 #'   'gaussian'}. See \code{\link{LaplaceMechanism}} and
@@ -419,11 +373,11 @@ sdDP <- function (x, eps, which.sensitivity='bounded', lower.bounds=NULL,
 #' @return A list of the sanitized covariances based on the bounded and/or
 #'   unbounded definitions of differential privacy.
 #' @examples
-#' covDP(c(1,4,-2,8,-6),c(1,3,2,2,4),1,which.sensitivity='bounded',
-#'   lower.bound1=-10,upper.bound1=10,lower.bound2=0,upper.bound2=5,
+#' covDP(c(1,4,-2,8,-6),c(1,3,2,2,4),1,lower.bound1=-10,upper.bound1=10,
+#'   lower.bound2=0,upper.bound2=5,which.sensitivity='bounded',
 #'   mechanism='laplace')
-#' covDP(c(1,4,-2,8,-6),c(1,3,2,2,4),1,which.sensitivity='unbounded',
-#'   lower.bound1=-10,upper.bound110,lower.bound2=0,upper.bound2=5,
+#' covDP(c(1,4,-2,8,-6),c(1,3,2,2,4),1,lower.bound1=-10,upper.bound110,
+#'   lower.bound2=0,upper.bound2=5,which.sensitivity='unbounded',
 #'   mechanism='gaussian',delta=0.5,type.DP='aDP')
 #'
 #' @references \insertRef{Dwork2006a}{DPpack}
@@ -435,32 +389,14 @@ sdDP <- function (x, eps, which.sensitivity='bounded', lower.bounds=NULL,
 #' \insertRef{DPtextbook}{DPpack}
 #'
 #' @export
-covDP <- function (x1, x2, eps, which.sensitivity='bounded',
-                  lower.bound1=NULL, upper.bound1=NULL,
-                  lower.bound2=NULL, upper.bound2=NULL,
+covDP <- function (x1, x2, eps, lower.bound1, upper.bound1, lower.bound2,
+                  upper.bound2, which.sensitivity='bounded',
                   mechanism='laplace', delta=NULL, type.DP='pDP'){
   #### INPUT CHECKING ####
-  {
-  if (is.null(upper.bound1)){
-    warning("Upper bound on x1 missing and will be calculated from the data.
-            This may represent additional privacy loss.");
-    upper.bound1 <- max(x1);
-  } else if (length(upper.bound1)!=1) stop("Length of upper.bound1 must be 1.");
-  if (is.null(lower.bound1)){
-    warning("Lower bound on x1 missing and will be calculated from the data.
-            This may represent additional privacy loss.");
-    lower.bound1 <- min(x1);
-  } else if (length(lower.bound1)!=1) stop("Length of lower.bound1 must be 1.");
-  if (is.null(upper.bound2)){
-    warning("Upper bound on x2 missing and will be calculated from the data.
-          This may represent additional privacy loss.");
-    upper.bound2 <- max(x2);
-  } else if (length(upper.bound2)!=1) stop("Length of upper.bound2 must be 1.");
-  if (is.null(lower.bound2)){
-    warning("Lower bound on x2 missing and will be calculated from the data.
-          This may represent additional privacy loss.");
-    lower.bound2 <- min(x2);
-  } else if (length(lower.bound2)!=1) stop("Length of lower.bound2 must be 1.");
+  {if (length(upper.bound1)!=1) stop("Length of upper.bound1 must be 1.");
+  if (length(lower.bound1)!=1) stop("Length of lower.bound1 must be 1.");
+  if (length(upper.bound2)!=1) stop("Length of upper.bound2 must be 1.");
+  if (length(lower.bound2)!=1) stop("Length of lower.bound2 must be 1.");
   x1[x1<lower.bound1] <- lower.bound1;
   x1[x1>upper.bound1] <- upper.bound1;
   x2[x2<lower.bound2] <- lower.bound2;
@@ -490,7 +426,6 @@ covDP <- function (x1, x2, eps, which.sensitivity='bounded',
     sanitized.cov <- GaussianMechanism(tv,eps,delta,bs,us,which.sensitivity,
                                        type.DP);
   }
-
   ##########
 
   ########## Postprocessing layer
@@ -522,8 +457,6 @@ covDP <- function (x1, x2, eps, which.sensitivity='bounded',
 #'   individually satisfies differential privacy at level eps, but may not do so
 #'   collectively and in composition. Care must be taken not to violate
 #'   differential privacy in this case.
-#' @param lower.bound Real number giving the global or public lower bound of x.
-#' @param upper.bound Real number giving the global or public upper bound of x.
 #' @param mechanism String indicating which mechanism to use for differential
 #'   privacy. Currently the following mechanisms are supported: {'laplace',
 #'   'gaussian'}. See \code{\link{LaplaceMechanism}} and
@@ -542,11 +475,11 @@ covDP <- function (x1, x2, eps, which.sensitivity='bounded',
 #'   unbounded definitions of differential privacy.
 #' @examples
 #' result <- histogramDP(c(1,1,-2,8,-6),1,which.sensitivity='bounded',
-#'   lower.bound=-10,upper.bound=10,mechanism='laplace')
+#'   mechanism='laplace')
 #' plot(result$Bounded)
 #' result <- histogramDP(c(1,1,-2,8,-6),1,normalize=TRUE,
-#'   which.sensitivity='unbounded',lower.bound=-10,upper.bound=10,
-#'   mechanism='gaussian',delta=0.5,type.DP='aDP',allow.negative=FALSE)
+#'   which.sensitivity='unbounded',mechanism='gaussian',delta=0.5,type.DP='aDP',
+#'   allow.negative=FALSE)
 #' plot(result$Unbounded)
 #'
 #' @references \insertRef{Dwork2006a}{DPpack}
@@ -559,31 +492,16 @@ covDP <- function (x1, x2, eps, which.sensitivity='bounded',
 #'
 #' @export
 histogramDP <- function(x, eps, breaks="Sturges", normalize=FALSE,
-                        which.sensitivity='bounded',
-                        lower.bound=NULL, upper.bound=NULL,
-                        mechanism='laplace', delta=NULL, type.DP='pDP',
-                        allow.negative=FALSE){
+                        which.sensitivity='bounded', mechanism='laplace',
+                        delta=NULL, type.DP='pDP', allow.negative=FALSE){
   #### INPUT CHECKING ####
-  {
-    if (is.null(upper.bound)){
-      warning("Upper bound missing and will be calculated from the data.
-            This may represent additional privacy loss.");
-      upper.bound <- max(x);
-    } else if (length(upper.bound)!=1) stop("Length of upper.bound must be 1.");
-    if (is.null(lower.bound)){
-      warning("Lower bound missing and will be calculated from the data.
-            This may represent additional privacy loss.");
-      lower.bound <- min(x);
-    } else if (length(lower.bound)!=1) stop("Length of lower.bound must be 1.");
-    x[x<lower.bound] <- lower.bound;
-    x[x>upper.bound] <- upper.bound;
-    if (mechanism=='gaussian'){
-      if (is.null(delta)){
-        print("Must specify delta for Gaussian mechanism.");
-      }
-    } else if (mechanism!='laplace'){
-      stop("Mechanism must be one of {'laplace', 'gaussian'}.");
+  {if (mechanism=='gaussian'){
+    if (is.null(delta)){
+      print("Must specify delta for Gaussian mechanism.");
     }
+  } else if (mechanism!='laplace'){
+    stop("Mechanism must be one of {'laplace', 'gaussian'}.");
+  }
   }
   ##########
 
@@ -596,7 +514,6 @@ histogramDP <- function(x, eps, breaks="Sturges", normalize=FALSE,
 
   ########## Privacy layer
   counts <- tv$counts;
-  # Might need to verify this is right later (also see tableDP)
   # This means that each param[i] in the mechanism becomes bs/eps rather
   #       than bs[i]/(alloc.proportions[i]*eps)
   bs <- rep(bs, length(counts))/length(counts);
@@ -690,14 +607,13 @@ histogramDP <- function(x, eps, breaks="Sturges", normalize=FALSE,
 tableDP <- function(x, y, eps, which.sensitivity='bounded', mechanism='laplace',
                     delta=NULL, type.DP='pDP', allow.negative=FALSE){
   #### INPUT CHECKING ####
-  {
-    if (mechanism=='gaussian'){
-      if (is.null(delta)){
-        print("Must specify delta for Gaussian mechanism.");
-      }
-    } else if (mechanism!='laplace'){
-      stop("Mechanism must be one of {'laplace', 'gaussian'}.");
+  {if (mechanism=='gaussian'){
+    if (is.null(delta)){
+      print("Must specify delta for Gaussian mechanism.");
     }
+  } else if (mechanism!='laplace'){
+    stop("Mechanism must be one of {'laplace', 'gaussian'}.");
+  }
   }
   ##########
 
@@ -762,6 +678,10 @@ tableDP <- function(x, y, eps, which.sensitivity='bounded', mechanism='laplace',
 #'
 #' @param ... Two or more vectors from which to compute the pooled variance.
 #' @param eps Positive real number defining the epsilon privacy budget.
+#' @param lower.bound Real number giving the global or public lower bound of the
+#'   input data.
+#' @param upper.bound Real number giving the global or public upper bound of the
+#'   input data.
 #' @param which.sensitivity String indicating which type of sensitivity to use.
 #'   Can be one of {'bounded', 'unbounded', 'both'}. If 'bounded' (default),
 #'   returns result plus noise based on bounded definition for differential
@@ -771,10 +691,6 @@ tableDP <- function(x, y, eps, which.sensitivity='bounded', mechanism='laplace',
 #'   individually satisfies differential privacy at level eps, but may not do so
 #'   collectively and in composition. Care must be taken not to violate
 #'   differential privacy in this case.
-#' @param lower.bound Real number giving the global or public lower bound of the
-#'   input data.
-#' @param upper.bound Real number giving the global or public upper bound of the
-#'   input data.
 #' @param mechanism String indicating which mechanism to use for differential
 #'   privacy. Currently the following mechanisms are supported: {'laplace',
 #'   'gaussian'}. See \code{\link{LaplaceMechanism}} and
@@ -792,10 +708,10 @@ tableDP <- function(x, y, eps, which.sensitivity='bounded', mechanism='laplace',
 #' @return A list of the sanitized pooled variances based on the bounded and/or
 #'   unbounded definitions of differential privacy.
 #' @examples
-#' pooledVarDP(c(1,4,-2,8,-6),c(1,2),c(-5,-7),eps=1,which.sensitivity='bounded',
-#'   lower.bound=-10,upper.bound=10,mechanism='laplace')
+#' pooledVarDP(c(1,4,-2,8,-6),c(1,2),c(-5,-7),eps=1,lower.bound=-10,
+#'   upper.bound=10,which.sensitivity='bounded',mechanism='laplace')
 #' pooledVarDP(c(1,4,-2,8,-6),c(1,2),c(-5,-7),eps=1,
-#'   which.sensitivity='unbounded',lower.bound=-10,upper.bound=10,
+#'   lower.bound=-10,upper.bound=10,which.sensitivity='unbounded',
 #'   mechanism='gaussian',delta=0.5,type.DP='aDP',approx.n.max=TRUE)
 #'
 #' @references \insertRef{Dwork2006a}{DPpack}
@@ -807,39 +723,18 @@ tableDP <- function(x, y, eps, which.sensitivity='bounded', mechanism='laplace',
 #' \insertRef{DPtextbook}{DPpack}
 #'
 #' @export
-pooledVarDP <- function(..., eps=1, which.sensitivity='bounded',
-                        lower.bound=NULL, upper.bound=NULL,
-                        mechanism='laplace', delta=NULL, type.DP='pDP',
-                        approx.n.max=FALSE){
+pooledVarDP <- function(..., eps=1, lower.bound, upper.bound,
+                        which.sensitivity='bounded', mechanism='laplace',
+                        delta=NULL, type.DP='pDP', approx.n.max=FALSE){
   samples <- list(...);
   #### INPUT CHECKING ####
-  {
-  J = length(samples);
-  if (is.null(lower.bound)){
-    warning(paste("Lower bound missing and will be calculated from the data.",
-                  "This may represent additional privacy loss."));
-    lower.bounds <- numeric(J);
-    for (j in 1:J){
-      lower.bounds[j] <- min(samples[[j]])
-    }
-    lower.bound <- min(lower.bounds);
-  } else if (length(lower.bound)!=1) stop("Length of lower.bound must be 1.");
-  if (is.null(upper.bound)){
-    warning(paste("Upper bound missing and will be calculated from the data.",
-                  "This may represent additional privacy loss."));
-    upper.bounds <- numeric(J);
-    for (j in 1:J){
-      upper.bounds[j] <- max(samples[[j]])
-    }
-    upper.bound <- max(upper.bounds);
-  } else if (length(upper.bound)!=1) stop("Length of upper.bound must be 1.");
+  {J = length(samples);
+  if (length(lower.bound)!=1) stop("Length of lower.bound must be 1.");
+  if (length(upper.bound)!=1) stop("Length of upper.bound must be 1.");
 
   for (j in 1:J){
     samples[[j]][samples[[j]]<lower.bound] <- lower.bound;
     samples[[j]][samples[[j]]>upper.bound] <- upper.bound;
-    # if (any(samples[[j]]<lower.bound || any(samples[[j]]>upper.bound))){
-    #   stop("Each element in samples must be contained in (lower.bounds, upper.bounds).")
-    # }
   }
 
   if (mechanism=='gaussian'){
@@ -897,6 +792,12 @@ pooledVarDP <- function(..., eps=1, which.sensitivity='bounded',
 #' @param ... Two or more matrices, each with two columns from which to compute
 #'   the pooled covariance.
 #' @param eps Positive real number defining the epsilon privacy budget.
+#' @param lower.bound1,lower.bound2 Real numbers giving the global or public
+#'   lower bounds over the first and second columns of all input data,
+#'   respectively.
+#' @param upper.bound1,upper.bound2 Real numbers giving the global or public
+#'   upper bounds over the first and second columns of all input data,
+#'   respectively.
 #' @param which.sensitivity String indicating which type of sensitivity to use.
 #'   Can be one of {'bounded', 'unbounded', 'both'}. If 'bounded' (default),
 #'   returns result plus noise based on bounded definition for differential
@@ -906,12 +807,6 @@ pooledVarDP <- function(..., eps=1, which.sensitivity='bounded',
 #'   individually satisfies differential privacy at level eps, but may not do so
 #'   collectively and in composition. Care must be taken not to violate
 #'   differential privacy in this case.
-#' @param lower.bound1,lower.bound2 Real numbers giving the global or public
-#'   lower bounds over the first and second columns of all input data,
-#'   respectively.
-#' @param upper.bound1,upper.bound2 Real numbers giving the global or public
-#'   upper bounds over the first and second columns of all input data,
-#'   respectively.
 #' @param mechanism String indicating which mechanism to use for differential
 #'   privacy. Currently the following mechanisms are supported: {'laplace',
 #'   'gaussian'}. See \code{\link{LaplaceMechanism}} and
@@ -931,12 +826,11 @@ pooledVarDP <- function(..., eps=1, which.sensitivity='bounded',
 #' @examples
 #' x1 <- matrix(c(1,4,-2,8,-6,-3),ncol=2)
 #' x2 <- matrix(c(1,2,-5,7),ncol=2)
-#' pooledVarDP(x1,x2,eps=1,which.sensitivity='bounded',
-#'   lower.bound1=-10,upper.bound1=10,lower.bound2=-10,upper.bound2=10,
-#'   mechanism='laplace')
-#' pooledVarDP(x1,x2,eps=1,which.sensitivity='unbounded',
-#'   lower.bound1=-10,upper.bound1=10,lower.bound2=-10,upper.bound2=10,
-#'   mechanism='gaussian',delta=0.5,type.DP='aDP',approx.n.max=TRUE)
+#' pooledVarDP(x1,x2,eps=1,lower.bound1=-10,upper.bound1=10,lower.bound2=-10,
+#'   upper.bound2=10,which.sensitivity='bounded',mechanism='laplace')
+#' pooledVarDP(x1,x2,eps=1,lower.bound1=-10,upper.bound1=10,lower.bound2=-10,
+#'   upper.bound2=10,which.sensitivity='unbounded',mechanism='gaussian',
+#'   delta=0.5,type.DP='aDP',approx.n.max=TRUE)
 #'
 #' @references \insertRef{Dwork2006a}{DPpack}
 #'
@@ -947,68 +841,24 @@ pooledVarDP <- function(..., eps=1, which.sensitivity='bounded',
 #' \insertRef{DPtextbook}{DPpack}
 #'
 #' @export
-pooledCovDP <- function(..., eps=1, which.sensitivity='bounded',
-                        lower.bound1=NULL, upper.bound1=NULL,
-                        lower.bound2=NULL, upper.bound2=NULL,
+pooledCovDP <- function(..., eps=1, lower.bound1, upper.bound1, lower.bound2,
+                        upper.bound2, which.sensitivity='bounded',
                         mechanism='laplace', delta=NULL, type.DP='pDP',
                         approx.n.max=FALSE){
   samples <- list(...);
   #### INPUT CHECKING ####
-  {
-  J = length(samples);
-  if (is.null(lower.bound1)){
-    warning("Lower bound for first column missing and will be calculated from the data.
-            This may represent additional privacy loss.");
-    lower.bounds1 <- numeric(J);
-    for (j in 1:J){
-      lower.bounds1[j] <- min(samples[[j]][,1]);
-    }
-    lower.bound1 <- min(lower.bounds1);
-  } else if (length(lower.bound1)!=1) stop("Length of lower.bound1 must be 1.");
-  if (is.null(lower.bound2)){
-    warning("Lower bound for second column missing and will be calculated from the data.
-            This may represent additional privacy loss.");
-    lower.bounds2 <- numeric(J);
-    for (j in 1:J){
-      lower.bounds2[j] <- min(samples[[j]][,2]);
-    }
-    lower.bound2 <- min(lower.bounds2);
-  } else if (length(lower.bound2)!=1) stop("Length of lower.bound2 must be 1.");
-  if (is.null(upper.bound1)){
-    warning("Upper bound for first column missing and will be calculated from the data.
-            This may represent additional privacy loss.");
-    upper.bounds1 <- numeric(J);
-    for (j in 1:J){
-      upper.bounds1[j] <- max(samples[[j]][,1]);
-    }
-    upper.bound1 <- max(upper.bounds1);
-  } else if (length(upper.bound1)!=1) stop("Length of upper.bound1 must be 1.");
-  if (is.null(upper.bound2)){
-    warning("Upper bound for second column missing and will be calculated from the data.
-            This may represent additional privacy loss.");
-    upper.bounds2 <- numeric(J);
-    for (j in 1:J){
-      upper.bounds2[j] <- max(samples[[j]][,2]);
-    }
-    upper.bound2 <- max(upper.bounds2);
-  } else if (length(upper.bound2)!=1) stop("Length of upper.bound2 must be 1.");
+  {J = length(samples);
+  if (length(lower.bound1)!=1) stop("Length of lower.bound1 must be 1.");
+  if (length(lower.bound2)!=1) stop("Length of lower.bound2 must be 1.");
+  if (length(upper.bound1)!=1) stop("Length of upper.bound1 must be 1.");
+  if (length(upper.bound2)!=1) stop("Length of upper.bound2 must be 1.");
 
   for (j in 1:J){
     samples[[j]][samples[[j]][,1]<lower.bound1,1] <- lower.bound1;
     samples[[j]][samples[[j]][,1]>upper.bound1,1] <- upper.bound1;
     samples[[j]][samples[[j]][,2]<lower.bound2,2] <- lower.bound2;
     samples[[j]][samples[[j]][,2]>upper.bound2,2] <- upper.bound2;
-    # if (any(samples[[j]][,1]<lower.bound1 || any(samples[[j]][,1]>upper.bound1))){
-    #   stop("Each element in first column of samples must be contained in
-    #        (lower.bound1, upper.bound1).")
-    # }
   }
-  # for (j in 1:J){
-  #   if (any(samples[[j]][,2]<lower.bound2 || any(samples[[j]][,2]>upper.bound2))){
-  #     stop("Each element in second column of samples must be contained in
-  #          (lower.bound2, upper.bound2).")
-  #   }
-  # }
 
   if (mechanism=='gaussian'){
     if (is.null(delta)){
@@ -1054,6 +904,8 @@ pooledCovDP <- function(..., eps=1, which.sensitivity='bounded',
 #' @param x Numeric vector of which the quantile will be taken.
 #' @param quant Real number between 0 and 1 indicating which quantile to return.
 #' @param eps Positive real number defining the epsilon privacy budget.
+#' @param lower.bound Real number giving the global or public lower bound of x.
+#' @param upper.bound Real number giving the global or public upper bound of x.
 #' @param which.sensitivity String indicating which type of sensitivity to use.
 #'   Can be one of {'bounded', 'unbounded', 'both'}. If 'bounded' (default),
 #'   returns result plus noise based on bounded definition for differential
@@ -1063,8 +915,6 @@ pooledCovDP <- function(..., eps=1, which.sensitivity='bounded',
 #'   individually satisfies differential privacy at level eps, but may not do so
 #'   collectively and in composition. Care must be taken not to violate
 #'   differential privacy in this case.
-#' @param lower.bound Real number giving the global or public lower bound of x.
-#' @param upper.bound Real number giving the global or public upper bound of x.
 #' @param mechanism String indicating which mechanism to use for differential
 #'   privacy. Currently the following mechanisms are supported: {'exponential'}.
 #'   See \code{\link{ExponentialMechanism}} for a description of the supported
@@ -1074,10 +924,10 @@ pooledCovDP <- function(..., eps=1, which.sensitivity='bounded',
 #' @return A list of the sanitized quantiles based on the bounded and/or
 #'   unbounded definitions of differential privacy.
 #' @examples
-#' quantileDP(c(1,1,-2,8,-6),.25,1,which.sensitivity='bounded',
-#'   lower.bound=-10,upper.bound=10,mechanism='exponential')
-#' quantileDP(c(1,1,-2,8,-6),.75,1,which.sensitivity='unbounded',
-#'   lower.bound=-10,upper.bound=10,mechanism='exponential')
+#' quantileDP(c(1,1,-2,8,-6),.25,1,lower.bound=-10,upper.bound=10,
+#'   which.sensitivity='bounded',mechanism='exponential')
+#' quantileDP(c(1,1,-2,8,-6),.75,1,lower.bound=-10,upper.bound=10,
+#'   which.sensitivity='unbounded',mechanism='exponential')
 #'
 #' @references \insertRef{Dwork2006a}{DPpack}
 #'
@@ -1086,30 +936,17 @@ pooledCovDP <- function(..., eps=1, which.sensitivity='bounded',
 #'   \insertRef{Smith2011a}{DPpack}
 #'
 #' @export
-quantileDP <- function (x, quant, eps, which.sensitivity='bounded',
-                        lower.bound=NULL, upper.bound=NULL,
-                        mechanism='exponential', delta=NULL){
+quantileDP <- function (x, quant, eps, lower.bound, upper.bound,
+                        which.sensitivity='bounded', mechanism='exponential',
+                        delta=NULL){
   # NOTE: See
   # https://github.com/IBM/differential-privacy-library/blob/main/diffprivlib/tools/quantiles.py
   #
   # NOTE: The data access and privacy layers are somewhat mixed.
 
   #### INPUT CHECKING ####
-  {
-  if (is.null(upper.bound)){
-    warning(paste("Upper bound missing and will be calculated from the data.",
-                  "This may represent additional privacy loss."));
-    upper.bound <- max(x);
-  } else{
-    if (length(upper.bound)!=1) stop("Length of upper.bound must be 1.");
-  }
-  if (is.null(lower.bound)){
-    warning(paste("Lower bound missing and will be calculated from the data.",
-                  "This may represent additional privacy loss."));
-    lower.bound <- min(x);
-  } else{
-    if (length(lower.bound)!=1) stop("Length of lower.bound must be 1.");
-  }
+  {if (length(upper.bound)!=1) stop("Length of upper.bound must be 1.");
+  if (length(lower.bound)!=1) stop("Length of lower.bound must be 1.");
   x[x<lower.bound] <- lower.bound;
   x[x>upper.bound] <- upper.bound;
   if (quant<0 || quant>1) stop("quant must be between 0 and 1.")
@@ -1163,6 +1000,8 @@ quantileDP <- function (x, quant, eps, which.sensitivity='bounded',
 #'
 #' @param x Numeric vector of which the median will be taken.
 #' @param eps Positive real number defining the epsilon privacy budget.
+#' @param lower.bound Real number giving the global or public lower bound of x.
+#' @param upper.bound Real number giving the global or public upper bound of x.
 #' @param which.sensitivity String indicating which type of sensitivity to use.
 #'   Can be one of {'bounded', 'unbounded', 'both'}. If 'bounded' (default),
 #'   returns result plus noise based on bounded definition for differential
@@ -1172,8 +1011,6 @@ quantileDP <- function (x, quant, eps, which.sensitivity='bounded',
 #'   individually satisfies differential privacy at level eps, but may not do so
 #'   collectively and in composition. Care must be taken not to violate
 #'   differential privacy in this case.
-#' @param lower.bound Real number giving the global or public lower bound of x.
-#' @param upper.bound Real number giving the global or public upper bound of x.
 #' @param mechanism String indicating which mechanism to use for differential
 #'   privacy. Currently the following mechanisms are supported: {'exponential'}.
 #'   See \code{\link{ExponentialMechanism}} for a description of the supported
@@ -1183,10 +1020,10 @@ quantileDP <- function (x, quant, eps, which.sensitivity='bounded',
 #' @return A list of the sanitized medians based on the bounded and/or unbounded
 #'   definitions of differential privacy.
 #' @examples
-#' medianDP(c(1,1,-2,8,-6),1,which.sensitivity='bounded',
-#'   lower.bound=-10,upper.bound=10,mechanism='exponential')
-#' medianDP(c(1,1,-2,8,-6),1,which.sensitivity='unbounded',
-#'   lower.bound=-10,upper.bound=10,mechanism='exponential')
+#' medianDP(c(1,1,-2,8,-6),1,lower.bound=-10,upper.bound=10,
+#'   which.sensitivity='bounded',mechanism='exponential')
+#' medianDP(c(1,1,-2,8,-6),1,lower.bound=-10,upper.bound=10,
+#'   which.sensitivity='unbounded',mechanism='exponential')
 #'
 #' @references \insertRef{Dwork2006a}{DPpack}
 #'
@@ -1195,11 +1032,11 @@ quantileDP <- function (x, quant, eps, which.sensitivity='bounded',
 #'   \insertRef{Smith2011a}{DPpack}
 #'
 #' @export
-medianDP <- function (x, eps, which.sensitivity='bounded',
-                      lower.bound=NULL, upper.bound=NULL,
-                      mechanism='exponential', delta=NULL){
-  sanitized.median <- quantileDP(x,.5,eps,which.sensitivity,lower.bound,
-                                 upper.bound,mechanism,delta);
+medianDP <- function (x, eps, lower.bound, upper.bound,
+                      which.sensitivity='bounded', mechanism='exponential',
+                      delta=NULL){
+  sanitized.median <- quantileDP(x,.5,eps,lower.bound,upper.bound,
+                                 which.sensitivity,mechanism,delta);
   class(sanitized.median)<-"Sanitized Median";
   return(sanitized.median);
   ##########

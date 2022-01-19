@@ -447,7 +447,7 @@ set.seed(round(runif(1,0,100)))
 
 ksvmdp <- svmDP$new('l2', eps, lambda, kernel='Gaussian', D)
 
-ksvmdp$fit(X,y,upper.bounds=upper.bounds,lower.bounds=lower.bounds)
+ksvmdp$fit(X,y) # Note bounds unnecessary for Gaussian kernel
 
 theta <- ksvmdp$coeff
 
@@ -543,7 +543,8 @@ set.seed(round(runif(1,0,100)))
 ksvmdp <- svmDP$new('l2', eps, lambda, kernel='Gaussian',
                                      D, gamma=gamma)
 
-ksvmdp$fit(X,y,upper.bounds=upper.bounds,lower.bounds=lower.bounds)
+# Note bounds unnecessary with Gaussian kernel
+ksvmdp$fit(X,y)
 
 theta <- ksvmdp$coeff
 

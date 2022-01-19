@@ -68,8 +68,8 @@ ermdp <- EmpiricalRiskMinimizationDP.CMS$new(h, loss, regularizer, eps,
 # Assume 2 columns of X each bounded between -1 and 1
 # Assume y is 0 or 1 labels for each row of X
 # Assume ermdp is previously constructed object as in $new example
-upper.bounds <- c( 1, 1, 1) # Bounds for X and y
-lower.bounds <- c(-1,-1, 0) # Bounds for X and y
+upper.bounds <- c( 1, 1) # Bounds for X and y
+lower.bounds <- c(-1,-1) # Bounds for X and y
 ermdp$fit(X, y, upper.bounds, lower.bounds)
 ermdp$coeff # Gets private coefficients
 
@@ -287,8 +287,8 @@ are stored in coeff.
 \if{html}{\out{<div class="r">}}\preformatted{EmpiricalRiskMinimizationDP.CMS$fit(
   X,
   y,
-  upper.bounds = NULL,
-  lower.bounds = NULL,
+  upper.bounds,
+  lower.bounds,
   add.bias = FALSE
 )}\if{html}{\out{</div>}}
 }
@@ -323,8 +323,8 @@ Defaults to FALSE.}
 # Assume 2 columns of X each bounded between -1 and 1
 # Assume y is 0 or 1 labels for each row of X
 # Assume ermdp is previously constructed object as in $new example
-upper.bounds <- c( 1, 1, 1) # Bounds for X and y
-lower.bounds <- c(-1,-1, 0) # Bounds for X and y
+upper.bounds <- c( 1, 1) # Bounds for X and y
+lower.bounds <- c(-1,-1) # Bounds for X and y
 ermdp$fit(X, y, upper.bounds, lower.bounds)
 ermdp$coeff # Gets private coefficients
 

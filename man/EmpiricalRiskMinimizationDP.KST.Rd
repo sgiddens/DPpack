@@ -70,8 +70,8 @@ ermdp <- EmpiricalRiskMinimizationDP.KST$new(h, loss, 'l2', eps, delta,
 #   the second being between -1 and 1
 # Assume y is a matrix with values between -2 and 2
 # Assume ermdp is previously constructed object as in $new example
-upper.bounds <- c( 1, 1, 2) # Bounds for X and y
-lower.bounds <- c(1,-1, -2) # Bounds for X and y
+upper.bounds <- c(1, 1, 2) # Bounds for X and y
+lower.bounds <- c(1,-1,-2) # Bounds for X and y
 ermdp$fit(X, y, upper.bounds, lower.bounds)
 ermdp$coeff # Gets private coefficients
 
@@ -298,8 +298,8 @@ coefficients are stored in coeff.
 \if{html}{\out{<div class="r">}}\preformatted{EmpiricalRiskMinimizationDP.KST$fit(
   X,
   y,
-  upper.bounds = NULL,
-  lower.bounds = NULL,
+  upper.bounds,
+  lower.bounds,
   add.bias = FALSE
 )}\if{html}{\out{</div>}}
 }
@@ -337,8 +337,8 @@ Defaults to FALSE.}
 #   the second being between -1 and 1
 # Assume y is a matrix with values between -2 and 2
 # Assume ermdp is previously constructed object as in $new example
-upper.bounds <- c( 1, 1, 2) # Bounds for X and y
-lower.bounds <- c(1,-1, -2) # Bounds for X and y
+upper.bounds <- c(1, 1, 2) # Bounds for X and y
+lower.bounds <- c(1,-1,-2) # Bounds for X and y
 ermdp$fit(X, y, upper.bounds, lower.bounds)
 ermdp$coeff # Gets private coefficients
 

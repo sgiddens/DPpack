@@ -7,9 +7,9 @@
 pooledVarDP(
   ...,
   eps = 1,
+  lower.bound,
+  upper.bound,
   which.sensitivity = "bounded",
-  lower.bound = NULL,
-  upper.bound = NULL,
   mechanism = "laplace",
   delta = NULL,
   type.DP = "pDP",
@@ -21,6 +21,12 @@ pooledVarDP(
 
 \item{eps}{Positive real number defining the epsilon privacy budget.}
 
+\item{lower.bound}{Real number giving the global or public lower bound of the
+input data.}
+
+\item{upper.bound}{Real number giving the global or public upper bound of the
+input data.}
+
 \item{which.sensitivity}{String indicating which type of sensitivity to use.
 Can be one of {'bounded', 'unbounded', 'both'}. If 'bounded' (default),
 returns result plus noise based on bounded definition for differential
@@ -30,12 +36,6 @@ definition. If 'both', returns result based on both methods
 individually satisfies differential privacy at level eps, but may not do so
 collectively and in composition. Care must be taken not to violate
 differential privacy in this case.}
-
-\item{lower.bound}{Real number giving the global or public lower bound of the
-input data.}
-
-\item{upper.bound}{Real number giving the global or public upper bound of the
-input data.}
 
 \item{mechanism}{String indicating which mechanism to use for differential
 privacy. Currently the following mechanisms are supported: {'laplace',
@@ -64,10 +64,10 @@ This function computes the differentially private pooled variance from two or
 more vectors of data at user-specified privacy levels of epsilon and delta.
 }
 \examples{
-pooledVarDP(c(1,4,-2,8,-6),c(1,2),c(-5,-7),eps=1,which.sensitivity='bounded',
-  lower.bound=-10,upper.bound=10,mechanism='laplace')
+pooledVarDP(c(1,4,-2,8,-6),c(1,2),c(-5,-7),eps=1,lower.bound=-10,
+  upper.bound=10,which.sensitivity='bounded',mechanism='laplace')
 pooledVarDP(c(1,4,-2,8,-6),c(1,2),c(-5,-7),eps=1,
-  which.sensitivity='unbounded',lower.bound=-10,upper.bound=10,
+  lower.bound=-10,upper.bound=10,which.sensitivity='unbounded',
   mechanism='gaussian',delta=0.5,type.DP='aDP',approx.n.max=TRUE)
 
 }
