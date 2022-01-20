@@ -10,8 +10,8 @@ sdDP(
   lower.bounds,
   upper.bounds,
   which.sensitivity = "bounded",
-  mechanism = "laplace",
-  delta = NULL,
+  mechanism = "Laplace",
+  delta = 0,
   type.DP = "pDP",
   alloc.proportions = NULL
 )
@@ -41,13 +41,13 @@ collectively and in composition. Care must be taken not to violate
 differential privacy in this case.}
 
 \item{mechanism}{String indicating which mechanism to use for differential
-privacy. Currently the following mechanisms are supported: {'laplace',
-'gaussian'}. See \code{\link{LaplaceMechanism}} and
+privacy. Currently the following mechanisms are supported: {'Laplace',
+'Gaussian'}. See \code{\link{LaplaceMechanism}} and
 \code{\link{GaussianMechanism}} for a description of the supported
 mechanisms.}
 
 \item{delta}{Nonnegative real number defining the delta privacy parameter. If
-0, reduces to eps-DP and the Laplace mechanism is used.}
+0 (default), reduces to eps-DP and the Laplace mechanism is used.}
 
 \item{type.DP}{String indicating the type of differential privacy desired for
 the Gaussian mechanism (if selected). Can be either 'pDP' for probabilistic
@@ -78,7 +78,7 @@ privacy at the specified level.
 \examples{
 sdDP(c(1,4,-2,8,-6),1,lower.bounds=-10,upper.bounds=10)
 sdDP(c(1,4,-2,8,-6),1,lower.bounds=-10,upper.bounds=10,
-  which.sensitivity='unbounded',mechanism='gaussian',delta=0.5,type.DP='aDP')
+  which.sensitivity='unbounded',mechanism='Gaussian',delta=0.5,type.DP='aDP')
 sdDP(matrix(c(1,4,-2,8,-6,0),ncol=2),1,lower.bounds=c(-10,-10),
   upper.bounds=c(10,10),which.sensitivity='bounded',alloc.proportions=c(1,2))
 

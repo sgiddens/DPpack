@@ -107,9 +107,8 @@ to ensure differential privacy, the function must be convex.}
 \item{\code{eps}}{Positive real number defining the epsilon privacy budget. If
 set to Inf, runs algorithm without differential privacy.}
 
-\item{\code{delta}}{Nonnegative real number defining the delta parameter for
-approximate differential privacy. If set to 0, pure differential
-privacy is used.}
+\item{\code{delta}}{Nonnegative real number defining the delta privacy parameter.
+If 0, reduces to pure eps-DP.}
 
 \item{\code{gamma}}{Nonnegative real number representing the regularization
 constant.}

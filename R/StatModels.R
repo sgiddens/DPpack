@@ -1308,9 +1308,8 @@ EmpiricalRiskMinimizationDP.KST <- R6::R6Class("EmpiricalRiskMinimizationDP.KST"
   #' @field eps Positive real number defining the epsilon privacy budget. If
   #'   set to Inf, runs algorithm without differential privacy.
   eps = NULL,
-  #' @field delta Nonnegative real number defining the delta parameter for
-  #'   approximate differential privacy. If set to 0, pure differential
-  #'   privacy is used.
+  #' @field delta Nonnegative real number defining the delta privacy parameter.
+  #'   If 0, reduces to pure eps-DP.
   delta = NULL,
   #' @field domain List of functions representing the constraints on the
   #'   search space for the objective perturbation algorithm. Must contain two
@@ -1355,9 +1354,8 @@ EmpiricalRiskMinimizationDP.KST <- R6::R6Class("EmpiricalRiskMinimizationDP.KST"
   #'   to ensure differential privacy, the function must be convex.
   #' @param eps Positive real number defining the epsilon privacy budget. If
   #'   set to Inf, runs algorithm without differential privacy.
-  #' @param delta Nonnegative real number defining the delta parameter for
-  #'   approximate differential privacy. If set to 0, pure differential
-  #'   privacy is used.
+  #' @param delta Nonnegative real number defining the delta privacy parameter.
+  #'   If 0, reduces to pure eps-DP.
   #' @param domain List of functions representing the constraints on the
   #'   search space for the objective perturbation algorithm of form as given
   #'   in domain field description.
@@ -1482,7 +1480,7 @@ EmpiricalRiskMinimizationDP.KST <- R6::R6Class("EmpiricalRiskMinimizationDP.KST"
     p <- ncol(X)
     if (is.null(self$eps) || is.infinite(self$eps)) Delta <- 0
     else Delta <- 2*self$lambda/self$eps
-    if (is.null(self$delta) || self$delta==0){
+    if (self$delta==0){
       norm.b <- rgamma(1, p, rate=self$eps/(2*self$zeta))
       direction.b <- rnorm(p)
       direction.b <- direction.b/sqrt(sum(direction.b^2))
@@ -1706,9 +1704,8 @@ LinearRegressionDP <- R6::R6Class("LinearRegressionDP",
   #'   to ensure differential privacy, the function must be convex.
   #' @param eps Positive real number defining the epsilon privacy budget. If
   #'   set to Inf, runs algorithm without differential privacy.
-  #' @param delta Nonnegative real number defining the delta parameter for
-  #'   approximate differential privacy. If set to 0, pure differential
-  #'   privacy is used.
+  #' @param delta Nonnegative real number defining the delta privacy parameter.
+    #'   If 0, reduces to pure eps-DP.
   #' @param gamma Nonnegative real number representing the regularization
   #'   constant.
   #' @param regularizer.gr Optional function representing the gradient of the

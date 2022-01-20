@@ -11,8 +11,7 @@ quantileDP(
   lower.bound,
   upper.bound,
   which.sensitivity = "bounded",
-  mechanism = "exponential",
-  delta = NULL
+  mechanism = "exponential"
 )
 }
 \arguments{
@@ -40,9 +39,6 @@ differential privacy in this case.}
 privacy. Currently the following mechanisms are supported: {'exponential'}.
 See \code{\link{ExponentialMechanism}} for a description of the supported
 mechanisms.}
-
-\item{delta}{Nonnegative real number defining the delta privacy parameter. If
-0, reduces to eps-DP and the Laplace mechanism is used.}
 }
 \value{
 A list of the sanitized quantiles based on the bounded and/or

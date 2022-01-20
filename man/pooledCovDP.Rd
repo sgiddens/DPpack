@@ -12,8 +12,8 @@ pooledCovDP(
   lower.bound2,
   upper.bound2,
   which.sensitivity = "bounded",
-  mechanism = "laplace",
-  delta = NULL,
+  mechanism = "Laplace",
+  delta = 0,
   type.DP = "pDP",
   approx.n.max = FALSE
 )
@@ -43,13 +43,13 @@ collectively and in composition. Care must be taken not to violate
 differential privacy in this case.}
 
 \item{mechanism}{String indicating which mechanism to use for differential
-privacy. Currently the following mechanisms are supported: {'laplace',
-'gaussian'}. See \code{\link{LaplaceMechanism}} and
+privacy. Currently the following mechanisms are supported: {'Laplace',
+'Gaussian'}. See \code{\link{LaplaceMechanism}} and
 \code{\link{GaussianMechanism}} for a description of the supported
 mechanisms.}
 
 \item{delta}{Nonnegative real number defining the delta privacy parameter. If
-0, reduces to eps-DP and the Laplace mechanism is used.}
+0 (default), reduces to eps-DP and the Laplace mechanism is used.}
 
 \item{type.DP}{String indicating the type of differential privacy desired for
 the Gaussian mechanism (if selected). Can be either 'pDP' for probabilistic
@@ -73,9 +73,9 @@ epsilon and delta.
 x1 <- matrix(c(1,4,-2,8,-6,-3),ncol=2)
 x2 <- matrix(c(1,2,-5,7),ncol=2)
 pooledVarDP(x1,x2,eps=1,lower.bound1=-10,upper.bound1=10,lower.bound2=-10,
-  upper.bound2=10,which.sensitivity='bounded',mechanism='laplace')
+  upper.bound2=10,which.sensitivity='bounded',mechanism='Laplace')
 pooledVarDP(x1,x2,eps=1,lower.bound1=-10,upper.bound1=10,lower.bound2=-10,
-  upper.bound2=10,which.sensitivity='unbounded',mechanism='gaussian',
+  upper.bound2=10,which.sensitivity='unbounded',mechanism='Gaussian',
   delta=0.5,type.DP='aDP',approx.n.max=TRUE)
 
 }
