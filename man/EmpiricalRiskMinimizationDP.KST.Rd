@@ -40,7 +40,7 @@ regularizer must be convex.
 ## ------------------------------------------------
 
 # Construct object for linear regression
-h <- function(X, coeff) X\%*\%coeff
+mapXy <- function(X, coeff) X\%*\%coeff
 loss <- function(y.hat, y) (y.hat-y)^2/2
 regularizer <- 'l2' # Alternatively, function(coeff) coeff\%*\%coeff/2
 eps <- 1
@@ -51,13 +51,13 @@ domain <- list("constraints"=function(coeff) coeff\%*\%coeff-length(coeff),
 zeta <- 2*p^(3/2)
 lambda <- p
 gamma <- 1
-h.gr <- function(X, coeff) t(X)
+mapXy.gr <- function(X, coeff) t(X)
 loss.gr <- function(y.hat, y) y.hat-y
 regularizer.gr <- function(coeff) coeff
 
-ermdp <- EmpiricalRiskMinimizationDP.KST$new(h, loss, 'l2', eps, delta,
+ermdp <- EmpiricalRiskMinimizationDP.KST$new(mapXy, loss, 'l2', eps, delta,
                                              domain, zeta, lambda,
-                                             gamma, h.gr, loss.gr,
+                                             gamma, mapXy.gr, loss.gr,
                                              regularizer.gr)
 
 
@@ -93,14 +93,14 @@ predicted.y <- ermdp$predict(Xtest)
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
 \describe{
-\item{\code{h}}{Hypothesis function of the form h(X, coeff), where X is a matrix
-and coeff is a vector or matrix, that returns a column matrix of
-predicted labels for each row of X.}
+\item{\code{mapXy}}{Map function of the form mapXy(X, coeff), where X is a matrix and
+coeff is a vector or matrix, that returns a column matrix of predicted
+labels for each row of X.}
 
-\item{\code{h.gr}}{Function representing the gradient of the hypothesis function
-with respect to the values in coeff and of the same form as h. Should
-be given such that the ith row of the output represents the gradient of
-h with respect to the ith coefficient.}
+\item{\code{mapXy.gr}}{Function representing the gradient of the map function with
+respect to the values in coeff and of the same form as mapXy. Should be given
+such that the ith row of the output represents the gradient of mapXy with
+respect to the ith coefficient.}
 
 \item{\code{loss}}{Loss function of the form loss(y.hat, y), where y.hat and y
 are matrices, that returns a matrix of the same shape as y.hat and y of
@@ -172,7 +172,7 @@ constant.}
 Create a new EmpiricalRiskMinimizationDP.KST object.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{EmpiricalRiskMinimizationDP.KST$new(
-  h,
+  mapXy,
   loss,
   regularizer,
   eps,
@@ -181,7 +181,7 @@ Create a new EmpiricalRiskMinimizationDP.KST object.
   zeta,
   lambda,
   gamma,
-  h.gr = NULL,
+  mapXy.gr = NULL,
   loss.gr = NULL,
   regularizer.gr = NULL
 )}\if{html}{\out{</div>}}
@@ -190,8 +190,7 @@ Create a new EmpiricalRiskMinimizationDP.KST object.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{h}}{Hypothesis function. Must have form as given in h field
-description.}
+\item{\code{mapXy}}{Map function. Must have form as given in mapXy field description.}
 
 \item{\code{loss}}{Loss function. Must have form as given in loss field
 description. Additionally, to ensure differential privacy, it must be
@@ -200,41 +199,41 @@ all \eqn{x_i, y_i, \theta}, and for all \eqn{x_i, y_i, \theta} the
 Hessian of \eqn{l(\theta,x_i,y_i)} must be of rank at most one and its
 Eigenvalues must be bounded above by some value lambda.}
 
-\item{\code{regularizer}}{String or regularization function. If a string, must
-be 'l2', indicating to use l2 regularization. If a function, must have
-form as given in regularizer field description. Additionally, in order
-to ensure differential privacy, the function must be convex.}
+\item{\code{regularizer}}{String or regularization function. If a string, must be
+'l2', indicating to use l2 regularization. If a function, must have form
+as given in regularizer field description. Additionally, in order to
+ensure differential privacy, the function must be convex.}
 
-\item{\code{eps}}{Positive real number defining the epsilon privacy budget. If
-set to Inf, runs algorithm without differential privacy.}
+\item{\code{eps}}{Positive real number defining the epsilon privacy budget. If set
+to Inf, runs algorithm without differential privacy.}
 
 \item{\code{delta}}{Nonnegative real number defining the delta privacy parameter.
 If 0, reduces to pure eps-DP.}
 
-\item{\code{domain}}{List of functions representing the constraints on the
-search space for the objective perturbation algorithm of form as given
-in domain field description.}
+\item{\code{domain}}{List of functions representing the constraints on the search
+space for the objective perturbation algorithm of form as given in domain
+field description.}
 
 \item{\code{zeta}}{Positive real number corresponding to the upper bound of the
 2-norm of the gradient of the loss function with respect to the
 coefficient vector, i.e. \eqn{||l(\theta,x_i,y_i)||\le} zeta for some
 constant zeta for all \eqn{x_i, y_i, \theta}.}
 
-\item{\code{lambda}}{Positive real number corresponding to the upper bound of
-the Eigenvalues of the Hessian of \eqn{l(\theta,x_i,y_i)} for all
-\eqn{x_i, y_i, \theta}.}
+\item{\code{lambda}}{Positive real number corresponding to the upper bound of the
+Eigenvalues of the Hessian of \eqn{l(\theta,x_i,y_i)} for all \eqn{x_i,
+  y_i, \theta}.}
 
 \item{\code{gamma}}{Nonnegative real number representing the regularization
 constant.}
 
-\item{\code{h.gr}}{Optional function representing the gradient of the hypothesis
-function with respect to the values in coeff. Must have form as given
-in h.gr field description. If not given, gradients are not used to
-compute the coefficient values in fitting the model.}
+\item{\code{mapXy.gr}}{Optional function representing the gradient of the map function
+with respect to the values in coeff. Must have form as given in mapXy.gr
+field description. If not given, gradients are not used to compute the
+coefficient values in fitting the model.}
 
 \item{\code{loss.gr}}{Optional function representing the gradient of the loss
-function with respect to y.hat. Must have form as given in loss.gr
-field description. If not given, gradients are not used to compute the
+function with respect to y.hat. Must have form as given in loss.gr field
+description. If not given, gradients are not used to compute the
 coefficient values in fitting the model.}
 
 \item{\code{regularizer.gr}}{Optional function representing the gradient of the
@@ -250,7 +249,7 @@ A new EmpiricalRiskMinimizationDP.KST object.
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
 \preformatted{# Construct object for linear regression
-h <- function(X, coeff) X\%*\%coeff
+mapXy <- function(X, coeff) X\%*\%coeff
 loss <- function(y.hat, y) (y.hat-y)^2/2
 regularizer <- 'l2' # Alternatively, function(coeff) coeff\%*\%coeff/2
 eps <- 1
@@ -261,13 +260,13 @@ domain <- list("constraints"=function(coeff) coeff\%*\%coeff-length(coeff),
 zeta <- 2*p^(3/2)
 lambda <- p
 gamma <- 1
-h.gr <- function(X, coeff) t(X)
+mapXy.gr <- function(X, coeff) t(X)
 loss.gr <- function(y.hat, y) y.hat-y
 regularizer.gr <- function(coeff) coeff
 
-ermdp <- EmpiricalRiskMinimizationDP.KST$new(h, loss, 'l2', eps, delta,
+ermdp <- EmpiricalRiskMinimizationDP.KST$new(mapXy, loss, 'l2', eps, delta,
                                              domain, zeta, lambda,
-                                             gamma, h.gr, loss.gr,
+                                             gamma, mapXy.gr, loss.gr,
                                              regularizer.gr)
 
 }
@@ -285,7 +284,7 @@ model. The function runs the objective perturbation algorithm
 \insertCite{Kifer2012}{DPpack} to generate an objective function. A
 numerical constrained optimization method is then run to find optimal
 coefficients for fitting the model given the training data and
-hyperparameters. The \code{\link{nloptr}} function is used. If h.gr,
+hyperparameters. The \code{\link{nloptr}} function is used. If mapXy.gr,
 loss.gr, and regularizer.gr are all given in the construction of the
 object, the gradient of the objective function and the Jacobian of the
 constraint function are utilized for the algorithm, and the NLOPT_LD_MMA

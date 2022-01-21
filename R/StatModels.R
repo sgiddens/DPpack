@@ -1,7 +1,7 @@
-#' Sigmoid Hypothesis Function
+#' Sigmoid Map Function
 #'
-#' This function implements the sigmoid hypothesis function used for logistic
-#' regression in the form required by
+#' This function implements the sigmoid map function from data X to labels y
+#' used for logistic regression in the form required by
 #' \code{\link{EmpiricalRiskMinimizationDP.CMS}}.
 #'
 #' @param X Matrix of data.
@@ -11,16 +11,16 @@
 #' @examples
 #'   X <- matrix(c(1,2,3,4,5,6),nrow=2)
 #'   coeff <- c(0.5,-1,2)
-#'   h.sigmoid(X,coeff)
+#'   mapXy.sigmoid(X,coeff)
 #'
 #' @keywords internal
 #'
 #' @export
-h.sigmoid <- function(X, coeff) e1071::sigmoid(X%*%coeff)
+mapXy.sigmoid <- function(X, coeff) e1071::sigmoid(X%*%coeff)
 
-#' Sigmoid Hypothesis Function Gradient
+#' Sigmoid Map Function Gradient
 #'
-#' This function implements the gradient of the sigmoid hypothesis function with
+#' This function implements the gradient of the sigmoid map function with
 #' respect to coeff used for logistic regression in the form required by
 #' \code{\link{EmpiricalRiskMinimizationDP.CMS}}.
 #'
@@ -31,54 +31,54 @@ h.sigmoid <- function(X, coeff) e1071::sigmoid(X%*%coeff)
 #' @examples
 #'   X <- matrix(c(1,2,3,4,5,6),nrow=2)
 #'   coeff <- c(0.5,-1,2)
-#'   h.gr.sigmoid(X,coeff)
+#'   mapXy.gr.sigmoid(X,coeff)
 #'
 #' @keywords internal
 #'
 #' @export
-h.gr.sigmoid <- function(X, coeff) as.numeric(e1071::dsigmoid(X%*%coeff))*t(X)
+mapXy.gr.sigmoid <- function(X, coeff) as.numeric(e1071::dsigmoid(X%*%coeff))*t(X)
 
-#' Linear Hypothesis Function
+#' Linear Map Function
 #'
-#' This function implements the linear hypothesis function used for linear SVM
-#' and linear regression in the form required by
+#' This function implements the linear map function from data X to labels y used
+#' for linear SVM and linear regression in the form required by
 #' \code{\link{EmpiricalRiskMinimizationDP.CMS}} and
 #' \code{\link{EmpiricalRiskMinimizationDP.KST}}.
 #'
 #' @param X Matrix of data.
 #' @param coeff Vector or matrix of coefficients or weights.
-#' @return Matrix of values of the linear hypothesis function corresponding to
-#'   each row of X.
+#' @return Matrix of values of the linear map function corresponding to each row
+#'   of X.
 #' @examples
 #'   X <- matrix(c(1,2,3,4,5,6),nrow=2)
 #'   coeff <- c(0.5,-1,2)
-#'   h.linear(X,coeff)
+#'   mapXy.linear(X,coeff)
 #'
 #' @keywords internal
 #'
 #' @export
-h.linear <- function(X, coeff) X%*%coeff
+mapXy.linear <- function(X, coeff) X%*%coeff
 
-#' Linear Hypothesis Function Gradient
+#' Linear Map Function Gradient
 #'
-#' This function implements the gradient of the linear hypothesis function with
-#' respect to coeff used for linear SVM and linear regression in the form
-#' required by \code{\link{EmpiricalRiskMinimizationDP.CMS}} and
+#' This function implements the gradient of the linear map function with respect
+#' to coeff used for linear SVM and linear regression in the form required by
+#' \code{\link{EmpiricalRiskMinimizationDP.CMS}} and
 #' \code{\link{EmpiricalRiskMinimizationDP.KST}}.
 #'
 #' @param X Matrix of data.
 #' @param coeff Vector or matrix of coefficients or weights.
-#' @return Matrix of values of the gradient of the linear hypothesis function
-#'   with respect to each value of coeff.
+#' @return Matrix of values of the gradient of the linear map function with
+#'   respect to each value of coeff.
 #' @examples
 #'   X <- matrix(c(1,2,3,4,5,6),nrow=2)
 #'   coeff <- c(0.5,-1,2)
-#'   h.gr.linear(X,coeff)
+#'   mapXy.gr.linear(X,coeff)
 #'
 #' @keywords internal
 #'
 #' @export
-h.gr.linear <- function(X, coeff) t(X)
+mapXy.gr.linear <- function(X, coeff) t(X)
 
 #' Cross Entropy Loss Function
 #'
@@ -353,12 +353,12 @@ tune_model<- function(models, X, y, upper.bounds, lower.bounds,
 #'   \code{\link{LogisticRegressionDP}} for an example of this type of
 #'   structure.
 #'
-#' @details A new model object of this class accepts as inputs a hypothesis
-#'   function, a loss function, a regularizer, an epsilon value for differential
-#'   privacy, a lambda value that scales the regularizer, and a constant c
-#'   meeting certain constraints related to the loss function. The model can
-#'   then be fit with a dataset X (given as a data.frame), a set of binary
-#'   labels y for each row of X, as well as upper and lower bounds on the
+#' @details A new model object of this class accepts as inputs a map from data X
+#'   to labels y, a loss function, a regularizer, an epsilon value for
+#'   differential privacy, a lambda value that scales the regularizer, and a
+#'   constant c meeting certain constraints related to the loss function. The
+#'   model can then be fit with a dataset X (given as a data.frame), a set of
+#'   binary labels y for each row of X, as well as upper and lower bounds on the
 #'   possible values for each column of X and for y. In fitting, the model
 #'   stores a vector of coefficients coeff which satisfy epsilon-level
 #'   differential privacy. These can be released directly, or used in
@@ -386,15 +386,15 @@ tune_model<- function(models, X, y, upper.bounds, lower.bounds,
 #' @export
 EmpiricalRiskMinimizationDP.CMS <- R6::R6Class("EmpiricalRiskMinimizationDP.CMS",
   public=list(
-  #' @field h Hypothesis function of the form h(X, coeff), where X is a matrix
-  #'   and coeff is a vector or matrix, that returns a column matrix of
-  #'   predicted labels for each row of X.
-  h = NULL,
-  #' @field h.gr Function representing the gradient of the hypothesis function
-  #'   with respect to the values in coeff and of the same form as h. Should be
-  #'   given such that the ith row of the output represents the gradient of h
-  #'   with respect to the ith coefficient.
-  h.gr = NULL,
+  #' @field mapXy Map function of the form mapXy(X, coeff), where X is a matrix and
+  #'   coeff is a vector or matrix, that returns a column matrix of predicted
+  #'   labels for each row of X.
+  mapXy = NULL,
+  #' @field mapXy.gr Function representing the gradient of the map function with
+  #'   respect to the values in coeff and of the same form as mapXy. Should be given
+  #'   such that the ith row of the output represents the gradient of mapXy with
+  #'   respect to the ith coefficient.
+  mapXy.gr = NULL,
   #' @field loss Loss function of the form loss(y.hat, y), where y.hat and y are
   #'   matrices, that returns a matrix of the same shape as y.hat and y of loss
   #'   function values for the empirical risk minimization model with predicted
@@ -464,8 +464,7 @@ EmpiricalRiskMinimizationDP.CMS <- R6::R6Class("EmpiricalRiskMinimizationDP.CMS"
   #'   used in converting data into transform space.
   prefilter=NULL,
   #' @description Create a new EmpiricalRiskMinimizationDP.CMS object.
-  #' @param h Hypothesis function. Must have form as given in h field
-  #'   description.
+  #' @param mapXy Map function. Must have form as given in mapXy field description.
   #' @param loss Loss function. Must have form as given in loss field
   #'   description. Additionally, in order to ensure differential privacy, the
   #'   function must be convex and doubly differentiable w.r.t. y.hat with
@@ -482,10 +481,10 @@ EmpiricalRiskMinimizationDP.CMS <- R6::R6Class("EmpiricalRiskMinimizationDP.CMS"
   #'   constant.
   #' @param c Positive real number such that |loss''(y.hat,y)|<=c for all
   #'   possible values of y.hat and y.
-  #' @param h.gr Optional function representing the gradient of the hypothesis
-  #'   function with respect to the values in coeff. Must have form as given in
-  #'   h.gr field description. If not given, gradients are not used to compute
-  #'   the coefficient values in fitting the model.
+  #' @param mapXy.gr Optional function representing the gradient of the map function
+  #'   with respect to the values in coeff. Must have form as given in mapXy.gr
+  #'   field description. If not given, gradients are not used to compute the
+  #'   coefficient values in fitting the model.
   #' @param loss.gr Optional function representing the gradient of the loss
   #'   function with respect to y.hat. Must have form as given in loss.gr field
   #'   description. If not given, gradients are not used to compute the
@@ -497,25 +496,25 @@ EmpiricalRiskMinimizationDP.CMS <- R6::R6Class("EmpiricalRiskMinimizationDP.CMS"
   #'
   #' @examples
   #' # Construct object for logistic regression
-  #' h <- function(X, coeff) e1071::sigmoid(X%*%coeff)
+  #' mapXy <- function(X, coeff) e1071::sigmoid(X%*%coeff)
   #' # Cross entropy loss
   #' loss <- function(y.hat,y) -(y*log(y.hat) + (1-y)*log(1-y.hat))
   #' regularizer <- 'l2' # Alternatively, function(coeff) coeff%*%coeff/2
   #' eps <- 1
   #' lambda <- 0.1
   #' c <- 1/4 # Required value for logistic regression
-  #' h.gr <- function(X, coeff) as.numeric(e1071::dsigmoid(X%*%coeff))*t(X)
+  #' mapXy.gr <- function(X, coeff) as.numeric(e1071::dsigmoid(X%*%coeff))*t(X)
   #' loss.gr <- function(y.hat, y) -y/y.hat + (1-y)/(1-y.hat)
   #' regularizer.gr <- function(coeff) coeff
-  #' ermdp <- EmpiricalRiskMinimizationDP.CMS$new(h, loss, regularizer, eps,
-  #'                                              lambda, c, h.gr, loss.gr,
+  #' ermdp <- EmpiricalRiskMinimizationDP.CMS$new(mapXy, loss, regularizer, eps,
+  #'                                              lambda, c, mapXy.gr, loss.gr,
   #'                                              regularizer.gr)
   #'
   #' @return A new EmpiricalRiskMinimizationDP.CMS object.
-  initialize = function(h, loss, regularizer, eps, lambda, c, h.gr = NULL,
+  initialize = function(mapXy, loss, regularizer, eps, lambda, c, mapXy.gr = NULL,
                         loss.gr = NULL, regularizer.gr = NULL){
-    self$h <- h
-    self$h.gr <- h.gr
+    self$mapXy <- mapXy
+    self$mapXy.gr <- mapXy.gr
     self$loss <- loss
     self$loss.gr <- loss.gr
     if (is.character(regularizer)){
@@ -539,7 +538,7 @@ EmpiricalRiskMinimizationDP.CMS <- R6::R6Class("EmpiricalRiskMinimizationDP.CMS"
   #'   numerical optimization method is then run to find optimal coefficients
   #'   for fitting the model given the training data and hyperparameters. The
   #'   built-in \code{\link{optim}} function using the "BFGS" optimization
-  #'   method is used. If h.gr, loss.gr, and regularizer.gr are all given in the
+  #'   method is used. If mapXy.gr, loss.gr, and regularizer.gr are all given in the
   #'   construction of the object, the gradient of the objective function is
   #'   utilized by optim as well. The resulting privacy-preserving coefficients
   #'   are stored in coeff.
@@ -619,7 +618,7 @@ EmpiricalRiskMinimizationDP.CMS <- R6::R6Class("EmpiricalRiskMinimizationDP.CMS"
       X <- dplyr::mutate(X, bias =1)
       X <- X[, c(ncol(X), 1:(ncol(X)-1))]
     }
-    self$h(as.matrix(X), self$coeff)
+    self$mapXy(as.matrix(X), self$coeff)
   }
 ), private = list(
   # description Preprocess input data and bounds to ensure they meet the
@@ -684,7 +683,7 @@ EmpiricalRiskMinimizationDP.CMS <- R6::R6Class("EmpiricalRiskMinimizationDP.CMS"
   # description Run numerical optimization method to find optimal coefficients
   #   for fitting model given training data and hyperparameters. This function
   #   builds the objective function based on the training data, and runs the
-  #   built-in optim function using the "BFGS" optimization method. If h.gr,
+  #   built-in optim function using the "BFGS" optimization method. If mapXy.gr,
   #   loss.gr, and regularizer.gr are all given in the construction of the
   #   object, the gradient of the objective function is utilized by optim as
   #   well.
@@ -701,16 +700,16 @@ EmpiricalRiskMinimizationDP.CMS <- R6::R6Class("EmpiricalRiskMinimizationDP.CMS"
 
     # Get objective function
     objective <- function(par, X, y, Delta, b){
-      as.numeric(sum(self$loss(self$h(X,par),y))/n +
+      as.numeric(sum(self$loss(self$mapXy(X,par),y))/n +
                    self$lambda*self$regularizer(par)/n + t(b)%*%par/n +
                    Delta*par%*%par/2)
     }
 
     # Get gradient function
-    if (!is.null(self$h.gr) && !is.null(self$loss.gr) &&
+    if (!is.null(self$mapXy.gr) && !is.null(self$loss.gr) &&
         !is.null(self$regularizer.gr)) {
       objective.gr <- function(par, X, y, Delta, b){
-        as.numeric(self$h.gr(X,par)%*%self$loss.gr(self$h(X,par),y)/n +
+        as.numeric(self$mapXy.gr(X,par)%*%self$loss.gr(self$mapXy(X,par),y)/n +
                      self$lambda*self$regularizer.gr(par)/n + b/n + Delta*par)
       }
     }
@@ -804,8 +803,8 @@ LogisticRegressionDP <- R6::R6Class("LogisticRegressionDP",
   #'
   #' @return A new LogisticRegressionDP object.
   initialize = function(regularizer, eps, lambda, regularizer.gr = NULL){
-    super$initialize(h.sigmoid, loss.cross.entropy, regularizer, eps,
-                    lambda, 1/4, h.gr.sigmoid, loss.gr.cross.entropy,
+    super$initialize(mapXy.sigmoid, loss.cross.entropy, regularizer, eps,
+                    lambda, 1/4, mapXy.gr.sigmoid, loss.gr.cross.entropy,
                     regularizer.gr)
   },
   #' @description Predict label(s) for given X using the fitted coefficients.
@@ -885,7 +884,7 @@ LogisticRegressionDP <- R6::R6Class("LogisticRegressionDP",
   # description Run numerical optimization method to find optimal coefficients
   #   for fitting model given training data and hyperparameters. This function
   #   builds the objective function based on the training data, and runs the
-  #   built-in optim function using the "BFGS" optimization method. If h.gr,
+  #   built-in optim function using the "BFGS" optimization method. If mapXy.gr,
   #   loss.gr, and regularizer.gr are all given in the construction of the
   #   object, the gradient of the objective function is utilized by optim as
   #   well.
@@ -903,16 +902,16 @@ LogisticRegressionDP <- R6::R6Class("LogisticRegressionDP",
 
     # Get objective function
     objective <- function(par, X, y, lambda, Delta, b){
-      as.numeric(sum(self$loss(self$h(X,par),y))/n +
+      as.numeric(sum(self$loss(self$mapXy(X,par),y))/n +
                    lambda*self$regularizer(par)/n + t(b)%*%par/n +
                    Delta*par%*%par/2)
     }
 
     # Get gradient function
-    if (!is.null(self$h.gr) && !is.null(self$loss.gr) &&
+    if (!is.null(self$mapXy.gr) && !is.null(self$loss.gr) &&
         !is.null(self$regularizer.gr)) {
       objective.gr <- function(par, X, y, lambda, Delta, b){
-        as.numeric(t(X)%*%(self$h(X, par)-y)/n +
+        as.numeric(t(X)%*%(self$mapXy(X, par)-y)/n +
                      lambda*self$regularizer.gr(par)/n + b/n + Delta*par)
       }
     }
@@ -1086,8 +1085,8 @@ svmDP <- R6::R6Class("svmDP",
   #' @return A new svmDP object.
   initialize = function(regularizer, eps, lambda, kernel='linear', D=NULL,
                         gamma=1, regularizer.gr=NULL, huber.h=1){
-    super$initialize(h.linear, generate.loss.huber(huber.h), regularizer, eps,
-                     lambda, 1/(2*huber.h), h.gr.linear,
+    super$initialize(mapXy.linear, generate.loss.huber(huber.h), regularizer, eps,
+                     lambda, 1/(2*huber.h), mapXy.gr.linear,
                      generate.loss.gr.huber(huber.h), regularizer.gr)
     self$kernel <- kernel
     if (kernel=="Gaussian"){
@@ -1277,15 +1276,15 @@ svmDP <- R6::R6Class("svmDP",
 #' @export
 EmpiricalRiskMinimizationDP.KST <- R6::R6Class("EmpiricalRiskMinimizationDP.KST",
   public=list(
-  #' @field h Hypothesis function of the form h(X, coeff), where X is a matrix
-  #'   and coeff is a vector or matrix, that returns a column matrix of
-  #'   predicted labels for each row of X.
-  h = NULL,
-  #' @field h.gr Function representing the gradient of the hypothesis function
-  #'   with respect to the values in coeff and of the same form as h. Should
-  #'   be given such that the ith row of the output represents the gradient of
-  #'   h with respect to the ith coefficient.
-  h.gr = NULL,
+  #' @field mapXy Map function of the form mapXy(X, coeff), where X is a matrix and
+  #'   coeff is a vector or matrix, that returns a column matrix of predicted
+  #'   labels for each row of X.
+  mapXy = NULL,
+  #' @field mapXy.gr Function representing the gradient of the map function with
+  #'   respect to the values in coeff and of the same form as mapXy. Should be given
+  #'   such that the ith row of the output represents the gradient of mapXy with
+  #'   respect to the ith coefficient.
+  mapXy.gr = NULL,
   #' @field loss Loss function of the form loss(y.hat, y), where y.hat and y
   #'   are matrices, that returns a matrix of the same shape as y.hat and y of
   #'   loss function values for the empirical risk minimization model with
@@ -1340,41 +1339,40 @@ EmpiricalRiskMinimizationDP.KST <- R6::R6Class("EmpiricalRiskMinimizationDP.KST"
   #' @field coeff Numeric vector of coefficients for the model.
   coeff = NULL,
   #' @description Create a new EmpiricalRiskMinimizationDP.KST object.
-  #' @param h Hypothesis function. Must have form as given in h field
-  #'   description.
+  #' @param mapXy Map function. Must have form as given in mapXy field description.
   #' @param loss Loss function. Must have form as given in loss field
   #'   description. Additionally, to ensure differential privacy, it must be
   #'   convex, \eqn{||l(\theta,x_i,y_i)||\le} zeta for some constant zeta for
   #'   all \eqn{x_i, y_i, \theta}, and for all \eqn{x_i, y_i, \theta} the
   #'   Hessian of \eqn{l(\theta,x_i,y_i)} must be of rank at most one and its
   #'   Eigenvalues must be bounded above by some value lambda.
-  #' @param regularizer String or regularization function. If a string, must
-  #'   be 'l2', indicating to use l2 regularization. If a function, must have
-  #'   form as given in regularizer field description. Additionally, in order
-  #'   to ensure differential privacy, the function must be convex.
-  #' @param eps Positive real number defining the epsilon privacy budget. If
-  #'   set to Inf, runs algorithm without differential privacy.
+  #' @param regularizer String or regularization function. If a string, must be
+  #'   'l2', indicating to use l2 regularization. If a function, must have form
+  #'   as given in regularizer field description. Additionally, in order to
+  #'   ensure differential privacy, the function must be convex.
+  #' @param eps Positive real number defining the epsilon privacy budget. If set
+  #'   to Inf, runs algorithm without differential privacy.
   #' @param delta Nonnegative real number defining the delta privacy parameter.
   #'   If 0, reduces to pure eps-DP.
-  #' @param domain List of functions representing the constraints on the
-  #'   search space for the objective perturbation algorithm of form as given
-  #'   in domain field description.
+  #' @param domain List of functions representing the constraints on the search
+  #'   space for the objective perturbation algorithm of form as given in domain
+  #'   field description.
   #' @param zeta Positive real number corresponding to the upper bound of the
   #'   2-norm of the gradient of the loss function with respect to the
   #'   coefficient vector, i.e. \eqn{||l(\theta,x_i,y_i)||\le} zeta for some
   #'   constant zeta for all \eqn{x_i, y_i, \theta}.
-  #' @param lambda Positive real number corresponding to the upper bound of
-  #'   the Eigenvalues of the Hessian of \eqn{l(\theta,x_i,y_i)} for all
-  #'   \eqn{x_i, y_i, \theta}.
+  #' @param lambda Positive real number corresponding to the upper bound of the
+  #'   Eigenvalues of the Hessian of \eqn{l(\theta,x_i,y_i)} for all \eqn{x_i,
+  #'   y_i, \theta}.
   #' @param gamma Nonnegative real number representing the regularization
   #'   constant.
-  #' @param h.gr Optional function representing the gradient of the hypothesis
-  #'   function with respect to the values in coeff. Must have form as given
-  #'   in h.gr field description. If not given, gradients are not used to
-  #'   compute the coefficient values in fitting the model.
-  #' @param loss.gr Optional function representing the gradient of the loss
-  #'   function with respect to y.hat. Must have form as given in loss.gr
+  #' @param mapXy.gr Optional function representing the gradient of the map function
+  #'   with respect to the values in coeff. Must have form as given in mapXy.gr
   #'   field description. If not given, gradients are not used to compute the
+  #'   coefficient values in fitting the model.
+  #' @param loss.gr Optional function representing the gradient of the loss
+  #'   function with respect to y.hat. Must have form as given in loss.gr field
+  #'   description. If not given, gradients are not used to compute the
   #'   coefficient values in fitting the model.
   #' @param regularizer.gr Optional function representing the gradient of the
   #'   regularizer function function with respect to coeff. Must have form as
@@ -1383,7 +1381,7 @@ EmpiricalRiskMinimizationDP.KST <- R6::R6Class("EmpiricalRiskMinimizationDP.KST"
   #'
   #' @examples
   #' # Construct object for linear regression
-  #' h <- function(X, coeff) X%*%coeff
+  #' mapXy <- function(X, coeff) X%*%coeff
   #' loss <- function(y.hat, y) (y.hat-y)^2/2
   #' regularizer <- 'l2' # Alternatively, function(coeff) coeff%*%coeff/2
   #' eps <- 1
@@ -1394,20 +1392,20 @@ EmpiricalRiskMinimizationDP.KST <- R6::R6Class("EmpiricalRiskMinimizationDP.KST"
   #' zeta <- 2*p^(3/2)
   #' lambda <- p
   #' gamma <- 1
-  #' h.gr <- function(X, coeff) t(X)
+  #' mapXy.gr <- function(X, coeff) t(X)
   #' loss.gr <- function(y.hat, y) y.hat-y
   #' regularizer.gr <- function(coeff) coeff
   #'
-  #' ermdp <- EmpiricalRiskMinimizationDP.KST$new(h, loss, 'l2', eps, delta,
+  #' ermdp <- EmpiricalRiskMinimizationDP.KST$new(mapXy, loss, 'l2', eps, delta,
   #'                                              domain, zeta, lambda,
-  #'                                              gamma, h.gr, loss.gr,
+  #'                                              gamma, mapXy.gr, loss.gr,
   #'                                              regularizer.gr)
   #'
   #' @return A new EmpiricalRiskMinimizationDP.KST object.
-  initialize = function(h, loss, regularizer, eps, delta, domain, zeta, lambda,
-                        gamma, h.gr=NULL, loss.gr=NULL, regularizer.gr=NULL){
-    self$h <- h # Must be of form h(X, coeff)
-    self$h.gr <- h.gr
+  initialize = function(mapXy, loss, regularizer, eps, delta, domain, zeta, lambda,
+                        gamma, mapXy.gr=NULL, loss.gr=NULL, regularizer.gr=NULL){
+    self$mapXy <- mapXy # Must be of form mapXy(X, coeff)
+    self$mapXy.gr <- mapXy.gr
     self$loss <- loss # Must be of form loss(y.hat,y)
     self$loss.gr <- loss.gr
     if (is.character(regularizer)){
@@ -1433,7 +1431,7 @@ EmpiricalRiskMinimizationDP.KST <- R6::R6Class("EmpiricalRiskMinimizationDP.KST"
   #'   \insertCite{Kifer2012}{DPpack} to generate an objective function. A
   #'   numerical constrained optimization method is then run to find optimal
   #'   coefficients for fitting the model given the training data and
-  #'   hyperparameters. The \code{\link{nloptr}} function is used. If h.gr,
+  #'   hyperparameters. The \code{\link{nloptr}} function is used. If mapXy.gr,
   #'   loss.gr, and regularizer.gr are all given in the construction of the
   #'   object, the gradient of the objective function and the Jacobian of the
   #'   constraint function are utilized for the algorithm, and the NLOPT_LD_MMA
@@ -1517,7 +1515,7 @@ EmpiricalRiskMinimizationDP.KST <- R6::R6Class("EmpiricalRiskMinimizationDP.KST"
       X <- dplyr::mutate(X, bias =1)
       X <- X[, c(ncol(X), 1:(ncol(X)-1))]
     }
-    self$h(as.matrix(X), self$coeff)
+    self$mapXy(as.matrix(X), self$coeff)
   }
 ), private=list(
   # description Preprocess input data and bounds to ensure they meet the
@@ -1586,7 +1584,7 @@ EmpiricalRiskMinimizationDP.KST <- R6::R6Class("EmpiricalRiskMinimizationDP.KST"
   #   for fitting model given training data and hyperparameters. This function
   #   builds the objective function based on the training data and the provided
   #   search space domain, and runs the constrained optimization algorithm
-  #   nloptr from the nloptr package. If h.gr, loss.gr, and regularizer.gr are
+  #   nloptr from the nloptr package. If mapXy.gr, loss.gr, and regularizer.gr are
   #   all given in the construction of the object, the gradient of the objective
   #   function and the Jacobian of the constraint function are utilized for the
   #   algorithm, and the NLOPT_LD_MMA method is used. If one or more of these
@@ -1604,7 +1602,7 @@ EmpiricalRiskMinimizationDP.KST <- R6::R6Class("EmpiricalRiskMinimizationDP.KST"
 
     # Get objective function
     objective <- function(par, X, y, Delta, b){
-      as.numeric(sum(self$loss(self$h(X,par),y))/n +
+      as.numeric(sum(self$loss(self$mapXy(X,par),y))/n +
                    self$gamma*self$regularizer(par)/n + Delta*par%*%par/(2*n) +
                    t(b)%*%par/n)
     }
@@ -1612,10 +1610,10 @@ EmpiricalRiskMinimizationDP.KST <- R6::R6Class("EmpiricalRiskMinimizationDP.KST"
     g <- function(par, X, y, Delta, b) self$domain$constraints(par) # For new opt method
 
     # Get gradient function
-    if (!is.null(self$h.gr) && !is.null(self$loss.gr) &&
+    if (!is.null(self$mapXy.gr) && !is.null(self$loss.gr) &&
         !is.null(self$regularizer.gr)) {
       objective.gr <- function(par, X, y, Delta, b){
-        as.numeric(self$h.gr(X,par)%*%self$loss.gr(self$h(X,par),y)/n +
+        as.numeric(self$mapXy.gr(X,par)%*%self$loss.gr(self$mapXy(X,par),y)/n +
                      self$gamma*self$regularizer.gr(par)/n + b/n + Delta*par/n)
       }
       alg <- "NLOPT_LD_MMA" # For new opt method
@@ -1728,9 +1726,9 @@ LinearRegressionDP <- R6::R6Class("LinearRegressionDP",
   initialize = function(regularizer, eps, delta, gamma, regularizer.gr=NULL){
       domain.linear <- list("constraints"=function(coeff) coeff%*%coeff-length(coeff),
                             "jacobian"=function(coeff) 2*coeff)
-      super$initialize(h.linear, loss.squared.error, regularizer, eps, delta,
+      super$initialize(mapXy.linear, loss.squared.error, regularizer, eps, delta,
                        domain.linear, NULL, NULL, gamma,
-                       h.gr=h.gr.linear, loss.gr=loss.gr.squared.error,
+                       mapXy.gr=mapXy.gr.linear, loss.gr=loss.gr.squared.error,
                        regularizer.gr=regularizer.gr)
     }
 ), private=list(

@@ -12,12 +12,12 @@ building more specific models via inheritance. See
 structure.
 }
 \details{
-A new model object of this class accepts as inputs a hypothesis
-function, a loss function, a regularizer, an epsilon value for differential
-privacy, a lambda value that scales the regularizer, and a constant c
-meeting certain constraints related to the loss function. The model can
-then be fit with a dataset X (given as a data.frame), a set of binary
-labels y for each row of X, as well as upper and lower bounds on the
+A new model object of this class accepts as inputs a map from data X
+to labels y, a loss function, a regularizer, an epsilon value for
+differential privacy, a lambda value that scales the regularizer, and a
+constant c meeting certain constraints related to the loss function. The
+model can then be fit with a dataset X (given as a data.frame), a set of
+binary labels y for each row of X, as well as upper and lower bounds on the
 possible values for each column of X and for y. In fitting, the model
 stores a vector of coefficients coeff which satisfy epsilon-level
 differential privacy. These can be released directly, or used in
@@ -45,18 +45,18 @@ this class.
 ## ------------------------------------------------
 
 # Construct object for logistic regression
-h <- function(X, coeff) e1071::sigmoid(X\%*\%coeff)
+mapXy <- function(X, coeff) e1071::sigmoid(X\%*\%coeff)
 # Cross entropy loss
 loss <- function(y.hat,y) -(y*log(y.hat) + (1-y)*log(1-y.hat))
 regularizer <- 'l2' # Alternatively, function(coeff) coeff\%*\%coeff/2
 eps <- 1
 lambda <- 0.1
 c <- 1/4 # Required value for logistic regression
-h.gr <- function(X, coeff) as.numeric(e1071::dsigmoid(X\%*\%coeff))*t(X)
+mapXy.gr <- function(X, coeff) as.numeric(e1071::dsigmoid(X\%*\%coeff))*t(X)
 loss.gr <- function(y.hat, y) -y/y.hat + (1-y)/(1-y.hat)
 regularizer.gr <- function(coeff) coeff
-ermdp <- EmpiricalRiskMinimizationDP.CMS$new(h, loss, regularizer, eps,
-                                             lambda, c, h.gr, loss.gr,
+ermdp <- EmpiricalRiskMinimizationDP.CMS$new(mapXy, loss, regularizer, eps,
+                                             lambda, c, mapXy.gr, loss.gr,
                                              regularizer.gr)
 
 
@@ -92,14 +92,14 @@ n.errors <- sum(abs(round(predicted.y)-ytest))
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
 \describe{
-\item{\code{h}}{Hypothesis function of the form h(X, coeff), where X is a matrix
-and coeff is a vector or matrix, that returns a column matrix of
-predicted labels for each row of X.}
+\item{\code{mapXy}}{Map function of the form mapXy(X, coeff), where X is a matrix and
+coeff is a vector or matrix, that returns a column matrix of predicted
+labels for each row of X.}
 
-\item{\code{h.gr}}{Function representing the gradient of the hypothesis function
-with respect to the values in coeff and of the same form as h. Should be
-given such that the ith row of the output represents the gradient of h
-with respect to the ith coefficient.}
+\item{\code{mapXy.gr}}{Function representing the gradient of the map function with
+respect to the values in coeff and of the same form as mapXy. Should be given
+such that the ith row of the output represents the gradient of mapXy with
+respect to the ith coefficient.}
 
 \item{\code{loss}}{Loss function of the form loss(y.hat, y), where y.hat and y are
 matrices, that returns a matrix of the same shape as y.hat and y of loss
@@ -187,13 +187,13 @@ used in converting data into transform space.}
 Create a new EmpiricalRiskMinimizationDP.CMS object.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{EmpiricalRiskMinimizationDP.CMS$new(
-  h,
+  mapXy,
   loss,
   regularizer,
   eps,
   lambda,
   c,
-  h.gr = NULL,
+  mapXy.gr = NULL,
   loss.gr = NULL,
   regularizer.gr = NULL
 )}\if{html}{\out{</div>}}
@@ -202,8 +202,7 @@ Create a new EmpiricalRiskMinimizationDP.CMS object.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{h}}{Hypothesis function. Must have form as given in h field
-description.}
+\item{\code{mapXy}}{Map function. Must have form as given in mapXy field description.}
 
 \item{\code{loss}}{Loss function. Must have form as given in loss field
 description. Additionally, in order to ensure differential privacy, the
@@ -226,10 +225,10 @@ constant.}
 \item{\code{c}}{Positive real number such that |loss''(y.hat,y)|<=c for all
 possible values of y.hat and y.}
 
-\item{\code{h.gr}}{Optional function representing the gradient of the hypothesis
-function with respect to the values in coeff. Must have form as given in
-h.gr field description. If not given, gradients are not used to compute
-the coefficient values in fitting the model.}
+\item{\code{mapXy.gr}}{Optional function representing the gradient of the map function
+with respect to the values in coeff. Must have form as given in mapXy.gr
+field description. If not given, gradients are not used to compute the
+coefficient values in fitting the model.}
 
 \item{\code{loss.gr}}{Optional function representing the gradient of the loss
 function with respect to y.hat. Must have form as given in loss.gr field
@@ -249,18 +248,18 @@ A new EmpiricalRiskMinimizationDP.CMS object.
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
 \preformatted{# Construct object for logistic regression
-h <- function(X, coeff) e1071::sigmoid(X\%*\%coeff)
+mapXy <- function(X, coeff) e1071::sigmoid(X\%*\%coeff)
 # Cross entropy loss
 loss <- function(y.hat,y) -(y*log(y.hat) + (1-y)*log(1-y.hat))
 regularizer <- 'l2' # Alternatively, function(coeff) coeff\%*\%coeff/2
 eps <- 1
 lambda <- 0.1
 c <- 1/4 # Required value for logistic regression
-h.gr <- function(X, coeff) as.numeric(e1071::dsigmoid(X\%*\%coeff))*t(X)
+mapXy.gr <- function(X, coeff) as.numeric(e1071::dsigmoid(X\%*\%coeff))*t(X)
 loss.gr <- function(y.hat, y) -y/y.hat + (1-y)/(1-y.hat)
 regularizer.gr <- function(coeff) coeff
-ermdp <- EmpiricalRiskMinimizationDP.CMS$new(h, loss, regularizer, eps,
-                                             lambda, c, h.gr, loss.gr,
+ermdp <- EmpiricalRiskMinimizationDP.CMS$new(mapXy, loss, regularizer, eps,
+                                             lambda, c, mapXy.gr, loss.gr,
                                              regularizer.gr)
 
 }
@@ -279,7 +278,7 @@ model. The function runs the objective perturbation algorithm
 numerical optimization method is then run to find optimal coefficients
 for fitting the model given the training data and hyperparameters. The
 built-in \code{\link{optim}} function using the "BFGS" optimization
-method is used. If h.gr, loss.gr, and regularizer.gr are all given in the
+method is used. If mapXy.gr, loss.gr, and regularizer.gr are all given in the
 construction of the object, the gradient of the objective function is
 utilized by optim as well. The resulting privacy-preserving coefficients
 are stored in coeff.

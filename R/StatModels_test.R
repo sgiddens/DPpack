@@ -65,8 +65,8 @@ eps <- 1
 set.seed(round(runif(1, 0, 100)))
 
 c <- 1/4 # Necessary constant for logistic regression
-ermdp <- EmpiricalRiskMinimizationDP.CMS$new(h.sigmoid, loss.cross.entropy,
-                                             'l2', eps, lambda, c, h.gr.sigmoid,
+ermdp <- EmpiricalRiskMinimizationDP.CMS$new(mapXy.sigmoid, loss.cross.entropy,
+                                             'l2', eps, lambda, c, mapXy.gr.sigmoid,
                                              loss.gr.cross.entropy)
 
 ermdp$fit(X, y, upper.bounds, lower.bounds)
@@ -682,9 +682,9 @@ zeta <- 2*p^(3/2)
 lambda <- p
 gamma <- 1
 
-ermdp.kst <- EmpiricalRiskMinimizationDP.KST$new(h.linear, loss.squared.error,
+ermdp.kst <- EmpiricalRiskMinimizationDP.KST$new(mapXy.linear, loss.squared.error,
                                                  'l2', eps, delta, domain, zeta,
-                                                 lambda, gamma, h.gr.linear,
+                                                 lambda, gamma, mapXy.gr.linear,
                                                  loss.gr.squared.error)
 ermdp.kst$fit(X,y,ub,lb)
 
