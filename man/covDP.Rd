@@ -51,7 +51,8 @@ mechanisms.}
 \item{type.DP}{String indicating the type of differential privacy desired for
 the Gaussian mechanism (if selected). Can be either 'pDP' for probabilistic
 DP \insertCite{Liu2019a}{DPpack} or 'aDP' for approximate DP
-\insertCite{DPtextbook}{DPpack}.}
+\insertCite{DPtextbook}{DPpack}. Note that if 'aDP' is chosen, epsilon must
+be strictly less than 1.}
 }
 \value{
 A list of the sanitized covariances based on the bounded and/or
@@ -65,7 +66,7 @@ vectors at user-specified privacy levels of epsilon and delta.
 covDP(c(1,4,-2,8,-6),c(1,3,2,2,4),1,lower.bound1=-10,upper.bound1=10,
   lower.bound2=0,upper.bound2=5,which.sensitivity='bounded',
   mechanism='Laplace')
-covDP(c(1,4,-2,8,-6),c(1,3,2,2,4),1,lower.bound1=-10,upper.bound110,
+covDP(c(1,4,-2,8,-6),c(1,3,2,2,4),.5,lower.bound1=-10,upper.bound110,
   lower.bound2=0,upper.bound2=5,which.sensitivity='unbounded',
   mechanism='Gaussian',delta=0.5,type.DP='aDP')
 

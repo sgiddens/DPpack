@@ -169,7 +169,7 @@ test_meanDP <- function(){
 
   print("         Gaussian aDP:")
   x <- data1d;
-  eps <- 1;
+  eps <- .9;
   ws = 'bounded'
   lb = -3
   ub = 3
@@ -360,7 +360,7 @@ test_varDP <- function(){
 
   print("         Gaussian aDP:")
   x <- data1d;
-  eps <- 1;
+  eps <- .9;
   ws = 'bounded'
   lb = -6
   ub = 6
@@ -551,7 +551,7 @@ test_sdDP <- function(){
 
   print("         Gaussian aDP:")
   x <- data1d;
-  eps <- 1;
+  eps <- .9;
   ws = 'bounded'
   lb = -6
   ub = 6
@@ -747,7 +747,7 @@ test_covDP <- function(){
   print("         Gaussian aDP:")
   x1 <- data1d;
   x2 = data1d+1;
-  eps <- 1;
+  eps <- .9;
   ws = 'bounded'
   lb1 = -6
   ub1 = 6
@@ -852,7 +852,7 @@ test_histogramDP <- function(){
 
   print("         Gaussian aDP:")
   x <- rnorm(100,mean=3,sd=2);
-  eps <- 1;
+  eps <- .9;
   normal <- FALSE;
   ws = 'bounded'
   mech = 'Gaussian'
@@ -986,7 +986,7 @@ test_tableDP <- function(){
   print("         Gaussian aDP:")
   x <- Cars93$Type;
   y <- Cars93$Origin;
-  eps <- 1;
+  eps <- .9;
   ws = 'bounded'
   mech = 'Gaussian'
   delta = .5
@@ -1222,7 +1222,7 @@ test_pooledVarDP <- function(){
   x <- rnorm(n1,sd=2);
   y <- rnorm(n2,sd=2);
   z <- rnorm(n3,sd=2);
-  eps <- 1;
+  eps <- .9;
   ws = 'bounded'
   lb = -6
   ub = 6
@@ -1509,7 +1509,7 @@ test_pooledCovDP <- function(){
   x <- matrix(rnorm(2*n1,sd=2),ncol=2);
   y <- matrix(rnorm(2*n2,sd=2),ncol=2);
   z <- matrix(rnorm(2*n3,sd=2),ncol=2);
-  eps <- 1;
+  eps <- .9;
   ws = 'bounded'
   lb1 = -6
   ub1 = 6

@@ -50,7 +50,8 @@ mechanisms.}
 \item{type.DP}{String indicating the type of differential privacy desired for
 the Gaussian mechanism (if selected). Can be either 'pDP' for probabilistic
 DP \insertCite{Liu2019a}{DPpack} or 'aDP' for approximate DP
-\insertCite{DPtextbook}{DPpack}.}
+\insertCite{DPtextbook}{DPpack}. Note that if 'aDP' is chosen, epsilon must
+be strictly less than 1.}
 
 \item{allow.negative}{Logical value. If FALSE (default), any negative values
 in the sanitized histogram due to the added noise will be set to 0. If
@@ -70,7 +71,7 @@ examples).
 result <- histogramDP(c(1,1,-2,8,-6),1,which.sensitivity='bounded',
   mechanism='Laplace')
 plot(result$Bounded)
-result <- histogramDP(c(1,1,-2,8,-6),1,normalize=TRUE,
+result <- histogramDP(c(1,1,-2,8,-6),.5,normalize=TRUE,
   which.sensitivity='unbounded',mechanism='Gaussian',delta=0.5,type.DP='aDP',
   allow.negative=FALSE)
 plot(result$Unbounded)

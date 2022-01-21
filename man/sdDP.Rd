@@ -52,7 +52,8 @@ mechanisms.}
 \item{type.DP}{String indicating the type of differential privacy desired for
 the Gaussian mechanism (if selected). Can be either 'pDP' for probabilistic
 DP \insertCite{Liu2019a}{DPpack} or 'aDP' for approximate DP
-\insertCite{DPtextbook}{DPpack}.}
+\insertCite{DPtextbook}{DPpack}. Note that if 'aDP' is chosen, epsilon must
+be strictly less than 1.}
 
 \item{alloc.proportions}{Numeric vector giving the allocation proportions of
 epsilon (and delta) to the statistics. For example, if this function is run
@@ -77,7 +78,7 @@ privacy at the specified level.
 }
 \examples{
 sdDP(c(1,4,-2,8,-6),1,lower.bounds=-10,upper.bounds=10)
-sdDP(c(1,4,-2,8,-6),1,lower.bounds=-10,upper.bounds=10,
+sdDP(c(1,4,-2,8,-6),.5,lower.bounds=-10,upper.bounds=10,
   which.sensitivity='unbounded',mechanism='Gaussian',delta=0.5,type.DP='aDP')
 sdDP(matrix(c(1,4,-2,8,-6,0),ncol=2),1,lower.bounds=c(-10,-10),
   upper.bounds=c(10,10),which.sensitivity='bounded',alloc.proportions=c(1,2))

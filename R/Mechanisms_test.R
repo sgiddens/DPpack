@@ -309,6 +309,9 @@ test_Gaussian <- function(){
   if (!is.character(a)) print("FAIL");
   a = tryCatch(GaussianMechanism(0,0,1,1),error=function(e) print(paste("PASS --",e)));
   if (!is.character(a)) print("FAIL");
+  a = tryCatch(GaussianMechanism(0,3,1,1,type.DP='aDP'),
+               error=function(e) print(paste("PASS --",e)));
+  if (!is.character(a)) print("FAIL");
   print("")
 
   print("         Bad delta:")

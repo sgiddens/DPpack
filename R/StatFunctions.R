@@ -33,7 +33,8 @@
 #' @param type.DP String indicating the type of differential privacy desired for
 #'   the Gaussian mechanism (if selected). Can be either 'pDP' for probabilistic
 #'   DP \insertCite{Liu2019a}{DPpack} or 'aDP' for approximate DP
-#'   \insertCite{DPtextbook}{DPpack}.
+#'   \insertCite{DPtextbook}{DPpack}. Note that if 'aDP' is chosen, epsilon must
+#'   be strictly less than 1.
 #' @param alloc.proportions Numeric vector giving the allocation proportions of
 #'   epsilon (and delta) to the statistics. For example, if this function is run
 #'   on a two-column matrix and alloc.proportions = c(.75, .25), then 75% of the
@@ -47,7 +48,7 @@
 #'   definitions of differential privacy.
 #' @examples
 #' meanDP(c(1,4,-2,8,-6),1,lower.bounds=-10,upper.bounds=10)
-#' meanDP(c(1,4,-2,8,-6),1,lower.bounds=-10,upper.bounds=10,
+#' meanDP(c(1,4,-2,8,-6),.5,lower.bounds=-10,upper.bounds=10,
 #'   which.sensitivity='unbounded',mechanism='Gaussian',
 #'   delta=0.5,type.DP='aDP')
 #' meanDP(matrix(c(1,4,-2,8,-6,0),ncol=2),1,lower.bounds=c(-10,-10),
@@ -152,7 +153,8 @@ meanDP <- function (x, eps, lower.bounds, upper.bounds,
 #' @param type.DP String indicating the type of differential privacy desired for
 #'   the Gaussian mechanism (if selected). Can be either 'pDP' for probabilistic
 #'   DP \insertCite{Liu2019a}{DPpack} or 'aDP' for approximate DP
-#'   \insertCite{DPtextbook}{DPpack}.
+#'   \insertCite{DPtextbook}{DPpack}. Note that if 'aDP' is chosen, epsilon must
+#'   be strictly less than 1.
 #' @param alloc.proportions Numeric vector giving the allocation proportions of
 #'   epsilon (and delta) to the statistics. For example, if this function is run
 #'   on a two-column matrix and alloc.proportions = c(.75, .25), then 75% of the
@@ -166,7 +168,7 @@ meanDP <- function (x, eps, lower.bounds, upper.bounds,
 #'   unbounded definitions of differential privacy.
 #' @examples
 #' varDP(c(1,4,-2,8,-6),1,lower.bounds=-10,upper.bounds=10)
-#' varDP(c(1,4,-2,8,-6),1,lower.bounds=-10,upper.bounds=10,
+#' varDP(c(1,4,-2,8,-6),.5,lower.bounds=-10,upper.bounds=10,
 #'   which.sensitivity='unbounded',mechanism='Gaussian',delta=0.5,type.DP='aDP')
 #' varDP(matrix(c(1,4,-2,8,-6,0),ncol=2),1,lower.bounds=c(-10,-10),
 #'   upper.bounds=c(10,10),which.sensitivity='bounded',alloc.proportions=c(1,2))
@@ -280,7 +282,8 @@ varDP <- function (x, eps, lower.bounds, upper.bounds,
 #' @param type.DP String indicating the type of differential privacy desired for
 #'   the Gaussian mechanism (if selected). Can be either 'pDP' for probabilistic
 #'   DP \insertCite{Liu2019a}{DPpack} or 'aDP' for approximate DP
-#'   \insertCite{DPtextbook}{DPpack}.
+#'   \insertCite{DPtextbook}{DPpack}. Note that if 'aDP' is chosen, epsilon must
+#'   be strictly less than 1.
 #' @param alloc.proportions Numeric vector giving the allocation proportions of
 #'   epsilon (and delta) to the statistics. For example, if this function is run
 #'   on a two-column matrix and alloc.proportions = c(.75, .25), then 75% of the
@@ -294,7 +297,7 @@ varDP <- function (x, eps, lower.bounds, upper.bounds,
 #'   and/or unbounded definitions of differential privacy.
 #' @examples
 #' sdDP(c(1,4,-2,8,-6),1,lower.bounds=-10,upper.bounds=10)
-#' sdDP(c(1,4,-2,8,-6),1,lower.bounds=-10,upper.bounds=10,
+#' sdDP(c(1,4,-2,8,-6),.5,lower.bounds=-10,upper.bounds=10,
 #'   which.sensitivity='unbounded',mechanism='Gaussian',delta=0.5,type.DP='aDP')
 #' sdDP(matrix(c(1,4,-2,8,-6,0),ncol=2),1,lower.bounds=c(-10,-10),
 #'   upper.bounds=c(10,10),which.sensitivity='bounded',alloc.proportions=c(1,2))
@@ -363,14 +366,15 @@ sdDP <- function (x, eps, lower.bounds, upper.bounds,
 #' @param type.DP String indicating the type of differential privacy desired for
 #'   the Gaussian mechanism (if selected). Can be either 'pDP' for probabilistic
 #'   DP \insertCite{Liu2019a}{DPpack} or 'aDP' for approximate DP
-#'   \insertCite{DPtextbook}{DPpack}.
+#'   \insertCite{DPtextbook}{DPpack}. Note that if 'aDP' is chosen, epsilon must
+#'   be strictly less than 1.
 #' @return A list of the sanitized covariances based on the bounded and/or
 #'   unbounded definitions of differential privacy.
 #' @examples
 #' covDP(c(1,4,-2,8,-6),c(1,3,2,2,4),1,lower.bound1=-10,upper.bound1=10,
 #'   lower.bound2=0,upper.bound2=5,which.sensitivity='bounded',
 #'   mechanism='Laplace')
-#' covDP(c(1,4,-2,8,-6),c(1,3,2,2,4),1,lower.bound1=-10,upper.bound110,
+#' covDP(c(1,4,-2,8,-6),c(1,3,2,2,4),.5,lower.bound1=-10,upper.bound110,
 #'   lower.bound2=0,upper.bound2=5,which.sensitivity='unbounded',
 #'   mechanism='Gaussian',delta=0.5,type.DP='aDP')
 #'
@@ -458,7 +462,8 @@ covDP <- function (x1, x2, eps, lower.bound1, upper.bound1, lower.bound2,
 #' @param type.DP String indicating the type of differential privacy desired for
 #'   the Gaussian mechanism (if selected). Can be either 'pDP' for probabilistic
 #'   DP \insertCite{Liu2019a}{DPpack} or 'aDP' for approximate DP
-#'   \insertCite{DPtextbook}{DPpack}.
+#'   \insertCite{DPtextbook}{DPpack}. Note that if 'aDP' is chosen, epsilon must
+#'   be strictly less than 1.
 #' @param allow.negative Logical value. If FALSE (default), any negative values
 #'   in the sanitized histogram due to the added noise will be set to 0. If
 #'   TRUE, the negative values (if any) will be returned.
@@ -468,7 +473,7 @@ covDP <- function (x1, x2, eps, lower.bound1, upper.bound1, lower.bound2,
 #' result <- histogramDP(c(1,1,-2,8,-6),1,which.sensitivity='bounded',
 #'   mechanism='Laplace')
 #' plot(result$Bounded)
-#' result <- histogramDP(c(1,1,-2,8,-6),1,normalize=TRUE,
+#' result <- histogramDP(c(1,1,-2,8,-6),.5,normalize=TRUE,
 #'   which.sensitivity='unbounded',mechanism='Gaussian',delta=0.5,type.DP='aDP',
 #'   allow.negative=FALSE)
 #' plot(result$Unbounded)
@@ -570,7 +575,8 @@ histogramDP <- function(x, eps, breaks="Sturges", normalize=FALSE,
 #' @param type.DP String indicating the type of differential privacy desired for
 #'   the Gaussian mechanism (if selected). Can be either 'pDP' for probabilistic
 #'   DP \insertCite{Liu2019a}{DPpack} or 'aDP' for approximate DP
-#'   \insertCite{DPtextbook}{DPpack}.
+#'   \insertCite{DPtextbook}{DPpack}. Note that if 'aDP' is chosen, epsilon must
+#'   be strictly less than 1.
 #' @param allow.negative Logical value. If FALSE (default), any negative values
 #'   in the sanitized table due to the added noise will be set to 0. If TRUE,
 #'   the negative values (if any) will be returned.
@@ -580,7 +586,7 @@ histogramDP <- function(x, eps, breaks="Sturges", normalize=FALSE,
 #' x <- MASS::Cars93$Type;
 #' y <- MASS::Cars93$Origin;
 #' tableDP(x,y,1,which.sensitivity='bounded',mechanism='Laplace')
-#' tableDP(x,y,1,which.sensitivity='unbounded',mechanism='Gaussian',delta=0.5,
+#' tableDP(x,y,.5,which.sensitivity='unbounded',mechanism='Gaussian',delta=0.5,
 #'   type.DP='aDP',allow.negative=FALSE)
 #'
 #' @references \insertRef{Dwork2006a}{DPpack}
@@ -686,7 +692,8 @@ tableDP <- function(x, y, eps, which.sensitivity='bounded', mechanism='Laplace',
 #' @param type.DP String indicating the type of differential privacy desired for
 #'   the Gaussian mechanism (if selected). Can be either 'pDP' for probabilistic
 #'   DP \insertCite{Liu2019a}{DPpack} or 'aDP' for approximate DP
-#'   \insertCite{DPtextbook}{DPpack}.
+#'   \insertCite{DPtextbook}{DPpack}. Note that if 'aDP' is chosen, epsilon must
+#'   be strictly less than 1.
 #' @param approx.n.max Logical indicating whether to approximate n.max, which is
 #'   defined to be the length of the largest input vector. Approximation is best
 #'   if n.max is very large.
@@ -695,7 +702,7 @@ tableDP <- function(x, y, eps, which.sensitivity='bounded', mechanism='Laplace',
 #' @examples
 #' pooledVarDP(c(1,4,-2,8,-6),c(1,2),c(-5,-7),eps=1,lower.bound=-10,
 #'   upper.bound=10,which.sensitivity='bounded',mechanism='Laplace')
-#' pooledVarDP(c(1,4,-2,8,-6),c(1,2),c(-5,-7),eps=1,
+#' pooledVarDP(c(1,4,-2,8,-6),c(1,2),c(-5,-7),eps=.5,
 #'   lower.bound=-10,upper.bound=10,which.sensitivity='unbounded',
 #'   mechanism='Gaussian',delta=0.5,type.DP='aDP',approx.n.max=TRUE)
 #'
@@ -799,7 +806,8 @@ pooledVarDP <- function(..., eps=1, lower.bound, upper.bound,
 #' @param type.DP String indicating the type of differential privacy desired for
 #'   the Gaussian mechanism (if selected). Can be either 'pDP' for probabilistic
 #'   DP \insertCite{Liu2019a}{DPpack} or 'aDP' for approximate DP
-#'   \insertCite{DPtextbook}{DPpack}.
+#'   \insertCite{DPtextbook}{DPpack}. Note that if 'aDP' is chosen, epsilon must
+#'   be strictly less than 1.
 #' @param approx.n.max Logical indicating whether to approximate n.max, which is
 #'   defined to be the length of the largest input vector. Approximation is best
 #'   if n.max is very large.
@@ -810,7 +818,7 @@ pooledVarDP <- function(..., eps=1, lower.bound, upper.bound,
 #' x2 <- matrix(c(1,2,-5,7),ncol=2)
 #' pooledVarDP(x1,x2,eps=1,lower.bound1=-10,upper.bound1=10,lower.bound2=-10,
 #'   upper.bound2=10,which.sensitivity='bounded',mechanism='Laplace')
-#' pooledVarDP(x1,x2,eps=1,lower.bound1=-10,upper.bound1=10,lower.bound2=-10,
+#' pooledVarDP(x1,x2,eps=.5,lower.bound1=-10,upper.bound1=10,lower.bound2=-10,
 #'   upper.bound2=10,which.sensitivity='unbounded',mechanism='Gaussian',
 #'   delta=0.5,type.DP='aDP',approx.n.max=TRUE)
 #'

@@ -42,7 +42,8 @@ mechanisms.}
 \item{type.DP}{String indicating the type of differential privacy desired for
 the Gaussian mechanism (if selected). Can be either 'pDP' for probabilistic
 DP \insertCite{Liu2019a}{DPpack} or 'aDP' for approximate DP
-\insertCite{DPtextbook}{DPpack}.}
+\insertCite{DPtextbook}{DPpack}. Note that if 'aDP' is chosen, epsilon must
+be strictly less than 1.}
 
 \item{allow.negative}{Logical value. If FALSE (default), any negative values
 in the sanitized table due to the added noise will be set to 0. If TRUE,
@@ -60,7 +61,7 @@ vectors of data at user-specified privacy levels of epsilon and delta.
 x <- MASS::Cars93$Type;
 y <- MASS::Cars93$Origin;
 tableDP(x,y,1,which.sensitivity='bounded',mechanism='Laplace')
-tableDP(x,y,1,which.sensitivity='unbounded',mechanism='Gaussian',delta=0.5,
+tableDP(x,y,.5,which.sensitivity='unbounded',mechanism='Gaussian',delta=0.5,
   type.DP='aDP',allow.negative=FALSE)
 
 }

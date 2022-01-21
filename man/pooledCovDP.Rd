@@ -54,7 +54,8 @@ mechanisms.}
 \item{type.DP}{String indicating the type of differential privacy desired for
 the Gaussian mechanism (if selected). Can be either 'pDP' for probabilistic
 DP \insertCite{Liu2019a}{DPpack} or 'aDP' for approximate DP
-\insertCite{DPtextbook}{DPpack}.}
+\insertCite{DPtextbook}{DPpack}. Note that if 'aDP' is chosen, epsilon must
+be strictly less than 1.}
 
 \item{approx.n.max}{Logical indicating whether to approximate n.max, which is
 defined to be the length of the largest input vector. Approximation is best
@@ -74,7 +75,7 @@ x1 <- matrix(c(1,4,-2,8,-6,-3),ncol=2)
 x2 <- matrix(c(1,2,-5,7),ncol=2)
 pooledVarDP(x1,x2,eps=1,lower.bound1=-10,upper.bound1=10,lower.bound2=-10,
   upper.bound2=10,which.sensitivity='bounded',mechanism='Laplace')
-pooledVarDP(x1,x2,eps=1,lower.bound1=-10,upper.bound1=10,lower.bound2=-10,
+pooledVarDP(x1,x2,eps=.5,lower.bound1=-10,upper.bound1=10,lower.bound2=-10,
   upper.bound2=10,which.sensitivity='unbounded',mechanism='Gaussian',
   delta=0.5,type.DP='aDP',approx.n.max=TRUE)
 

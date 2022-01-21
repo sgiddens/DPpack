@@ -51,7 +51,8 @@ this case.}
 \item{type.DP}{String indicating the type of differential privacy desired for
 the Gaussian mechanism. Can be either 'pDP' for probabilistic DP
 \insertCite{Liu2019a}{DPpack} or 'aDP' for approximate DP
-\insertCite{DPtextbook}{DPpack}.}
+\insertCite{DPtextbook}{DPpack}. Note that if 'aDP' is chosen, epsilon must
+be strictly less than 1.}
 
 \item{alloc.proportions}{Numeric vector giving the allocation proportions of
 epsilon (and delta if relevant) to the statistics. For example, if
@@ -82,7 +83,7 @@ how to divide epsilon and delta among the statistics using alloc.proportions.
 \examples{
 GaussianMechanism(5, 1, .5, bounded.sensitivities=0.5,
   which.sensitivity='bounded')
-GaussianMechanism(c(5,3), 1, .5, unbounded.sensitivities=1,
+GaussianMechanism(c(5,3), .5, .5, unbounded.sensitivities=1,
   which.sensitivity='unbounded', type.DP='aDP', alloc.proportions=c(.4,.6))
 
 }

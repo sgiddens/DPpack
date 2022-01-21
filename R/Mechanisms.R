@@ -195,7 +195,8 @@ LaplaceMechanism <- function (true.values, eps, bounded.sensitivities=NULL,
 #' @param type.DP String indicating the type of differential privacy desired for
 #'   the Gaussian mechanism. Can be either 'pDP' for probabilistic DP
 #'   \insertCite{Liu2019a}{DPpack} or 'aDP' for approximate DP
-#'   \insertCite{DPtextbook}{DPpack}.
+#'   \insertCite{DPtextbook}{DPpack}. Note that if 'aDP' is chosen, epsilon must
+#'   be strictly less than 1.
 #' @param alloc.proportions Numeric vector giving the allocation proportions of
 #'   epsilon (and delta if relevant) to the statistics. For example, if
 #'   true.values is of length two and alloc.proportions = c(.75, .25), then 75%
@@ -212,18 +213,18 @@ LaplaceMechanism <- function (true.values, eps, bounded.sensitivities=NULL,
 #' @examples
 #' GaussianMechanism(5, 1, .5, bounded.sensitivities=0.5,
 #'   which.sensitivity='bounded')
-#' GaussianMechanism(c(5,3), 1, .5, unbounded.sensitivities=1,
+#' GaussianMechanism(c(5,3), .5, .5, unbounded.sensitivities=1,
 #'   which.sensitivity='unbounded', type.DP='aDP', alloc.proportions=c(.4,.6))
 #'
 #' @importFrom Rdpack reprompt
 #'
 #' @references \insertRef{Dwork2006a}{DPpack}
 #'
-#' \insertRef{Kifer2011}{DPpack}
+#'   \insertRef{Kifer2011}{DPpack}
 #'
-#' \insertRef{Liu2019a}{DPpack}
+#'   \insertRef{Liu2019a}{DPpack}
 #'
-#' \insertRef{DPtextbook}{DPpack}
+#'   \insertRef{DPtextbook}{DPpack}
 #'
 #' @export
 GaussianMechanism <- function (true.values, eps, delta, bounded.sensitivities=NULL,
@@ -234,71 +235,72 @@ GaussianMechanism <- function (true.values, eps, delta, bounded.sensitivities=NU
   {if (!is.numeric(true.values) || !is.atomic(true.values)){
     stop("true.values must be numeric atomic vectors or scalars.");
   }
-    if (!is.numeric(eps) || length(eps)>1 || eps<=0) stop("eps must be a scalar > 0");
-    if (!is.numeric(delta) || length(delta)>1 || delta<=0) stop("delta must be a scalar > 0");
-    if (which.sensitivity=='bounded') {
-      out.bound = TRUE;
+  if (!is.numeric(eps) || length(eps)>1 || eps<=0) stop("eps must be a scalar > 0");
+  if (!is.numeric(delta) || length(delta)>1 || delta<=0) stop("delta must be a scalar > 0");
+  if (which.sensitivity=='bounded') {
+    out.bound = TRUE;
+    out.unbound = FALSE;
+    if (is.null(bounded.sensitivities)) {
+      stop("Must provide bounded.sensitivities if which.sensitivity is 'bounded' or 'both'.")
+    }
+    if (length(bounded.sensitivities)!=length(true.values)){
+      stop("Length of bounded.sensitivities must match length of true.values.");
+    }
+    if (any(bounded.sensitivities<=0)){
+      stop("Sensitivities must be > 0.");
+    }
+  }
+  else if (which.sensitivity=='unbounded') {
+    out.unbound = TRUE;
+    out.bound = FALSE;
+    if (is.null(unbounded.sensitivities)) {
+      stop("Must provide unbounded.sensitivities if which.sensitivity is 'unbounded' or 'both'.")
+    }
+    if (length(unbounded.sensitivities)!=length(true.values)){
+      stop("Length of unbounded.sensitivities must match length of true.values.");
+    }
+    if (any(unbounded.sensitivities<=0)){
+      stop("Sensitivities must be > 0.");
+    }
+  }
+  else if (which.sensitivity=='both') {
+    out.bound = TRUE;
+    out.unbound = TRUE;
+    if (is.null(bounded.sensitivities)) {
+      stop("Must provide bounded.sensitivities if which.sensitivity is 'bounded' or 'both'.")
+    }
+    if (length(bounded.sensitivities)!=length(true.values)){
+      stop("Length of bounded.sensitivities must match length of true.values.");
+    }
+    if (any(bounded.sensitivities<=0)){
+      stop("Sensitivities must be > 0.");
+    }
+    if (is.null(unbounded.sensitivities)) {
+      stop("Must provide unbounded.sensitivities if which.sensitivity is 'unbounded' or 'both'.")
+    }
+    if (length(unbounded.sensitivities)!=length(true.values)){
+      stop("Length of unbounded.sensitivities must match length of true.values.");
+    }
+    if (any(unbounded.sensitivities<=0)){
+      stop("Sensitivities must be > 0.");
+    }
+    if (all(bounded.sensitivities==unbounded.sensitivities)){
+      message("Bounded and unbounded sensitivities are identical. Only bounded will be returned.")
       out.unbound = FALSE;
-      if (is.null(bounded.sensitivities)) {
-        stop("Must provide bounded.sensitivities if which.sensitivity is 'bounded' or 'both'.")
-      }
-      if (length(bounded.sensitivities)!=length(true.values)){
-        stop("Length of bounded.sensitivities must match length of true.values.");
-      }
-      if (any(bounded.sensitivities<=0)){
-        stop("Sensitivities must be > 0.");
-      }
     }
-    else if (which.sensitivity=='unbounded') {
-      out.unbound = TRUE;
-      out.bound = FALSE;
-      if (is.null(unbounded.sensitivities)) {
-        stop("Must provide unbounded.sensitivities if which.sensitivity is 'unbounded' or 'both'.")
-      }
-      if (length(unbounded.sensitivities)!=length(true.values)){
-        stop("Length of unbounded.sensitivities must match length of true.values.");
-      }
-      if (any(unbounded.sensitivities<=0)){
-        stop("Sensitivities must be > 0.");
-      }
-    }
-    else if (which.sensitivity=='both') {
-      out.bound = TRUE;
-      out.unbound = TRUE;
-      if (is.null(bounded.sensitivities)) {
-        stop("Must provide bounded.sensitivities if which.sensitivity is 'bounded' or 'both'.")
-      }
-      if (length(bounded.sensitivities)!=length(true.values)){
-        stop("Length of bounded.sensitivities must match length of true.values.");
-      }
-      if (any(bounded.sensitivities<=0)){
-        stop("Sensitivities must be > 0.");
-      }
-      if (is.null(unbounded.sensitivities)) {
-        stop("Must provide unbounded.sensitivities if which.sensitivity is 'unbounded' or 'both'.")
-      }
-      if (length(unbounded.sensitivities)!=length(true.values)){
-        stop("Length of unbounded.sensitivities must match length of true.values.");
-      }
-      if (any(unbounded.sensitivities<=0)){
-        stop("Sensitivities must be > 0.");
-      }
-      if (all(bounded.sensitivities==unbounded.sensitivities)){
-        message("Bounded and unbounded sensitivities are identical. Only bounded will be returned.")
-        out.unbound = FALSE;
-      }
-    }
-    else stop("which.sensitivity must be one of {'bounded', 'unbounded', 'both'}");
-    if (type.DP!='pDP' && type.DP!='aDP') stop("type.DP must be one of {'pDP', 'aDP'}.");
-    n <- length(true.values);
-    if (is.null(alloc.proportions)) alloc.proportions <- rep(1,n);
-    if (length(alloc.proportions)!=length(true.values)) {
-      stop("Length of alloc.proportions must match length of true.values.");
-    }
-    if (any(alloc.proportions<=0)){
-      stop("Values in alloc.proportions must be > 0.");
-    }
-    alloc.proportions <- alloc.proportions/sum(alloc.proportions);
+  }
+  else stop("which.sensitivity must be one of {'bounded', 'unbounded', 'both'}");
+  if (type.DP!='pDP' && type.DP!='aDP') stop("type.DP must be one of {'pDP', 'aDP'}.");
+  if (type.DP=='aDP' && eps>=1) stop("eps must be < 1 for aDP.");
+  n <- length(true.values);
+  if (is.null(alloc.proportions)) alloc.proportions <- rep(1,n);
+  if (length(alloc.proportions)!=length(true.values)) {
+    stop("Length of alloc.proportions must match length of true.values.");
+  }
+  if (any(alloc.proportions<=0)){
+    stop("Values in alloc.proportions must be > 0.");
+  }
+  alloc.proportions <- alloc.proportions/sum(alloc.proportions);
   }
   ########
   n <- length(true.values);
