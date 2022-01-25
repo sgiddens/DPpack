@@ -38,11 +38,6 @@ utilized in subclasses within this package where appropriate preprocessing
 is implemented, not in this class.
 }
 \examples{
-
-## ------------------------------------------------
-## Method `EmpiricalRiskMinimizationDP.CMS$new`
-## ------------------------------------------------
-
 # Construct object for logistic regression
 mapXy <- function(X, coeff) e1071::sigmoid(X\%*\%coeff)
 # Cross entropy loss
@@ -58,27 +53,18 @@ ermdp <- EmpiricalRiskMinimizationDP.CMS$new(mapXy, loss, regularizer, eps,
                                              lambda, c, mapXy.gr, loss.gr,
                                              regularizer.gr)
 
-
-## ------------------------------------------------
-## Method `EmpiricalRiskMinimizationDP.CMS$fit`
-## ------------------------------------------------
-
+# Fit with data
 # Assume X is dataframe meeting assumptions for privacy
 # Assume 2 columns of X each bounded between -1 and 1
 # Assume y is 0 or 1 labels for each row of X
-# Assume ermdp is previously constructed object as in $new example
 upper.bounds <- c( 1, 1) # Bounds for X and y
 lower.bounds <- c(-1,-1) # Bounds for X and y
 ermdp$fit(X, y, upper.bounds, lower.bounds)
 ermdp$coeff # Gets private coefficients
 
-## ------------------------------------------------
-## Method `EmpiricalRiskMinimizationDP.CMS$predict`
-## ------------------------------------------------
-
-# Assume Xtest is a new dataframe of the same form as X from fit
-# method example, with true labels ytest
-# Also assume ermdp$fit() has already been run on training data
+# Predict new data points
+# Assume Xtest is a new dataframe of the same form as X from fit method
+#    example, with true labels ytest
 predicted.y <- ermdp$predict(Xtest) # Note these values need to be rounded
 n.errors <- sum(abs(round(predicted.y)-ytest))
 
@@ -251,28 +237,6 @@ are used to compute the coefficient values in fitting the model.}
 \subsection{Returns}{
 A new \code{EmpiricalRiskMinimizationDP.CMS} object.
 }
-\subsection{Examples}{
-\if{html}{\out{<div class="r example copy">}}
-\preformatted{# Construct object for logistic regression
-mapXy <- function(X, coeff) e1071::sigmoid(X\%*\%coeff)
-# Cross entropy loss
-loss <- function(y.hat,y) -(y*log(y.hat) + (1-y)*log(1-y.hat))
-regularizer <- 'l2' # Alternatively, function(coeff) coeff\%*\%coeff/2
-eps <- 1
-lambda <- 0.1
-c <- 1/4 # Required value for logistic regression
-mapXy.gr <- function(X, coeff) as.numeric(e1071::dsigmoid(X\%*\%coeff))*t(X)
-loss.gr <- function(y.hat, y) -y/y.hat + (1-y)/(1-y.hat)
-regularizer.gr <- function(coeff) coeff
-ermdp <- EmpiricalRiskMinimizationDP.CMS$new(mapXy, loss, regularizer, eps,
-                                             lambda, c, mapXy.gr, loss.gr,
-                                             regularizer.gr)
-
-}
-\if{html}{\out{</div>}}
-
-}
-
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-fit"></a>}}
@@ -323,21 +287,6 @@ Defaults to FALSE.}
 }
 \if{html}{\out{</div>}}
 }
-\subsection{Examples}{
-\if{html}{\out{<div class="r example copy">}}
-\preformatted{# Assume X is dataframe meeting assumptions for privacy
-# Assume 2 columns of X each bounded between -1 and 1
-# Assume y is 0 or 1 labels for each row of X
-# Assume ermdp is previously constructed object as in $new example
-upper.bounds <- c( 1, 1) # Bounds for X and y
-lower.bounds <- c(-1,-1) # Bounds for X and y
-ermdp$fit(X, y, upper.bounds, lower.bounds)
-ermdp$coeff # Gets private coefficients
-}
-\if{html}{\out{</div>}}
-
-}
-
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-predict"></a>}}
@@ -364,19 +313,6 @@ coefficients, add.bias should be set to TRUE for predictions.}
 \subsection{Returns}{
 Matrix of predicted labels corresponding to each row of \code{X}.
 }
-\subsection{Examples}{
-\if{html}{\out{<div class="r example copy">}}
-\preformatted{# Assume Xtest is a new dataframe of the same form as X from fit
-# method example, with true labels ytest
-# Also assume ermdp$fit() has already been run on training data
-predicted.y <- ermdp$predict(Xtest) # Note these values need to be rounded
-n.errors <- sum(abs(round(predicted.y)-ytest))
-
-}
-\if{html}{\out{</div>}}
-
-}
-
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-clone"></a>}}

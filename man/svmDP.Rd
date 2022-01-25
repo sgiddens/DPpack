@@ -42,29 +42,28 @@ contains functionality to add a column of constant 1s to X before scaling,
 if desired.
 }
 \examples{
-
-## ------------------------------------------------
-## Method `svmDP$new`
-## ------------------------------------------------
-
 # Construct object for SVM
 regularizer <- 'l2' # Alternatively, function(coeff) coeff\%*\%coeff/2
 eps <- 1
 lambda <- 0.1
 regularizer.gr <- function(coeff) coeff # If function given for regularizer
 huber.h <- 0.5
-svmdp <- svmDP$new(regularizer, eps, lambda,
+svmdp <- svmDP$new(regularizer, eps, lambda, kernel='linear',
                                   regularizer.gr=regularizer.gr,
                                   huber.h=huber.h)
 
+# Fit with data
+# Assume X is dataframe meeting assumptions for privacy
+# Assume 2 columns of X each bounded between -1 and 1
+# Assume y is 0 or 1 labels for each row of X
+upper.bounds <- c( 1, 1) # Bounds for X and y
+lower.bounds <- c(-1,-1) # Bounds for X and y
+svmdp$fit(X, y, upper.bounds, lower.bounds)
+svmdp$coeff # Gets private coefficients
 
-## ------------------------------------------------
-## Method `svmDP$predict`
-## ------------------------------------------------
-
-# Assume Xtest is a new dataframe of the same form as X from fit
-# method example, with true labels ytest
-# Also assume svmdp$fit() has already been run on training data
+# Predict new data points
+# Assume Xtest is a new dataframe of the same form as X from fit method
+#    example, with true labels ytest
 predicted.y <- svmdp$predict(Xtest)
 n.errors <- sum(predicted.y!=ytest)
 
@@ -158,23 +157,6 @@ Huber loss approximates the hinge loss. Defaults to 0.5
 \subsection{Returns}{
 A new svmDP object.
 }
-\subsection{Examples}{
-\if{html}{\out{<div class="r example copy">}}
-\preformatted{# Construct object for SVM
-regularizer <- 'l2' # Alternatively, function(coeff) coeff\%*\%coeff/2
-eps <- 1
-lambda <- 0.1
-regularizer.gr <- function(coeff) coeff # If function given for regularizer
-huber.h <- 0.5
-svmdp <- svmDP$new(regularizer, eps, lambda,
-                                  regularizer.gr=regularizer.gr,
-                                  huber.h=huber.h)
-
-}
-\if{html}{\out{</div>}}
-
-}
-
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-XtoV"></a>}}
@@ -233,19 +215,6 @@ model.}
 Matrix of predicted labels or scores corresponding to each row of
 \code{X}.
 }
-\subsection{Examples}{
-\if{html}{\out{<div class="r example copy">}}
-\preformatted{# Assume Xtest is a new dataframe of the same form as X from fit
-# method example, with true labels ytest
-# Also assume svmdp$fit() has already been run on training data
-predicted.y <- svmdp$predict(Xtest)
-n.errors <- sum(predicted.y!=ytest)
-
-}
-\if{html}{\out{</div>}}
-
-}
-
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-clone"></a>}}

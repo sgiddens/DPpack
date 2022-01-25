@@ -37,11 +37,6 @@ dataset. To ensure privacy, the add.bias argument in the \code{fit} and
 package where appropriate preprocessing is implemented, not in this class.
 }
 \examples{
-
-## ------------------------------------------------
-## Method `EmpiricalRiskMinimizationDP.KST$new`
-## ------------------------------------------------
-
 # Construct object for linear regression
 mapXy <- function(X, coeff) X\%*\%coeff
 loss <- function(y.hat, y) (y.hat-y)^2/2
@@ -63,28 +58,19 @@ ermdp <- EmpiricalRiskMinimizationDP.KST$new(mapXy, loss, 'l2', eps, delta,
                                              gamma, mapXy.gr, loss.gr,
                                              regularizer.gr)
 
-
-## ------------------------------------------------
-## Method `EmpiricalRiskMinimizationDP.KST$fit`
-## ------------------------------------------------
-
+# Fit with data
 # Assume X is dataframe meeting assumptions for privacy
 # Assume 2 columns of X, with the first being all 1 (for intercept), and
 #   the second being between -1 and 1
 # Assume y is a matrix with values between -2 and 2
-# Assume ermdp is previously constructed object as in $new example
 upper.bounds <- c(1, 1, 2) # Bounds for X and y
 lower.bounds <- c(1,-1,-2) # Bounds for X and y
 ermdp$fit(X, y, upper.bounds, lower.bounds)
 ermdp$coeff # Gets private coefficients
 
-## ------------------------------------------------
-## Method `EmpiricalRiskMinimizationDP.KST$predict`
-## ------------------------------------------------
-
-# Assume Xtest is a new dataframe of the same form as X from fit
-# method example, with true labels ytest
-# Also assume ermdp$fit() has already been run on training data
+# Predict new data points
+# Assume Xtest is a new dataframe of the same form as X from fit method
+#     example, with true labels ytest
 predicted.y <- ermdp$predict(Xtest)
 
 }
@@ -258,34 +244,6 @@ are used to compute the coefficient values in fitting the model.}
 \subsection{Returns}{
 A new EmpiricalRiskMinimizationDP.KST object.
 }
-\subsection{Examples}{
-\if{html}{\out{<div class="r example copy">}}
-\preformatted{# Construct object for linear regression
-mapXy <- function(X, coeff) X\%*\%coeff
-loss <- function(y.hat, y) (y.hat-y)^2/2
-regularizer <- 'l2' # Alternatively, function(coeff) coeff\%*\%coeff/2
-eps <- 1
-delta <- 1
-domain <- list("constraints"=function(coeff) coeff\%*\%coeff-length(coeff),
-  "jacobian"=function(coeff) 2*coeff)
-# Set p to be the number of predictors desired including intercept term (length of coeff)
-zeta <- 2*p^(3/2) # Proper bound for linear regression
-lambda <- p # Proper bound for linear regression
-gamma <- 1
-mapXy.gr <- function(X, coeff) t(X)
-loss.gr <- function(y.hat, y) y.hat-y
-regularizer.gr <- function(coeff) coeff
-
-ermdp <- EmpiricalRiskMinimizationDP.KST$new(mapXy, loss, 'l2', eps, delta,
-                                             domain, zeta, lambda,
-                                             gamma, mapXy.gr, loss.gr,
-                                             regularizer.gr)
-
-}
-\if{html}{\out{</div>}}
-
-}
-
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-fit"></a>}}
@@ -341,22 +299,6 @@ Defaults to FALSE.}
 }
 \if{html}{\out{</div>}}
 }
-\subsection{Examples}{
-\if{html}{\out{<div class="r example copy">}}
-\preformatted{# Assume X is dataframe meeting assumptions for privacy
-# Assume 2 columns of X, with the first being all 1 (for intercept), and
-#   the second being between -1 and 1
-# Assume y is a matrix with values between -2 and 2
-# Assume ermdp is previously constructed object as in $new example
-upper.bounds <- c(1, 1, 2) # Bounds for X and y
-lower.bounds <- c(1,-1,-2) # Bounds for X and y
-ermdp$fit(X, y, upper.bounds, lower.bounds)
-ermdp$coeff # Gets private coefficients
-}
-\if{html}{\out{</div>}}
-
-}
-
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-predict"></a>}}
@@ -382,18 +324,6 @@ coefficients, add.bias should be set to TRUE for predictions.}
 \subsection{Returns}{
 Matrix of predicted y values corresponding to each row of X.
 }
-\subsection{Examples}{
-\if{html}{\out{<div class="r example copy">}}
-\preformatted{# Assume Xtest is a new dataframe of the same form as X from fit
-# method example, with true labels ytest
-# Also assume ermdp$fit() has already been run on training data
-predicted.y <- ermdp$predict(Xtest)
-
-}
-\if{html}{\out{</div>}}
-
-}
-
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-clone"></a>}}

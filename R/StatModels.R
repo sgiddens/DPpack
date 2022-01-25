@@ -380,6 +380,37 @@ tune_model<- function(models, X, y, upper.bounds, lower.bounds,
 #'
 #' @references \insertRef{chaudhuri2011}{DPpack}
 #'
+#' @examples
+#' # Construct object for logistic regression
+#' mapXy <- function(X, coeff) e1071::sigmoid(X%*%coeff)
+#' # Cross entropy loss
+#' loss <- function(y.hat,y) -(y*log(y.hat) + (1-y)*log(1-y.hat))
+#' regularizer <- 'l2' # Alternatively, function(coeff) coeff%*%coeff/2
+#' eps <- 1
+#' lambda <- 0.1
+#' c <- 1/4 # Required value for logistic regression
+#' mapXy.gr <- function(X, coeff) as.numeric(e1071::dsigmoid(X%*%coeff))*t(X)
+#' loss.gr <- function(y.hat, y) -y/y.hat + (1-y)/(1-y.hat)
+#' regularizer.gr <- function(coeff) coeff
+#' ermdp <- EmpiricalRiskMinimizationDP.CMS$new(mapXy, loss, regularizer, eps,
+#'                                              lambda, c, mapXy.gr, loss.gr,
+#'                                              regularizer.gr)
+#'
+#' # Fit with data
+#' # Assume X is dataframe meeting assumptions for privacy
+#' # Assume 2 columns of X each bounded between -1 and 1
+#' # Assume y is 0 or 1 labels for each row of X
+#' upper.bounds <- c( 1, 1) # Bounds for X and y
+#' lower.bounds <- c(-1,-1) # Bounds for X and y
+#' ermdp$fit(X, y, upper.bounds, lower.bounds)
+#' ermdp$coeff # Gets private coefficients
+#'
+#' # Predict new data points
+#' # Assume Xtest is a new dataframe of the same form as X from fit method
+#' #    example, with true labels ytest
+#' predicted.y <- ermdp$predict(Xtest) # Note these values need to be rounded
+#' n.errors <- sum(abs(round(predicted.y)-ytest))
+#'
 #' @keywords internal
 #'
 #' @export
@@ -501,22 +532,6 @@ EmpiricalRiskMinimizationDP.CMS <- R6::R6Class("EmpiricalRiskMinimizationDP.CMS"
   #'   \code{regularizer} is a function, non-gradient based optimization methods
   #'   are used to compute the coefficient values in fitting the model.
   #'
-  #' @examples
-  #' # Construct object for logistic regression
-  #' mapXy <- function(X, coeff) e1071::sigmoid(X%*%coeff)
-  #' # Cross entropy loss
-  #' loss <- function(y.hat,y) -(y*log(y.hat) + (1-y)*log(1-y.hat))
-  #' regularizer <- 'l2' # Alternatively, function(coeff) coeff%*%coeff/2
-  #' eps <- 1
-  #' lambda <- 0.1
-  #' c <- 1/4 # Required value for logistic regression
-  #' mapXy.gr <- function(X, coeff) as.numeric(e1071::dsigmoid(X%*%coeff))*t(X)
-  #' loss.gr <- function(y.hat, y) -y/y.hat + (1-y)/(1-y.hat)
-  #' regularizer.gr <- function(coeff) coeff
-  #' ermdp <- EmpiricalRiskMinimizationDP.CMS$new(mapXy, loss, regularizer, eps,
-  #'                                              lambda, c, mapXy.gr, loss.gr,
-  #'                                              regularizer.gr)
-  #'
   #' @return A new \code{EmpiricalRiskMinimizationDP.CMS} object.
   initialize = function(mapXy, loss, regularizer, eps, lambda, c, mapXy.gr = NULL,
                         loss.gr = NULL, regularizer.gr = NULL){
@@ -564,16 +579,6 @@ EmpiricalRiskMinimizationDP.CMS <- R6::R6Class("EmpiricalRiskMinimizationDP.CMS"
   #'   corresponding upper bound is clipped at the bound.
   #' @param add.bias Boolean indicating whether to add a bias term to \code{X}.
   #'   Defaults to FALSE.
-  #'
-  #' @examples
-  #' # Assume X is dataframe meeting assumptions for privacy
-  #' # Assume 2 columns of X each bounded between -1 and 1
-  #' # Assume y is 0 or 1 labels for each row of X
-  #' # Assume ermdp is previously constructed object as in $new example
-  #' upper.bounds <- c( 1, 1) # Bounds for X and y
-  #' lower.bounds <- c(-1,-1) # Bounds for X and y
-  #' ermdp$fit(X, y, upper.bounds, lower.bounds)
-  #' ermdp$coeff # Gets private coefficients
   fit = function(X, y, upper.bounds, lower.bounds, add.bias=FALSE){
     preprocess <- private$preprocess_data(X,y,upper.bounds,lower.bounds,add.bias)
     X <- preprocess$X
@@ -612,13 +617,6 @@ EmpiricalRiskMinimizationDP.CMS <- R6::R6Class("EmpiricalRiskMinimizationDP.CMS"
   #' @param add.bias Boolean indicating whether to add a bias term to \code{X}.
   #'   Defaults to FALSE. If add.bias was set to TRUE when fitting the
   #'   coefficients, add.bias should be set to TRUE for predictions.
-  #'
-  #' @examples
-  #' # Assume Xtest is a new dataframe of the same form as X from fit
-  #' # method example, with true labels ytest
-  #' # Also assume ermdp$fit() has already been run on training data
-  #' predicted.y <- ermdp$predict(Xtest) # Note these values need to be rounded
-  #' n.errors <- sum(abs(round(predicted.y)-ytest))
   #'
   #' @return Matrix of predicted labels corresponding to each row of \code{X}.
   predict = function(X, add.bias=FALSE){
@@ -761,6 +759,30 @@ EmpiricalRiskMinimizationDP.CMS <- R6::R6Class("EmpiricalRiskMinimizationDP.CMS"
 #'
 #' @references \insertRef{chaudhuri2011}{DPpack}
 #'
+#' @examples
+#' # Construct object for logistic regression
+#' regularizer <- 'l2' # Alternatively, function(coeff) coeff%*%coeff/2
+#' eps <- 1
+#' lambda <- 0.1
+#' regularizer.gr <- function(coeff) coeff # If function given for regularizer
+#' lrdp <- LogisticRegressioinDP$new(regularizer, eps, lambda,
+#'                                   regularizer.gr)
+#'
+#' # Fit with data
+#' # Assume X is dataframe meeting assumptions for privacy
+#' # Assume 2 columns of X each bounded between -1 and 1
+#' # Assume y is 0 or 1 labels for each row of X
+#' upper.bounds <- c( 1, 1) # Bounds for X and y
+#' lower.bounds <- c(-1,-1) # Bounds for X and y
+#' lrdp$fit(X, y, upper.bounds, lower.bounds)
+#' lrdp$coeff # Gets private coefficients
+#'
+#' # Predict new data points
+#' # Assume Xtest is a new dataframe of the same form as X from fit method
+#' #      example, with true labels ytest
+#' predicted.y <- lrdp$predict(Xtest)
+#' n.errors <- sum(predicted.y!=ytest)
+#'
 #' @export
 LogisticRegressionDP <- R6::R6Class("LogisticRegressionDP",
   inherit=EmpiricalRiskMinimizationDP.CMS,
@@ -785,15 +807,6 @@ LogisticRegressionDP <- R6::R6Class("LogisticRegressionDP",
   #'   \code{regularizer} is a function, non-gradient based optimization methods
   #'   are used to compute the coefficient values in fitting the model.
   #'
-  #' @examples
-  #' # Construct object for logistic regression
-  #' regularizer <- 'l2' # Alternatively, function(coeff) coeff%*%coeff/2
-  #' eps <- 1
-  #' lambda <- 0.1
-  #' regularizer.gr <- function(coeff) coeff # If function given for regularizer
-  #' lrdp <- LogisticRegressioinDP$new(regularizer, eps, lambda,
-  #'                                   regularizer.gr)
-  #'
   #' @return A new \code{LogisticRegressionDP} object.
   initialize = function(regularizer, eps, lambda, regularizer.gr = NULL){
     super$initialize(mapXy.sigmoid, loss.cross.entropy, regularizer, eps,
@@ -811,13 +824,6 @@ LogisticRegressionDP <- R6::R6Class("LogisticRegressionDP",
   #'   value or the rounded class label. If FALSE (default), outputs the
   #'   predicted labels 0 or 1. If TRUE, returns the raw score from the logistic
   #'   regression.
-  #'
-  #' @examples
-  #' # Assume Xtest is a new dataframe of the same form as X from fit
-  #' # method example, with true labels ytest
-  #' # Also assume lrdp$fit() has already been run on training data
-  #' predicted.y <- lrdp$predict(Xtest)
-  #' n.errors <- sum(predicted.y!=ytest)
   #'
   #' @return Matrix of predicted labels or scores corresponding to each row of
   #'   \code{X}.
@@ -1017,6 +1023,32 @@ phi.gaussian <- function(x, theta){
 #'
 #'   \insertRef{Chapelle2007}{DPpack}
 #'
+#' @examples
+#' # Construct object for SVM
+#' regularizer <- 'l2' # Alternatively, function(coeff) coeff%*%coeff/2
+#' eps <- 1
+#' lambda <- 0.1
+#' regularizer.gr <- function(coeff) coeff # If function given for regularizer
+#' huber.h <- 0.5
+#' svmdp <- svmDP$new(regularizer, eps, lambda, kernel='linear',
+#'                                   regularizer.gr=regularizer.gr,
+#'                                   huber.h=huber.h)
+#'
+#' # Fit with data
+#' # Assume X is dataframe meeting assumptions for privacy
+#' # Assume 2 columns of X each bounded between -1 and 1
+#' # Assume y is 0 or 1 labels for each row of X
+#' upper.bounds <- c( 1, 1) # Bounds for X and y
+#' lower.bounds <- c(-1,-1) # Bounds for X and y
+#' svmdp$fit(X, y, upper.bounds, lower.bounds)
+#' svmdp$coeff # Gets private coefficients
+#'
+#' # Predict new data points
+#' # Assume Xtest is a new dataframe of the same form as X from fit method
+#' #    example, with true labels ytest
+#' predicted.y <- svmdp$predict(Xtest)
+#' n.errors <- sum(predicted.y!=ytest)
+#'
 #' @export
 svmDP <- R6::R6Class("svmDP",
   inherit=EmpiricalRiskMinimizationDP.CMS,
@@ -1053,17 +1085,6 @@ svmDP <- R6::R6Class("svmDP",
   #' @param huber.h Positive real number indicating the degree to which the
   #'   Huber loss approximates the hinge loss. Defaults to 0.5
   #'   \insertCite{Chapelle2007}{DPpack}.
-  #'
-  #' @examples
-  #' # Construct object for SVM
-  #' regularizer <- 'l2' # Alternatively, function(coeff) coeff%*%coeff/2
-  #' eps <- 1
-  #' lambda <- 0.1
-  #' regularizer.gr <- function(coeff) coeff # If function given for regularizer
-  #' huber.h <- 0.5
-  #' svmdp <- svmDP$new(regularizer, eps, lambda,
-  #'                                   regularizer.gr=regularizer.gr,
-  #'                                   huber.h=huber.h)
   #'
   #' @return A new svmDP object.
   initialize = function(regularizer, eps, lambda, kernel='linear', D=NULL,
@@ -1110,13 +1131,6 @@ svmDP <- R6::R6Class("svmDP",
   #'   value or the rounded class label. If FALSE (default), outputs the
   #'   predicted labels 0 or 1. If TRUE, returns the raw score from the SVM
   #'   model.
-  #'
-  #' @examples
-  #' # Assume Xtest is a new dataframe of the same form as X from fit
-  #' # method example, with true labels ytest
-  #' # Also assume svmdp$fit() has already been run on training data
-  #' predicted.y <- svmdp$predict(Xtest)
-  #' n.errors <- sum(predicted.y!=ytest)
   #'
   #' @return Matrix of predicted labels or scores corresponding to each row of
   #'   \code{X}.
@@ -1226,15 +1240,15 @@ svmDP <- R6::R6Class("svmDP",
   }
 ))
 
-#'Privacy-preserving Empirical Risk Minimization for Regression
+#' Privacy-preserving Empirical Risk Minimization for Regression
 #'
-#'@description This class implements differentially private empirical risk
+#' @description This class implements differentially private empirical risk
 #'  minimization using the objective perturbation technique
 #'  \insertCite{Kifer2012}{DPpack}. It is intended to be a framework for
 #'  building more specific models via inheritance. See
 #'  \code{\link{LinearRegressionDP}} for an example of this type of structure.
 #'
-#'@details After constructing an \code{EmpiricalRiskMinimizationDP.KST} object,
+#' @details After constructing an \code{EmpiricalRiskMinimizationDP.KST} object,
 #'  the object can be fit to a provided dataset. In fitting, the model stores a
 #'  vector of coefficients \code{coeff} which satisfy epsilon-level differential
 #'  privacy. These can be released directly, or used in conjunction with the
@@ -1259,9 +1273,46 @@ svmDP <- R6::R6Class("svmDP",
 #'  \code{predict} methods should only be utilized in subclasses within this
 #'  package where appropriate preprocessing is implemented, not in this class.
 #'
-#'@keywords internal
+#' @keywords internal
 #'
-#'@references \insertRef{Kifer2012}{DPpack}
+#' @references \insertRef{Kifer2012}{DPpack}
+#'
+#' @examples
+#' # Construct object for linear regression
+#' mapXy <- function(X, coeff) X%*%coeff
+#' loss <- function(y.hat, y) (y.hat-y)^2/2
+#' regularizer <- 'l2' # Alternatively, function(coeff) coeff%*%coeff/2
+#' eps <- 1
+#' delta <- 1
+#' domain <- list("constraints"=function(coeff) coeff%*%coeff-length(coeff),
+#'   "jacobian"=function(coeff) 2*coeff)
+#' # Set p to be the number of predictors desired including intercept term (length of coeff)
+#' zeta <- 2*p^(3/2) # Proper bound for linear regression
+#' lambda <- p # Proper bound for linear regression
+#' gamma <- 1
+#' mapXy.gr <- function(X, coeff) t(X)
+#' loss.gr <- function(y.hat, y) y.hat-y
+#' regularizer.gr <- function(coeff) coeff
+#'
+#' ermdp <- EmpiricalRiskMinimizationDP.KST$new(mapXy, loss, 'l2', eps, delta,
+#'                                              domain, zeta, lambda,
+#'                                              gamma, mapXy.gr, loss.gr,
+#'                                              regularizer.gr)
+#'
+#' # Fit with data
+#' # Assume X is dataframe meeting assumptions for privacy
+#' # Assume 2 columns of X, with the first being all 1 (for intercept), and
+#' #   the second being between -1 and 1
+#' # Assume y is a matrix with values between -2 and 2
+#' upper.bounds <- c(1, 1, 2) # Bounds for X and y
+#' lower.bounds <- c(1,-1,-2) # Bounds for X and y
+#' ermdp$fit(X, y, upper.bounds, lower.bounds)
+#' ermdp$coeff # Gets private coefficients
+#'
+#' # Predict new data points
+#' # Assume Xtest is a new dataframe of the same form as X from fit method
+#' #     example, with true labels ytest
+#' predicted.y <- ermdp$predict(Xtest)
 #'
 #'@export
 EmpiricalRiskMinimizationDP.KST <- R6::R6Class("EmpiricalRiskMinimizationDP.KST",
@@ -1379,28 +1430,6 @@ EmpiricalRiskMinimizationDP.KST <- R6::R6Class("EmpiricalRiskMinimizationDP.KST"
   #'   \code{regularizer} is a function, non-gradient based optimization methods
   #'   are used to compute the coefficient values in fitting the model.
   #'
-  #' @examples
-  #' # Construct object for linear regression
-  #' mapXy <- function(X, coeff) X%*%coeff
-  #' loss <- function(y.hat, y) (y.hat-y)^2/2
-  #' regularizer <- 'l2' # Alternatively, function(coeff) coeff%*%coeff/2
-  #' eps <- 1
-  #' delta <- 1
-  #' domain <- list("constraints"=function(coeff) coeff%*%coeff-length(coeff),
-  #'   "jacobian"=function(coeff) 2*coeff)
-  #' # Set p to be the number of predictors desired including intercept term (length of coeff)
-  #' zeta <- 2*p^(3/2) # Proper bound for linear regression
-  #' lambda <- p # Proper bound for linear regression
-  #' gamma <- 1
-  #' mapXy.gr <- function(X, coeff) t(X)
-  #' loss.gr <- function(y.hat, y) y.hat-y
-  #' regularizer.gr <- function(coeff) coeff
-  #'
-  #' ermdp <- EmpiricalRiskMinimizationDP.KST$new(mapXy, loss, 'l2', eps, delta,
-  #'                                              domain, zeta, lambda,
-  #'                                              gamma, mapXy.gr, loss.gr,
-  #'                                              regularizer.gr)
-  #'
   #' @return A new EmpiricalRiskMinimizationDP.KST object.
   initialize = function(mapXy, loss, regularizer, eps, delta, domain, zeta, lambda,
                         gamma, mapXy.gr=NULL, loss.gr=NULL, regularizer.gr=NULL){
@@ -1456,16 +1485,6 @@ EmpiricalRiskMinimizationDP.KST <- R6::R6Class("EmpiricalRiskMinimizationDP.KST"
   #'   bound is clipped at the bound.
   #' @param add.bias Boolean indicating whether to add a bias term to \code{X}.
   #'   Defaults to FALSE.
-  #' @examples
-  #' # Assume X is dataframe meeting assumptions for privacy
-  #' # Assume 2 columns of X, with the first being all 1 (for intercept), and
-  #' #   the second being between -1 and 1
-  #' # Assume y is a matrix with values between -2 and 2
-  #' # Assume ermdp is previously constructed object as in $new example
-  #' upper.bounds <- c(1, 1, 2) # Bounds for X and y
-  #' lower.bounds <- c(1,-1,-2) # Bounds for X and y
-  #' ermdp$fit(X, y, upper.bounds, lower.bounds)
-  #' ermdp$coeff # Gets private coefficients
   fit = function(X, y, upper.bounds, lower.bounds, add.bias=FALSE){
     # Assumptions:
     # If assumptions are not met in child class, implement
@@ -1502,12 +1521,6 @@ EmpiricalRiskMinimizationDP.KST <- R6::R6Class("EmpiricalRiskMinimizationDP.KST"
   #' @param add.bias Boolean indicating whether to add a bias term to \code{X}.
   #'   Defaults to FALSE. If add.bias was set to TRUE when fitting the
   #'   coefficients, add.bias should be set to TRUE for predictions.
-  #'
-  #' @examples
-  #' # Assume Xtest is a new dataframe of the same form as X from fit
-  #' # method example, with true labels ytest
-  #' # Also assume ermdp$fit() has already been run on training data
-  #' predicted.y <- ermdp$predict(Xtest)
   #'
   #' @return Matrix of predicted y values corresponding to each row of X.
   predict = function(X, add.bias=FALSE){
@@ -1672,6 +1685,32 @@ EmpiricalRiskMinimizationDP.KST <- R6::R6Class("EmpiricalRiskMinimizationDP.KST"
 #'
 #' @references \insertRef{Kifer2012}{DPpack}
 #'
+#' @examples
+#' # Construct object for linear regression
+#' regularizer <- 'l2' # Alternatively, function(coeff) coeff%*%coeff/2
+#' eps <- 1
+#' delta <- 1
+#' gamma <- 1
+#' regularizer.gr <- function(coeff) coeff
+#'
+#' lrdp <- LinearRegressionDP$new('l2', eps, delta, gamma,
+#'                                              regularizer.gr)
+#'
+#' # Fit with data
+#' # Assume X is dataframe meeting assumptions for privacy
+#' # Assume 2 columns of X, with the first being all 1 (for intercept), and
+#' #   the second being between -1 and 1
+#' # Assume y is a matrix with values between -2 and 2
+#' upper.bounds <- c(1, 1, 2) # Bounds for X and y
+#' lower.bounds <- c(1,-1,-2) # Bounds for X and y
+#' lrdp$fit(X, y, upper.bounds, lower.bounds)
+#' lrdp$coeff # Gets private coefficients
+#'
+#' # Predict new data points
+#' # Assume Xtest is a new dataframe of the same form as X from fit method
+#' #     example, with true labels ytest
+#' predicted.y <- lrdp$predict(Xtest)
+#'
 #' @export
 LinearRegressionDP <- R6::R6Class("LinearRegressionDP",
   inherit=EmpiricalRiskMinimizationDP.KST,
@@ -1696,17 +1735,6 @@ LinearRegressionDP <- R6::R6Class("LinearRegressionDP",
   #'   given as a string, this value is ignored. If not given and
   #'   \code{regularizer} is a function, non-gradient based optimization methods
   #'   are used to compute the coefficient values in fitting the model.
-  #'
-  #' @examples
-  #' # Construct object for linear regression
-  #' regularizer <- 'l2' # Alternatively, function(coeff) coeff%*%coeff/2
-  #' eps <- 1
-  #' delta <- 1
-  #' gamma <- 1
-  #' regularizer.gr <- function(coeff) coeff
-  #'
-  #' lrdp <- LinearRegressionDP$new('l2', eps, delta, gamma,
-  #'                                              regularizer.gr)
   #'
   #' @return A new LinearRegressionDP object.
   initialize = function(regularizer, eps, delta, gamma, regularizer.gr=NULL){

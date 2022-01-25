@@ -31,11 +31,6 @@ rest of X. The \code{fit} method contains functionality to add a column of
 constant 1s to X before scaling, if desired.
 }
 \examples{
-
-## ------------------------------------------------
-## Method `LinearRegressionDP$new`
-## ------------------------------------------------
-
 # Construct object for linear regression
 regularizer <- 'l2' # Alternatively, function(coeff) coeff\%*\%coeff/2
 eps <- 1
@@ -45,6 +40,21 @@ regularizer.gr <- function(coeff) coeff
 
 lrdp <- LinearRegressionDP$new('l2', eps, delta, gamma,
                                              regularizer.gr)
+
+# Fit with data
+# Assume X is dataframe meeting assumptions for privacy
+# Assume 2 columns of X, with the first being all 1 (for intercept), and
+#   the second being between -1 and 1
+# Assume y is a matrix with values between -2 and 2
+upper.bounds <- c(1, 1, 2) # Bounds for X and y
+lower.bounds <- c(1,-1,-2) # Bounds for X and y
+lrdp$fit(X, y, upper.bounds, lower.bounds)
+lrdp$coeff # Gets private coefficients
+
+# Predict new data points
+# Assume Xtest is a new dataframe of the same form as X from fit method
+#     example, with true labels ytest
+predicted.y <- lrdp$predict(Xtest)
 
 }
 \references{
@@ -109,23 +119,6 @@ are used to compute the coefficient values in fitting the model.}
 \subsection{Returns}{
 A new LinearRegressionDP object.
 }
-\subsection{Examples}{
-\if{html}{\out{<div class="r example copy">}}
-\preformatted{# Construct object for linear regression
-regularizer <- 'l2' # Alternatively, function(coeff) coeff\%*\%coeff/2
-eps <- 1
-delta <- 1
-gamma <- 1
-regularizer.gr <- function(coeff) coeff
-
-lrdp <- LinearRegressionDP$new('l2', eps, delta, gamma,
-                                             regularizer.gr)
-
-}
-\if{html}{\out{</div>}}
-
-}
-
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-clone"></a>}}
