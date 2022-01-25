@@ -8,46 +8,27 @@ This class implements differentially private linear regression
 using the objective perturbation technique \insertCite{Kifer2012}{DPpack}.
 }
 \details{
-A new model object of this class accepts as inputs functions and
-hyperparameters indicating the privacy levels and regularization. The model
-can then be fit with a dataset X (given as a data.frame), a set of true
-values y for each row of X, as well as upper and lower bounds on the
-possible values for each column of X and for y. In fitting, the model
-stores a vector of coefficients coeff which satisfy epsilon-level
-differential privacy. These can be released directly, or used in
-conjunction with the predict method to predict the label of new datapoints.
+After constructing a \code{LinearRegressionDP} object, the object
+can be fit to a provided dataset. In fitting, the model stores a vector of
+coefficients \code{coeff} which satisfy epsilon-level differential privacy.
+These can be released directly, or used in conjunction with the predict
+method to privately predict the label of new datapoints.
 
 Note that in order to guarantee epsilon-level privacy for the empirical
 risk minimization model, certain constraints must be satisfied for the
 values used to construct the object, as well as for the data used to fit.
-The regularization function must be convex. Also, it is assumed that if x
-represents a single row of the dataset X, then \eqn{||x||\le p} for all
-\eqn{x}, where \eqn{p} is the number of predictors (including any possible
+The regularizer must be convex. Additionally, it is assumed that if x
+represents a single row of the dataset X, then the l2-norm of x is at most
+p for all x, where p is the number of predictors (including any possible
 intercept term). In order to ensure this constraint is satisfied, the
-dataset is preprocessed using provided upper and lower bounds on the
-columns of X to scale the values in such a way that this constraint is met.
-After the private coefficients are generated, these are then postprocessed
-and un-scaled so that the stored coefficients correspond to the original
-data. This does not result in additional privacy loss as long as the upper
-and lower bounds provided when fitting the model do not depend directly on
-the data. Due to this constraint on \eqn{x}, it is best to avoid using an
-intercept term in the model whenever possible. If an intercept term must be
-used, the issue can be partially circumvented by adding a constant column
-to X before fitting the model, which will be scaled along with the rest of
-X. The \code{fit} method contains functionality to add a column of constant
-1s to X before scaling, if desired.
-
-The preprocessing of X is done as follows. First, the largest in absolute
-value of the upper and lower bounds on each column are used to scale each
-column individually such that the largest value in each column is at most 1
-in absolute value. Second, each value in X is divided by the square root of
-the number of predictors of X (including bias term). These two scalings
-ensure that each row of X satisfies the necessary constraints for
-differential privacy. Additionally, the true values y are assumed to be
-bounded between \eqn{-p} and \eqn{p}. To accomodate this assumption, the
-provided upper and lower bounds on y are used to shift the true values to
-be centered around 0, then the bounds are used to scale the true values to
-be within this range.
+dataset is preprocessed and scaled, and the resulting coefficients are
+postprocessed and un-scaled so that the stored coefficients correspond to
+the original data. Due to this constraint on x, it is best to avoid using
+an intercept term in the model whenever possible. If an intercept term must
+be used, the issue can be partially circumvented by adding a constant
+column to X before fitting the model, which will be scaled along with the
+rest of X. The \code{fit} method contains functionality to add a column of
+constant 1s to X before scaling, if desired.
 }
 \examples{
 
@@ -99,13 +80,15 @@ Create a new LinearRegressionDP object.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{regularizer}}{String or regularization function. If a string, must
-be 'l2', indicating to use l2 regularization. If a function, must have
-form as given in regularizer field description. Additionally, in order
-to ensure differential privacy, the function must be convex.}
+\item{\code{regularizer}}{String or regularization function. If a string, must be
+'l2', indicating to use l2 regularization. If a function, must have form
+\code{regularizer(coeff)}, where \code{coeff} is a vector or matrix, and
+return the value of the regularizer at \code{coeff}. See
+\code{\link{regularizer.l2}} for an example. Additionally, in order to
+ensure differential privacy, the function must be convex.}
 
-\item{\code{eps}}{Positive real number defining the epsilon privacy budget. If
-set to Inf, runs algorithm without differential privacy.}
+\item{\code{eps}}{Positive real number defining the epsilon privacy budget. If set
+to Inf, runs algorithm without differential privacy.}
 
 \item{\code{delta}}{Nonnegative real number defining the delta privacy parameter.
 If 0, reduces to pure eps-DP.}
@@ -114,9 +97,12 @@ If 0, reduces to pure eps-DP.}
 constant.}
 
 \item{\code{regularizer.gr}}{Optional function representing the gradient of the
-regularizer function function with respect to coeff. Must have form as
-given in regularizer.gr field description. If not given, gradients are
-not used to compute the coefficient values in fitting the model.}
+regularization function with respect to \code{coeff} and of the form
+\code{regularizer.gr(coeff)}. Should return a vector. See
+\code{\link{regularizer.gr.l2}} for an example. If \code{regularizer} is
+given as a string, this value is ignored. If not given and
+\code{regularizer} is a function, gradients are not used to compute the
+coefficient values in fitting the model.}
 }
 \if{html}{\out{</div>}}
 }

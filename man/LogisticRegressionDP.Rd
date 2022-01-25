@@ -9,46 +9,27 @@ using the objective perturbation technique
 \insertCite{chaudhuri2011}{DPpack}.
 }
 \details{
-A new model object of this class accepts as inputs a regularizer, an
-epsilon value for differential privacy, and a lambda value that scales the
-regularizer. The model can then be fit with a dataset X (given as a
-data.frame), a set of binary labels y for each row of X, as well as upper
-and lower bounds on the possible values for each column of X and for y. In
-fitting, the model stores a vector of coefficients coeff which satisfy
-epsilon-level differential privacy. These can be released directly, or used
-in conjunction with the predict method to predict the label of new
-datapoints.
+After constructing a \code{LogisticRegressionDP} object, the object
+can be fit to a provided dataset. In fitting, the model stores a vector of
+coefficients \code{coeff} which satisfy epsilon-level differential privacy.
+These can be released directly, or used in conjunction with the predict
+method to privately predict the label of new datapoints.
 
 Note that in order to guarantee epsilon-level privacy for the empirical
 risk minimization model, certain constraints must be satisfied for the
 values used to construct the object, as well as for the data used to fit.
-The regularizer must be 1-strongly convex and doubly differentiable. Also,
-it is assumed that if x represents a single row of the dataset X, then
-\eqn{||x||\le 1} for all \eqn{x}. In order to ensure this constraint is
-satisfied, the dataset is preprocessed using provided upper and lower
-bounds on the columns of X to scale the values in such a way that this
-constraint is met. After the private coefficients are generated, these are
-then postprocessed and un-scaled so that the stored coefficients correspond
-to the original data. This does not result in additional privacy loss as
-long as the upper and lower bounds provided when fitting the model do not
-depend directly on the data. Due to this constraint on \eqn{x}, it is best
-to avoid using a bias term in the model whenever possible. If a bias term
-must be used, the issue can be partially circumvented by adding a constant
-column to X before fitting the model, which will be scaled along with the
-rest of X. The \code{fit} method contains functionality to add a column of
-constant 1s to X before scaling, if desired.
-
-The preprocessing of X is done as follows. First, the largest in absolute
-value of the upper and lower bounds on each column are used to scale each
-column individually such that the largest value in each column is at most 1
-in absolute value. Second, each value in X is divided by the square root of
-the number of predictors of X (including bias term). These two scalings
-ensure that each row of X satisfies the necessary constraints for
-differential privacy. Additionally, the labels y are assumed to be either 0
-or 1. If different values are provided, they are coerced to be either 0 or
-1 prior to fitting the model. Values in y that are \eqn{\le} 0 are assigned
-to be 0, while values in y \eqn{>} 0 are assigned to be 1. Accordingly, new
-predicted labels are output as either 0 or 1.
+The regularizer must be 1-strongly convex and doubly differentiable.
+Additionally, it is assumed that if x represents a single row of the
+dataset X, then the l2-norm of x is at most 1 for all x. In order to ensure
+this constraint is satisfied, the dataset is preprocessed and scaled, and
+the resulting coefficients are postprocessed and un-scaled so that the
+stored coefficients correspond to the original data. Due to this constraint
+on x, it is best to avoid using a bias term in the model whenever possible.
+If a bias term must be used, the issue can be partially circumvented by
+adding a constant column to X before fitting the model, which will be
+scaled along with the rest of X. The \code{fit} method contains
+functionality to add a column of constant 1s to X before scaling, if
+desired.
 }
 \examples{
 
@@ -101,7 +82,7 @@ n.errors <- sum(predicted.y!=ytest)
 \if{html}{\out{<a id="method-new"></a>}}
 \if{latex}{\out{\hypertarget{method-new}{}}}
 \subsection{Method \code{new()}}{
-Create a new LogisticRegressionDP object.
+Create a new \code{LogisticRegressionDP} object.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{LogisticRegressionDP$new(regularizer, eps, lambda, regularizer.gr = NULL)}\if{html}{\out{</div>}}
 }
@@ -111,7 +92,9 @@ Create a new LogisticRegressionDP object.
 \describe{
 \item{\code{regularizer}}{String or regularization function. If a string, must be
 'l2', indicating to use l2 regularization. If a function, must have form
-as given in regularizer field description. Additionally, in order to
+\code{regularizer(coeff)}, where \code{coeff} is a vector or matrix, and
+return the value of the regularizer at \code{coeff}. See
+\code{\link{regularizer.l2}} for an example. Additionally, in order to
 ensure differential privacy, the function must be 1-strongly convex and
 doubly differentiable.}
 
@@ -122,15 +105,17 @@ to Inf, runs algorithm without differential privacy.}
 constant.}
 
 \item{\code{regularizer.gr}}{Optional function representing the gradient of the
-regularizer function function with respect to coeff. Must have form as
-given in regularizer.gr field description for parent class. If not given,
-gradients are not used to compute the coefficient values in fitting the
-model.}
+regularization function with respect to \code{coeff} and of the form
+\code{regularizer.gr(coeff)}. Should return a vector. See
+\code{\link{regularizer.gr.l2}} for an example. If \code{regularizer} is
+given as a string, this value is ignored. If not given and
+\code{regularizer} is a function, gradients are not used to compute the
+coefficient values in fitting the model.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-A new LogisticRegressionDP object.
+A new \code{LogisticRegressionDP} object.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
@@ -152,7 +137,8 @@ lrdp <- LogisticRegressioinDP$new(regularizer, eps, lambda,
 \if{html}{\out{<a id="method-predict"></a>}}
 \if{latex}{\out{\hypertarget{method-predict}{}}}
 \subsection{Method \code{predict()}}{
-Predict label(s) for given X using the fitted coefficients.
+Predict label(s) for given \code{X} using the fitted
+coefficients.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{LogisticRegressionDP$predict(X, add.bias = FALSE, raw.value = FALSE)}\if{html}{\out{</div>}}
 }
@@ -161,20 +147,22 @@ Predict label(s) for given X using the fitted coefficients.
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{X}}{Dataframe of data on which to make predictions. Must be of same
-form as X used to fit coefficients.}
+form as \code{X} used to fit coefficients.}
 
-\item{\code{add.bias}}{Boolean indicating whether to add a bias term to X.
+\item{\code{add.bias}}{Boolean indicating whether to add a bias term to \code{X}.
 Defaults to FALSE. If add.bias was set to TRUE when fitting the
 coefficients, add.bias should be set to TRUE for predictions.}
 
 \item{\code{raw.value}}{Boolean indicating whether to return the raw predicted
-value or the rounded class label. If FALSE (default), rounds the values
-to 0 or 1. If TRUE, returns the raw score from the logistic regression.}
+value or the rounded class label. If FALSE (default), outputs the
+predicted labels 0 or 1. If TRUE, returns the raw score from the logistic
+regression.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-Matrix of predicted labels corresponding to each row of X.
+Matrix of predicted labels or scores corresponding to each row of
+\code{X}.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}

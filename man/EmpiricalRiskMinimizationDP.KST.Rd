@@ -11,27 +11,30 @@ building more specific models via inheritance. See
 \code{\link{LinearRegressionDP}} for an example of this type of structure.
 }
 \details{
-A new model object of this class accepts as inputs various functions
-and hyperparameters related to the specific regression problem. The model
-can then be fit with a dataset X (given as a data.frame), a set of true
-values y for each row of X, as well as upper and lower bounds on the
-possible values for each column of X and for y. In fitting, the model
-stores a vector of coefficients coeff which satisfy epsilon-level
-differential privacy. These can be released directly, or used in
-conjunction with the predict method to predict the value of new datapoints.
+After constructing an \code{EmpiricalRiskMinimizationDP.KST} object,
+the object can be fit to a provided dataset. In fitting, the model stores a
+vector of coefficients \code{coeff} which satisfy epsilon-level differential
+privacy. These can be released directly, or used in conjunction with the
+predict method to privately predict the value of new datapoints.
 
-Note that in order to guarantee epsilon-level privacy for the empirical
-risk minimization model, certain constraints must be satisfied for the
-values used to construct the object, as well as for the data used to fit.
-Specifically, the following constraints must be met. First, the provided
-domain must be a closed convex subset of R^p, where p is the number of
-columns of X. Second, if \eqn{L(\theta,X,y) = (1/n)\sum l(\theta,x_i,y_i)}
-is the loss function, then \eqn{L} must be convex with a continuous
-Hessian. Third, \eqn{||l(\theta,x_i,y_i)||\le} zeta for some constant zeta
-for all \eqn{x_i, y_i, \theta}. Fourth, for all \eqn{x_i, y_i, \theta} the
-Hessian of \eqn{l(\theta,x_i,y_i)} must be of rank at most one and its
-Eigenvalues must be bounded above by some value lambda. Finally, the
-regularizer must be convex.
+Note that in order to guarantee epsilon-level privacy for the empirical risk
+minimization model, certain constraints must be satisfied for the values
+used to construct the object, as well as for the data used to fit.
+Specifically, the following constraints must be met. Let \eqn{l} represent
+the loss function for an individual dataset row x and output value y and
+\eqn{L} represent the average loss over all rows and output values. First,
+\eqn{L} must be convex with a continuous Hessian. Second, the l2-norm of the
+gradient of \eqn{l} must be bounded above by some constant zeta for all
+possible input values in the domain. Third, for all possible inputs to
+\eqn{l}, the Hessian of \eqn{l} must be of rank at most one and its
+Eigenvalues must be bounded above by some constant lambda. Fourth, the
+regularizer must be convex. Finally, the provided domain of \eqn{l} must be
+a closed convex subset of the set of all real-valued vectors of dimension p,
+where p is the number of columns of X. Note that because of this, a bias
+term cannot be included without appropriate scaling/preprocessing of the
+dataset. To ensure privacy, the add.bias argument in the \code{fit} and
+\code{predict} methods should only be utilized in subclasses within this
+package where appropriate preprocessing is implemented, not in this class.
 }
 \examples{
 
@@ -48,8 +51,8 @@ delta <- 1
 domain <- list("constraints"=function(coeff) coeff\%*\%coeff-length(coeff),
   "jacobian"=function(coeff) 2*coeff)
 # Set p to be the number of predictors desired including intercept term (length of coeff)
-zeta <- 2*p^(3/2)
-lambda <- p
+zeta <- 2*p^(3/2) # Proper bound for linear regression
+lambda <- p # Proper bound for linear regression
 gamma <- 1
 mapXy.gr <- function(X, coeff) t(X)
 loss.gr <- function(y.hat, y) y.hat-y
@@ -75,7 +78,6 @@ lower.bounds <- c(1,-1,-2) # Bounds for X and y
 ermdp$fit(X, y, upper.bounds, lower.bounds)
 ermdp$coeff # Gets private coefficients
 
-
 ## ------------------------------------------------
 ## Method `EmpiricalRiskMinimizationDP.KST$predict`
 ## ------------------------------------------------
@@ -93,64 +95,48 @@ predicted.y <- ermdp$predict(Xtest)
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
 \describe{
-\item{\code{mapXy}}{Map function of the form mapXy(X, coeff), where X is a matrix and
-coeff is a vector or matrix, that returns a column matrix of predicted
-labels for each row of X.}
+\item{\code{mapXy}}{Map function of the form \code{mapXy(X, coeff)} mapping input
+data matrix \code{X} and coefficient vector or matrix \code{coeff} to
+output labels \code{y}.}
 
 \item{\code{mapXy.gr}}{Function representing the gradient of the map function with
-respect to the values in coeff and of the same form as mapXy. Should be given
-such that the ith row of the output represents the gradient of mapXy with
-respect to the ith coefficient.}
+respect to the values in \code{coeff} and of the form \code{mapXy.gr(X,
+  coeff)}, where \code{X} is a matrix and \code{coeff} is a matrix or
+numeric vector.}
 
-\item{\code{loss}}{Loss function of the form loss(y.hat, y), where y.hat and y
-are matrices, that returns a matrix of the same shape as y.hat and y of
-loss function values for the empirical risk minimization model with
-predicted labels y.hat and true labels y.}
+\item{\code{loss}}{Loss function of the form \code{loss(y.hat, y)}, where
+\code{y.hat} and \code{y} are matrices.}
 
-\item{\code{loss.gr}}{Function representing the gradient of the loss function
-with respect to y.hat and of the same form as loss. Should be given
-such that the ith row of the output represents the gradient of loss at
-the ith set of input values.}
+\item{\code{loss.gr}}{Function representing the gradient of the loss function with
+respect to \code{y.hat} and of the form \code{loss.gr(y.hat, y)}, where
+\code{y.hat} and \code{y} are matrices.}
 
-\item{\code{regularizer}}{Regularization function. Must be of the form
-regularizer(coeff), where coeff is a vector or matrix, that returns the
-value of the regularizer at coeff.}
+\item{\code{regularizer}}{Regularization function of the form
+\code{regularizer(coeff)}, where \code{coeff} is a vector or matrix.}
 
 \item{\code{regularizer.gr}}{Function representing the gradient of the
-regularization function with respect to coeff and of the same form as
-regularizer. Should return a vector. If regularizer is a string, this
-value is ignored.}
+regularization function with respect to \code{coeff} and of the form
+\code{regularizer.gr(coeff)}.}
 
-\item{\code{eps}}{Positive real number defining the epsilon privacy budget. If
-set to Inf, runs algorithm without differential privacy.}
+\item{\code{gamma}}{Nonnegative real number representing the regularization
+constant.}
+
+\item{\code{eps}}{Positive real number defining the epsilon privacy budget. If set
+to Inf, runs algorithm without differential privacy.}
 
 \item{\code{delta}}{Nonnegative real number defining the delta privacy parameter.
 If 0, reduces to pure eps-DP.}
 
-\item{\code{domain}}{List of functions representing the constraints on the
-search space for the objective perturbation algorithm. Must contain two
-function, labeled "constraints" and "jacobian", respectively. The
-"constraints" function accepts a vector of coefficients from the search
-space and returns a value such that the value is \eqn{\le 0} if and
-only if the input coefficient vector is within the constrained search
-space. The "jacobian" function also accepts a vector of coefficients
-and returns the Jacobian of the constraint function. For example, in
-linear regression, the coefficient vector \eqn{\theta} is assumed to
-satisfy \eqn{||\theta||_2 \le sqrt(p)}, where \eqn{p} is the length of
-\eqn{\theta} \insertCite{Kifer2012}{DPpack}. So, domain could be
-defined as \code{domain <- list("constraints"=function(coeff) coeff\%*\%coeff-length(coeff), "jacobian"=function(coeff) 2*coeff)}.}
+\item{\code{domain}}{List of constraint and jacobian functions representing the
+constraints on the search space for the objective perturbation algorithm
+used in \insertCite{Kifer2012}{DPpack}.}
 
-\item{\code{zeta}}{Positive real number corresponding to the upper bound of the
-2-norm of the gradient of the loss function with respect to the
-coefficient vector, i.e. \eqn{||l(\theta,x_i,y_i)||\le} zeta for some
-constant zeta for all \eqn{x_i, y_i, \theta}.}
+\item{\code{zeta}}{Positive real number denoting the upper bound on the l2-norm
+value of the gradient of the loss function, as required to ensure
+differential privacy.}
 
-\item{\code{lambda}}{Positive real number corresponding to the upper bound of
-the Eigenvalues of the Hessian of \eqn{l(\theta,x_i,y_i)} for all
-\eqn{x_i, y_i, \theta}.}
-
-\item{\code{gamma}}{Nonnegative real number representing the regularization
-constant.}
+\item{\code{lambda}}{Positive real number corresponding to the upper bound of the
+Eigenvalues of the Hessian of the loss function for all possible inputs.}
 
 \item{\code{coeff}}{Numeric vector of coefficients for the model.}
 }
@@ -169,7 +155,7 @@ constant.}
 \if{html}{\out{<a id="method-new"></a>}}
 \if{latex}{\out{\hypertarget{method-new}{}}}
 \subsection{Method \code{new()}}{
-Create a new EmpiricalRiskMinimizationDP.KST object.
+Create a new \code{EmpiricalRiskMinimizationDP.KST} object.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{EmpiricalRiskMinimizationDP.KST$new(
   mapXy,
@@ -190,18 +176,26 @@ Create a new EmpiricalRiskMinimizationDP.KST object.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{mapXy}}{Map function. Must have form as given in mapXy field description.}
+\item{\code{mapXy}}{Map function of the form \code{mapXy(X, coeff)} mapping input
+data matrix \code{X} and coefficient vector or matrix \code{coeff} to
+output labels \code{y}. Should return a column matrix of predicted labels
+for each row of \code{X}. See \code{\link{mapXy.linear}} for an example.}
 
-\item{\code{loss}}{Loss function. Must have form as given in loss field
-description. Additionally, to ensure differential privacy, it must be
-convex, \eqn{||l(\theta,x_i,y_i)||\le} zeta for some constant zeta for
-all \eqn{x_i, y_i, \theta}, and for all \eqn{x_i, y_i, \theta} the
-Hessian of \eqn{l(\theta,x_i,y_i)} must be of rank at most one and its
-Eigenvalues must be bounded above by some value lambda.}
+\item{\code{loss}}{Loss function of the form \code{loss(y.hat, y)}, where
+\code{y.hat} and \code{y} are matrices. Should be defined such that it
+returns a matrix of loss values for each element of \code{y.hat} and
+\code{y}. See \code{\link{loss.squared.error}} for an example. This
+function must be convex and the l2-norm of its gradient must be bounded
+above by zeta for some constant zeta for all possible inputs within the
+given domain. Additionally, for all possible inputs within the given
+domain, the Hessian of the loss function must be of rank at most one and
+its Eigenvalues must be bounded above by some constant lambda.}
 
 \item{\code{regularizer}}{String or regularization function. If a string, must be
 'l2', indicating to use l2 regularization. If a function, must have form
-as given in regularizer field description. Additionally, in order to
+\code{regularizer(coeff)}, where \code{coeff} is a vector or matrix, and
+return the value of the regularizer at \code{coeff}. See
+\code{\link{regularizer.l2}} for an example. Additionally, in order to
 ensure differential privacy, the function must be convex.}
 
 \item{\code{eps}}{Positive real number defining the epsilon privacy budget. If set
@@ -211,35 +205,53 @@ to Inf, runs algorithm without differential privacy.}
 If 0, reduces to pure eps-DP.}
 
 \item{\code{domain}}{List of functions representing the constraints on the search
-space for the objective perturbation algorithm of form as given in domain
-field description.}
+space for the objective perturbation algorithm. Must contain two
+functions, labeled "constraints" and "jacobian", respectively. The
+"constraints" function accepts a vector of coefficients from the search
+space and returns a value such that the value is nonpositive if and only
+if the input coefficient vector is within the constrained search space.
+The "jacobian" function also accepts a vector of coefficients and returns
+the Jacobian of the constraint function. For example, in linear
+regression, the square of the l2-norm of the coefficient vector
+\eqn{\theta} is assumed to be bounded above by p, where p is the length
+of \eqn{\theta} \insertCite{Kifer2012}{DPpack}. So, domain could be defined
+as \code{domain <- list("constraints"=function(coeff) coeff\%*\%coeff-length(coeff), "jacobian"=function(coeff) 2*coeff)}.}
 
-\item{\code{zeta}}{Positive real number corresponding to the upper bound of the
-2-norm of the gradient of the loss function with respect to the
-coefficient vector, i.e. \eqn{||l(\theta,x_i,y_i)||\le} zeta for some
-constant zeta for all \eqn{x_i, y_i, \theta}.}
+\item{\code{zeta}}{Positive real number denoting the upper bound on the l2-norm
+value of the gradient of the loss function, as required to ensure
+differential privacy.}
 
 \item{\code{lambda}}{Positive real number corresponding to the upper bound of the
-Eigenvalues of the Hessian of \eqn{l(\theta,x_i,y_i)} for all \eqn{x_i,
-  y_i, \theta}.}
+Eigenvalues of the Hessian of the loss function for all possible inputs.}
 
 \item{\code{gamma}}{Nonnegative real number representing the regularization
 constant.}
 
-\item{\code{mapXy.gr}}{Optional function representing the gradient of the map function
-with respect to the values in coeff. Must have form as given in mapXy.gr
-field description. If not given, gradients are not used to compute the
-coefficient values in fitting the model.}
+\item{\code{mapXy.gr}}{Optional function representing the gradient of the map
+function with respect to the values in \code{coeff}. If given, must be of
+the form \code{mapXy.gr(X, coeff)}, where \code{X} is a matrix and
+\code{coeff} is a matrix or numeric vector. Should be defined such that
+the ith row of the output represents the gradient with respect to the ith
+coefficient. See \code{\link{mapXy.gr.linear}} for an example. If not
+given, gradients are not used to compute the coefficient values in
+fitting the model.}
 
 \item{\code{loss.gr}}{Optional function representing the gradient of the loss
-function with respect to y.hat. Must have form as given in loss.gr field
-description. If not given, gradients are not used to compute the
-coefficient values in fitting the model.}
+function with respect to \code{y.hat} and of the form
+\code{loss.gr(y.hat, y)}, where \code{y.hat} and \code{y} are matrices.
+Should be defined such that the ith row of the output represents the
+gradient of the loss function at the ith set of input values. See
+\code{\link{loss.gr.squared.error}} for an example. If not given,
+gradients are not used to compute the coefficient values in fitting the
+model.}
 
 \item{\code{regularizer.gr}}{Optional function representing the gradient of the
-regularizer function function with respect to coeff. Must have form as
-given in regularizer.gr field description. If not given, gradients are
-not used to compute the coefficient values in fitting the model.}
+regularization function with respect to \code{coeff} and of the form
+\code{regularizer.gr(coeff)}. Should return a vector. See
+\code{\link{regularizer.gr.l2}} for an example. If \code{regularizer} is
+given as a string, this value is ignored. If not given and
+\code{regularizer} is a function, gradients are not used to compute the
+coefficient values in fitting the model.}
 }
 \if{html}{\out{</div>}}
 }
@@ -257,8 +269,8 @@ delta <- 1
 domain <- list("constraints"=function(coeff) coeff\%*\%coeff-length(coeff),
   "jacobian"=function(coeff) 2*coeff)
 # Set p to be the number of predictors desired including intercept term (length of coeff)
-zeta <- 2*p^(3/2)
-lambda <- p
+zeta <- 2*p^(3/2) # Proper bound for linear regression
+lambda <- p # Proper bound for linear regression
 gamma <- 1
 mapXy.gr <- function(X, coeff) t(X)
 loss.gr <- function(y.hat, y) y.hat-y
@@ -282,14 +294,14 @@ ermdp <- EmpiricalRiskMinimizationDP.KST$new(mapXy, loss, 'l2', eps, delta,
 Fit the differentially private emprirical risk minimization
 model. The function runs the objective perturbation algorithm
 \insertCite{Kifer2012}{DPpack} to generate an objective function. A
-numerical constrained optimization method is then run to find optimal
-coefficients for fitting the model given the training data and
-hyperparameters. The \code{\link{nloptr}} function is used. If mapXy.gr,
-loss.gr, and regularizer.gr are all given in the construction of the
-object, the gradient of the objective function and the Jacobian of the
-constraint function are utilized for the algorithm, and the NLOPT_LD_MMA
-method is used. If one or more of these gradient functions are not given,
-the NLOPT_LN_COBYLA method is used. The resulting privacy-preserving
+numerical optimization method is then run to find optimal coefficients
+for fitting the model given the training data and hyperparameters. The
+\code{\link{nloptr}} function is used. If mapXy.gr, loss.gr, and
+regularizer.gr are all given in the construction of the object, the
+gradient of the objective function and the Jacobian of the constraint
+function are utilized for the algorithm, and the NLOPT_LD_MMA method is
+used. If one or more of these gradient functions are not given, the
+NLOPT_LN_COBYLA method is used. The resulting privacy-preserving
 coefficients are stored in coeff.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{EmpiricalRiskMinimizationDP.KST$fit(
@@ -306,23 +318,25 @@ coefficients are stored in coeff.
 \describe{
 \item{\code{X}}{Dataframe of data to be fit.}
 
-\item{\code{y}}{Vector or matrix of true values for each row of X.}
+\item{\code{y}}{Vector or matrix of true values for each row of \code{X}.}
 
-\item{\code{upper.bounds}}{Numeric vector of length ncol(X)+1 giving upper bounds
-on the values in each column of X and the values in y. The last value in
-the vector is assumed to be the upper bound on y, while the first ncol(X)
-values are assumed to be in the same order as the corresponding columns
-of X. Any value in the columns of X and y larger than the corresponding
-upper bound is clipped at the bound.}
+\item{\code{upper.bounds}}{Numeric vector of length \code{ncol(X)+1} giving upper
+bounds on the values in each column of \code{X} and the values of
+\code{y}. The last value in the vector is assumed to be the upper bound
+on \code{y}, while the first \code{ncol(X)} values are assumed to be in
+the same order as the corresponding columns of \code{X}. Any value in the
+columns of \code{X} and in \code{y} larger than the corresponding upper
+bound is clipped at the bound.}
 
-\item{\code{lower.bounds}}{Numeric vector of length ncol(X)+1 giving lower bounds
-on the values in each column of X and the values in y. The last value in
-the vector is assumed to be the lower bound on y, while the first ncol(X)
-values are assumed to be in the same order as the corresponding columns
-of X. Any value in the columns of X and y smaller than the corresponding
-lower bound is clipped at the bound.}
+\item{\code{lower.bounds}}{Numeric vector of length \code{ncol(X)+1} giving lower
+bounds on the values in each column of \code{X} and the values of
+\code{y}. The last value in the vector is assumed to be the lower bound
+on \code{y}, while the first \code{ncol(X)} values are assumed to be in
+the same order as the corresponding columns of \code{X}. Any value in the
+columns of \code{X} and in \code{y} larger than the corresponding lower
+bound is clipped at the bound.}
 
-\item{\code{add.bias}}{Boolean indicating whether to add a bias term to X.
+\item{\code{add.bias}}{Boolean indicating whether to add a bias term to \code{X}.
 Defaults to FALSE.}
 }
 \if{html}{\out{</div>}}
@@ -338,7 +352,6 @@ upper.bounds <- c(1, 1, 2) # Bounds for X and y
 lower.bounds <- c(1,-1,-2) # Bounds for X and y
 ermdp$fit(X, y, upper.bounds, lower.bounds)
 ermdp$coeff # Gets private coefficients
-
 }
 \if{html}{\out{</div>}}
 
@@ -358,9 +371,9 @@ Predict y values for given X using the fitted coefficients.
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{X}}{Dataframe of data on which to make predictions. Must be of same
-form as X used to fit coefficients.}
+form as \code{X} used to fit coefficients.}
 
-\item{\code{add.bias}}{Boolean indicating whether to add a bias term to X.
+\item{\code{add.bias}}{Boolean indicating whether to add a bias term to \code{X}.
 Defaults to FALSE. If add.bias was set to TRUE when fitting the
 coefficients, add.bias should be set to TRUE for predictions.}
 }

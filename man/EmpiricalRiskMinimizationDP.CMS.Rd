@@ -12,31 +12,30 @@ building more specific models via inheritance. See
 structure.
 }
 \details{
-A new model object of this class accepts as inputs a map from data X
-to labels y, a loss function, a regularizer, an epsilon value for
-differential privacy, a lambda value that scales the regularizer, and a
-constant c meeting certain constraints related to the loss function. The
-model can then be fit with a dataset X (given as a data.frame), a set of
-binary labels y for each row of X, as well as upper and lower bounds on the
-possible values for each column of X and for y. In fitting, the model
-stores a vector of coefficients coeff which satisfy epsilon-level
+After constructing an \code{EmpiricalRiskMinimizationDP.CMS} object,
+the object can be fit to a provided dataset. In fitting, the model stores a
+vector of coefficients \code{coeff} which satisfy epsilon-level
 differential privacy. These can be released directly, or used in
-conjunction with the predict method to predict the label of new datapoints.
+conjunction with the predict method to privately predict the label of new
+datapoints.
 
 Note that in order to guarantee epsilon-level privacy for the empirical
 risk minimization model, certain constraints must be satisfied for the
 values used to construct the object, as well as for the data used to fit.
 Specifically, the provided loss function must be convex and doubly
-differentiable w.r.t. y.hat with |loss'(y.hat,y)|<=1 and
-|loss''(y.hat,y)|<=c for some constant c and for all possible values of
-y.hat and y, where y.hat is the predicted label and y is the true label.
-The regularizer must be 1-strongly convex and doubly differentiable.
-Additionally, it is assumed that if x represents a single row of the
-dataset X, then ||x||<=1 for all x. Note that because of this, a bias term
-cannot be included without appropriate scaling/preprocessing of the
-dataset. To ensure privacy, the add.bias argument in the $fit and $predict
-methods should only be utilized in subclasses within this package, not in
-this class.
+differentiable with respect to \code{y.hat}. Additionally, the absolute
+value of the first derivative of the loss function must be at most 1 and
+the absolute value of the second derivative of the loss function must be
+bounded above by a constant c for all possible values of \code{y.hat} and
+\code{y}, where \code{y.hat} is the predicted label and \code{y} is the
+true label. The regularizer must be 1-strongly convex and doubly
+differentiable. Additionally, it is assumed that if x represents a single
+row of the dataset X, then the l2-norm of x is at most 1 for all x. Note
+that because of this, a bias term cannot be included without appropriate
+scaling/preprocessing of the dataset. To ensure privacy, the add.bias
+argument in the \code{fit} and \code{predict} methods should only be
+utilized in subclasses within this package where appropriate preprocessing
+is implemented, not in this class.
 }
 \examples{
 
@@ -73,7 +72,6 @@ lower.bounds <- c(-1,-1) # Bounds for X and y
 ermdp$fit(X, y, upper.bounds, lower.bounds)
 ermdp$coeff # Gets private coefficients
 
-
 ## ------------------------------------------------
 ## Method `EmpiricalRiskMinimizationDP.CMS$predict`
 ## ------------------------------------------------
@@ -92,33 +90,28 @@ n.errors <- sum(abs(round(predicted.y)-ytest))
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
 \describe{
-\item{\code{mapXy}}{Map function of the form mapXy(X, coeff), where X is a matrix and
-coeff is a vector or matrix, that returns a column matrix of predicted
-labels for each row of X.}
+\item{\code{mapXy}}{Map function of the form \code{mapXy(X, coeff)} mapping input
+data matrix \code{X} and coefficient vector or matrix \code{coeff} to
+output labels \code{y}.}
 
 \item{\code{mapXy.gr}}{Function representing the gradient of the map function with
-respect to the values in coeff and of the same form as mapXy. Should be given
-such that the ith row of the output represents the gradient of mapXy with
-respect to the ith coefficient.}
+respect to the values in \code{coeff} and of the form \code{mapXy.gr(X,
+  coeff)}, where \code{X} is a matrix and \code{coeff} is a matrix or
+numeric vector.}
 
-\item{\code{loss}}{Loss function of the form loss(y.hat, y), where y.hat and y are
-matrices, that returns a matrix of the same shape as y.hat and y of loss
-function values for the empirical risk minimization model with predicted
-labels y.hat and true labels y.}
+\item{\code{loss}}{Loss function of the form \code{loss(y.hat, y)}, where
+\code{y.hat} and \code{y} are matrices.}
 
 \item{\code{loss.gr}}{Function representing the gradient of the loss function with
-respect to y.hat and of the same form as loss. Should be given such that
-the ith row of the output represents the gradient of loss at the ith set
-of input values.}
+respect to \code{y.hat} and of the form \code{loss.gr(y.hat, y)}, where
+\code{y.hat} and \code{y} are matrices.}
 
-\item{\code{regularizer}}{Regularization function. Must be of the form
-regularizer(coeff), where coeff is a vector or matrix, that returns the
-value of the regularizer at coeff.}
+\item{\code{regularizer}}{Regularization function of the form
+\code{regularizer(coeff)}, where \code{coeff} is a vector or matrix.}
 
 \item{\code{regularizer.gr}}{Function representing the gradient of the
-regularization function with respect to coeff and of the same form as
-regularizer. Should return a vector. If regularizer is a string, this
-value is ignored.}
+regularization function with respect to \code{coeff} and of the form
+\code{regularizer.gr(coeff)}.}
 
 \item{\code{lambda}}{Nonnegative real number representing the regularization
 constant.}
@@ -132,42 +125,35 @@ ensure differential privacy.}
 
 \item{\code{coeff}}{Numeric vector of coefficients for the model.}
 
-\item{\code{kernel}}{String indicating which kernel to use for SVM. Must be one of
-{'linear', 'Gaussian'}. If 'linear' (default), linear SVM is used. If
-'Gaussian,' uses the sampling function corresponding to the Gaussian
-(radial) kernel approximation.}
+\item{\code{kernel}}{Value only used in child class \code{\link{svmDP}}. String
+indicating which kernel to use for SVM. Must be one of {'linear',
+'Gaussian'}. If 'linear' (default), linear SVM is used. If 'Gaussian,'
+uses the sampling function corresponding to the Gaussian (radial) kernel
+approximation.}
 
-\item{\code{D}}{Value only used in child class
-\code{\link{svmDP}}. Nonnegative integer
-indicating the dimensionality of the transform space approximating the
-kernel. Higher values of D provide better kernel approximations at a cost
-of computational efficiency.}
+\item{\code{D}}{Value only used in child class \code{\link{svmDP}}. Nonnegative
+integer indicating the dimensionality of the transform space
+approximating the kernel. Higher values of \code{D} provide better kernel
+approximations at a cost of computational efficiency.}
 
-\item{\code{sampling}}{Value only used in child class
-\code{\link{svmDP}}. String or sampling function.
-If a string, must be 'Gaussian' (default), indicating to use the sampling
-function corresponding to the Gaussian (radial) kernel approximation. If
-a function, must be of the form sampling(d), where d is the input
-dimension, and return a (d+1)-dimensional vector of samples corresponding
-to the Fourier transform of the kernel to be approximated.}
+\item{\code{sampling}}{Value only used in child class \code{\link{svmDP}}.
+Sampling function of the form \code{sampling(d)}, where \code{d} is the
+input dimension, returning a (\code{d}+1)-dimensional vector of samples
+corresponding to the Fourier transform of the kernel to be approximated.}
 
-\item{\code{phi}}{Value only used in child class
-\code{\link{svmDP}}. Function or NULL (default).
-If sampling is given as one of the predefined strings, this input is
-unnecessary. If sampling is a function, this should also be a function of
-the form phi(x, theta), where x is an individual row of of the original
-dataset, and theta is a (d+1)-dimensional vector sampled from the Fourier
-transform of the kernel to be approximated, where d is the dimension of
-x. The function then returns a numeric scalar corresponding to the
-pre-filtered value at the given row with the given sampled vector.}
+\item{\code{phi}}{Value only used in child class \code{\link{svmDP}}. Function of
+the form \code{phi(x, theta)}, where \code{x} is an individual row of the
+original dataset, and theta is a (\code{d}+1)-dimensional vector sampled
+from the Fourier transform of the kernel to be approximated, where
+\code{d} is the dimension of \code{x}. The function returns a numeric
+scalar corresponding to the pre-filtered value at the given row with the
+given sampled vector.}
 
-\item{\code{gamma}}{Value only used in child class
-\code{\link{svmDP}}. Positive real number
-corresponding to the Gaussian kernel parameter.}
+\item{\code{gamma}}{Value only used in child class \code{\link{svmDP}}. Positive
+real number corresponding to the Gaussian kernel parameter.}
 
-\item{\code{prefilter}}{Value only used in child class
-\code{\link{svmDP}}. Matrix of pre-filter values
-used in converting data into transform space.}
+\item{\code{prefilter}}{Value only used in child class \code{\link{svmDP}}. Matrix
+of pre-filter values used in converting data into transform space.}
 }
 \if{html}{\out{</div>}}
 }
@@ -184,7 +170,7 @@ used in converting data into transform space.}
 \if{html}{\out{<a id="method-new"></a>}}
 \if{latex}{\out{\hypertarget{method-new}{}}}
 \subsection{Method \code{new()}}{
-Create a new EmpiricalRiskMinimizationDP.CMS object.
+Create a new \code{EmpiricalRiskMinimizationDP.CMS} object.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{EmpiricalRiskMinimizationDP.CMS$new(
   mapXy,
@@ -202,17 +188,25 @@ Create a new EmpiricalRiskMinimizationDP.CMS object.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{mapXy}}{Map function. Must have form as given in mapXy field description.}
+\item{\code{mapXy}}{Map function of the form \code{mapXy(X, coeff)} mapping input
+data matrix \code{X} and coefficient vector or matrix \code{coeff} to
+output labels \code{y}. Should return a column matrix of predicted labels
+for each row of \code{X}. See \code{\link{mapXy.sigmoid}} for an example.}
 
-\item{\code{loss}}{Loss function. Must have form as given in loss field
-description. Additionally, in order to ensure differential privacy, the
-function must be convex and doubly differentiable w.r.t. y.hat with
-|loss'(y.hat, y)|<=1 and |loss''(y.hat, y)|<=c for some constant c and
-for all possible values of y.hat and y.}
+\item{\code{loss}}{Loss function of the form \code{loss(y.hat, y)}, where
+\code{y.hat} and \code{y} are matrices. Should be defined such that it
+returns a matrix of loss values for each element of \code{y.hat} and
+\code{y}. See \code{\link{loss.cross.entropy}} for an example.
+Additionally, the absolute value of the first derivative of the loss
+function must be at most 1 and the absolute value of the second
+derivative of the loss function must be bounded above by a constant c for
+all possible values of \code{y.hat} and \code{y}.}
 
 \item{\code{regularizer}}{String or regularization function. If a string, must be
 'l2', indicating to use l2 regularization. If a function, must have form
-as given in regularizer field description. Additionally, in order to
+\code{regularizer(coeff)}, where \code{coeff} is a vector or matrix, and
+return the value of the regularizer at \code{coeff}. See
+\code{\link{regularizer.l2}} for an example. Additionally, in order to
 ensure differential privacy, the function must be 1-strongly convex and
 doubly differentiable.}
 
@@ -222,28 +216,40 @@ to Inf, runs algorithm without differential privacy.}
 \item{\code{lambda}}{Nonnegative real number representing the regularization
 constant.}
 
-\item{\code{c}}{Positive real number such that |loss''(y.hat,y)|<=c for all
-possible values of y.hat and y.}
+\item{\code{c}}{Positive real number denoting the upper bound on the absolute
+value of the second derivative of the loss function, as required to
+ensure differential privacy.}
 
-\item{\code{mapXy.gr}}{Optional function representing the gradient of the map function
-with respect to the values in coeff. Must have form as given in mapXy.gr
-field description. If not given, gradients are not used to compute the
-coefficient values in fitting the model.}
+\item{\code{mapXy.gr}}{Optional function representing the gradient of the map
+function with respect to the values in \code{coeff}. If given, must be of
+the form \code{mapXy.gr(X, coeff)}, where \code{X} is a matrix and
+\code{coeff} is a matrix or numeric vector. Should be defined such that
+the ith row of the output represents the gradient with respect to the ith
+coefficient. See \code{\link{mapXy.gr.sigmoid}} for an example. If not
+given, gradients are not used to compute the coefficient values in
+fitting the model.}
 
 \item{\code{loss.gr}}{Optional function representing the gradient of the loss
-function with respect to y.hat. Must have form as given in loss.gr field
-description. If not given, gradients are not used to compute the
-coefficient values in fitting the model.}
+function with respect to \code{y.hat} and of the form
+\code{loss.gr(y.hat, y)}, where \code{y.hat} and \code{y} are matrices.
+Should be defined such that the ith row of the output represents the
+gradient of the loss function at the ith set of input values. See
+\code{\link{loss.gr.cross.entropy}} for an example. If not given,
+gradients are not used to compute the coefficient values in fitting the
+model.}
 
 \item{\code{regularizer.gr}}{Optional function representing the gradient of the
-regularizer function function with respect to coeff. Must have form as
-given in regularizer.gr field description. If not given, gradients are
-not used to compute the coefficient values in fitting the model.}
+regularization function with respect to \code{coeff} and of the form
+\code{regularizer.gr(coeff)}. Should return a vector. See
+\code{\link{regularizer.gr.l2}} for an example. If \code{regularizer} is
+given as a string, this value is ignored. If not given and
+\code{regularizer} is a function, gradients are not used to compute the
+coefficient values in fitting the model.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-A new EmpiricalRiskMinimizationDP.CMS object.
+A new \code{EmpiricalRiskMinimizationDP.CMS} object.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
@@ -272,16 +278,17 @@ ermdp <- EmpiricalRiskMinimizationDP.CMS$new(mapXy, loss, regularizer, eps,
 \if{html}{\out{<a id="method-fit"></a>}}
 \if{latex}{\out{\hypertarget{method-fit}{}}}
 \subsection{Method \code{fit()}}{
-Fit the differentially private emprirical risk minimization
-model. The function runs the objective perturbation algorithm
+Fit the differentially private empirical risk minimization
+model. This method runs the objective perturbation algorithm
 \insertCite{chaudhuri2011}{DPpack} to generate an objective function. A
 numerical optimization method is then run to find optimal coefficients
 for fitting the model given the training data and hyperparameters. The
 built-in \code{\link{optim}} function using the "BFGS" optimization
-method is used. If mapXy.gr, loss.gr, and regularizer.gr are all given in the
-construction of the object, the gradient of the objective function is
-utilized by optim as well. The resulting privacy-preserving coefficients
-are stored in coeff.
+method is used. If \code{mapXy.gr}, \code{loss.gr}, and
+\code{regularizer.gr} are all given in the construction of the object,
+the gradient of the objective function is utilized by \code{optim} as
+well. The resulting privacy-preserving coefficients are stored in
+\code{coeff}.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{EmpiricalRiskMinimizationDP.CMS$fit(
   X,
@@ -297,21 +304,21 @@ are stored in coeff.
 \describe{
 \item{\code{X}}{Dataframe of data to be fit.}
 
-\item{\code{y}}{Vector or matrix of true labels for each row of X.}
+\item{\code{y}}{Vector or matrix of true labels for each row of \code{X}.}
 
-\item{\code{upper.bounds}}{Numeric vector of length ncol(X) giving upper bounds on
-the values in each column of X. The ncol(X) values are assumed to be in
-the same order as the corresponding columns of X. Any value in the
-columns of X larger than the corresponding upper bound is clipped at the
-bound.}
+\item{\code{upper.bounds}}{Numeric vector of length \code{ncol(X)} giving upper
+bounds on the values in each column of X. The \code{ncol(X)} values are
+assumed to be in the same order as the corresponding columns of \code{X}.
+Any value in the columns of \code{X} larger than the corresponding upper
+bound is clipped at the bound.}
 
-\item{\code{lower.bounds}}{Numeric vector of length ncol(X) giving lower bounds on
-the values in each column of X. The ncol(X) values are assumed to be in
-the same order as the corresponding columns of X. Any value in the
-columns of X larger than the corresponding upper bound is clipped at the
-bound.}
+\item{\code{lower.bounds}}{Numeric vector of length \code{ncol(X)} giving lower
+bounds on the values in each column of \code{X}. The \code{ncol(X)}
+values are assumed to be in the same order as the corresponding columns
+of \code{X}. Any value in the columns of \code{X} larger than the
+corresponding upper bound is clipped at the bound.}
 
-\item{\code{add.bias}}{Boolean indicating whether to add a bias term to X.
+\item{\code{add.bias}}{Boolean indicating whether to add a bias term to \code{X}.
 Defaults to FALSE.}
 }
 \if{html}{\out{</div>}}
@@ -326,7 +333,6 @@ upper.bounds <- c( 1, 1) # Bounds for X and y
 lower.bounds <- c(-1,-1) # Bounds for X and y
 ermdp$fit(X, y, upper.bounds, lower.bounds)
 ermdp$coeff # Gets private coefficients
-
 }
 \if{html}{\out{</div>}}
 
@@ -337,7 +343,8 @@ ermdp$coeff # Gets private coefficients
 \if{html}{\out{<a id="method-predict"></a>}}
 \if{latex}{\out{\hypertarget{method-predict}{}}}
 \subsection{Method \code{predict()}}{
-Predict label(s) for given X using the fitted coefficients.
+Predict label(s) for given \code{X} using the fitted
+coefficients.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{EmpiricalRiskMinimizationDP.CMS$predict(X, add.bias = FALSE)}\if{html}{\out{</div>}}
 }
@@ -346,16 +353,16 @@ Predict label(s) for given X using the fitted coefficients.
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{X}}{Dataframe of data on which to make predictions. Must be of same
-form as X used to fit coefficients.}
+form as \code{X} used to fit coefficients.}
 
-\item{\code{add.bias}}{Boolean indicating whether to add a bias term to X.
+\item{\code{add.bias}}{Boolean indicating whether to add a bias term to \code{X}.
 Defaults to FALSE. If add.bias was set to TRUE when fitting the
 coefficients, add.bias should be set to TRUE for predictions.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-Matrix of predicted labels corresponding to each row of X.
+Matrix of predicted labels corresponding to each row of \code{X}.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
