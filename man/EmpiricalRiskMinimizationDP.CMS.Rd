@@ -226,8 +226,8 @@ the form \code{mapXy.gr(X, coeff)}, where \code{X} is a matrix and
 \code{coeff} is a matrix or numeric vector. Should be defined such that
 the ith row of the output represents the gradient with respect to the ith
 coefficient. See \code{\link{mapXy.gr.sigmoid}} for an example. If not
-given, gradients are not used to compute the coefficient values in
-fitting the model.}
+given, non-gradient based optimization methods are used to compute the
+coefficient values in fitting the model.}
 
 \item{\code{loss.gr}}{Optional function representing the gradient of the loss
 function with respect to \code{y.hat} and of the form
@@ -235,16 +235,16 @@ function with respect to \code{y.hat} and of the form
 Should be defined such that the ith row of the output represents the
 gradient of the loss function at the ith set of input values. See
 \code{\link{loss.gr.cross.entropy}} for an example. If not given,
-gradients are not used to compute the coefficient values in fitting the
-model.}
+non-gradient based optimization methods are used to compute the
+coefficient values in fitting the model.}
 
 \item{\code{regularizer.gr}}{Optional function representing the gradient of the
 regularization function with respect to \code{coeff} and of the form
 \code{regularizer.gr(coeff)}. Should return a vector. See
 \code{\link{regularizer.gr.l2}} for an example. If \code{regularizer} is
 given as a string, this value is ignored. If not given and
-\code{regularizer} is a function, gradients are not used to compute the
-coefficient values in fitting the model.}
+\code{regularizer} is a function, non-gradient based optimization methods
+are used to compute the coefficient values in fitting the model.}
 }
 \if{html}{\out{</div>}}
 }

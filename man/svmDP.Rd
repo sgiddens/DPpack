@@ -143,8 +143,8 @@ regularization function with respect to \code{coeff} and of the form
 \code{regularizer.gr(coeff)}. Should return a vector. See
 \code{\link{regularizer.gr.l2}} for an example. If \code{regularizer} is
 given as a string, this value is ignored. If not given and
-\code{regularizer} is a function, gradients are not used to compute the
-coefficient values in fitting the model.}
+\code{regularizer} is a function, non-gradient based optimization methods
+are used to compute the coefficient values in fitting the model.}
 
 \item{\code{huber.h}}{Positive real number indicating the degree to which the
 Huber loss approximates the hinge loss. Defaults to 1.}

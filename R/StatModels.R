@@ -483,23 +483,23 @@ EmpiricalRiskMinimizationDP.CMS <- R6::R6Class("EmpiricalRiskMinimizationDP.CMS"
   #'   \code{coeff} is a matrix or numeric vector. Should be defined such that
   #'   the ith row of the output represents the gradient with respect to the ith
   #'   coefficient. See \code{\link{mapXy.gr.sigmoid}} for an example. If not
-  #'   given, gradients are not used to compute the coefficient values in
-  #'   fitting the model.
+  #'   given, non-gradient based optimization methods are used to compute the
+  #'   coefficient values in fitting the model.
   #' @param loss.gr Optional function representing the gradient of the loss
   #'   function with respect to \code{y.hat} and of the form
   #'   \code{loss.gr(y.hat, y)}, where \code{y.hat} and \code{y} are matrices.
   #'   Should be defined such that the ith row of the output represents the
   #'   gradient of the loss function at the ith set of input values. See
   #'   \code{\link{loss.gr.cross.entropy}} for an example. If not given,
-  #'   gradients are not used to compute the coefficient values in fitting the
-  #'   model.
+  #'   non-gradient based optimization methods are used to compute the
+  #'   coefficient values in fitting the model.
   #' @param regularizer.gr Optional function representing the gradient of the
   #'   regularization function with respect to \code{coeff} and of the form
   #'   \code{regularizer.gr(coeff)}. Should return a vector. See
   #'   \code{\link{regularizer.gr.l2}} for an example. If \code{regularizer} is
   #'   given as a string, this value is ignored. If not given and
-  #'   \code{regularizer} is a function, gradients are not used to compute the
-  #'   coefficient values in fitting the model.
+  #'   \code{regularizer} is a function, non-gradient based optimization methods
+  #'   are used to compute the coefficient values in fitting the model.
   #'
   #' @examples
   #' # Construct object for logistic regression
@@ -782,8 +782,8 @@ LogisticRegressionDP <- R6::R6Class("LogisticRegressionDP",
   #'   \code{regularizer.gr(coeff)}. Should return a vector. See
   #'   \code{\link{regularizer.gr.l2}} for an example. If \code{regularizer} is
   #'   given as a string, this value is ignored. If not given and
-  #'   \code{regularizer} is a function, gradients are not used to compute the
-  #'   coefficient values in fitting the model.
+  #'   \code{regularizer} is a function, non-gradient based optimization methods
+  #'   are used to compute the coefficient values in fitting the model.
   #'
   #' @examples
   #' # Construct object for logistic regression
@@ -1045,8 +1045,8 @@ svmDP <- R6::R6Class("svmDP",
   #'   \code{regularizer.gr(coeff)}. Should return a vector. See
   #'   \code{\link{regularizer.gr.l2}} for an example. If \code{regularizer} is
   #'   given as a string, this value is ignored. If not given and
-  #'   \code{regularizer} is a function, gradients are not used to compute the
-  #'   coefficient values in fitting the model.
+  #'   \code{regularizer} is a function, non-gradient based optimization methods
+  #'   are used to compute the coefficient values in fitting the model.
   #' @param huber.h Positive real number indicating the degree to which the
   #'   Huber loss approximates the hinge loss. Defaults to 1.
   #'
@@ -1341,8 +1341,8 @@ EmpiricalRiskMinimizationDP.KST <- R6::R6Class("EmpiricalRiskMinimizationDP.KST"
   #'   the Jacobian of the constraint function. For example, in linear
   #'   regression, the square of the l2-norm of the coefficient vector
   #'   \eqn{\theta} is assumed to be bounded above by p, where p is the length
-  #'   of \eqn{\theta} \insertCite{Kifer2012}{DPpack}. So, domain could be defined
-  #'   as `domain <- list("constraints"=function(coeff)
+  #'   of \eqn{\theta} \insertCite{Kifer2012}{DPpack}. So, domain could be
+  #'   defined as `domain <- list("constraints"=function(coeff)
   #'   coeff%*%coeff-length(coeff), "jacobian"=function(coeff) 2*coeff)`.
   #' @param zeta Positive real number denoting the upper bound on the l2-norm
   #'   value of the gradient of the loss function, as required to ensure
@@ -1357,23 +1357,23 @@ EmpiricalRiskMinimizationDP.KST <- R6::R6Class("EmpiricalRiskMinimizationDP.KST"
   #'   \code{coeff} is a matrix or numeric vector. Should be defined such that
   #'   the ith row of the output represents the gradient with respect to the ith
   #'   coefficient. See \code{\link{mapXy.gr.linear}} for an example. If not
-  #'   given, gradients are not used to compute the coefficient values in
-  #'   fitting the model.
+  #'   given, non-gradient based optimization methods are used to compute the
+  #'   coefficient values in fitting the model.
   #' @param loss.gr Optional function representing the gradient of the loss
   #'   function with respect to \code{y.hat} and of the form
   #'   \code{loss.gr(y.hat, y)}, where \code{y.hat} and \code{y} are matrices.
   #'   Should be defined such that the ith row of the output represents the
   #'   gradient of the loss function at the ith set of input values. See
   #'   \code{\link{loss.gr.squared.error}} for an example. If not given,
-  #'   gradients are not used to compute the coefficient values in fitting the
-  #'   model.
+  #'   non-gradient based optimization methods are used to compute the
+  #'   coefficient values in fitting the model.
   #' @param regularizer.gr Optional function representing the gradient of the
   #'   regularization function with respect to \code{coeff} and of the form
   #'   \code{regularizer.gr(coeff)}. Should return a vector. See
   #'   \code{\link{regularizer.gr.l2}} for an example. If \code{regularizer} is
   #'   given as a string, this value is ignored. If not given and
-  #'   \code{regularizer} is a function, gradients are not used to compute the
-  #'   coefficient values in fitting the model.
+  #'   \code{regularizer} is a function, non-gradient based optimization methods
+  #'   are used to compute the coefficient values in fitting the model.
   #'
   #' @examples
   #' # Construct object for linear regression
@@ -1690,8 +1690,8 @@ LinearRegressionDP <- R6::R6Class("LinearRegressionDP",
   #'   \code{regularizer.gr(coeff)}. Should return a vector. See
   #'   \code{\link{regularizer.gr.l2}} for an example. If \code{regularizer} is
   #'   given as a string, this value is ignored. If not given and
-  #'   \code{regularizer} is a function, gradients are not used to compute the
-  #'   coefficient values in fitting the model.
+  #'   \code{regularizer} is a function, non-gradient based optimization methods
+  #'   are used to compute the coefficient values in fitting the model.
   #'
   #' @examples
   #' # Construct object for linear regression
