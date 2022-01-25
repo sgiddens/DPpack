@@ -5,8 +5,7 @@
 \title{Differentially Private Contingency Table}
 \usage{
 tableDP(
-  x,
-  y,
+  ...,
   eps,
   which.sensitivity = "bounded",
   mechanism = "Laplace",
@@ -16,7 +15,7 @@ tableDP(
 )
 }
 \arguments{
-\item{x, y}{Vectors of data from which to create the contingency table.}
+\item{...}{Vectors of data from which to create the contingency table.}
 
 \item{eps}{Positive real number defining the epsilon privacy budget.}
 
@@ -60,9 +59,10 @@ vectors of data at user-specified privacy levels of epsilon and delta.
 \examples{
 x <- MASS::Cars93$Type;
 y <- MASS::Cars93$Origin;
-tableDP(x,y,1,which.sensitivity='bounded',mechanism='Laplace')
-tableDP(x,y,.5,which.sensitivity='unbounded',mechanism='Gaussian',delta=0.5,
-  type.DP='aDP',allow.negative=FALSE)
+z <- MASS::Cars93$AirBags;
+tableDP(x,y,eps=1,which.sensitivity='bounded',mechanism='Laplace')
+tableDP(x,y,z,eps=.5,which.sensitivity='unbounded',mechanism='Gaussian',
+  delta=0.5,type.DP='aDP',allow.negative=FALSE)
 
 }
 \references{

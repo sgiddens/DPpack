@@ -918,6 +918,7 @@ test_tableDP <- function(){
   ### Test input ###
   x <- Cars93$Type;
   y <- Cars93$Origin;
+  z <- Cars93$AirBags;
 
   print("         No input:")
   a = tryCatch(tableDP(),error=function(e) print(paste("PASS --",e)));
@@ -925,7 +926,7 @@ test_tableDP <- function(){
   print("")
 
   print("         Bad mechanism:")
-  a = tryCatch(tableDP(x,y,1,mechanism='abc'),
+  a = tryCatch(tableDP(x,y,eps=1,mechanism='abc'),
                error=function(e) print(paste("PASS --",e)));
   if (!is.character(a)) print("FAIL");
   print("")
@@ -946,7 +947,8 @@ test_tableDP <- function(){
   print("Original:")
   print(table(x,y))
   print("Sanitized:")
-  print(tableDP(x,y,eps,ws,mech,delta,tdp,an)$Bounded);
+  print(tableDP(x,y,eps=eps,which.sensitivity=ws,mechanism=mech,delta=delta,
+                type.DP=tdp,allow.negative=an)$Bounded);
   Sys.sleep(5)
 
   print("         Simple unbounded Laplace:")
@@ -963,7 +965,8 @@ test_tableDP <- function(){
   print("Original:")
   print(table(x,y))
   print("Sanitized:")
-  print(tableDP(x,y,eps,ws,mech,delta,tdp,an)$Unbounded);
+  print(tableDP(x,y,eps=eps,which.sensitivity=ws,mechanism=mech,delta=delta,
+                type.DP=tdp,allow.negative=an)$Unbounded);
   Sys.sleep(5)
 
   print("         Gaussian pDP:")
@@ -980,7 +983,8 @@ test_tableDP <- function(){
   print("Original:")
   print(table(x,y))
   print("Sanitized:")
-  print(tableDP(x,y,eps,ws,mech,delta,tdp,an)$Bounded);
+  print(tableDP(x,y,eps=eps,which.sensitivity=ws,mechanism=mech,delta=delta,
+                type.DP=tdp,allow.negative=an)$Bounded);
   Sys.sleep(5)
 
   print("         Gaussian aDP:")
@@ -997,7 +1001,8 @@ test_tableDP <- function(){
   print("Original:")
   print(table(x,y))
   print("Sanitized:")
-  print(tableDP(x,y,eps,ws,mech,delta,tdp,an)$Bounded);
+  print(tableDP(x,y,eps=eps,which.sensitivity=ws,mechanism=mech,delta=delta,
+                type.DP=tdp,allow.negative=an)$Bounded);
   Sys.sleep(5)
 
   print("         Allow Negative:")
@@ -1014,7 +1019,27 @@ test_tableDP <- function(){
   print("Original:")
   print(table(x,y))
   print("Sanitized:")
-  print(tableDP(x,y,eps,ws,mech,delta,tdp,an)$Bounded);
+  print(tableDP(x,y,eps=eps,which.sensitivity=ws,mechanism=mech,delta=delta,
+                type.DP=tdp,allow.negative=an)$Bounded);
+  Sys.sleep(5)
+
+  print("         More than 2 inputs:")
+  x <- Cars93$Type;
+  y <- Cars93$Origin;
+  z <- Cars93$AirBags;
+  eps <- 1;
+  ws = 'bounded'
+  mech = 'Laplace'
+  delta = 0
+  tdp = 'pDP'
+  an = FALSE;
+
+  print("Verify similarity...")
+  print("Original:")
+  print(table(x,y,z))
+  print("Sanitized:")
+  print(tableDP(x,y,z,eps=eps,which.sensitivity=ws,mechanism=mech,delta=delta,
+                type.DP=tdp,allow.negative=an)$Bounded);
   Sys.sleep(5)
 
   ### END TEST FUNCTIONALITY ###

@@ -4,10 +4,10 @@
 \alias{tableDataAccess}
 \title{Differentially Private Contingency Table Data Access Function}
 \usage{
-tableDataAccess(x, y)
+tableDataAccess(...)
 }
 \arguments{
-\item{x, y}{Vectors of data from which to create the contingency table.}
+\item{...}{Vectors of data from which to create the contingency table.}
 }
 \value{
 List of the true contingency table and the sensitivities calculated

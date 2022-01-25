@@ -151,7 +151,7 @@ histogramDataAccess <- function (x, breaks){
 #' bounded and unbounded differential privacy \insertCite{Kifer2011}{DPpack}
 #' according to the theoretical values \insertCite{Liu2019b}{DPpack}.
 #'
-#' @param x,y Vectors of data from which to create the contingency table.
+#' @param ... Vectors of data from which to create the contingency table.
 #' @return List of the true contingency table and the sensitivities calculated
 #'   based on bounded and unbounded differential privacy.
 #' @examples
@@ -164,8 +164,8 @@ histogramDataAccess <- function (x, breaks){
 #' \insertRef{Kifer2011}{DPpack}
 #'
 #' @keywords internal
-tableDataAccess <- function(x, y){
-  tv <- table(x,y);
+tableDataAccess <- function(...){
+  tv <- table(...);
   bs <- 2;
   us <- 1;
   return(list("True.Values"=tv, "Bounded.Sensitivities"=bs,

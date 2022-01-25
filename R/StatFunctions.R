@@ -554,7 +554,7 @@ histogramDP <- function(x, eps, breaks="Sturges", normalize=FALSE,
 #' This function computes a differentially private contingency table from two
 #' vectors of data at user-specified privacy levels of epsilon and delta.
 #'
-#' @param x,y Vectors of data from which to create the contingency table.
+#' @param ... Vectors of data from which to create the contingency table.
 #' @param eps Positive real number defining the epsilon privacy budget.
 #' @param which.sensitivity String indicating which type of sensitivity to use.
 #'   Can be one of {'bounded', 'unbounded', 'both'}. If 'bounded' (default),
@@ -585,20 +585,21 @@ histogramDP <- function(x, eps, breaks="Sturges", normalize=FALSE,
 #' @examples
 #' x <- MASS::Cars93$Type;
 #' y <- MASS::Cars93$Origin;
-#' tableDP(x,y,1,which.sensitivity='bounded',mechanism='Laplace')
-#' tableDP(x,y,.5,which.sensitivity='unbounded',mechanism='Gaussian',delta=0.5,
-#'   type.DP='aDP',allow.negative=FALSE)
+#' z <- MASS::Cars93$AirBags;
+#' tableDP(x,y,eps=1,which.sensitivity='bounded',mechanism='Laplace')
+#' tableDP(x,y,z,eps=.5,which.sensitivity='unbounded',mechanism='Gaussian',
+#'   delta=0.5,type.DP='aDP',allow.negative=FALSE)
 #'
 #' @references \insertRef{Dwork2006a}{DPpack}
 #'
-#' \insertRef{Kifer2011}{DPpack}
+#'   \insertRef{Kifer2011}{DPpack}
 #'
-#' \insertRef{Liu2019a}{DPpack}
+#'   \insertRef{Liu2019a}{DPpack}
 #'
-#' \insertRef{DPtextbook}{DPpack}
+#'   \insertRef{DPtextbook}{DPpack}
 #'
 #' @export
-tableDP <- function(x, y, eps, which.sensitivity='bounded', mechanism='Laplace',
+tableDP <- function(..., eps, which.sensitivity='bounded', mechanism='Laplace',
                     delta=0, type.DP='pDP', allow.negative=FALSE){
   #### INPUT CHECKING ####
   {if (delta==0 & mechanism=='Gaussian') mechanism <- 'Laplace';
@@ -609,20 +610,18 @@ tableDP <- function(x, y, eps, which.sensitivity='bounded', mechanism='Laplace',
   ##########
 
   ########## Data access layer
-  results <- tableDataAccess(x, y);
+  results <- tableDataAccess(...);
   tv <- results$True.Values;
   bs <- results$Bounded.Sensitivities;
   us <- results$Unbounded.Sensitivities;
 
   # Flatten tv, but keep values to recreate later
-  rnames <- row.names(tv);
-  cnames <- colnames(tv);
+  named.table <- tv - tv;
   dims <- dim(tv);
   dim(tv) <- NULL;
   ##########
 
   ########## Privacy layer
-  # Might need to verify this is right later (also see histogramDP)
   # This means that each param[i] in the mechanism becomes bs/eps rather
   #       than bs[i]/(alloc.proportions[i]*eps)
   bs <- rep(bs, length(tv))/length(tv);
@@ -641,8 +640,7 @@ tableDP <- function(x, y, eps, which.sensitivity='bounded', mechanism='Laplace',
   if (!is.null(sanitized.tables$Bounded)){
     bounded.table <- sanitized.tables$Bounded;
     dim(bounded.table) <- dims;
-    row.names(bounded.table) <- rnames;
-    colnames(bounded.table) <- cnames;
+    bounded.table <- named.table + bounded.table;
     bounded.table <- round(bounded.table);
     if (!allow.negative) bounded.table[bounded.table<0] <- 0;
     sanitized.table[["Bounded"]] <- bounded.table;
@@ -650,8 +648,7 @@ tableDP <- function(x, y, eps, which.sensitivity='bounded', mechanism='Laplace',
   if (!is.null(sanitized.tables$Unbounded)){
     unbounded.table <- sanitized.tables$Unbounded;
     dim(unbounded.table) <- dims;
-    row.names(unbounded.table) <- rnames;
-    colnames(unbounded.table) <- cnames;
+    unbounded.table <- named.table + unbounded.table;
     unbounded.table <- round(unbounded.table);
     if (!allow.negative) unbounded.table[unbounded.table<0] <- 0;
     sanitized.table[["Unbounded"]] <- unbounded.table;
