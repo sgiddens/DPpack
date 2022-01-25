@@ -694,9 +694,11 @@ tableDP <- function(x, y, eps, which.sensitivity='bounded', mechanism='Laplace',
 #'   DP \insertCite{Liu2019a}{DPpack} or 'aDP' for approximate DP
 #'   \insertCite{DPtextbook}{DPpack}. Note that if 'aDP' is chosen, epsilon must
 #'   be strictly less than 1.
-#' @param approx.n.max Logical indicating whether to approximate n.max, which is
-#'   defined to be the length of the largest input vector. Approximation is best
-#'   if n.max is very large.
+#' @param approx.n.max Logical indicating whether to approximate n.max (defined
+#'   to be the length of the largest input vector) in the computation of the
+#'   global sensitivity based on the upper and lower bounds of the data
+#'   \insertCite{Liu2019b}{DPpack}. Approximation is best if n.max is very
+#'   large.
 #' @return A list of the sanitized pooled variances based on the bounded and/or
 #'   unbounded definitions of differential privacy.
 #' @examples
@@ -713,6 +715,8 @@ tableDP <- function(x, y, eps, which.sensitivity='bounded', mechanism='Laplace',
 #' \insertRef{Liu2019a}{DPpack}
 #'
 #' \insertRef{DPtextbook}{DPpack}
+#'
+#' \insertRef{Liu2019b}{DPpack}
 #'
 #' @export
 pooledVarDP <- function(..., eps=1, lower.bound, upper.bound,
@@ -808,9 +812,11 @@ pooledVarDP <- function(..., eps=1, lower.bound, upper.bound,
 #'   DP \insertCite{Liu2019a}{DPpack} or 'aDP' for approximate DP
 #'   \insertCite{DPtextbook}{DPpack}. Note that if 'aDP' is chosen, epsilon must
 #'   be strictly less than 1.
-#' @param approx.n.max Logical indicating whether to approximate n.max, which is
-#'   defined to be the length of the largest input vector. Approximation is best
-#'   if n.max is very large.
+#' @param approx.n.max Logical indicating whether to approximate n.max (defined
+#'   to be the length of the largest input vector) in the computation of the
+#'   global sensitivity based on the upper and lower bounds of the data
+#'   \insertCite{Liu2019b}{DPpack}. Approximation is best if n.max is very
+#'   large.
 #' @return A list of the sanitized pooled covariances based on the bounded
 #'   and/or unbounded definitions of differential privacy.
 #' @examples
@@ -824,11 +830,13 @@ pooledVarDP <- function(..., eps=1, lower.bound, upper.bound,
 #'
 #' @references \insertRef{Dwork2006a}{DPpack}
 #'
-#' \insertRef{Kifer2011}{DPpack}
+#'   \insertRef{Kifer2011}{DPpack}
 #'
-#' \insertRef{Liu2019a}{DPpack}
+#'   \insertRef{Liu2019a}{DPpack}
 #'
-#' \insertRef{DPtextbook}{DPpack}
+#'   \insertRef{DPtextbook}{DPpack}
+#'
+#'   \insertRef{Liu2019b}{DPpack}
 #'
 #' @export
 pooledCovDP <- function(..., eps=1, lower.bound1, upper.bound1, lower.bound2,

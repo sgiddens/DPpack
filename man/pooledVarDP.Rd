@@ -52,9 +52,11 @@ DP \insertCite{Liu2019a}{DPpack} or 'aDP' for approximate DP
 \insertCite{DPtextbook}{DPpack}. Note that if 'aDP' is chosen, epsilon must
 be strictly less than 1.}
 
-\item{approx.n.max}{Logical indicating whether to approximate n.max, which is
-defined to be the length of the largest input vector. Approximation is best
-if n.max is very large.}
+\item{approx.n.max}{Logical indicating whether to approximate n.max (defined
+to be the length of the largest input vector) in the computation of the
+global sensitivity based on the upper and lower bounds of the data
+\insertCite{Liu2019b}{DPpack}. Approximation is best if n.max is very
+large.}
 }
 \value{
 A list of the sanitized pooled variances based on the bounded and/or
@@ -80,4 +82,6 @@ pooledVarDP(c(1,4,-2,8,-6),c(1,2),c(-5,-7),eps=.5,
 \insertRef{Liu2019a}{DPpack}
 
 \insertRef{DPtextbook}{DPpack}
+
+\insertRef{Liu2019b}{DPpack}
 }
