@@ -25,20 +25,21 @@ values used to construct the object, as well as for the data used to fit.
 First, the loss function is assumed to be doubly differentiable. The hinge
 loss, which is typically used for support vector machines, is not
 differentiable at 1. Thus, to satisfy this constraint, this class utilizes
-the Huber loss, a smooth approximation to the hinge loss. The level of
-approximation to the hinge loss is determined by a user-specified constant,
-h, which defaults to 1. Additionally, the regularizer must be 1-strongly
-convex and doubly differentiable. Finally, it is assumed that if x
-represents a single row of the dataset X, then the l2-norm of x is at most
-1 for all x. In order to ensure this constraint is satisfied, the dataset
-is preprocessed and scaled, and the resulting coefficients are
-postprocessed and un-scaled so that the stored coefficients correspond to
-the original data. Due to this constraint on x, it is best to avoid using a
-bias term in the model whenever possible. If a bias term must be used, the
-issue can be partially circumvented by adding a constant column to X before
-fitting the model, which will be scaled along with the rest of X. The
-\code{fit} method contains functionality to add a column of constant 1s to
-X before scaling, if desired.
+the Huber loss, a smooth approximation to the hinge loss
+\insertCite{Chapelle2007}{DPpack}. The level of approximation to the hinge
+loss is determined by a user-specified constant, h, which defaults to 0.5,
+a typical value. Additionally, the regularizer must be 1-strongly convex
+and doubly differentiable. Finally, it is assumed that if x represents a
+single row of the dataset X, then the l2-norm of x is at most 1 for all x.
+In order to ensure this constraint is satisfied, the dataset is
+preprocessed and scaled, and the resulting coefficients are postprocessed
+and un-scaled so that the stored coefficients correspond to the original
+data. Due to this constraint on x, it is best to avoid using a bias term in
+the model whenever possible. If a bias term must be used, the issue can be
+partially circumvented by adding a constant column to X before fitting the
+model, which will be scaled along with the rest of X. The \code{fit} method
+contains functionality to add a column of constant 1s to X before scaling,
+if desired.
 }
 \examples{
 
@@ -51,7 +52,7 @@ regularizer <- 'l2' # Alternatively, function(coeff) coeff\%*\%coeff/2
 eps <- 1
 lambda <- 0.1
 regularizer.gr <- function(coeff) coeff # If function given for regularizer
-huber.h <- 1
+huber.h <- 0.5
 svmdp <- svmDP$new(regularizer, eps, lambda,
                                   regularizer.gr=regularizer.gr,
                                   huber.h=huber.h)
@@ -70,6 +71,8 @@ n.errors <- sum(predicted.y!=ytest)
 }
 \references{
 \insertRef{chaudhuri2011}{DPpack}
+
+\insertRef{Chapelle2007}{DPpack}
 }
 \section{Super class}{
 \code{\link[DPpack:EmpiricalRiskMinimizationDP.CMS]{DPpack::EmpiricalRiskMinimizationDP.CMS}} -> \code{svmDP}
@@ -104,7 +107,7 @@ Create a new \code{svmDP} object.
   D = NULL,
   gamma = 1,
   regularizer.gr = NULL,
-  huber.h = 1
+  huber.h = 0.5
 )}\if{html}{\out{</div>}}
 }
 
@@ -147,7 +150,8 @@ given as a string, this value is ignored. If not given and
 are used to compute the coefficient values in fitting the model.}
 
 \item{\code{huber.h}}{Positive real number indicating the degree to which the
-Huber loss approximates the hinge loss. Defaults to 1.}
+Huber loss approximates the hinge loss. Defaults to 0.5
+\insertCite{Chapelle2007}{DPpack}.}
 }
 \if{html}{\out{</div>}}
 }
@@ -161,7 +165,7 @@ regularizer <- 'l2' # Alternatively, function(coeff) coeff\%*\%coeff/2
 eps <- 1
 lambda <- 0.1
 regularizer.gr <- function(coeff) coeff # If function given for regularizer
-huber.h <- 1
+huber.h <- 0.5
 svmdp <- svmDP$new(regularizer, eps, lambda,
                                   regularizer.gr=regularizer.gr,
                                   huber.h=huber.h)
