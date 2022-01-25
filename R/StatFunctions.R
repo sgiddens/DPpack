@@ -551,7 +551,7 @@ histogramDP <- function(x, eps, breaks="Sturges", normalize=FALSE,
 
 #' Differentially Private Contingency Table
 #'
-#' This function computes a differentially private contingency table from two
+#' This function computes a differentially private contingency table from given
 #' vectors of data at user-specified privacy levels of epsilon and delta.
 #'
 #' @param ... Vectors of data from which to create the contingency table.

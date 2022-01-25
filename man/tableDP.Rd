@@ -53,7 +53,7 @@ A list of the sanitized contingency tables based on the bounded
 and/or unbounded definitions of differential privacy.
 }
 \description{
-This function computes a differentially private contingency table from two
+This function computes a differentially private contingency table from given
 vectors of data at user-specified privacy levels of epsilon and delta.
 }
 \examples{
