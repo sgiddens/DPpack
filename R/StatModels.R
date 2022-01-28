@@ -347,9 +347,9 @@ tune_model<- function(models, X, y, upper.bounds, lower.bounds,
 #' Privacy-preserving Empirical Risk Minimization for Binary Classification
 #'
 #' @description This class implements differentially private empirical risk
-#'   minimization using the objective perturbation technique
-#'   \insertCite{chaudhuri2011}{DPpack}. It is intended to be a framework for
-#'   building more specific models via inheritance. See
+#'   minimization \insertCite{chaudhuri2011}{DPpack}. Either the output or the
+#'   objective perturbation method can be used. It is intended to be a framework
+#'   for building more specific models via inheritance. See
 #'   \code{\link{LogisticRegressionDP}} for an example of this type of
 #'   structure.
 #'
@@ -363,20 +363,22 @@ tune_model<- function(models, X, y, upper.bounds, lower.bounds,
 #'   Note that in order to guarantee epsilon-level privacy for the empirical
 #'   risk minimization model, certain constraints must be satisfied for the
 #'   values used to construct the object, as well as for the data used to fit.
-#'   Specifically, the provided loss function must be convex and doubly
-#'   differentiable with respect to \code{y.hat}. Additionally, the absolute
-#'   value of the first derivative of the loss function must be at most 1 and
-#'   the absolute value of the second derivative of the loss function must be
-#'   bounded above by a constant c for all possible values of \code{y.hat} and
-#'   \code{y}, where \code{y.hat} is the predicted label and \code{y} is the
-#'   true label. The regularizer must be 1-strongly convex and doubly
-#'   differentiable. Additionally, it is assumed that if x represents a single
-#'   row of the dataset X, then the l2-norm of x is at most 1 for all x. Note
-#'   that because of this, a bias term cannot be included without appropriate
-#'   scaling/preprocessing of the dataset. To ensure privacy, the add.bias
-#'   argument in the \code{fit} and \code{predict} methods should only be
-#'   utilized in subclasses within this package where appropriate preprocessing
-#'   is implemented, not in this class.
+#'   These conditions depend on the chosen perturbation method. Specifically, the
+#'   provided loss function must be convex and differentiable with respect to
+#'   \code{y.hat}, and the absolute value of the first derivative of the loss
+#'   function must be at most 1. If objective perturbation is chosen, the loss
+#'   function must also be doubly differentiable and the absolute value of the
+#'   second derivative of the loss function must be bounded above by a constant
+#'   c for all possible values of \code{y.hat} and \code{y}, where \code{y.hat}
+#'   is the predicted label and \code{y} is the true label. The regularizer must
+#'   be 1-strongly convex and differentiable. It also must be doubly
+#'   differentiable if objective perturbation is chosen. Finally, it is assumed
+#'   that if x represents a single row of the dataset X, then the l2-norm of x
+#'   is at most 1 for all x. Note that because of this, a bias term cannot be
+#'   included without appropriate scaling/preprocessing of the dataset. To
+#'   ensure privacy, the add.bias argument in the \code{fit} and \code{predict}
+#'   methods should only be utilized in subclasses within this package where
+#'   appropriate preprocessing is implemented, not in this class.
 #'
 #' @references \insertRef{chaudhuri2011}{DPpack}
 #'
@@ -388,12 +390,14 @@ tune_model<- function(models, X, y, upper.bounds, lower.bounds,
 #' regularizer <- 'l2' # Alternatively, function(coeff) coeff%*%coeff/2
 #' eps <- 1
 #' lambda <- 0.1
+#' perturbation.method <- 'objective'
 #' c <- 1/4 # Required value for logistic regression
 #' mapXy.gr <- function(X, coeff) as.numeric(e1071::dsigmoid(X%*%coeff))*t(X)
 #' loss.gr <- function(y.hat, y) -y/y.hat + (1-y)/(1-y.hat)
 #' regularizer.gr <- function(coeff) coeff
 #' ermdp <- EmpiricalRiskMinimizationDP.CMS$new(mapXy, loss, regularizer, eps,
-#'                                              lambda, c, mapXy.gr, loss.gr,
+#'                                              lambda, perturbation.method, c,
+#'                                              mapXy.gr, loss.gr,
 #'                                              regularizer.gr)
 #'
 #' # Fit with data
@@ -445,9 +449,12 @@ EmpiricalRiskMinimizationDP.CMS <- R6::R6Class("EmpiricalRiskMinimizationDP.CMS"
   #' @field eps Positive real number defining the epsilon privacy budget. If set
   #'   to Inf, runs algorithm without differential privacy.
   eps = NULL,
+  #' @field perturbation.method String indicating whether to use the 'output' or
+  #'   the 'objective' perturbation methods \insertCite{chaudhuri2011}{DPpack}.
+  perturbation.method = NULL,
   #' @field c Positive real number denoting the upper bound on the absolute
   #'   value of the second derivative of the loss function, as required to
-  #'   ensure differential privacy.
+  #'   ensure differential privacy for the objective perturbation method.
   c = NULL,
   #' @field coeff Numeric vector of coefficients for the model.
   coeff = NULL,
@@ -489,25 +496,33 @@ EmpiricalRiskMinimizationDP.CMS <- R6::R6Class("EmpiricalRiskMinimizationDP.CMS"
   #' @param loss Loss function of the form \code{loss(y.hat, y)}, where
   #'   \code{y.hat} and \code{y} are matrices. Should be defined such that it
   #'   returns a matrix of loss values for each element of \code{y.hat} and
-  #'   \code{y}. See \code{\link{loss.cross.entropy}} for an example.
-  #'   Additionally, the absolute value of the first derivative of the loss
-  #'   function must be at most 1 and the absolute value of the second
-  #'   derivative of the loss function must be bounded above by a constant c for
-  #'   all possible values of \code{y.hat} and \code{y}.
+  #'   \code{y}. See \code{\link{loss.cross.entropy}} for an example. It must be
+  #'   convex and differentiable, and the absolute value of the first derivative
+  #'   of the loss function must be at most 1. Additionally, if the objective
+  #'   perturbation method is chosen, it must be doubly differentiable and the
+  #'   absolute value of the second derivative of the loss function must be
+  #'   bounded above by a constant c for all possible values of \code{y.hat} and
+  #'   \code{y}.
   #' @param regularizer String or regularization function. If a string, must be
   #'   'l2', indicating to use l2 regularization. If a function, must have form
   #'   \code{regularizer(coeff)}, where \code{coeff} is a vector or matrix, and
   #'   return the value of the regularizer at \code{coeff}. See
   #'   \code{\link{regularizer.l2}} for an example. Additionally, in order to
   #'   ensure differential privacy, the function must be 1-strongly convex and
-  #'   doubly differentiable.
+  #'   differentiable. If the objective perturbation method is chosen, it must
+  #'   also be doubly differentiable.
   #' @param eps Positive real number defining the epsilon privacy budget. If set
   #'   to Inf, runs algorithm without differential privacy.
   #' @param lambda Nonnegative real number representing the regularization
   #'   constant.
+  #' @param perturbation.method String indicating whether to use the 'output' or
+  #'   the 'objective' perturbation methods \insertCite{chaudhuri2011}{DPpack}.
+  #'   Defaults to 'objective'.
   #' @param c Positive real number denoting the upper bound on the absolute
   #'   value of the second derivative of the loss function, as required to
-  #'   ensure differential privacy.
+  #'   ensure differential privacy for the objective perturbation method. This
+  #'   input is unnecessary if perturbation.method is 'output', but is required
+  #'   if perturbation.method is 'objective'. Defaults to NULL.
   #' @param mapXy.gr Optional function representing the gradient of the map
   #'   function with respect to the values in \code{coeff}. If given, must be of
   #'   the form \code{mapXy.gr(X, coeff)}, where \code{X} is a matrix and
@@ -533,8 +548,9 @@ EmpiricalRiskMinimizationDP.CMS <- R6::R6Class("EmpiricalRiskMinimizationDP.CMS"
   #'   are used to compute the coefficient values in fitting the model.
   #'
   #' @return A new \code{EmpiricalRiskMinimizationDP.CMS} object.
-  initialize = function(mapXy, loss, regularizer, eps, lambda, c, mapXy.gr = NULL,
-                        loss.gr = NULL, regularizer.gr = NULL){
+  initialize = function(mapXy, loss, regularizer, eps, lambda,
+                        perturbation.method = 'objective', c = NULL,
+                        mapXy.gr = NULL, loss.gr = NULL, regularizer.gr = NULL){
     self$mapXy <- mapXy
     self$mapXy.gr <- mapXy.gr
     self$loss <- loss
@@ -552,19 +568,28 @@ EmpiricalRiskMinimizationDP.CMS <- R6::R6Class("EmpiricalRiskMinimizationDP.CMS"
     }
     self$eps <- eps
     self$lambda <- lambda
+    if (perturbation.method != 'output' & perturbation.method != 'objective'){
+      stop("perturbation.method must be one of 'output' or 'objective'.")
+    }
+    self$perturbation.method <- perturbation.method
+    if (perturbation.method == 'objective' & is.null(c)){
+      stop("c must be given for 'objective' perturbation.method.")
+    }
     self$c <- c
   },
   #' @description Fit the differentially private empirical risk minimization
-  #'   model. This method runs the objective perturbation algorithm
-  #'   \insertCite{chaudhuri2011}{DPpack} to generate an objective function. A
-  #'   numerical optimization method is then run to find optimal coefficients
-  #'   for fitting the model given the training data and hyperparameters. The
-  #'   built-in \code{\link{optim}} function using the "BFGS" optimization
-  #'   method is used. If \code{mapXy.gr}, \code{loss.gr}, and
-  #'   \code{regularizer.gr} are all given in the construction of the object,
-  #'   the gradient of the objective function is utilized by \code{optim} as
-  #'   well. The resulting privacy-preserving coefficients are stored in
-  #'   \code{coeff}.
+  #'   model. This method runs either the output perturbation or the objective
+  #'   perturbation algorithm\insertCite{chaudhuri2011}{DPpack}, depending on
+  #'   the value of perturbation.method used to construct the object, to
+  #'   generate an objective function. A numerical optimization method is then
+  #'   run to find optimal coefficients for fitting the model given the training
+  #'   data and hyperparameters. The built-in \code{\link{optim}} function using
+  #'   the "BFGS" optimization method is used. If \code{mapXy.gr},
+  #'   \code{loss.gr}, and \code{regularizer.gr} are all given in the
+  #'   construction of the object, the gradient of the objective function is
+  #'   utilized by \code{optim} as well. Otherwise, non-gradient based
+  #'   optimization methods are used. The resulting privacy-preserving
+  #'   coefficients are stored in \code{coeff}.
   #' @param X Dataframe of data to be fit.
   #' @param y Vector or matrix of true labels for each row of \code{X}.
   #' @param upper.bounds Numeric vector of length \code{ncol(X)} giving upper
@@ -586,7 +611,7 @@ EmpiricalRiskMinimizationDP.CMS <- R6::R6Class("EmpiricalRiskMinimizationDP.CMS"
 
     n <- length(y)
     d <- ncol(X)
-    if (!is.infinite(self$eps)){
+    if (!is.infinite(self$eps) & self$perturbation.method=='objective'){
       eps.prime <- self$eps - log(1 + 2*self$c/(n*self$lambda) +
                                     self$c^2/(n^2*self$lambda^2))
       if (eps.prime > 0) {
@@ -607,6 +632,14 @@ EmpiricalRiskMinimizationDP.CMS <- R6::R6Class("EmpiricalRiskMinimizationDP.CMS"
     }
 
     tmp.coeff <- private$optimize_coeff(X, y, Delta, b)
+    if (self$perturbation.method=='output'){
+      beta <- n*self$lambda*self$eps/2
+      norm.b <- rgamma(1, d, rate=beta)
+      direction.b <- rnorm(d)
+      direction.b <- direction.b/sqrt(sum(direction.b^2))
+      b <- norm.b * direction.b
+      tmp.coeff <- tmp.coeff + b
+    }
     self$coeff <- private$postprocess_coeff(tmp.coeff, preprocess)
     invisible(self)
   },
@@ -692,7 +725,7 @@ EmpiricalRiskMinimizationDP.CMS <- R6::R6Class("EmpiricalRiskMinimizationDP.CMS"
   #   built-in optim function using the "BFGS" optimization method. If mapXy.gr,
   #   loss.gr, and regularizer.gr are all given in the construction of the
   #   object, the gradient of the objective function is utilized by optim as
-  #   well.
+  #   well. Otherwise, non-gradient based methods are used.
   # param X Matrix of data to be fit.
   # param y Vector or matrix of true labels for each row of X.
   # param Delta Nonnegative real number set by the differentially private
@@ -732,8 +765,8 @@ EmpiricalRiskMinimizationDP.CMS <- R6::R6Class("EmpiricalRiskMinimizationDP.CMS"
 #' Privacy-preserving Logistic Regression
 #'
 #' @description This class implements differentially private logistic regression
-#'   using the objective perturbation technique
-#'   \insertCite{chaudhuri2011}{DPpack}.
+#'   \insertCite{chaudhuri2011}{DPpack}. Either the output or the objective
+#'   perturbation method can be used.
 #'
 #' @details After constructing a \code{LogisticRegressionDP} object, the object
 #'   can be fit to a provided dataset. In fitting, the model stores a vector of
@@ -741,21 +774,22 @@ EmpiricalRiskMinimizationDP.CMS <- R6::R6Class("EmpiricalRiskMinimizationDP.CMS"
 #'   These can be released directly, or used in conjunction with the predict
 #'   method to privately predict the label of new datapoints.
 #'
-#'   Note that in order to guarantee epsilon-level privacy for the empirical
-#'   risk minimization model, certain constraints must be satisfied for the
-#'   values used to construct the object, as well as for the data used to fit.
-#'   The regularizer must be 1-strongly convex and doubly differentiable.
-#'   Additionally, it is assumed that if x represents a single row of the
-#'   dataset X, then the l2-norm of x is at most 1 for all x. In order to ensure
-#'   this constraint is satisfied, the dataset is preprocessed and scaled, and
-#'   the resulting coefficients are postprocessed and un-scaled so that the
-#'   stored coefficients correspond to the original data. Due to this constraint
-#'   on x, it is best to avoid using a bias term in the model whenever possible.
-#'   If a bias term must be used, the issue can be partially circumvented by
-#'   adding a constant column to X before fitting the model, which will be
-#'   scaled along with the rest of X. The \code{fit} method contains
-#'   functionality to add a column of constant 1s to X before scaling, if
-#'   desired.
+#'   Note that in order to guarantee epsilon-level privacy for the logistic
+#'   regression model, certain constraints must be satisfied for the values used
+#'   to construct the object, as well as for the data used to fit. These
+#'   conditions depend on the chosen perturbation method. The regularizer must
+#'   be 1-strongly convex and differentiable. It also must be doubly
+#'   differentiable if objective perturbation is chosen. Additionally, it is
+#'   assumed that if x represents a single row of the dataset X, then the
+#'   l2-norm of x is at most 1 for all x. In order to ensure this constraint is
+#'   satisfied, the dataset is preprocessed and scaled, and the resulting
+#'   coefficients are postprocessed and un-scaled so that the stored
+#'   coefficients correspond to the original data. Due to this constraint on x,
+#'   it is best to avoid using a bias term in the model whenever possible. If a
+#'   bias term must be used, the issue can be partially circumvented by adding a
+#'   constant column to X before fitting the model, which will be scaled along
+#'   with the rest of X. The \code{fit} method contains functionality to add a
+#'   column of constant 1s to X before scaling, if desired.
 #'
 #' @references \insertRef{chaudhuri2011}{DPpack}
 #'
@@ -764,9 +798,10 @@ EmpiricalRiskMinimizationDP.CMS <- R6::R6Class("EmpiricalRiskMinimizationDP.CMS"
 #' regularizer <- 'l2' # Alternatively, function(coeff) coeff%*%coeff/2
 #' eps <- 1
 #' lambda <- 0.1
+#' perturbation.method <- 'objective'
 #' regularizer.gr <- function(coeff) coeff # If function given for regularizer
 #' lrdp <- LogisticRegressioinDP$new(regularizer, eps, lambda,
-#'                                   regularizer.gr)
+#'                                   perturbation.method, regularizer.gr)
 #'
 #' # Fit with data
 #' # Assume X is dataframe meeting assumptions for privacy
@@ -799,6 +834,9 @@ LogisticRegressionDP <- R6::R6Class("LogisticRegressionDP",
   #'   to Inf, runs algorithm without differential privacy.
   #' @param lambda Nonnegative real number representing the regularization
   #'   constant.
+  #' @param perturbation.method String indicating whether to use the 'output' or
+  #'   the 'objective' perturbation methods \insertCite{chaudhuri2011}{DPpack}.
+  #'   Defaults to 'objective'.
   #' @param regularizer.gr Optional function representing the gradient of the
   #'   regularization function with respect to \code{coeff} and of the form
   #'   \code{regularizer.gr(coeff)}. Should return a vector. See
@@ -808,10 +846,12 @@ LogisticRegressionDP <- R6::R6Class("LogisticRegressionDP",
   #'   are used to compute the coefficient values in fitting the model.
   #'
   #' @return A new \code{LogisticRegressionDP} object.
-  initialize = function(regularizer, eps, lambda, regularizer.gr = NULL){
+  initialize = function(regularizer, eps, lambda,
+                        perturbation.method = 'objective',
+                        regularizer.gr = NULL){
     super$initialize(mapXy.sigmoid, loss.cross.entropy, regularizer, eps,
-                    lambda, 1/4, mapXy.gr.sigmoid, loss.gr.cross.entropy,
-                    regularizer.gr)
+                    lambda, perturbation.method, 1/4, mapXy.gr.sigmoid,
+                    loss.gr.cross.entropy, regularizer.gr)
   },
   #' @description Predict label(s) for given \code{X} using the fitted
   #'   coefficients.
@@ -889,7 +929,7 @@ LogisticRegressionDP <- R6::R6Class("LogisticRegressionDP",
   #   built-in optim function using the "BFGS" optimization method. If mapXy.gr,
   #   loss.gr, and regularizer.gr are all given in the construction of the
   #   object, the gradient of the objective function is utilized by optim as
-  #   well.
+  #   well. Otherwise, non-gradient based optimization methods are used.
   # param X Matrix of data to be fit.
   # param y Vector or matrix of true labels for each row of X.
   # param Delta Nonnegative real number set by the differentially private
@@ -983,9 +1023,9 @@ phi.gaussian <- function(x, theta){
 
 #' Privacy-preserving Support Vector Machine
 #'
-#' @description This class implements a differentially private support vector
-#'   machine (SVM) using the objective perturbation technique
-#'   \insertCite{chaudhuri2011}{DPpack}.
+#' @description This class implements differentially private support vector
+#'   machine (SVM) \insertCite{chaudhuri2011}{DPpack}. Either the output or the
+#'   objective perturbation method can be used.
 #'
 #' @details After constructing an \code{svmDP} object, the object can be fit to
 #'   a provided dataset. In fitting, the model stores a vector of coefficients
@@ -999,17 +1039,19 @@ phi.gaussian <- function(x, theta){
 #'   approximation method via Fourier transforms \insertCite{@see @Rahimi2007,
 #'   2008}{DPpack}.
 #'
-#'   Note that in order to guarantee epsilon-level privacy for the empirical
-#'   risk minimization model, certain constraints must be satisfied for the
-#'   values used to construct the object, as well as for the data used to fit.
-#'   First, the loss function is assumed to be doubly differentiable. The hinge
-#'   loss, which is typically used for support vector machines, is not
-#'   differentiable at 1. Thus, to satisfy this constraint, this class utilizes
-#'   the Huber loss, a smooth approximation to the hinge loss
-#'   \insertCite{Chapelle2007}{DPpack}. The level of approximation to the hinge
-#'   loss is determined by a user-specified constant, h, which defaults to 0.5,
-#'   a typical value. Additionally, the regularizer must be 1-strongly convex
-#'   and doubly differentiable. Finally, it is assumed that if x represents a
+#'   Note that in order to guarantee epsilon-level privacy for the SVM model,
+#'   certain constraints must be satisfied for the values used to construct the
+#'   object, as well as for the data used to fit. These conditions depend on the
+#'   chosen perturbation method. First, the loss function is assumed to be
+#'   differentiable (and doubly differentiable if the objective perturbation
+#'   method is used). The hinge loss, which is typically used for support vector
+#'   machines, is not differentiable at 1. Thus, to satisfy this constraint,
+#'   this class utilizes the Huber loss, a smooth approximation to the hinge
+#'   loss \insertCite{Chapelle2007}{DPpack}. The level of approximation to the
+#'   hinge loss is determined by a user-specified constant, h, which defaults to
+#'   0.5, a typical value. Additionally, the regularizer must be 1-strongly convex and
+#'   differentiable. It also must be doubly differentiable if objective
+#'   perturbation is chosen. Finally, it is assumed that if x represents a
 #'   single row of the dataset X, then the l2-norm of x is at most 1 for all x.
 #'   In order to ensure this constraint is satisfied, the dataset is
 #'   preprocessed and scaled, and the resulting coefficients are postprocessed
@@ -1034,9 +1076,11 @@ phi.gaussian <- function(x, theta){
 #' regularizer <- 'l2' # Alternatively, function(coeff) coeff%*%coeff/2
 #' eps <- 1
 #' lambda <- 0.1
+#' perturbation.method <- 'objective'
 #' regularizer.gr <- function(coeff) coeff # If function given for regularizer
 #' huber.h <- 0.5
-#' svmdp <- svmDP$new(regularizer, eps, lambda, kernel='linear',
+#' svmdp <- svmDP$new(regularizer, eps, lambda, perturbation.method,
+#'                                   kernel='linear',
 #'                                   regularizer.gr=regularizer.gr,
 #'                                   huber.h=huber.h)
 #'
@@ -1071,6 +1115,9 @@ svmDP <- R6::R6Class("svmDP",
   #'   to Inf, runs algorithm without differential privacy.
   #' @param lambda Nonnegative real number representing the regularization
   #'   constant.
+  #' @param perturbation.method String indicating whether to use the 'output' or
+  #'   the 'objective' perturbation methods \insertCite{chaudhuri2011}{DPpack}.
+  #'   Defaults to 'objective'.
   #' @param kernel String indicating which kernel to use for SVM. Must be one of
   #'   {'linear', 'Gaussian'}. If 'linear' (default), linear SVM is used. If
   #'   'Gaussian,' uses the sampling function corresponding to the Gaussian
@@ -1093,10 +1140,11 @@ svmDP <- R6::R6Class("svmDP",
   #'   \insertCite{Chapelle2007}{DPpack}.
   #'
   #' @return A new svmDP object.
-  initialize = function(regularizer, eps, lambda, kernel='linear', D=NULL,
-                        gamma=1, regularizer.gr=NULL, huber.h=0.5){
+  initialize = function(regularizer, eps, lambda,
+                        perturbation.method = 'objective', kernel='linear',
+                        D=NULL, gamma=1, regularizer.gr=NULL, huber.h=0.5){
     super$initialize(mapXy.linear, generate.loss.huber(huber.h), regularizer, eps,
-                     lambda, 1/(2*huber.h), mapXy.gr.linear,
+                     lambda, perturbation.method, 1/(2*huber.h), mapXy.gr.linear,
                      generate.loss.gr.huber(huber.h), regularizer.gr)
     self$kernel <- kernel
     if (kernel=="Gaussian"){

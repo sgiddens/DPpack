@@ -5,8 +5,8 @@
 \title{Privacy-preserving Logistic Regression}
 \description{
 This class implements differentially private logistic regression
-using the objective perturbation technique
-\insertCite{chaudhuri2011}{DPpack}.
+\insertCite{chaudhuri2011}{DPpack}. Either the output or the objective
+perturbation method can be used.
 }
 \details{
 After constructing a \code{LogisticRegressionDP} object, the object
@@ -15,30 +15,32 @@ coefficients \code{coeff} which satisfy epsilon-level differential privacy.
 These can be released directly, or used in conjunction with the predict
 method to privately predict the label of new datapoints.
 
-Note that in order to guarantee epsilon-level privacy for the empirical
-risk minimization model, certain constraints must be satisfied for the
-values used to construct the object, as well as for the data used to fit.
-The regularizer must be 1-strongly convex and doubly differentiable.
-Additionally, it is assumed that if x represents a single row of the
-dataset X, then the l2-norm of x is at most 1 for all x. In order to ensure
-this constraint is satisfied, the dataset is preprocessed and scaled, and
-the resulting coefficients are postprocessed and un-scaled so that the
-stored coefficients correspond to the original data. Due to this constraint
-on x, it is best to avoid using a bias term in the model whenever possible.
-If a bias term must be used, the issue can be partially circumvented by
-adding a constant column to X before fitting the model, which will be
-scaled along with the rest of X. The \code{fit} method contains
-functionality to add a column of constant 1s to X before scaling, if
-desired.
+Note that in order to guarantee epsilon-level privacy for the logistic
+regression model, certain constraints must be satisfied for the values used
+to construct the object, as well as for the data used to fit. These
+conditions depend on the chosen perturbation method. The regularizer must
+be 1-strongly convex and differentiable. It also must be doubly
+differentiable if objective perturbation is chosen. Additionally, it is
+assumed that if x represents a single row of the dataset X, then the
+l2-norm of x is at most 1 for all x. In order to ensure this constraint is
+satisfied, the dataset is preprocessed and scaled, and the resulting
+coefficients are postprocessed and un-scaled so that the stored
+coefficients correspond to the original data. Due to this constraint on x,
+it is best to avoid using a bias term in the model whenever possible. If a
+bias term must be used, the issue can be partially circumvented by adding a
+constant column to X before fitting the model, which will be scaled along
+with the rest of X. The \code{fit} method contains functionality to add a
+column of constant 1s to X before scaling, if desired.
 }
 \examples{
 # Construct object for logistic regression
 regularizer <- 'l2' # Alternatively, function(coeff) coeff\%*\%coeff/2
 eps <- 1
 lambda <- 0.1
+perturbation.method <- 'objective'
 regularizer.gr <- function(coeff) coeff # If function given for regularizer
 lrdp <- LogisticRegressioinDP$new(regularizer, eps, lambda,
-                                  regularizer.gr)
+                                  perturbation.method, regularizer.gr)
 
 # Fit with data
 # Assume X is dataframe meeting assumptions for privacy
@@ -83,7 +85,13 @@ n.errors <- sum(predicted.y!=ytest)
 \subsection{Method \code{new()}}{
 Create a new \code{LogisticRegressionDP} object.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{LogisticRegressionDP$new(regularizer, eps, lambda, regularizer.gr = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{LogisticRegressionDP$new(
+  regularizer,
+  eps,
+  lambda,
+  perturbation.method = "objective",
+  regularizer.gr = NULL
+)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -102,6 +110,10 @@ to Inf, runs algorithm without differential privacy.}
 
 \item{\code{lambda}}{Nonnegative real number representing the regularization
 constant.}
+
+\item{\code{perturbation.method}}{String indicating whether to use the 'output' or
+the 'objective' perturbation methods \insertCite{chaudhuri2011}{DPpack}.
+Defaults to 'objective'.}
 
 \item{\code{regularizer.gr}}{Optional function representing the gradient of the
 regularization function with respect to \code{coeff} and of the form

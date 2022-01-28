@@ -1022,7 +1022,7 @@ quantileDP <- function (x, quant, eps, lower.bound, upper.bound,
 medianDP <- function (x, eps, lower.bound, upper.bound,
                       which.sensitivity='bounded', mechanism='exponential'){
   sanitized.median <- quantileDP(x,.5,eps,lower.bound,upper.bound,
-                                 which.sensitivity,mechanism,delta);
+                                 which.sensitivity,mechanism);
   class(sanitized.median)<-"Sanitized Median";
   return(sanitized.median);
   ##########

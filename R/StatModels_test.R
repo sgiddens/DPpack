@@ -64,9 +64,13 @@ eps <- 1
 
 set.seed(round(runif(1, 0, 100)))
 
-c <- 1/4 # Necessary constant for logistic regression
+pm <- 'objective'
+c <- 1/4 # Necessary constant for logistic regression if objective used
+# pm <- 'output'
+# c <- NULL
 ermdp <- EmpiricalRiskMinimizationDP.CMS$new(mapXy.sigmoid, loss.cross.entropy,
-                                             'l2', eps, lambda, c, mapXy.gr.sigmoid,
+                                             'l2', eps, lambda, pm, c,
+                                             mapXy.gr.sigmoid,
                                              loss.gr.cross.entropy)
 
 ermdp$fit(X, y, upper.bounds, lower.bounds)
@@ -190,7 +194,9 @@ eps <- 1
 
 set.seed(round(runif(1,0,100)))
 
-lrdp <- LogisticRegressionDP$new('l2', eps, lambda)
+pm <- 'objective'
+# pm <- 'output'
+lrdp <- LogisticRegressionDP$new('l2', eps, lambda, pm)
 
 ### No bias, satisfies constraints
 lrdp$fit(X,y,upper.bounds=upper.bounds,lower.bounds=lower.bounds)
@@ -334,7 +340,9 @@ eps <- 1
 
 set.seed(round(runif(1,0,100)))
 
-svmdp <- svmDP$new('l2', eps, lambda, kernel='linear')
+pm <- 'objective'
+# pm <- 'output'
+svmdp <- svmDP$new('l2', eps, lambda, pm, kernel='linear')
 
 ### No bias, satisfies constraints
 svmdp$fit(X,y,upper.bounds=upper.bounds,lower.bounds=lower.bounds)
@@ -445,7 +453,9 @@ D <- 5
 
 set.seed(round(runif(1,0,100)))
 
-ksvmdp <- svmDP$new('l2', eps, lambda, kernel='Gaussian', D)
+pm <- 'objective'
+# pm <- 'output'
+ksvmdp <- svmDP$new('l2', eps, lambda, pm, kernel='Gaussian', D)
 
 ksvmdp$fit(X,y) # Note bounds unnecessary for Gaussian kernel
 
@@ -540,7 +550,9 @@ gamma<-1
 
 set.seed(round(runif(1,0,100)))
 
-ksvmdp <- svmDP$new('l2', eps, lambda, kernel='Gaussian',
+# pm <- 'objective'
+pm <- 'output'
+ksvmdp <- svmDP$new('l2', eps, lambda, pm, kernel='Gaussian',
                                      D, gamma=gamma)
 
 # Note bounds unnecessary with Gaussian kernel

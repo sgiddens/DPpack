@@ -4,9 +4,9 @@
 \alias{svmDP}
 \title{Privacy-preserving Support Vector Machine}
 \description{
-This class implements a differentially private support vector
-machine (SVM) using the objective perturbation technique
-\insertCite{chaudhuri2011}{DPpack}.
+This class implements differentially private support vector
+machine (SVM) \insertCite{chaudhuri2011}{DPpack}. Either the output or the
+objective perturbation method can be used.
 }
 \details{
 After constructing an \code{svmDP} object, the object can be fit to
@@ -21,17 +21,19 @@ new datapoints. Note that the mapping function \code{XtoV} is based on an
 approximation method via Fourier transforms \insertCite{@see @Rahimi2007,
 2008}{DPpack}.
 
-Note that in order to guarantee epsilon-level privacy for the empirical
-risk minimization model, certain constraints must be satisfied for the
-values used to construct the object, as well as for the data used to fit.
-First, the loss function is assumed to be doubly differentiable. The hinge
-loss, which is typically used for support vector machines, is not
-differentiable at 1. Thus, to satisfy this constraint, this class utilizes
-the Huber loss, a smooth approximation to the hinge loss
-\insertCite{Chapelle2007}{DPpack}. The level of approximation to the hinge
-loss is determined by a user-specified constant, h, which defaults to 0.5,
-a typical value. Additionally, the regularizer must be 1-strongly convex
-and doubly differentiable. Finally, it is assumed that if x represents a
+Note that in order to guarantee epsilon-level privacy for the SVM model,
+certain constraints must be satisfied for the values used to construct the
+object, as well as for the data used to fit. These conditions depend on the
+chosen perturbation method. First, the loss function is assumed to be
+differentiable (and doubly differentiable if the objective perturbation
+method is used). The hinge loss, which is typically used for support vector
+machines, is not differentiable at 1. Thus, to satisfy this constraint,
+this class utilizes the Huber loss, a smooth approximation to the hinge
+loss \insertCite{Chapelle2007}{DPpack}. The level of approximation to the
+hinge loss is determined by a user-specified constant, h, which defaults to
+0.5, a typical value. Additionally, the regularizer must be 1-strongly convex and
+differentiable. It also must be doubly differentiable if objective
+perturbation is chosen. Finally, it is assumed that if x represents a
 single row of the dataset X, then the l2-norm of x is at most 1 for all x.
 In order to ensure this constraint is satisfied, the dataset is
 preprocessed and scaled, and the resulting coefficients are postprocessed
@@ -48,9 +50,11 @@ if desired.
 regularizer <- 'l2' # Alternatively, function(coeff) coeff\%*\%coeff/2
 eps <- 1
 lambda <- 0.1
+perturbation.method <- 'objective'
 regularizer.gr <- function(coeff) coeff # If function given for regularizer
 huber.h <- 0.5
-svmdp <- svmDP$new(regularizer, eps, lambda, kernel='linear',
+svmdp <- svmDP$new(regularizer, eps, lambda, perturbation.method,
+                                  kernel='linear',
                                   regularizer.gr=regularizer.gr,
                                   huber.h=huber.h)
 
@@ -108,6 +112,7 @@ Create a new \code{svmDP} object.
   regularizer,
   eps,
   lambda,
+  perturbation.method = "objective",
   kernel = "linear",
   D = NULL,
   gamma = 1,
@@ -132,6 +137,10 @@ to Inf, runs algorithm without differential privacy.}
 
 \item{\code{lambda}}{Nonnegative real number representing the regularization
 constant.}
+
+\item{\code{perturbation.method}}{String indicating whether to use the 'output' or
+the 'objective' perturbation methods \insertCite{chaudhuri2011}{DPpack}.
+Defaults to 'objective'.}
 
 \item{\code{kernel}}{String indicating which kernel to use for SVM. Must be one of
 {'linear', 'Gaussian'}. If 'linear' (default), linear SVM is used. If

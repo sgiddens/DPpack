@@ -5,9 +5,9 @@
 \title{Privacy-preserving Empirical Risk Minimization for Binary Classification}
 \description{
 This class implements differentially private empirical risk
-minimization using the objective perturbation technique
-\insertCite{chaudhuri2011}{DPpack}. It is intended to be a framework for
-building more specific models via inheritance. See
+minimization \insertCite{chaudhuri2011}{DPpack}. Either the output or the
+objective perturbation method can be used. It is intended to be a framework
+for building more specific models via inheritance. See
 \code{\link{LogisticRegressionDP}} for an example of this type of
 structure.
 }
@@ -22,20 +22,22 @@ datapoints.
 Note that in order to guarantee epsilon-level privacy for the empirical
 risk minimization model, certain constraints must be satisfied for the
 values used to construct the object, as well as for the data used to fit.
-Specifically, the provided loss function must be convex and doubly
-differentiable with respect to \code{y.hat}. Additionally, the absolute
-value of the first derivative of the loss function must be at most 1 and
-the absolute value of the second derivative of the loss function must be
-bounded above by a constant c for all possible values of \code{y.hat} and
-\code{y}, where \code{y.hat} is the predicted label and \code{y} is the
-true label. The regularizer must be 1-strongly convex and doubly
-differentiable. Additionally, it is assumed that if x represents a single
-row of the dataset X, then the l2-norm of x is at most 1 for all x. Note
-that because of this, a bias term cannot be included without appropriate
-scaling/preprocessing of the dataset. To ensure privacy, the add.bias
-argument in the \code{fit} and \code{predict} methods should only be
-utilized in subclasses within this package where appropriate preprocessing
-is implemented, not in this class.
+These conditions depend on the chosen perturbation method. Specifically, the
+provided loss function must be convex and differentiable with respect to
+\code{y.hat}, and the absolute value of the first derivative of the loss
+function must be at most 1. If objective perturbation is chosen, the loss
+function must also be doubly differentiable and the absolute value of the
+second derivative of the loss function must be bounded above by a constant
+c for all possible values of \code{y.hat} and \code{y}, where \code{y.hat}
+is the predicted label and \code{y} is the true label. The regularizer must
+be 1-strongly convex and differentiable. It also must be doubly
+differentiable if objective perturbation is chosen. Finally, it is assumed
+that if x represents a single row of the dataset X, then the l2-norm of x
+is at most 1 for all x. Note that because of this, a bias term cannot be
+included without appropriate scaling/preprocessing of the dataset. To
+ensure privacy, the add.bias argument in the \code{fit} and \code{predict}
+methods should only be utilized in subclasses within this package where
+appropriate preprocessing is implemented, not in this class.
 }
 \examples{
 # Construct object for logistic regression
@@ -45,12 +47,14 @@ loss <- function(y.hat,y) -(y*log(y.hat) + (1-y)*log(1-y.hat))
 regularizer <- 'l2' # Alternatively, function(coeff) coeff\%*\%coeff/2
 eps <- 1
 lambda <- 0.1
+perturbation.method <- 'objective'
 c <- 1/4 # Required value for logistic regression
 mapXy.gr <- function(X, coeff) as.numeric(e1071::dsigmoid(X\%*\%coeff))*t(X)
 loss.gr <- function(y.hat, y) -y/y.hat + (1-y)/(1-y.hat)
 regularizer.gr <- function(coeff) coeff
 ermdp <- EmpiricalRiskMinimizationDP.CMS$new(mapXy, loss, regularizer, eps,
-                                             lambda, c, mapXy.gr, loss.gr,
+                                             lambda, perturbation.method, c,
+                                             mapXy.gr, loss.gr,
                                              regularizer.gr)
 
 # Fit with data
@@ -105,9 +109,12 @@ constant.}
 \item{\code{eps}}{Positive real number defining the epsilon privacy budget. If set
 to Inf, runs algorithm without differential privacy.}
 
+\item{\code{perturbation.method}}{String indicating whether to use the 'output' or
+the 'objective' perturbation methods \insertCite{chaudhuri2011}{DPpack}.}
+
 \item{\code{c}}{Positive real number denoting the upper bound on the absolute
 value of the second derivative of the loss function, as required to
-ensure differential privacy.}
+ensure differential privacy for the objective perturbation method.}
 
 \item{\code{coeff}}{Numeric vector of coefficients for the model.}
 
@@ -164,7 +171,8 @@ Create a new \code{EmpiricalRiskMinimizationDP.CMS} object.
   regularizer,
   eps,
   lambda,
-  c,
+  perturbation.method = "objective",
+  c = NULL,
   mapXy.gr = NULL,
   loss.gr = NULL,
   regularizer.gr = NULL
@@ -182,11 +190,13 @@ for each row of \code{X}. See \code{\link{mapXy.sigmoid}} for an example.}
 \item{\code{loss}}{Loss function of the form \code{loss(y.hat, y)}, where
 \code{y.hat} and \code{y} are matrices. Should be defined such that it
 returns a matrix of loss values for each element of \code{y.hat} and
-\code{y}. See \code{\link{loss.cross.entropy}} for an example.
-Additionally, the absolute value of the first derivative of the loss
-function must be at most 1 and the absolute value of the second
-derivative of the loss function must be bounded above by a constant c for
-all possible values of \code{y.hat} and \code{y}.}
+\code{y}. See \code{\link{loss.cross.entropy}} for an example. It must be
+convex and differentiable, and the absolute value of the first derivative
+of the loss function must be at most 1. Additionally, if the objective
+perturbation method is chosen, it must be doubly differentiable and the
+absolute value of the second derivative of the loss function must be
+bounded above by a constant c for all possible values of \code{y.hat} and
+\code{y}.}
 
 \item{\code{regularizer}}{String or regularization function. If a string, must be
 'l2', indicating to use l2 regularization. If a function, must have form
@@ -194,7 +204,8 @@ all possible values of \code{y.hat} and \code{y}.}
 return the value of the regularizer at \code{coeff}. See
 \code{\link{regularizer.l2}} for an example. Additionally, in order to
 ensure differential privacy, the function must be 1-strongly convex and
-doubly differentiable.}
+differentiable. If the objective perturbation method is chosen, it must
+also be doubly differentiable.}
 
 \item{\code{eps}}{Positive real number defining the epsilon privacy budget. If set
 to Inf, runs algorithm without differential privacy.}
@@ -202,9 +213,15 @@ to Inf, runs algorithm without differential privacy.}
 \item{\code{lambda}}{Nonnegative real number representing the regularization
 constant.}
 
+\item{\code{perturbation.method}}{String indicating whether to use the 'output' or
+the 'objective' perturbation methods \insertCite{chaudhuri2011}{DPpack}.
+Defaults to 'objective'.}
+
 \item{\code{c}}{Positive real number denoting the upper bound on the absolute
 value of the second derivative of the loss function, as required to
-ensure differential privacy.}
+ensure differential privacy for the objective perturbation method. This
+input is unnecessary if perturbation.method is 'output', but is required
+if perturbation.method is 'objective'. Defaults to NULL.}
 
 \item{\code{mapXy.gr}}{Optional function representing the gradient of the map
 function with respect to the values in \code{coeff}. If given, must be of
@@ -243,16 +260,18 @@ A new \code{EmpiricalRiskMinimizationDP.CMS} object.
 \if{latex}{\out{\hypertarget{method-fit}{}}}
 \subsection{Method \code{fit()}}{
 Fit the differentially private empirical risk minimization
-model. This method runs the objective perturbation algorithm
-\insertCite{chaudhuri2011}{DPpack} to generate an objective function. A
-numerical optimization method is then run to find optimal coefficients
-for fitting the model given the training data and hyperparameters. The
-built-in \code{\link{optim}} function using the "BFGS" optimization
-method is used. If \code{mapXy.gr}, \code{loss.gr}, and
-\code{regularizer.gr} are all given in the construction of the object,
-the gradient of the objective function is utilized by \code{optim} as
-well. The resulting privacy-preserving coefficients are stored in
-\code{coeff}.
+model. This method runs either the output perturbation or the objective
+perturbation algorithm\insertCite{chaudhuri2011}{DPpack}, depending on
+the value of perturbation.method used to construct the object, to
+generate an objective function. A numerical optimization method is then
+run to find optimal coefficients for fitting the model given the training
+data and hyperparameters. The built-in \code{\link{optim}} function using
+the "BFGS" optimization method is used. If \code{mapXy.gr},
+\code{loss.gr}, and \code{regularizer.gr} are all given in the
+construction of the object, the gradient of the objective function is
+utilized by \code{optim} as well. Otherwise, non-gradient based
+optimization methods are used. The resulting privacy-preserving
+coefficients are stored in \code{coeff}.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{EmpiricalRiskMinimizationDP.CMS$fit(
   X,
