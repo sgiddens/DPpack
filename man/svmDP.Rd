@@ -14,10 +14,12 @@ a provided dataset. In fitting, the model stores a vector of coefficients
 \code{coeff} which satisfy epsilon-level differential privacy.
 Additionally, if a nonlinear kernel is chosen, the models stores a mapping
 function from the input data X to a higher dimensional dataset V in the
-form of a method \code{XtoV} as required by
+form of a method \code{XtoV} as required
 \insertCite{chaudhuri2011}{DPpack}. These can be released directly, or used
 in conjunction with the predict method to privately predict the label of
-new datapoints.
+new datapoints. Note that the mapping function \code{XtoV} is based on an
+approximation method via Fourier transforms \insertCite{@see @Rahimi2007,
+2008}{DPpack}.
 
 Note that in order to guarantee epsilon-level privacy for the empirical
 risk minimization model, certain constraints must be satisfied for the
@@ -72,6 +74,10 @@ n.errors <- sum(predicted.y!=ytest)
 \insertRef{chaudhuri2011}{DPpack}
 
 \insertRef{Chapelle2007}{DPpack}
+
+\insertRef{Rahimi2007}{DPpack}
+
+\insertRef{Rahimi2008}{DPpack}
 }
 \section{Super class}{
 \code{\link[DPpack:EmpiricalRiskMinimizationDP.CMS]{DPpack::EmpiricalRiskMinimizationDP.CMS}} -> \code{svmDP}
