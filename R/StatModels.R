@@ -1845,8 +1845,17 @@ LinearRegressionDP <- R6::R6Class("LinearRegressionDP",
     # Process y
     lb.y <- lower.bounds[length(lower.bounds)]
     ub.y <- upper.bounds[length(upper.bounds)]
-    shift.y <- lb.y + (ub.y - lb.y)/2 # Subtracting this centers at 0
-    scale.y <- (ub.y-lb.y)/(2*p) # Dividing by this scales to max size p in abs()
+    if (add.bias) {
+      shift.y <- lb.y + (ub.y - lb.y)/2 # Subtracting this centers at 0
+      scale.y <- (ub.y-lb.y)/(2*p) # Dividing by this scales to max size p in abs()
+    }
+    else {
+      # Cannot have shift term if no bias term to re-absorb it in post-processing
+      shift.y <- 0
+      # Dividing by this scales to max size p in abs()
+      scale.y <- max(abs(c(lb.y, ub.y)))/p
+    }
+
     y.norm <- (y-shift.y)/scale.y
 
     list(X=X.norm,y=y.norm, scale.X=scale.X, shift.y=shift.y, scale.y=scale.y)

@@ -664,22 +664,22 @@ ggplot() +   geom_point(data = data,
 # Build dataset
 n <- 500
 p <- 2 # for easy visualization
-X <- data.frame(const=numeric(n)+1, X=seq(-1,1,length.out = n))
+X <- data.frame(X=seq(-1,1,length.out = n))
 true.theta <- c(-.3,.5) # Normal case (within search space bounds - shows variation)
 # true.theta <- c(1,2) # Too large coeff case (outside search space bounds - no variation)
-y <- as.matrix(X)%*%true.theta + rnorm(n=n,sd=.1)
+y <- true.theta[1] + as.matrix(X)%*%true.theta[2:length(true.theta)] + rnorm(n=n,sd=.1)
 y[y< -p] <- -p
 y[y>p] <- p
 
 data <- cbind(X,y)
-y <- as.matrix(data[,3])
+y <- as.matrix(data[,2])
 colnames(data) <- c(colnames(X), 'y')
 # Includes everything
-ub <- c(1, 1, 2)
-lb <- c(1, -1, -2)
+ub <- c(1,2)
+lb <- c(-1,-2)
 # Limits some values
-# ub <- c(1, 1, .75)
-# lb <- c(1, -1, -.75)
+# ub <- c(1, .75)
+# lb <- c(-1, -.75)
 
 ggplot(data) + geom_point(aes(x=X, y=y), size = 2) +
   ylim(min(y), max(y)) + #coord_fixed(ratio = 1) +
@@ -698,7 +698,7 @@ ermdp.kst <- EmpiricalRiskMinimizationDP.KST$new(mapXy.linear, loss.squared.erro
                                                  'l2', eps, delta, domain, zeta,
                                                  lambda, gamma, mapXy.gr.linear,
                                                  loss.gr.squared.error)
-ermdp.kst$fit(X,y,ub,lb)
+ermdp.kst$fit(X,y,ub,lb,add.bias=TRUE)
 
 theta <- ermdp.kst$coeff
 
@@ -723,19 +723,19 @@ theta
 #################################
 # Build dataset
 n <- 500
-p <- 2 # for easy visualization
-X <- data.frame(const=numeric(n)+1, X=seq(-1,.5,length.out = n))
+X <- data.frame(X=seq(-1,1,length.out = n))
 true.theta <- c(-.3,.5) # Normal case
 # true.theta <- c(1,2) # Too large coeff case
-y <- as.matrix(X)%*%true.theta + rnorm(n=n,sd=.1)
+y <- true.theta[1] + as.matrix(X)%*%true.theta[2:length(true.theta)] + rnorm(n=n,sd=.1)
+p <- length(true.theta)
 y[y< -p] <- -p
 y[y> p] <- p
 
 data <- cbind(X,y)
-y <- as.matrix(data[,3])
+y <- as.matrix(data[,2])
 colnames(data) <- c(colnames(X), 'y')
-ub <- c(1, 1, 2)
-lb <- c(1, -1, -2)
+ub <- c(1, p)
+lb <- c(-1, -p)
 
 ggplot(data) + geom_point(aes(x=X, y=y), size = 2) +
   ylim(min(y), max(y)) + #coord_fixed(ratio = 1) +
@@ -750,11 +750,11 @@ gamma <- 1
 
 linrdp <- LinearRegressionDP$new(regularizer, eps, delta, gamma,
                                                  regularizer.gr)
-linrdp$fit(X,y,ub,lb)
+linrdp$fit(X,y,ub,lb,add.bias=TRUE)
 
 theta <- linrdp$coeff
 
-grid <- seq(-1,.5,length.out=100)
+grid <- seq(-1,1,length.out=100)
 
 gridData <- data.frame(X=grid,y=theta[1]+theta[2]*grid)
 
