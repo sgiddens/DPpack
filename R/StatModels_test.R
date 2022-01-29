@@ -579,9 +579,9 @@ ggplot() +   geom_point(data = data,
 ### END TESTING KERNEL SVM ON NONLINEAR DATASET ###
 
 
-#########################################
-### TESTING PARAMETER TUNING FUNCTION ###
-#########################################
+############################################################
+### TESTING PARAMETER TUNING FUNCTION FOR CLASSIFICATION ###
+############################################################
 # Build dataset
 N <- 200 # number of points per class
 D <- 2 # dimensionality, we use 2D data for easy visulization
@@ -635,7 +635,7 @@ lrdp2 <- LogisticRegressionDP$new("l2", eps, 1)
 lrdp3 <- LogisticRegressionDP$new("l2", eps, .0001)
 
 models <- c(lrdp1, lrdp2, lrdp3)
-model <- tune_model(models, X, y, upper.bounds, lower.bounds)
+model <- tune_classification_model(models, X, y, upper.bounds, lower.bounds)
 theta <- model$coeff
 
 # Grid
@@ -654,6 +654,7 @@ ggplot() +   geom_point(data = data,
             alpha = 0.3, show.legend = F)+
   coord_fixed(ratio = 1) +
   theme_bw(base_size = 12)
+model$lambda
 
 ### END TESTING PARAMETER TUNING FUNCTION ###
 
@@ -748,8 +749,7 @@ eps <- 1
 delta <- 1
 gamma <- 1
 
-linrdp <- LinearRegressionDP$new(regularizer, eps, delta, gamma,
-                                                 regularizer.gr)
+linrdp <- LinearRegressionDP$new(regularizer, eps, delta, gamma, regularizer.gr)
 linrdp$fit(X,y,ub,lb,add.bias=TRUE)
 
 theta <- linrdp$coeff
@@ -768,3 +768,55 @@ ggplot() + geom_point(data = data,
 theta
 
 ### END TESTING LINEAR REGRESSION ###
+
+###############################################################
+### TESTING PARAMETER TUNING FUNCTION FOR LINEAR REGRESSION ###
+###############################################################
+# Build dataset
+n <- 500
+X <- data.frame(X=seq(-1,1,length.out = n))
+true.theta <- c(-.3,.5) # Normal case
+# true.theta <- c(1,2) # Too large coeff case
+y <- true.theta[1] + as.matrix(X)%*%true.theta[2:length(true.theta)] + rnorm(n=n,sd=.1)
+p <- length(true.theta)
+y[y< -p] <- -p
+y[y> p] <- p
+
+data <- cbind(X,y)
+y <- as.matrix(data[,2])
+colnames(data) <- c(colnames(X), 'y')
+ub <- c(1, p)
+lb <- c(-1, -p)
+
+ggplot(data) + geom_point(aes(x=X, y=y), size = 2) +
+  ylim(min(y), max(y)) + #coord_fixed(ratio = 1) +
+  ggtitle('Data to be regressed') +
+  theme_bw(base_size = 12)
+
+set.seed(round(runif(1,0,100)))
+
+eps <- 1
+delta <- 1
+
+linrdp1 <- LinearRegressionDP$new("l2", eps, delta, 100)
+linrdp2 <- LinearRegressionDP$new("l2", eps, delta, 1)
+linrdp3 <- LinearRegressionDP$new("l2", eps, delta, .0001)
+
+models <- c(linrdp1, linrdp2, linrdp3)
+model <- tune_linear_regression_model(models, X, y, ub, lb, add.bias=TRUE)
+theta <- model$coeff
+
+grid <- seq(-1,1,length.out=100)
+
+gridData <- data.frame(X=grid,y=theta[1]+theta[2]*grid)
+
+# Regression line visualization
+ggplot() + geom_point(data = data,
+                      aes(x=X, y=y),
+                      size = 2, show.legend = F) +
+  geom_line(data=gridData, aes(x=X,y=y), color='red') + ylim(min(y), max(y)) +
+  ggtitle('Regression Line for Linear Regression') +
+  theme_bw(base_size = 12)
+model$gamma
+
+### END TESTING PARAMETER TUNING FUNCTION FOR LINEAR REGRESSION ###

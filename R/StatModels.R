@@ -260,45 +260,37 @@ regularizer.l2 <- function(coeff) coeff%*%coeff/2
 #' @export
 regularizer.gr.l2 <- function(coeff) coeff
 
-#' Privacy-preserving Hyperparameter Tuning
+#' Privacy-preserving Hyperparameter Tuning for Binary Classification Models
 #'
 #' This function implements the privacy-preserving hyperparameter tuning
 #' function \insertCite{chaudhuri2011}{DPpack} using the exponential mechanism.
 #' It accepts a list of models with various chosen hyperparameters, a dataset X
-#' with corresponding labels y, upper and lower bounds on the columns of X and
-#' the values of y, and a boolean indicating whether to add bias in the
-#' construction of each of the models. The data are split into m+1 equal groups,
-#' where m is the number of models being compared. One group is set aside as the
-#' validation group, and each of the other m groups are used to train each of
-#' the given m models. The number of errors on the validation set is counted for
-#' each model and used as the utility values in the exponential mechanism
-#' (\code{\link{ExponentialMechanism}}) to select tuned model in a
+#' with corresponding labels y, upper and lower bounds on the columns of X, and
+#' a boolean indicating whether to add bias in the construction of each of the
+#' models. The data are split into m+1 equal groups, where m is the number of
+#' models being compared. One group is set aside as the validation group, and
+#' each of the other m groups are used to train each of the given m models. The
+#' number of errors on the validation set is counted for each model and used as
+#' the utility values in the exponential mechanism
+#' (\code{\link{ExponentialMechanism}}) to select a tuned model in a
 #' privacy-preserving way.
 #'
-#' @param models Vector of model objects, each initialized with a different
-#'   combination of hyperparameter values from the search space for tuning.
-#'   Currently, only binary classification models are supported. Each model
-#'   should be initialized with the same epsilon privacy parameter value eps.
-#'   The tuned model satisfies eps-level differential privacy.
+#' @param models Vector of binary classification model objects, each initialized
+#'   with a different combination of hyperparameter values from the search space
+#'   for tuning. Each model should be initialized with the same epsilon privacy
+#'   parameter value eps. The tuned model satisfies eps-level differential
+#'   privacy.
 #' @param X Dataframe of data to be used in tuning the model. Note it is assumed
 #'   the data rows and corresponding labels are randomly shuffled.
 #' @param y Vector or matrix of true labels for each row of X.
 #' @param upper.bounds Numeric vector giving upper bounds on the values in each
-#'   column of X (and the values in y for regression model tuning). For binary
-#'   classification models, should be length ncol(X). For regression models,
-#'   should be length ncol(X)+1. The first ncol(X) values are assumed to be in
-#'   the same order as the corresponding columns of X, while the last value in
-#'   the vector is assumed to be the upper bound on y (if given). Any value in
-#'   the columns of X and y larger than the corresponding upper bound is clipped
-#'   at the bound.
+#'   column of X. Should be of length ncol(X). The values are assumed to be in
+#'   the same order as the corresponding columns of X. Any value in the columns
+#'   of X larger than the corresponding upper bound is clipped at the bound.
 #' @param lower.bounds Numeric vector giving lower bounds on the values in each
-#'   column of X (and the values in y for regression model tuning). For binary
-#'   classification models, should be length ncol(X). For regression models,
-#'   should be length ncol(X)+1. The first ncol(X) values are assumed to be in
-#'   the same order as the corresponding columns of X, while the last value in
-#'   the vector is assumed to be the lower bound on y (if given). Any value in
-#'   the columns of X and y smaller than the corresponding lower bound is clipped
-#'   at the bound.
+#'   column of X. Should be of length ncol(X). The values are assumed to be in
+#'   the same order as the corresponding columns of X. Any value in the columns
+#'   of X smaller than the corresponding lower bound is clipped at the bound.
 #' @param add.bias Boolean indicating whether to add a bias term to X. Defaults
 #'   to FALSE.
 #' @return Single model object selected from the input list models with tuned
@@ -318,23 +310,24 @@ regularizer.gr.l2 <- function(coeff) coeff
 #' lrdp2 <- LogisticRegressionDP$new("l2", eps, grid.search[2])
 #' lrdp3 <- LogisticRegressionDP$new("l2", eps, grid.search[3])
 #' models <- c(lrdp1, lrdp2, lrdp3)
-#' tuned.model <- tune_model(models, X, y, upper.bounds, lower.bounds)
+#' tuned.model <- tune_classification_model(models, X, y, upper.bounds, lower.bounds)
+#' # tuned.model result can be used the same as a trained LogisticRegressionDP model
 #' tuned.model$lambda # Gives resulting selected hyperparameter
 #'
 #' @references \insertRef{chaudhuri2011}{DPpack}
 #'
 #' @export
-tune_model<- function(models, X, y, upper.bounds, lower.bounds,
+tune_classification_model<- function(models, X, y, upper.bounds, lower.bounds,
                       add.bias=FALSE){
   # Make sure values are correct
   m <- length(models)
   n <- length(y)
   # Split data into m+1 groups
-  validateX <- X[seq(m+1,n,m+1),]
+  validateX <- X[seq(m+1,n,m+1),,drop=FALSE]
   validatey <- y[seq(m+1,n,m+1)]
   z <- numeric(m)
   for (i in 1:m){
-    subX <- X[seq(i,n,m+1),]
+    subX <- X[seq(i,n,m+1),,drop=FALSE]
     suby <- y[seq(i,n,m+1)]
     models[[i]]$fit(subX,suby,upper.bounds,lower.bounds,add.bias)
     validatey.hat <- models[[i]]$predict(validateX,add.bias,raw.value=FALSE)
@@ -1877,3 +1870,91 @@ LinearRegressionDP <- R6::R6Class("LinearRegressionDP",
     coeff
   }
 ))
+
+#' Privacy-preserving Hyperparameter Tuning for Linear Regression Models
+#'
+#' This function implements the privacy-preserving hyperparameter tuning
+#' function \insertCite{Kifer2012}{DPpack} using the exponential mechanism. It
+#' accepts a list of models with various chosen hyperparameters, a dataset X
+#' with corresponding values y, upper and lower bounds on the columns of X and
+#' the values of y, and a boolean indicating whether to add bias in the
+#' construction of each of the models. The data are split into m+1 equal groups,
+#' where m is the number of models being compared. One group is set aside as the
+#' validation group, and each of the other m groups are used to train each of
+#' the given m models. The negative of the sum of the squared error for each
+#' model on the validation set is used as the utility values in the exponential
+#' mechanism (\code{\link{ExponentialMechanism}}) to select a tuned model in a
+#' privacy-preserving way.
+#'
+#' @param models Vector of linear regression model objects, each initialized
+#'   with a different combination of hyperparameter values from the search space
+#'   for tuning. Each model should be initialized with the same epsilon privacy
+#'   parameter value eps. The tuned model satisfies eps-level differential
+#'   privacy.
+#' @param X Dataframe of data to be used in tuning the model. Note it is assumed
+#'   the data rows and corresponding labels are randomly shuffled.
+#' @param y Vector or matrix of true values for each row of X.
+#' @param upper.bounds Numeric vector giving upper bounds on the values in each
+#'   column of X and the values in y. Should be length ncol(X)+1. The first
+#'   ncol(X) values are assumed to be in the same order as the corresponding
+#'   columns of X, while the last value in the vector is assumed to be the upper
+#'   bound on y. Any value in the columns of X and y larger than the
+#'   corresponding upper bound is clipped at the bound.
+#' @param lower.bounds Numeric vector giving lower bounds on the values in each
+#'   column of X and the values in y. Should be length ncol(X)+1. The first
+#'   ncol(X) values are assumed to be in the same order as the corresponding
+#'   columns of X, while the last value in the vector is assumed to be the lower
+#'   bound on y. Any value in the columns of X and y smaller than the
+#'   corresponding lower bound is clipped at the bound.
+#' @param add.bias Boolean indicating whether to add a bias term to X. Defaults
+#'   to FALSE.
+#' @return Single model object selected from the input list models with tuned
+#'   parameters.
+#' @examples
+#' # Assume X is dataframe meeting assumptions for privacy
+#' # Assume 1 column of X bounded between -1 and 1
+#' # Assume y is bounded between -2 and 2
+#' upper.bounds <- c( 1, 2) # Bounds for X and y
+#' lower.bounds <- c(-1,-2) # Bounds for X and y
+#' eps <- 1
+#' delta <- 0.1
+#'
+#' # Grid of possible gamma values for tuning linear regression model
+#' grid.search <- c(100, 1, .0001)
+#'
+#' linrdp1 <- LinearRegressionDP$new("l2", eps, delta, grid.search[1])
+#' linrdp2 <- LinearRegressionDP$new("l2", eps, delta, grid.search[2])
+#' linrdp3 <- LinearRegressionDP$new("l2", eps, delta, grid.search[3])
+#' models <- c(lrdp1, lrdp2, lrdp3)
+#' tuned.model <- tune_linear_regression_model(models, X, y, upper.bounds,
+#'                                             lower.bounds, add.bias=TRUE)
+#' # tuned.model result can be used the same as a trained LinearRegressionDP model
+#' tuned.model$lambda # Gives resulting selected hyperparameter
+#'
+#' @references \insertRef{Kifer2012}{DPpack}
+#'
+#' @export
+tune_linear_regression_model<- function(models, X, y, upper.bounds, lower.bounds,
+                                     add.bias=FALSE){
+  # Make sure values are correct
+  m <- length(models)
+  n <- length(y)
+  # Split data into m+1 groups
+  validateX <- X[seq(m+1,n,m+1),,drop=FALSE]
+  validatey <- y[seq(m+1,n,m+1)]
+  z <- numeric(m)
+  for (i in 1:m){
+    subX <- X[seq(i,n,m+1),,drop=FALSE]
+    suby <- y[seq(i,n,m+1)]
+    models[[i]]$fit(subX,suby,upper.bounds,lower.bounds,add.bias)
+    validatey.hat <- models[[i]]$predict(validateX,add.bias)
+    z[i] <- sum((validatey - validatey.hat)^2)
+  }
+  # Bounds for y give global sensitivity for exponential mechanism in linear
+  #    regression case. Sensitivity can be computed as square of difference
+  #    between upper and lower bounds.
+  ub.y <- upper.bounds[length(upper.bounds)]
+  lb.y <- lower.bounds[length(lower.bounds)]
+  res <- ExponentialMechanism(-z, models[[1]]$eps, (ub.y-lb.y)^2, candidates=models)
+  res$Bounded[[1]]
+}
