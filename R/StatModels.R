@@ -846,6 +846,36 @@ LogisticRegressionDP <- R6::R6Class("LogisticRegressionDP",
                     lambda, perturbation.method, 1/4, mapXy.gr.sigmoid,
                     loss.gr.cross.entropy, regularizer.gr)
   },
+  #' @description Fit the differentially private logistic regression model. This
+  #'   method runs either the output perturbation or the objective perturbation
+  #'   algorithm\insertCite{chaudhuri2011}{DPpack}, depending on the value of
+  #'   perturbation.method used to construct the object, to generate an
+  #'   objective function. A numerical optimization method is then run to find
+  #'   optimal coefficients for fitting the model given the training data and
+  #'   hyperparameters. The built-in \code{\link{optim}} function using the
+  #'   "BFGS" optimization method is used. If \code{regularizer} is given as
+  #'   'l2' or if \code{regularizer.gr} is given in the construction of the
+  #'   object, the gradient of the objective function is utilized by
+  #'   \code{optim} as well. Otherwise, non-gradient based optimization methods
+  #'   are used. The resulting privacy-preserving coefficients are stored in
+  #'   \code{coeff}.
+  #' @param X Dataframe of data to be fit.
+  #' @param y Vector or matrix of true labels for each row of \code{X}.
+  #' @param upper.bounds Numeric vector of length \code{ncol(X)} giving upper
+  #'   bounds on the values in each column of X. The \code{ncol(X)} values are
+  #'   assumed to be in the same order as the corresponding columns of \code{X}.
+  #'   Any value in the columns of \code{X} larger than the corresponding upper
+  #'   bound is clipped at the bound.
+  #' @param lower.bounds Numeric vector of length \code{ncol(X)} giving lower
+  #'   bounds on the values in each column of \code{X}. The \code{ncol(X)}
+  #'   values are assumed to be in the same order as the corresponding columns
+  #'   of \code{X}. Any value in the columns of \code{X} larger than the
+  #'   corresponding upper bound is clipped at the bound.
+  #' @param add.bias Boolean indicating whether to add a bias term to \code{X}.
+  #'   Defaults to FALSE.
+  fit = function(X, y, upper.bounds, lower.bounds, add.bias=FALSE){
+    super$fit(X,y,upper.bounds,lower.bounds,add.bias)
+  },
   #' @description Predict label(s) for given \code{X} using the fitted
   #'   coefficients.
   #' @param X Dataframe of data on which to make predictions. Must be of same
@@ -1147,6 +1177,36 @@ svmDP <- R6::R6Class("svmDP",
       self$D <- D
     } else if (kernel!="linear") stop("kernel must be one of {'linear',
                                       Gaussian'}")
+  },
+  #' @description Fit the differentially private SVM model. This
+  #'   method runs either the output perturbation or the objective perturbation
+  #'   algorithm\insertCite{chaudhuri2011}{DPpack}, depending on the value of
+  #'   perturbation.method used to construct the object, to generate an
+  #'   objective function. A numerical optimization method is then run to find
+  #'   optimal coefficients for fitting the model given the training data and
+  #'   hyperparameters. The built-in \code{\link{optim}} function using the
+  #'   "BFGS" optimization method is used. If \code{regularizer} is given as
+  #'   'l2' or if \code{regularizer.gr} is given in the construction of the
+  #'   object, the gradient of the objective function is utilized by
+  #'   \code{optim} as well. Otherwise, non-gradient based optimization methods
+  #'   are used. The resulting privacy-preserving coefficients are stored in
+  #'   \code{coeff}.
+  #' @param X Dataframe of data to be fit.
+  #' @param y Vector or matrix of true labels for each row of \code{X}.
+  #' @param upper.bounds Numeric vector of length \code{ncol(X)} giving upper
+  #'   bounds on the values in each column of X. The \code{ncol(X)} values are
+  #'   assumed to be in the same order as the corresponding columns of \code{X}.
+  #'   Any value in the columns of \code{X} larger than the corresponding upper
+  #'   bound is clipped at the bound.
+  #' @param lower.bounds Numeric vector of length \code{ncol(X)} giving lower
+  #'   bounds on the values in each column of \code{X}. The \code{ncol(X)}
+  #'   values are assumed to be in the same order as the corresponding columns
+  #'   of \code{X}. Any value in the columns of \code{X} larger than the
+  #'   corresponding upper bound is clipped at the bound.
+  #' @param add.bias Boolean indicating whether to add a bias term to \code{X}.
+  #'   Defaults to FALSE.
+  fit = function(X, y, upper.bounds, lower.bounds, add.bias=FALSE){
+    super$fit(X,y,upper.bounds,lower.bounds,add.bias)
   },
   #' @description Convert input data X into transformed data V. Uses sampled
   #'   pre-filter values and a mapping function based on the chosen kernel to
@@ -1791,7 +1851,39 @@ LinearRegressionDP <- R6::R6Class("LinearRegressionDP",
                        domain.linear, NULL, NULL, gamma,
                        mapXy.gr=mapXy.gr.linear, loss.gr=loss.gr.squared.error,
                        regularizer.gr=regularizer.gr)
-    }
+    },
+  #' @description Fit the differentially private linear regression model. The
+  #'   function runs the objective perturbation algorithm
+  #'   \insertCite{Kifer2012}{DPpack} to generate an objective function. A
+  #'   numerical optimization method is then run to find optimal coefficients
+  #'   for fitting the model given the training data and hyperparameters. The
+  #'   \code{\link{nloptr}} function is used. If \code{regularizer} is given as
+  #'   'l2' or if \code{regularizer.gr} is given in the construction of the
+  #'   object, the gradient of the objective function and the Jacobian of the
+  #'   constraint function are utilized for the algorithm, and the NLOPT_LD_MMA
+  #'   method is used. If this is not the case, the NLOPT_LN_COBYLA method is
+  #'   used. The resulting privacy-preserving coefficients are stored in coeff.
+  #' @param X Dataframe of data to be fit.
+  #' @param y Vector or matrix of true values for each row of \code{X}.
+  #' @param upper.bounds Numeric vector of length \code{ncol(X)+1} giving upper
+  #'   bounds on the values in each column of \code{X} and the values of
+  #'   \code{y}. The last value in the vector is assumed to be the upper bound
+  #'   on \code{y}, while the first \code{ncol(X)} values are assumed to be in
+  #'   the same order as the corresponding columns of \code{X}. Any value in the
+  #'   columns of \code{X} and in \code{y} larger than the corresponding upper
+  #'   bound is clipped at the bound.
+  #' @param lower.bounds Numeric vector of length \code{ncol(X)+1} giving lower
+  #'   bounds on the values in each column of \code{X} and the values of
+  #'   \code{y}. The last value in the vector is assumed to be the lower bound
+  #'   on \code{y}, while the first \code{ncol(X)} values are assumed to be in
+  #'   the same order as the corresponding columns of \code{X}. Any value in the
+  #'   columns of \code{X} and in \code{y} larger than the corresponding lower
+  #'   bound is clipped at the bound.
+  #' @param add.bias Boolean indicating whether to add a bias term to \code{X}.
+  #'   Defaults to FALSE.
+  fit = function(X, y, upper.bounds, lower.bounds, add.bias=FALSE){
+    super$fit(X,y,upper.bounds,lower.bounds,add.bias)
+  }
 ), private=list(
   # description Preprocess input data and bounds to ensure they meet the
   #   assumptions necessary for fitting the model. If desired, a bias term can

@@ -68,6 +68,7 @@ n.errors <- sum(predicted.y!=ytest)
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-new}{\code{LogisticRegressionDP$new()}}
+\item \href{#method-fit}{\code{LogisticRegressionDP$fit()}}
 \item \href{#method-predict}{\code{LogisticRegressionDP$predict()}}
 \item \href{#method-clone}{\code{LogisticRegressionDP$clone()}}
 }
@@ -75,7 +76,6 @@ n.errors <- sum(predicted.y!=ytest)
 \if{html}{
 \out{<details open ><summary>Inherited methods</summary>}
 \itemize{
-\item \out{<span class="pkg-link" data-pkg="DPpack" data-topic="EmpiricalRiskMinimizationDP.CMS" data-id="fit">}\href{../../DPpack/html/EmpiricalRiskMinimizationDP.CMS.html#method-fit}{\code{DPpack::EmpiricalRiskMinimizationDP.CMS$fit()}}\out{</span>}
 }
 \out{</details>}
 }
@@ -127,6 +127,52 @@ are used to compute the coefficient values in fitting the model.}
 }
 \subsection{Returns}{
 A new \code{LogisticRegressionDP} object.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-fit"></a>}}
+\if{latex}{\out{\hypertarget{method-fit}{}}}
+\subsection{Method \code{fit()}}{
+Fit the differentially private logistic regression model. This
+method runs either the output perturbation or the objective perturbation
+algorithm\insertCite{chaudhuri2011}{DPpack}, depending on the value of
+perturbation.method used to construct the object, to generate an
+objective function. A numerical optimization method is then run to find
+optimal coefficients for fitting the model given the training data and
+hyperparameters. The built-in \code{\link{optim}} function using the
+"BFGS" optimization method is used. If \code{regularizer} is given as
+'l2' or if \code{regularizer.gr} is given in the construction of the
+object, the gradient of the objective function is utilized by
+\code{optim} as well. Otherwise, non-gradient based optimization methods
+are used. The resulting privacy-preserving coefficients are stored in
+\code{coeff}.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{LogisticRegressionDP$fit(X, y, upper.bounds, lower.bounds, add.bias = FALSE)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{X}}{Dataframe of data to be fit.}
+
+\item{\code{y}}{Vector or matrix of true labels for each row of \code{X}.}
+
+\item{\code{upper.bounds}}{Numeric vector of length \code{ncol(X)} giving upper
+bounds on the values in each column of X. The \code{ncol(X)} values are
+assumed to be in the same order as the corresponding columns of \code{X}.
+Any value in the columns of \code{X} larger than the corresponding upper
+bound is clipped at the bound.}
+
+\item{\code{lower.bounds}}{Numeric vector of length \code{ncol(X)} giving lower
+bounds on the values in each column of \code{X}. The \code{ncol(X)}
+values are assumed to be in the same order as the corresponding columns
+of \code{X}. Any value in the columns of \code{X} larger than the
+corresponding upper bound is clipped at the bound.}
+
+\item{\code{add.bias}}{Boolean indicating whether to add a bias term to \code{X}.
+Defaults to FALSE.}
+}
+\if{html}{\out{</div>}}
 }
 }
 \if{html}{\out{<hr>}}

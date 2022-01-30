@@ -67,13 +67,13 @@ predicted.y <- lrdp$predict(Xtest)
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-new}{\code{LinearRegressionDP$new()}}
+\item \href{#method-fit}{\code{LinearRegressionDP$fit()}}
 \item \href{#method-clone}{\code{LinearRegressionDP$clone()}}
 }
 }
 \if{html}{
 \out{<details open ><summary>Inherited methods</summary>}
 \itemize{
-\item \out{<span class="pkg-link" data-pkg="DPpack" data-topic="EmpiricalRiskMinimizationDP.KST" data-id="fit">}\href{../../DPpack/html/EmpiricalRiskMinimizationDP.KST.html#method-fit}{\code{DPpack::EmpiricalRiskMinimizationDP.KST$fit()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="DPpack" data-topic="EmpiricalRiskMinimizationDP.KST" data-id="predict">}\href{../../DPpack/html/EmpiricalRiskMinimizationDP.KST.html#method-predict}{\code{DPpack::EmpiricalRiskMinimizationDP.KST$predict()}}\out{</span>}
 }
 \out{</details>}
@@ -118,6 +118,54 @@ are used to compute the coefficient values in fitting the model.}
 }
 \subsection{Returns}{
 A new LinearRegressionDP object.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-fit"></a>}}
+\if{latex}{\out{\hypertarget{method-fit}{}}}
+\subsection{Method \code{fit()}}{
+Fit the differentially private linear regression model. The
+function runs the objective perturbation algorithm
+\insertCite{Kifer2012}{DPpack} to generate an objective function. A
+numerical optimization method is then run to find optimal coefficients
+for fitting the model given the training data and hyperparameters. The
+\code{\link{nloptr}} function is used. If \code{regularizer} is given as
+'l2' or if \code{regularizer.gr} is given in the construction of the
+object, the gradient of the objective function and the Jacobian of the
+constraint function are utilized for the algorithm, and the NLOPT_LD_MMA
+method is used. If this is not the case, the NLOPT_LN_COBYLA method is
+used. The resulting privacy-preserving coefficients are stored in coeff.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{LinearRegressionDP$fit(X, y, upper.bounds, lower.bounds, add.bias = FALSE)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{X}}{Dataframe of data to be fit.}
+
+\item{\code{y}}{Vector or matrix of true values for each row of \code{X}.}
+
+\item{\code{upper.bounds}}{Numeric vector of length \code{ncol(X)+1} giving upper
+bounds on the values in each column of \code{X} and the values of
+\code{y}. The last value in the vector is assumed to be the upper bound
+on \code{y}, while the first \code{ncol(X)} values are assumed to be in
+the same order as the corresponding columns of \code{X}. Any value in the
+columns of \code{X} and in \code{y} larger than the corresponding upper
+bound is clipped at the bound.}
+
+\item{\code{lower.bounds}}{Numeric vector of length \code{ncol(X)+1} giving lower
+bounds on the values in each column of \code{X} and the values of
+\code{y}. The last value in the vector is assumed to be the lower bound
+on \code{y}, while the first \code{ncol(X)} values are assumed to be in
+the same order as the corresponding columns of \code{X}. Any value in the
+columns of \code{X} and in \code{y} larger than the corresponding lower
+bound is clipped at the bound.}
+
+\item{\code{add.bias}}{Boolean indicating whether to add a bias term to \code{X}.
+Defaults to FALSE.}
+}
+\if{html}{\out{</div>}}
 }
 }
 \if{html}{\out{<hr>}}
