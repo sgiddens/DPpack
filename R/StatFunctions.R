@@ -44,8 +44,8 @@
 #'   all computations. By default, it distributes eps and delta evenly among the
 #'   calculations. Input does not need to be normalized, meaning
 #'   alloc.proportions = c(3,1) produces the same result as the example above.
-#' @return A list of the sanitized means based on the bounded and/or unbounded
-#'   definitions of differential privacy.
+#' @return Sanitized mean(s) based on the bounded and/or unbounded definitions
+#'   of differential privacy.
 #' @examples
 #' meanDP(c(1,4,-2,8,-6),1,lower.bounds=-10,upper.bounds=10)
 #' meanDP(c(1,4,-2,8,-6),.5,lower.bounds=-10,upper.bounds=10,
@@ -57,11 +57,11 @@
 #'
 #' @references \insertRef{Dwork2006a}{DPpack}
 #'
-#' \insertRef{Kifer2011}{DPpack}
+#'   \insertRef{Kifer2011}{DPpack}
 #'
-#' \insertRef{Liu2019a}{DPpack}
+#'   \insertRef{Liu2019a}{DPpack}
 #'
-#' \insertRef{DPtextbook}{DPpack}
+#'   \insertRef{DPtextbook}{DPpack}
 #'
 #' @export
 meanDP <- function (x, eps, lower.bounds, upper.bounds,
@@ -112,7 +112,7 @@ meanDP <- function (x, eps, lower.bounds, upper.bounds,
   ##########
 
   ########## Postprocessing layer
-  class(sanitized.means)<-"Sanitized Mean";
+  if (which.sensitivity=='both') class(sanitized.means)<-"Sanitized Mean";
   return(sanitized.means);
   ##########
 }
@@ -160,12 +160,12 @@ meanDP <- function (x, eps, lower.bounds, upper.bounds,
 #'   on a two-column matrix and alloc.proportions = c(.75, .25), then 75% of the
 #'   privacy budget eps (and delta) is allocated to the statistical computation
 #'   for column 1, and the remaining 25% is allocated to the statistical
-#'   computation for column 2. This ensures (eps, delta)-level privacy across all
-#'   computations. By default, it distributes eps and delta evenly among the
+#'   computation for column 2. This ensures (eps, delta)-level privacy across
+#'   all computations. By default, it distributes eps and delta evenly among the
 #'   calculations. Input does not need to be normalized, meaning
 #'   alloc.proportions = c(3,1) produces the same result as the example above.
-#' @return A list of the sanitized variances based on the bounded and/or
-#'   unbounded definitions of differential privacy.
+#' @return Sanitized variance(s) based on the bounded and/or unbounded
+#'   definitions of differential privacy.
 #' @examples
 #' varDP(c(1,4,-2,8,-6),1,lower.bounds=-10,upper.bounds=10)
 #' varDP(c(1,4,-2,8,-6),.5,lower.bounds=-10,upper.bounds=10,
@@ -175,11 +175,11 @@ meanDP <- function (x, eps, lower.bounds, upper.bounds,
 #'
 #' @references \insertRef{Dwork2006a}{DPpack}
 #'
-#' \insertRef{Kifer2011}{DPpack}
+#'   \insertRef{Kifer2011}{DPpack}
 #'
-#' \insertRef{Liu2019a}{DPpack}
+#'   \insertRef{Liu2019a}{DPpack}
 #'
-#' \insertRef{DPtextbook}{DPpack}
+#'   \insertRef{DPtextbook}{DPpack}
 #'
 #' @export
 varDP <- function (x, eps, lower.bounds, upper.bounds,
@@ -222,26 +222,30 @@ varDP <- function (x, eps, lower.bounds, upper.bounds,
   if (mechanism=='Laplace'){
     while (TRUE){ # Make sure variance is > 0 after noise
       sanitized.vars <- LaplaceMechanism(tv,eps,bs,us,which.sensitivity,
-                                         alloc.proportions);
-      done = TRUE;
-      if (!is.null(sanitized.vars$Bounded) && any(sanitized.vars$Bounded<=0)) done=FALSE;
-      if (!is.null(sanitized.vars$Unbounded) && any(sanitized.vars$Unbounded<=0)) done=FALSE;
+                                         alloc.proportions)
+      done <- TRUE
+      if (which.sensitivity=='both'){
+        if (any(sanitized.vars$Bounded<=0)) done <- FALSE
+        if (any(sanitized.vars$Unbounded<=0)) done <- FALSE
+      } else if (any(sanitized.vars<=0)) done <- FALSE
       if (done) break;
     }
   }  else if (mechanism=='Gaussian'){
     while (TRUE){
       sanitized.vars <- GaussianMechanism(tv,eps,delta,bs,us,which.sensitivity,
                                           type.DP,alloc.proportions);
-      done = TRUE;
-      if (!is.null(sanitized.vars$Bounded) && any(sanitized.vars$Bounded<=0)) done=FALSE;
-      if (!is.null(sanitized.vars$Unbounded) && any(sanitized.vars$Unbounded<=0)) done=FALSE;
+      done <- TRUE
+      if (which.sensitivity=='both'){
+        if (any(sanitized.vars$Bounded<=0)) done <- FALSE
+        if (any(sanitized.vars$Unbounded<=0)) done <- FALSE
+      } else if (any(sanitized.vars<=0)) done <- FALSE
       if (done) break;
     }
   }
   ##########
 
   ########## Postprocessing layer
-  class(sanitized.vars)<-"Sanitized Variance";
+  if (which.sensitivity=='both') class(sanitized.vars)<-"Sanitized Variance";
   return(sanitized.vars);
   ##########
 }
@@ -289,12 +293,12 @@ varDP <- function (x, eps, lower.bounds, upper.bounds,
 #'   on a two-column matrix and alloc.proportions = c(.75, .25), then 75% of the
 #'   privacy budget eps (and delta) is allocated to the statistical computation
 #'   for column 1, and the remaining 25% is allocated to the statistical
-#'   computation for column 2. This ensures (eps, delta)-level privacy across all
-#'   computations. By default, it distributes eps and delta evenly among the
+#'   computation for column 2. This ensures (eps, delta)-level privacy across
+#'   all computations. By default, it distributes eps and delta evenly among the
 #'   calculations. Input does not need to be normalized, meaning
 #'   alloc.proportions = c(3,1) produces the same result as the example above.
-#' @return A list of the sanitized standard deviations based on the bounded
-#'   and/or unbounded definitions of differential privacy.
+#' @return Sanitized standard deviation(s) based on the bounded and/or unbounded
+#'   definitions of differential privacy.
 #' @examples
 #' sdDP(c(1,4,-2,8,-6),1,lower.bounds=-10,upper.bounds=10)
 #' sdDP(c(1,4,-2,8,-6),.5,lower.bounds=-10,upper.bounds=10,
@@ -304,11 +308,11 @@ varDP <- function (x, eps, lower.bounds, upper.bounds,
 #'
 #' @references \insertRef{Dwork2006a}{DPpack}
 #'
-#' \insertRef{Kifer2011}{DPpack}
+#'   \insertRef{Kifer2011}{DPpack}
 #'
-#' \insertRef{Liu2019a}{DPpack}
+#'   \insertRef{Liu2019a}{DPpack}
 #'
-#' \insertRef{DPtextbook}{DPpack}
+#'   \insertRef{DPtextbook}{DPpack}
 #'
 #' @export
 sdDP <- function (x, eps, lower.bounds, upper.bounds,
@@ -324,14 +328,13 @@ sdDP <- function (x, eps, lower.bounds, upper.bounds,
   ##########
 
   ########## Postprocessing layer
-  sanitized.sds = list();
-  if (which.sensitivity=='bounded' || which.sensitivity=='both') {
-    sanitized.sds[["Bounded"]] <- sqrt(sanitized.variances$Bounded);
-  }
-  if (which.sensitivity=='unbounded' || which.sensitivity=='both') {
-    sanitized.sds[["Unbounded"]] <- sqrt(sanitized.variances$Unbounded);
-  }
-  class(sanitized.sds) <- "Sanitized Std Dev";
+  if (which.sensitivity=='both'){
+    sanitized.sds <- list()
+    sanitized.sds[["Bounded"]] <- sqrt(sanitized.variances$Bounded)
+    sanitized.sds[["Unbounded"]] <- sqrt(sanitized.variances$Unbounded)
+    class(sanitized.sds) <- "Sanitized Standard Deviation";
+  } else sanitized.sds <- sqrt(sanitized.variances)
+
   return(sanitized.sds);
   ##########
 }
@@ -368,8 +371,8 @@ sdDP <- function (x, eps, lower.bounds, upper.bounds,
 #'   DP \insertCite{Liu2019a}{DPpack} or 'aDP' for approximate DP
 #'   \insertCite{DPtextbook}{DPpack}. Note that if 'aDP' is chosen, epsilon must
 #'   be strictly less than 1.
-#' @return A list of the sanitized covariances based on the bounded and/or
-#'   unbounded definitions of differential privacy.
+#' @return Sanitized covariance(s) based on the bounded and/or unbounded
+#'   definitions of differential privacy.
 #' @examples
 #' covDP(c(1,4,-2,8,-6),c(1,3,2,2,4),1,lower.bound1=-10,upper.bound1=10,
 #'   lower.bound2=0,upper.bound2=5,which.sensitivity='bounded',
@@ -380,11 +383,11 @@ sdDP <- function (x, eps, lower.bounds, upper.bounds,
 #'
 #' @references \insertRef{Dwork2006a}{DPpack}
 #'
-#' \insertRef{Kifer2011}{DPpack}
+#'   \insertRef{Kifer2011}{DPpack}
 #'
-#' \insertRef{Liu2019a}{DPpack}
+#'   \insertRef{Liu2019a}{DPpack}
 #'
-#' \insertRef{DPtextbook}{DPpack}
+#'   \insertRef{DPtextbook}{DPpack}
 #'
 #' @export
 covDP <- function (x1, x2, eps, lower.bound1, upper.bound1, lower.bound2,
@@ -424,8 +427,8 @@ covDP <- function (x1, x2, eps, lower.bound1, upper.bound1, lower.bound2,
   ##########
 
   ########## Postprocessing layer
-  class(sanitized.cov)<-"Sanitized Covariance";
-  return(sanitized.cov);
+  if (which.sensitivity=='both') class(sanitized.cov)<-"Sanitized Covariance";
+  return(sanitized.cov)
   ##########
 }
 
@@ -467,24 +470,24 @@ covDP <- function (x1, x2, eps, lower.bound1, upper.bound1, lower.bound2,
 #' @param allow.negative Logical value. If FALSE (default), any negative values
 #'   in the sanitized histogram due to the added noise will be set to 0. If
 #'   TRUE, the negative values (if any) will be returned.
-#' @return A list of the sanitized histograms based on the bounded and/or
-#'   unbounded definitions of differential privacy.
+#' @return Sanitized histogram(s) based on the bounded and/or unbounded definitions
+#'   of differential privacy.
 #' @examples
 #' result <- histogramDP(c(1,1,-2,8,-6),1,which.sensitivity='bounded',
 #'   mechanism='Laplace')
-#' plot(result$Bounded)
+#' plot(result)
 #' result <- histogramDP(c(1,1,-2,8,-6),.5,normalize=TRUE,
 #'   which.sensitivity='unbounded',mechanism='Gaussian',delta=0.5,type.DP='aDP',
 #'   allow.negative=FALSE)
-#' plot(result$Unbounded)
+#' plot(result)
 #'
 #' @references \insertRef{Dwork2006a}{DPpack}
 #'
-#' \insertRef{Kifer2011}{DPpack}
+#'   \insertRef{Kifer2011}{DPpack}
 #'
-#' \insertRef{Liu2019a}{DPpack}
+#'   \insertRef{Liu2019a}{DPpack}
 #'
-#' \insertRef{DPtextbook}{DPpack}
+#'   \insertRef{DPtextbook}{DPpack}
 #'
 #' @export
 histogramDP <- function(x, eps, breaks="Sturges", normalize=FALSE,
@@ -520,19 +523,19 @@ histogramDP <- function(x, eps, breaks="Sturges", normalize=FALSE,
   ##########
 
   ########## Postprocessing layer
-  sanitized.hist <- list();
-  if (!is.null(sanitized.counts$Bounded)){
-    sc <- sanitized.counts$Bounded;
-    if (!allow.negative) sc[sc<0] <- 0;
+  if (which.sensitivity=='both'){
+    sanitized.hist <- list()
+
+    sc <- sanitized.counts$Bounded
+    if (!allow.negative) sc[sc<0] <- 0
     if (normalize) {
-      sc <- sc/sum(sc);
+      sc <- sc/sum(sc)
     } else{
-      sc <- round(sc);
+      sc <- round(sc)
     }
-    tv$counts <- sc;
-    sanitized.hist[["Bounded"]] <- tv;
-  }
-  if (!is.null(sanitized.counts$Unbounded)){
+    tv$counts <- sc
+    sanitized.hist[["Bounded"]] <- tv
+
     sc <- sanitized.counts$Unbounded;
     if (!allow.negative) sc[sc<0] <- 0;
     if (normalize) {
@@ -542,9 +545,20 @@ histogramDP <- function(x, eps, breaks="Sturges", normalize=FALSE,
     }
     tv$counts <- sc;
     sanitized.hist[["Unbounded"]] <- tv;
+
+    class(sanitized.hist)<-"Sanitized Histogram";
+  } else{
+    sc <- sanitized.counts
+    if (!allow.negative) sc[sc<0] <- 0
+    if (normalize) {
+      sc <- sc/sum(sc)
+    } else{
+      sc <- round(sc)
+    }
+    tv$counts <- sc
+    sanitized.hist <- tv
   }
 
-  class(sanitized.hist)<-"Sanitized Histogram";
   return(sanitized.hist);
   ##########
 }
@@ -580,8 +594,8 @@ histogramDP <- function(x, eps, breaks="Sturges", normalize=FALSE,
 #' @param allow.negative Logical value. If FALSE (default), any negative values
 #'   in the sanitized table due to the added noise will be set to 0. If TRUE,
 #'   the negative values (if any) will be returned.
-#' @return A list of the sanitized contingency tables based on the bounded
-#'   and/or unbounded definitions of differential privacy.
+#' @return Sanitized contingency table(s) based on the bounded and/or unbounded
+#'   definitions of differential privacy.
 #' @examples
 #' x <- MASS::Cars93$Type;
 #' y <- MASS::Cars93$Origin;
@@ -635,26 +649,33 @@ tableDP <- function(..., eps, which.sensitivity='bounded', mechanism='Laplace',
   ##########
 
   ########## Postprocessing layer
-  # Unflatten and round tables
-  sanitized.table <- list();
-  if (!is.null(sanitized.tables$Bounded)){
+  if (which.sensitivity=='both'){
+    sanitized.table <- list()
+
+    # Unflatten and round tables
     bounded.table <- sanitized.tables$Bounded;
     dim(bounded.table) <- dims;
     bounded.table <- named.table + bounded.table;
     bounded.table <- round(bounded.table);
     if (!allow.negative) bounded.table[bounded.table<0] <- 0;
     sanitized.table[["Bounded"]] <- bounded.table;
-  }
-  if (!is.null(sanitized.tables$Unbounded)){
+
     unbounded.table <- sanitized.tables$Unbounded;
     dim(unbounded.table) <- dims;
     unbounded.table <- named.table + unbounded.table;
     unbounded.table <- round(unbounded.table);
     if (!allow.negative) unbounded.table[unbounded.table<0] <- 0;
     sanitized.table[["Unbounded"]] <- unbounded.table;
+
+    class(sanitized.table)<-"Sanitized Contingency Table";
+  } else{
+    dim(sanitized.tables) <- dims;
+    sanitized.tables <- named.table + sanitized.tables;
+    sanitized.tables <- round(sanitized.tables);
+    if (!allow.negative) sanitized.tables[sanitized.tables<0] <- 0;
+    sanitized.table <- sanitized.tables;
   }
 
-  class(sanitized.table)<-"Sanitized Contingency Table";
   return(sanitized.table);
   ##########
 }
@@ -696,8 +717,8 @@ tableDP <- function(..., eps, which.sensitivity='bounded', mechanism='Laplace',
 #'   global sensitivity based on the upper and lower bounds of the data
 #'   \insertCite{Liu2019b}{DPpack}. Approximation is best if n.max is very
 #'   large.
-#' @return A list of the sanitized pooled variances based on the bounded and/or
-#'   unbounded definitions of differential privacy.
+#' @return Sanitized pooled variance(s) based on the bounded and/or unbounded
+#'   definitions of differential privacy.
 #' @examples
 #' pooledVarDP(c(1,4,-2,8,-6),c(1,2),c(-5,-7),eps=1,lower.bound=-10,
 #'   upper.bound=10,which.sensitivity='bounded',mechanism='Laplace')
@@ -707,13 +728,13 @@ tableDP <- function(..., eps, which.sensitivity='bounded', mechanism='Laplace',
 #'
 #' @references \insertRef{Dwork2006a}{DPpack}
 #'
-#' \insertRef{Kifer2011}{DPpack}
+#'   \insertRef{Kifer2011}{DPpack}
 #'
-#' \insertRef{Liu2019a}{DPpack}
+#'   \insertRef{Liu2019a}{DPpack}
 #'
-#' \insertRef{DPtextbook}{DPpack}
+#'   \insertRef{DPtextbook}{DPpack}
 #'
-#' \insertRef{Liu2019b}{DPpack}
+#'   \insertRef{Liu2019b}{DPpack}
 #'
 #' @export
 pooledVarDP <- function(..., eps=1, lower.bound, upper.bound,
@@ -750,25 +771,29 @@ pooledVarDP <- function(..., eps=1, lower.bound, upper.bound,
   if (mechanism=='Laplace'){
     while (TRUE){ # Make sure variance is > 0 after noise
       sanitized.vars <- LaplaceMechanism(tv,eps,bs,us,which.sensitivity);
-      done = TRUE;
-      if (!is.null(sanitized.vars$Bounded) && any(sanitized.vars$Bounded<=0)) done=FALSE;
-      if (!is.null(sanitized.vars$Unbounded) && any(sanitized.vars$Unbounded<=0)) done=FALSE;
+      done <- TRUE
+      if (which.sensitivity=='both'){
+        if (any(sanitized.vars$Bounded<=0)) done <- FALSE
+        if (any(sanitized.vars$Unbounded<=0)) done <- FALSE
+      } else if (any(sanitized.vars<=0)) done <- FALSE
       if (done) break;
     }
   } else if (mechanism=='Gaussian'){
     while (TRUE){ # Make sure variance is > 0 after noise
       sanitized.vars <- GaussianMechanism(tv,eps,delta,bs,us,which.sensitivity,
                                           type.DP);
-      done = TRUE;
-      if (!is.null(sanitized.vars$Bounded) && any(sanitized.vars$Bounded<=0)) done=FALSE;
-      if (!is.null(sanitized.vars$Unbounded) && any(sanitized.vars$Unbounded<=0)) done=FALSE;
+      done <- TRUE
+      if (which.sensitivity=='both'){
+        if (any(sanitized.vars$Bounded<=0)) done <- FALSE
+        if (any(sanitized.vars$Unbounded<=0)) done <- FALSE
+      } else if (any(sanitized.vars<=0)) done <- FALSE
       if (done) break;
     }
   }
   ##########
 
   ########## Postprocessing layer
-  class(sanitized.vars)<-"Sanitized Pooled Variance";
+  if (which.sensitivity=='both') class(sanitized.vars)<-"Sanitized Pooled Variance";
   return(sanitized.vars);
   ##########
 }
@@ -814,8 +839,8 @@ pooledVarDP <- function(..., eps=1, lower.bound, upper.bound,
 #'   global sensitivity based on the upper and lower bounds of the data
 #'   \insertCite{Liu2019b}{DPpack}. Approximation is best if n.max is very
 #'   large.
-#' @return A list of the sanitized pooled covariances based on the bounded
-#'   and/or unbounded definitions of differential privacy.
+#' @return Sanitized pooled covariance(s) based on the bounded and/or unbounded
+#'   definitions of differential privacy.
 #' @examples
 #' x1 <- matrix(c(1,4,-2,8,-6,-3),ncol=2)
 #' x2 <- matrix(c(1,2,-5,7),ncol=2)
@@ -883,7 +908,7 @@ pooledCovDP <- function(..., eps=1, lower.bound1, upper.bound1, lower.bound2,
   ##########
 
   ########## Postprocessing layer
-  class(sanitized.cov)<-"Sanitized Pooled Covariance";
+  if (which.sensitivity=='both') class(sanitized.cov)<-"Sanitized Pooled Covariance";
   return(sanitized.cov);
   ##########
 }
@@ -911,8 +936,8 @@ pooledCovDP <- function(..., eps=1, lower.bound1, upper.bound1, lower.bound2,
 #'   privacy. Currently the following mechanisms are supported: {'exponential'}.
 #'   See \code{\link{ExponentialMechanism}} for a description of the supported
 #'   mechanisms.
-#' @return A list of the sanitized quantiles based on the bounded and/or
-#'   unbounded definitions of differential privacy.
+#' @return Sanitized quantile(s) based on the bounded and/or unbounded
+#'   definitions of differential privacy.
 #' @examples
 #' quantileDP(c(1,1,-2,8,-6),.25,1,lower.bound=-10,upper.bound=10,
 #'   which.sensitivity='bounded',mechanism='exponential')
@@ -960,24 +985,29 @@ quantileDP <- function (x, quant, eps, lower.bound, upper.bound,
     sanitized.indices <- ExponentialMechanism(utility, eps, bs, us,
                                               which.sensitivity,
                                               measure=diff(sorted));
-    sanitized.quantile <- list();
-    if (!is.null(sanitized.indices$Bounded)){
+
+    if (which.sensitivity=='both'){
+      sanitized.quantile <- list();
+
       bounded.idx <- sanitized.indices$Bounded;
       bounded.sanitized <- runif(1)*(sorted[bounded.idx+1]-sorted[bounded.idx]) +
         sorted[bounded.idx];
       sanitized.quantile[["Bounded"]] <- bounded.sanitized;
-    }
-    if (!is.null(sanitized.indices$Unbounded)){
+
       unbounded.idx <- sanitized.indices$Unbounded;
       unbounded.sanitized <- runif(1)*(sorted[unbounded.idx+1]-sorted[unbounded.idx]) +
         sorted[unbounded.idx];
       sanitized.quantile[["Unbounded"]] <- unbounded.sanitized;
+
+      class(sanitized.quantile)<-"Sanitized Quantile";
+    } else{
+      sanitized.quantile <- runif(1)*(sorted[sanitized.indices+1]-sorted[sanitized.indices]) +
+        sorted[sanitized.indices]
     }
   }
   ##########
 
   ########## Postprocessing layer
-  class(sanitized.quantile)<-"Sanitized Quantile";
   return(sanitized.quantile);
   ##########
 }
@@ -1004,8 +1034,8 @@ quantileDP <- function (x, quant, eps, lower.bound, upper.bound,
 #'   privacy. Currently the following mechanisms are supported: {'exponential'}.
 #'   See \code{\link{ExponentialMechanism}} for a description of the supported
 #'   mechanisms.
-#' @return A list of the sanitized medians based on the bounded and/or unbounded
-#'   definitions of differential privacy.
+#' @return Sanitized median(s) based on the bounded and/or unbounded definitions
+#'   of differential privacy.
 #' @examples
 #' medianDP(c(1,1,-2,8,-6),1,lower.bound=-10,upper.bound=10,
 #'   which.sensitivity='bounded',mechanism='exponential')
@@ -1022,8 +1052,8 @@ quantileDP <- function (x, quant, eps, lower.bound, upper.bound,
 medianDP <- function (x, eps, lower.bound, upper.bound,
                       which.sensitivity='bounded', mechanism='exponential'){
   sanitized.median <- quantileDP(x,.5,eps,lower.bound,upper.bound,
-                                 which.sensitivity,mechanism);
-  class(sanitized.median)<-"Sanitized Median";
+                                 which.sensitivity,mechanism)
+  if (which.sensitivity=='both') class(sanitized.median)<-"Sanitized Median"
   return(sanitized.median);
   ##########
 }

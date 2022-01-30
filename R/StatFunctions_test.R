@@ -70,7 +70,7 @@ test_meanDP <- function(){
   n = 10000;
   data <- numeric(n);
   for (i in 1:n){
-    data[i] <- meanDP(x, eps, lb, ub, ws, mech, delta, tdp, ap)$Bounded
+    data[i] <- meanDP(x, eps, lb, ub, ws, mech, delta, tdp, ap)
   }
 
   tv = mean(x)
@@ -92,7 +92,7 @@ test_meanDP <- function(){
   n = 10000;
   data <- numeric(n);
   for (i in 1:n){
-    data[i] <- meanDP(x, eps, lb, ub, ws, mech, delta, tdp, ap)$Unbounded
+    data[i] <- meanDP(x, eps, lb, ub, ws, mech, delta, tdp, ap)
   }
 
   tv = mean(x)
@@ -114,7 +114,7 @@ test_meanDP <- function(){
   n = 10000;
   data <- numeric(n);
   for (i in 1:n){
-    data[i] <- meanDP(x, eps, lb, ub, ws, mech, delta, tdp, ap)$Bounded
+    data[i] <- meanDP(x, eps, lb, ub, ws, mech, delta, tdp, ap)
   }
 
   tv = mean(x)
@@ -136,7 +136,7 @@ test_meanDP <- function(){
   n = 10000;
   data <- numeric(n);
   for (i in 1:n){
-    data[i] <- meanDP(x, eps, lb, ub, ws, mech, delta, tdp, ap)$Bounded
+    data[i] <- meanDP(x, eps, lb, ub, ws, mech, delta, tdp, ap)
   }
 
   tv = mean(x)
@@ -158,7 +158,7 @@ test_meanDP <- function(){
   n = 10000;
   data <- numeric(n);
   for (i in 1:n){
-    data[i] <- meanDP(x, eps, lb, ub, ws, mech, delta, tdp, ap)$Bounded
+    data[i] <- meanDP(x, eps, lb, ub, ws, mech, delta, tdp, ap)
   }
 
   tv = mean(x)
@@ -180,7 +180,7 @@ test_meanDP <- function(){
   n = 10000;
   data <- numeric(n);
   for (i in 1:n){
-    data[i] <- meanDP(x, eps, lb, ub, ws, mech, delta, tdp, ap)$Bounded
+    data[i] <- meanDP(x, eps, lb, ub, ws, mech, delta, tdp, ap)
   }
 
   tv = mean(x)
@@ -261,7 +261,7 @@ test_varDP <- function(){
   n = 10000;
   data <- numeric(n);
   for (i in 1:n){
-    data[i] <- varDP(x, eps, lb, ub, ws, mech, delta, tdp, ap)$Bounded
+    data[i] <- varDP(x, eps, lb, ub, ws, mech, delta, tdp, ap)
   }
 
   tv = var(x)
@@ -283,7 +283,7 @@ test_varDP <- function(){
   n = 10000;
   data <- numeric(n);
   for (i in 1:n){
-    data[i] <- varDP(x, eps, lb, ub, ws, mech, delta, tdp, ap)$Unbounded
+    data[i] <- varDP(x, eps, lb, ub, ws, mech, delta, tdp, ap)
   }
 
   tv = var(x)
@@ -305,7 +305,7 @@ test_varDP <- function(){
   n = 10000;
   data <- numeric(n);
   for (i in 1:n){
-    data[i] <- varDP(x, eps, lb, ub, ws, mech, delta, tdp, ap)$Bounded
+    data[i] <- varDP(x, eps, lb, ub, ws, mech, delta, tdp, ap)
   }
 
   tv = var(x)
@@ -327,7 +327,7 @@ test_varDP <- function(){
   n = 10000;
   data <- numeric(n);
   for (i in 1:n){
-    data[i] <- varDP(x, eps, lb, ub, ws, mech, delta, tdp, ap)$Bounded
+    data[i] <- varDP(x, eps, lb, ub, ws, mech, delta, tdp, ap)
   }
 
   tv = var(x)
@@ -349,7 +349,7 @@ test_varDP <- function(){
   n = 10000;
   data <- numeric(n);
   for (i in 1:n){
-    data[i] <- varDP(x, eps, lb, ub, ws, mech, delta, tdp, ap)$Bounded
+    data[i] <- varDP(x, eps, lb, ub, ws, mech, delta, tdp, ap)
   }
 
   tv = var(x)
@@ -371,7 +371,7 @@ test_varDP <- function(){
   n = 10000;
   data <- numeric(n);
   for (i in 1:n){
-    data[i] <- varDP(x, eps, lb, ub, ws, mech, delta, tdp, ap)$Bounded
+    data[i] <- varDP(x, eps, lb, ub, ws, mech, delta, tdp, ap)
   }
 
   tv = var(x)
@@ -452,7 +452,7 @@ test_sdDP <- function(){
   n = 10000;
   data <- numeric(n);
   for (i in 1:n){
-    data[i] <- sdDP(x, eps, lb, ub, ws, mech, delta, tdp, ap)$Bounded
+    data[i] <- sdDP(x, eps, lb, ub, ws, mech, delta, tdp, ap)
   }
 
   tv = sd(x)
@@ -474,7 +474,7 @@ test_sdDP <- function(){
   n = 10000;
   data <- numeric(n);
   for (i in 1:n){
-    data[i] <- sdDP(x, eps, lb, ub, ws, mech, delta, tdp, ap)$Unbounded
+    data[i] <- sdDP(x, eps, lb, ub, ws, mech, delta, tdp, ap)
   }
 
   tv = sd(x)
@@ -496,7 +496,7 @@ test_sdDP <- function(){
   n = 10000;
   data <- numeric(n);
   for (i in 1:n){
-    data[i] <- sdDP(x, eps, lb, ub, ws, mech, delta, tdp, ap)$Bounded
+    data[i] <- sdDP(x, eps, lb, ub, ws, mech, delta, tdp, ap)
   }
 
   tv = sd(x)
@@ -518,7 +518,7 @@ test_sdDP <- function(){
   n = 10000;
   data <- numeric(n);
   for (i in 1:n){
-    data[i] <- sdDP(x, eps, lb, ub, ws, mech, delta, tdp, ap)$Bounded
+    data[i] <- sdDP(x, eps, lb, ub, ws, mech, delta, tdp, ap)
   }
 
   tv = sd(x)
@@ -540,7 +540,7 @@ test_sdDP <- function(){
   n = 10000;
   data <- numeric(n);
   for (i in 1:n){
-    data[i] <- sdDP(x, eps, lb, ub, ws, mech, delta, tdp, ap)$Bounded
+    data[i] <- sdDP(x, eps, lb, ub, ws, mech, delta, tdp, ap)
   }
 
   tv = sd(x)
@@ -562,7 +562,7 @@ test_sdDP <- function(){
   n = 10000;
   data <- numeric(n);
   for (i in 1:n){
-    data[i] <- sdDP(x, eps, lb, ub, ws, mech, delta, tdp, ap)$Bounded
+    data[i] <- sdDP(x, eps, lb, ub, ws, mech, delta, tdp, ap)
   }
 
   tv = sd(x)
@@ -635,7 +635,7 @@ test_covDP <- function(){
   n = 10000;
   data <- numeric(n);
   for (i in 1:n){
-    data[i] <- covDP(x1, x2, eps, lb1, ub1, lb2, ub2, ws, mech, delta, tdp)$Bounded
+    data[i] <- covDP(x1, x2, eps, lb1, ub1, lb2, ub2, ws, mech, delta, tdp)
   }
 
   tv = cov(x1,x2)
@@ -660,7 +660,7 @@ test_covDP <- function(){
   n = 10000;
   data <- numeric(n);
   for (i in 1:n){
-    data[i] <- covDP(x1, x2, eps, lb1, ub1, lb2, ub2, ws, mech, delta, tdp)$Unbounded
+    data[i] <- covDP(x1, x2, eps, lb1, ub1, lb2, ub2, ws, mech, delta, tdp)
   }
 
   tv = cov(x1,x2)
@@ -685,7 +685,7 @@ test_covDP <- function(){
   n = 10000;
   data <- numeric(n);
   for (i in 1:n){
-    data[i] <- covDP(x1, x2, eps, lb1, ub1, lb2, ub2, ws, mech, delta, tdp)$Bounded
+    data[i] <- covDP(x1, x2, eps, lb1, ub1, lb2, ub2, ws, mech, delta, tdp)
   }
 
   tv = cov(x1,x2)
@@ -710,7 +710,7 @@ test_covDP <- function(){
   n = 10000;
   data <- numeric(n);
   for (i in 1:n){
-    data[i] <- covDP(x1, x2, eps, lb1, ub1, lb2, ub2, ws, mech, delta, tdp)$Bounded
+    data[i] <- covDP(x1, x2, eps, lb1, ub1, lb2, ub2, ws, mech, delta, tdp)
   }
 
   tv = cov(x1,x2)
@@ -735,7 +735,7 @@ test_covDP <- function(){
   n = 10000;
   data <- numeric(n);
   for (i in 1:n){
-    data[i] <- covDP(x1, x2, eps, lb1, ub1, lb2, ub2, ws, mech, delta, tdp)$Bounded
+    data[i] <- covDP(x1, x2, eps, lb1, ub1, lb2, ub2, ws, mech, delta, tdp)
   }
 
   tv = cov(x1,x2)
@@ -760,7 +760,7 @@ test_covDP <- function(){
   n = 10000;
   data <- numeric(n);
   for (i in 1:n){
-    data[i] <- covDP(x1, x2, eps, lb1, ub1, lb2, ub2, ws, mech, delta, tdp)$Bounded
+    data[i] <- covDP(x1, x2, eps, lb1, ub1, lb2, ub2, ws, mech, delta, tdp)
   }
 
   tv = cov(x1,x2)
@@ -806,7 +806,7 @@ test_histogramDP <- function(){
   tdp = 'pDP'
   an = FALSE;
 
-  result <- histogramDP(x, eps, "Sturges",normal, ws, mech, delta, tdp, an)$Bounded
+  result <- histogramDP(x, eps, "Sturges",normal, ws, mech, delta, tdp, an)
 
   par(mfrow=c(1,2))
   plot(result,main="Simple bounded Laplace");
@@ -824,7 +824,7 @@ test_histogramDP <- function(){
   tdp = 'pDP'
   an = FALSE;
 
-  result <- histogramDP(x, eps, "Sturges",normal, ws, mech, delta, tdp, an)$Unbounded
+  result <- histogramDP(x, eps, "Sturges",normal, ws, mech, delta, tdp, an)
 
   par(mfrow=c(1,2))
   plot(result,main="Simple unbounded Laplace");
@@ -842,7 +842,7 @@ test_histogramDP <- function(){
   tdp = 'pDP'
   an = FALSE;
 
-  result <- histogramDP(x, eps, "Sturges",normal, ws, mech, delta, tdp, an)$Bounded
+  result <- histogramDP(x, eps, "Sturges",normal, ws, mech, delta, tdp, an)
 
   par(mfrow=c(1,2))
   plot(result,main="Gaussian pDP");
@@ -860,7 +860,7 @@ test_histogramDP <- function(){
   tdp = 'aDP'
   an = FALSE;
 
-  result <- histogramDP(x, eps, "Sturges",normal, ws, mech, delta, tdp, an)$Bounded
+  result <- histogramDP(x, eps, "Sturges",normal, ws, mech, delta, tdp, an)
 
   par(mfrow=c(1,2))
   plot(result,main="Gaussian aDP");
@@ -878,7 +878,7 @@ test_histogramDP <- function(){
   tdp = 'pDP'
   an = FALSE;
 
-  result <- histogramDP(x, eps, "Sturges",normal, ws, mech, delta, tdp, an)$Bounded
+  result <- histogramDP(x, eps, "Sturges",normal, ws, mech, delta, tdp, an)
 
   par(mfrow=c(1,2))
   plot(result,main="Normalized");
@@ -896,7 +896,7 @@ test_histogramDP <- function(){
   tdp = 'pDP'
   an = TRUE;
 
-  result <- histogramDP(x, eps, "Sturges",normal, ws, mech, delta, tdp, an)$Bounded
+  result <- histogramDP(x, eps, "Sturges",normal, ws, mech, delta, tdp, an)
 
   par(mfrow=c(1,2))
   plot(result,main="Allow Negative");
@@ -948,7 +948,7 @@ test_tableDP <- function(){
   print(table(x,y))
   print("Sanitized:")
   print(tableDP(x,y,eps=eps,which.sensitivity=ws,mechanism=mech,delta=delta,
-                type.DP=tdp,allow.negative=an)$Bounded);
+                type.DP=tdp,allow.negative=an));
   Sys.sleep(5)
 
   print("         Simple unbounded Laplace:")
@@ -966,7 +966,7 @@ test_tableDP <- function(){
   print(table(x,y))
   print("Sanitized:")
   print(tableDP(x,y,eps=eps,which.sensitivity=ws,mechanism=mech,delta=delta,
-                type.DP=tdp,allow.negative=an)$Unbounded);
+                type.DP=tdp,allow.negative=an));
   Sys.sleep(5)
 
   print("         Gaussian pDP:")
@@ -984,7 +984,7 @@ test_tableDP <- function(){
   print(table(x,y))
   print("Sanitized:")
   print(tableDP(x,y,eps=eps,which.sensitivity=ws,mechanism=mech,delta=delta,
-                type.DP=tdp,allow.negative=an)$Bounded);
+                type.DP=tdp,allow.negative=an));
   Sys.sleep(5)
 
   print("         Gaussian aDP:")
@@ -1002,7 +1002,7 @@ test_tableDP <- function(){
   print(table(x,y))
   print("Sanitized:")
   print(tableDP(x,y,eps=eps,which.sensitivity=ws,mechanism=mech,delta=delta,
-                type.DP=tdp,allow.negative=an)$Bounded);
+                type.DP=tdp,allow.negative=an));
   Sys.sleep(5)
 
   print("         Allow Negative:")
@@ -1020,7 +1020,7 @@ test_tableDP <- function(){
   print(table(x,y))
   print("Sanitized:")
   print(tableDP(x,y,eps=eps,which.sensitivity=ws,mechanism=mech,delta=delta,
-                type.DP=tdp,allow.negative=an)$Bounded);
+                type.DP=tdp,allow.negative=an));
   Sys.sleep(5)
 
   print("         More than 2 inputs:")
@@ -1039,7 +1039,7 @@ test_tableDP <- function(){
   print(table(x,y,z))
   print("Sanitized:")
   print(tableDP(x,y,z,eps=eps,which.sensitivity=ws,mechanism=mech,delta=delta,
-                type.DP=tdp,allow.negative=an)$Bounded);
+                type.DP=tdp,allow.negative=an));
   Sys.sleep(5)
 
   ### END TEST FUNCTIONALITY ###
@@ -1111,7 +1111,7 @@ test_pooledVarDP <- function(){
     data[i] <- pooledVarDP(x,y,z, eps=eps,
                            lower.bound=lb, upper.bound=ub, which.sensitivity=ws,
                            mechanism=mech, delta=delta, type.DP=tdp,
-                           approx.n.max=anm)$Bounded
+                           approx.n.max=anm)
   }
 
   tv = ((n1-1)*var(x) + (n2-1)*var(y) + (n3-1)*var(z))/(n1+n2+n3-3);
@@ -1141,7 +1141,7 @@ test_pooledVarDP <- function(){
     data[i] <- pooledVarDP(x,y,z, eps=eps,
                            lower.bound=lb, upper.bound=ub, which.sensitivity=ws,
                            mechanism=mech, delta=delta, type.DP=tdp,
-                           approx.n.max=anm)$Unbounded
+                           approx.n.max=anm)
   }
 
   tv = ((n1-1)*var(x) + (n2-1)*var(y) + (n3-1)*var(z))/(n1+n2+n3-3);
@@ -1171,7 +1171,7 @@ test_pooledVarDP <- function(){
     data[i] <- pooledVarDP(x,y,z, eps=eps,
                            lower.bound=lb, upper.bound=ub, which.sensitivity=ws,
                            mechanism=mech, delta=delta, type.DP=tdp,
-                           approx.n.max=anm)$Bounded
+                           approx.n.max=anm)
   }
 
   tv = ((n1-1)*var(x) + (n2-1)*var(y) + (n3-1)*var(z))/(n1+n2+n3-3);
@@ -1201,7 +1201,7 @@ test_pooledVarDP <- function(){
     data[i] <- pooledVarDP(x,y,z, eps=eps,
                            lower.bound=lb, upper.bound=ub, which.sensitivity=ws,
                            mechanism=mech, delta=delta, type.DP=tdp,
-                           approx.n.max=anm)$Bounded
+                           approx.n.max=anm)
   }
 
   tv = ((n1-1)*var(x) + (n2-1)*var(y) + (n3-1)*var(z))/(n1+n2+n3-3);
@@ -1231,7 +1231,7 @@ test_pooledVarDP <- function(){
     data[i] <- pooledVarDP(x,y,z, eps=eps,
                            lower.bound=lb, upper.bound=ub, which.sensitivity=ws,
                            mechanism=mech, delta=delta, type.DP=tdp,
-                           approx.n.max=anm)$Bounded
+                           approx.n.max=anm)
   }
 
   tv = ((n1-1)*var(x) + (n2-1)*var(y) + (n3-1)*var(z))/(n1+n2+n3-3);
@@ -1261,7 +1261,7 @@ test_pooledVarDP <- function(){
     data[i] <- pooledVarDP(x,y,z, eps=eps,
                            lower.bound=lb, upper.bound=ub, which.sensitivity=ws,
                            mechanism=mech, delta=delta, type.DP=tdp,
-                           approx.n.max=anm)$Bounded
+                           approx.n.max=anm)
   }
 
   tv = ((n1-1)*var(x) + (n2-1)*var(y) + (n3-1)*var(z))/(n1+n2+n3-3);
@@ -1291,7 +1291,7 @@ test_pooledVarDP <- function(){
     data[i] <- pooledVarDP(x,y,z, eps=eps,
                            lower.bound=lb, upper.bound=ub, which.sensitivity=ws,
                            mechanism=mech, delta=delta, type.DP=tdp,
-                           approx.n.max=anm)$Bounded
+                           approx.n.max=anm)
   }
 
   tv = ((n1-1)*var(x) + (n2-1)*var(y) + (n3-1)*var(z))/(n1+n2+n3-3);
@@ -1381,7 +1381,7 @@ test_pooledCovDP <- function(){
                            lower.bound1=lb1, upper.bound1=ub1,
                            lower.bound2=lb2, upper.bound2=ub2,
                            which.sensitivity=ws, mechanism=mech, delta=delta,
-                           type.DP=tdp, approx.n.max=anm)$Bounded
+                           type.DP=tdp, approx.n.max=anm)
   }
 
   tv = ((n1-1)*cov(x[,1],x[,2])+(n2-1)*cov(y[,1],y[,2])+(n3-1)*cov(z[,1],z[,2]))/
@@ -1415,7 +1415,7 @@ test_pooledCovDP <- function(){
                            lower.bound1=lb1, upper.bound1=ub1,
                            lower.bound2=lb2, upper.bound2=ub2,
                            which.sensitivity=ws, mechanism=mech, delta=delta, type.DP=tdp,
-                           approx.n.max=anm)$Unbounded
+                           approx.n.max=anm)
   }
 
   tv = ((n1-1)*cov(x[,1],x[,2])+(n2-1)*cov(y[,1],y[,2])+(n3-1)*cov(z[,1],z[,2]))/
@@ -1449,7 +1449,7 @@ test_pooledCovDP <- function(){
                            lower.bound1=lb1, upper.bound1=ub1,
                            lower.bound2=lb2, upper.bound2=ub2,
                            which.sensitivity=ws, mechanism=mech, delta=delta, type.DP=tdp,
-                           approx.n.max=anm)$Bounded
+                           approx.n.max=anm)
   }
 
   tv = ((n1-1)*cov(x[,1],x[,2])+(n2-1)*cov(y[,1],y[,2])+(n3-1)*cov(z[,1],z[,2]))/
@@ -1483,7 +1483,7 @@ test_pooledCovDP <- function(){
                            lower.bound1=lb1, upper.bound1=ub1,
                            lower.bound2=lb2, upper.bound2=ub2,
                            which.sensitivity=ws, mechanism=mech, delta=delta, type.DP=tdp,
-                           approx.n.max=anm)$Bounded
+                           approx.n.max=anm)
   }
 
   tv = ((n1-1)*cov(x[,1],x[,2])+(n2-1)*cov(y[,1],y[,2])+(n3-1)*cov(z[,1],z[,2]))/
@@ -1517,7 +1517,7 @@ test_pooledCovDP <- function(){
                            lower.bound1=lb1, upper.bound1=ub1,
                            lower.bound2=lb2, upper.bound2=ub2,
                            which.sensitivity=ws, mechanism=mech, delta=delta, type.DP=tdp,
-                           approx.n.max=anm)$Bounded
+                           approx.n.max=anm)
   }
 
   tv = ((n1-1)*cov(x[,1],x[,2])+(n2-1)*cov(y[,1],y[,2])+(n3-1)*cov(z[,1],z[,2]))/
@@ -1551,7 +1551,7 @@ test_pooledCovDP <- function(){
                            lower.bound1=lb1, upper.bound1=ub1,
                            lower.bound2=lb2, upper.bound2=ub2,
                            which.sensitivity=ws, mechanism=mech, delta=delta, type.DP=tdp,
-                           approx.n.max=anm)$Bounded
+                           approx.n.max=anm)
   }
 
   tv = ((n1-1)*cov(x[,1],x[,2])+(n2-1)*cov(y[,1],y[,2])+(n3-1)*cov(z[,1],z[,2]))/
@@ -1585,7 +1585,7 @@ test_pooledCovDP <- function(){
                            lower.bound1=lb1, upper.bound1=ub1,
                            lower.bound2=lb2, upper.bound2=ub2,
                            which.sensitivity=ws, mechanism=mech, delta=delta, type.DP=tdp,
-                           approx.n.max=anm)$Bounded
+                           approx.n.max=anm)
   }
 
   tv = ((n1-1)*cov(x[,1],x[,2])+(n2-1)*cov(y[,1],y[,2])+(n3-1)*cov(z[,1],z[,2]))/
@@ -1657,7 +1657,7 @@ test_quantileDP <- function(){
   n = 10000;
   data <- numeric(n);
   for (i in 1:n){
-    data[i] <- quantileDP(x, quant, eps, lb, ub, ws, mech)$Bounded
+    data[i] <- quantileDP(x, quant, eps, lb, ub, ws, mech)
   }
 
   tv = quantile(x,quant)
@@ -1677,7 +1677,7 @@ test_quantileDP <- function(){
   n = 10000;
   data <- numeric(n);
   for (i in 1:n){
-    data[i] <- quantileDP(x, quant, eps, lb, ub, ws, mech)$Unbounded
+    data[i] <- quantileDP(x, quant, eps, lb, ub, ws, mech)
   }
 
   tv = quantile(x,quant)
@@ -1697,7 +1697,7 @@ test_quantileDP <- function(){
   n = 10000;
   data <- numeric(n);
   for (i in 1:n){
-    data[i] <- quantileDP(x, quant, eps, lb, ub, ws, mech)$Bounded
+    data[i] <- quantileDP(x, quant, eps, lb, ub, ws, mech)
   }
 
   tv = quantile(x,quant)
@@ -1717,7 +1717,7 @@ test_quantileDP <- function(){
   n = 10000;
   data <- numeric(n);
   for (i in 1:n){
-    data[i] <- quantileDP(x, quant, eps, lb, ub, ws, mech)$Bounded
+    data[i] <- quantileDP(x, quant, eps, lb, ub, ws, mech)
   }
 
   tv = quantile(x,quant)
@@ -1737,7 +1737,7 @@ test_quantileDP <- function(){
   n = 10000;
   data <- numeric(n);
   for (i in 1:n){
-    data[i] <- quantileDP(x, quant, eps, lb, ub, ws, mech)$Bounded
+    data[i] <- quantileDP(x, quant, eps, lb, ub, ws, mech)
   }
 
   tv = quantile(x,quant)
@@ -1757,7 +1757,7 @@ test_quantileDP <- function(){
   n = 10000;
   data <- numeric(n);
   for (i in 1:n){
-    data[i] <- quantileDP(x, quant, eps, lb, ub, ws, mech)$Bounded
+    data[i] <- quantileDP(x, quant, eps, lb, ub, ws, mech)
   }
 
   tv = quantile(x,quant)
@@ -1777,7 +1777,7 @@ test_quantileDP <- function(){
   n = 10000;
   data <- numeric(n);
   for (i in 1:n){
-    data[i] <- quantileDP(x, quant, eps, lb, ub, ws, mech)$Bounded
+    data[i] <- quantileDP(x, quant, eps, lb, ub, ws, mech)
   }
 
   tv = quantile(x,quant)
@@ -1813,7 +1813,7 @@ test_medianDP <- function(){
   n = 10000;
   data <- numeric(n);
   for (i in 1:n){
-    data[i] <- medianDP(x, eps, lb, ub, ws, mech)$Bounded
+    data[i] <- medianDP(x, eps, lb, ub, ws, mech)
   }
 
   tv = median(x)

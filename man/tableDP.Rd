@@ -49,8 +49,8 @@ in the sanitized table due to the added noise will be set to 0. If TRUE,
 the negative values (if any) will be returned.}
 }
 \value{
-A list of the sanitized contingency tables based on the bounded
-and/or unbounded definitions of differential privacy.
+Sanitized contingency table(s) based on the bounded and/or unbounded
+definitions of differential privacy.
 }
 \description{
 This function computes a differentially private contingency table from given

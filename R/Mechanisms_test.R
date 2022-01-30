@@ -1,12 +1,11 @@
 library(ggplot2)
 library(rmutil)
-cur.dir <- '~/Desktop/DP Research/DP R Package/DPpack/R/';
 
 test_Laplace <- function(){
   #
   #
   #
-  source(paste(cur.dir,'Mechanisms.R',sep=""))
+  # source(paste(cur.dir,'Mechanisms.R',sep=""))
 
   ### Test input ###
   print("         No input:")
@@ -108,7 +107,7 @@ test_Laplace <- function(){
   n = 10000;
   data = numeric(n);
   for (i in 1:n){
-    data[i] = LaplaceMechanism(tv,eps,bs,us,ws,ap)$Bounded;
+    data[i] = LaplaceMechanism(tv,eps,bs,us,ws,ap);
   }
   hist(data,freq=FALSE,main="Simple bounded");
   x = seq(tv-5*th.s, tv+5*th.s,.1);
@@ -127,7 +126,7 @@ test_Laplace <- function(){
   n = 10000;
   data = numeric(n);
   for (i in 1:n){
-    data[i] = LaplaceMechanism(tv,eps,bs,us,ws,ap)$Unbounded;
+    data[i] = LaplaceMechanism(tv,eps,bs,us,ws,ap);
   }
   hist(data,freq=FALSE,main="Simple unbounded");
   x = seq(tv-5*th.s, tv+5*th.s,.1);
@@ -175,7 +174,7 @@ test_Laplace <- function(){
   n = 10000;
   data = numeric(n);
   for (i in 1:n){
-    data[i] = LaplaceMechanism(tv,eps,bs,us,ws,ap)$Bounded;
+    data[i] = LaplaceMechanism(tv,eps,bs,us,ws,ap);
   }
   hist(data,freq=FALSE,main="Changing true.values");
   x = seq(tv-5*th.s, tv+5*th.s,.1);
@@ -194,7 +193,7 @@ test_Laplace <- function(){
   n = 10000;
   data = numeric(n);
   for (i in 1:n){
-    data[i] = LaplaceMechanism(tv,eps,bs,us,ws,ap)$Bounded;
+    data[i] = LaplaceMechanism(tv,eps,bs,us,ws,ap);
   }
   hist(data,freq=FALSE,main="Changing true.values/epsilon");
   x = seq(tv-5*th.s, tv+5*th.s,.1);
@@ -213,7 +212,7 @@ test_Laplace <- function(){
   n = 10000;
   data = numeric(n);
   for (i in 1:n){
-    data[i] = LaplaceMechanism(tv,eps,bs,us,ws,ap)$Bounded;
+    data[i] = LaplaceMechanism(tv,eps,bs,us,ws,ap);
   }
   hist(data,freq=FALSE,main="Changing epsilon/bounded.sensitivity");
   x = seq(tv-5*th.s, tv+5*th.s,.1);
@@ -232,7 +231,7 @@ test_Laplace <- function(){
   n = 10000;
   data = numeric(n);
   for (i in 1:n){
-    data[i] = LaplaceMechanism(tv,eps,bs,us,ws,ap)$Unbounded;
+    data[i] = LaplaceMechanism(tv,eps,bs,us,ws,ap);
   }
   hist(data,freq=FALSE,main="Using unbounded");
   x = seq(tv-5*th.s, tv+5*th.s,.1);
@@ -250,7 +249,7 @@ test_Laplace <- function(){
   n = 10000;
   data = matrix(NaN,nrow=n,ncol=length(tv));
   for (i in 1:n){
-    data[i,] = LaplaceMechanism(tv,eps,bs,us,ws,ap)$Bounded;
+    data[i,] = LaplaceMechanism(tv,eps,bs,us,ws,ap);
   }
   th.s = length(tv)*bs/eps;
   for (j in 1:length(tv)){
@@ -271,7 +270,7 @@ test_Laplace <- function(){
   n = 10000;
   data = matrix(NaN,nrow=n,ncol=length(tv));
   for (i in 1:n){
-    data[i,] = LaplaceMechanism(tv,eps,bs,us,ws,ap)$Bounded;
+    data[i,] = LaplaceMechanism(tv,eps,bs,us,ws,ap);
   }
   ap = ap/sum(ap);
   th.s = bs/(ap*eps);
@@ -289,7 +288,7 @@ test_Gaussian <- function(){
   #
   #
   #
-  source(paste(cur.dir,'Mechanisms.R',sep=""))
+  # source(paste(cur.dir,'Mechanisms.R',sep=""))
 
   ### Test input ###
   print("         No input:")
@@ -411,7 +410,7 @@ test_Gaussian <- function(){
   n = 10000;
   data = numeric(n);
   for (i in 1:n){
-    data[i] = GaussianMechanism(tv,eps,delta,bs,us,ws,dp,ap)$Bounded;
+    data[i] = GaussianMechanism(tv,eps,delta,bs,us,ws,dp,ap);
   }
   hist(data,freq=FALSE,main="Simple bounded (pDP)");
   x = seq(tv-5*th.s, tv+5*th.s,.1);
@@ -432,7 +431,7 @@ test_Gaussian <- function(){
   n = 10000;
   data = numeric(n);
   for (i in 1:n){
-    data[i] = GaussianMechanism(tv,eps,delta,bs,us,ws,dp,ap)$Bounded;
+    data[i] = GaussianMechanism(tv,eps,delta,bs,us,ws,dp,ap);
   }
   hist(data,freq=FALSE,main="Simple bounded (aDP)");
   x = seq(tv-5*th.s, tv+5*th.s,.1);
@@ -453,7 +452,7 @@ test_Gaussian <- function(){
   n = 10000;
   data = numeric(n);
   for (i in 1:n){
-    data[i] = GaussianMechanism(tv,eps,delta,bs,us,ws,dp,ap)$Unbounded;
+    data[i] = GaussianMechanism(tv,eps,delta,bs,us,ws,dp,ap);
   }
   hist(data,freq=FALSE,main="Simple unbounded (pDP)");
   x = seq(tv-5*th.s, tv+5*th.s,.1);
@@ -474,7 +473,7 @@ test_Gaussian <- function(){
   n = 10000;
   data = numeric(n);
   for (i in 1:n){
-    data[i] = GaussianMechanism(tv,eps,delta,bs,us,ws,dp,ap)$Unbounded;
+    data[i] = GaussianMechanism(tv,eps,delta,bs,us,ws,dp,ap);
   }
   hist(data,freq=FALSE,main="Simple unbounded (aDP)");
   x = seq(tv-5*th.s, tv+5*th.s,.1);
@@ -557,7 +556,7 @@ test_Gaussian <- function(){
   n = 10000;
   data = numeric(n);
   for (i in 1:n){
-    data[i] = GaussianMechanism(tv,eps,delta,bs,us,ws,dp,ap)$Bounded;
+    data[i] = GaussianMechanism(tv,eps,delta,bs,us,ws,dp,ap);
   }
   hist(data,freq=FALSE,main="Changing true.values");
   x = seq(tv-5*th.s, tv+5*th.s,.1);
@@ -578,7 +577,7 @@ test_Gaussian <- function(){
   n = 10000;
   data = numeric(n);
   for (i in 1:n){
-    data[i] = GaussianMechanism(tv,eps,delta,bs,us,ws,dp,ap)$Bounded;
+    data[i] = GaussianMechanism(tv,eps,delta,bs,us,ws,dp,ap);
   }
   hist(data,freq=FALSE,main="Changing true.values/epsilon");
   x = seq(tv-5*th.s, tv+5*th.s,.1);
@@ -599,7 +598,7 @@ test_Gaussian <- function(){
   n = 10000;
   data = numeric(n);
   for (i in 1:n){
-    data[i] = GaussianMechanism(tv,eps,delta,bs,us,ws,dp,ap)$Bounded;
+    data[i] = GaussianMechanism(tv,eps,delta,bs,us,ws,dp,ap);
   }
   hist(data,freq=FALSE,main="Changing delta/bounded.sensitivity");
   x = seq(tv-5*th.s, tv+5*th.s,.1);
@@ -620,7 +619,7 @@ test_Gaussian <- function(){
   n = 10000;
   data = numeric(n);
   for (i in 1:n){
-    data[i] = GaussianMechanism(tv,eps,delta,bs,us,ws,dp,ap)$Unbounded;
+    data[i] = GaussianMechanism(tv,eps,delta,bs,us,ws,dp,ap);
   }
   hist(data,freq=FALSE,main="Using unbounded");
   x = seq(tv-5*th.s, tv+5*th.s,.1);
@@ -640,7 +639,7 @@ test_Gaussian <- function(){
   n = 10000;
   data = matrix(NaN,nrow=n,ncol=length(tv));
   for (i in 1:n){
-    data[i,] = GaussianMechanism(tv,eps,delta,bs,us,ws,dp,ap)$Bounded;
+    data[i,] = GaussianMechanism(tv,eps,delta,bs,us,ws,dp,ap);
   }
   ap = c(1,1,1)/3;
   th.s = bs*sqrt(2*log(1.25/(ap*delta)))/(ap*eps);
@@ -664,7 +663,7 @@ test_Gaussian <- function(){
   n = 10000;
   data = matrix(NaN,nrow=n,ncol=length(tv));
   for (i in 1:n){
-    data[i,] = GaussianMechanism(tv,eps,delta,bs,us,ws,dp,ap)$Bounded;
+    data[i,] = GaussianMechanism(tv,eps,delta,bs,us,ws,dp,ap);
   }
   ap = ap/sum(ap);
   th.s = bs*(sqrt(qnorm((ap*delta)/2)^2+2*(ap*eps))-qnorm((ap*delta)/2))/(2*(ap*eps));
@@ -682,7 +681,7 @@ test_Exponential <- function(){
   #
   #
   #
-  source(paste(cur.dir,'Mechanisms.R',sep=""))
+  # source(paste(cur.dir,'Mechanisms.R',sep=""))
 
   ### Test input ###
   print("         No input:")
@@ -778,7 +777,7 @@ test_Exponential <- function(){
   n = 10000;
   data = numeric(n);
   for (i in 1:n){
-    data[i] = ExponentialMechanism(u,eps,bs,us,ws,m,c)$Bounded;
+    data[i] = ExponentialMechanism(u,eps,bs,us,ws,m,c);
   }
   if (is.null(m)) m = rep(1,length(Z));
   th.probs = m*exp(eps*u/(2*bs));
@@ -800,7 +799,7 @@ test_Exponential <- function(){
   n = 10000;
   data = numeric(n);
   for (i in 1:n){
-    data[i] = ExponentialMechanism(u,eps,bs,us,ws,m,c)$Unbounded;
+    data[i] = ExponentialMechanism(u,eps,bs,us,ws,m,c);
   }
   if (is.null(m)) m = rep(1,length(Z));
   th.probs = m*exp(eps*u/(2*us));
@@ -855,7 +854,7 @@ test_Exponential <- function(){
   n = 10000;
   data = numeric(n);
   for (i in 1:n){
-    data[i] = ExponentialMechanism(u,eps,bs,us,ws,m,c)$Bounded;
+    data[i] = ExponentialMechanism(u,eps,bs,us,ws,m,c);
   }
   if (is.null(m)) m = rep(1,length(Z));
   th.probs = m*exp(eps*u/(2*bs));
@@ -877,7 +876,7 @@ test_Exponential <- function(){
   n = 10000;
   data = numeric(n);
   for (i in 1:n){
-    data[i] = ExponentialMechanism(u,eps,bs,us,ws,m,c)$Bounded;
+    data[i] = ExponentialMechanism(u,eps,bs,us,ws,m,c);
   }
   if (is.null(m)) m = rep(1,length(Z));
   th.probs = m*exp(eps*u/(2*bs));
@@ -899,7 +898,7 @@ test_Exponential <- function(){
   n = 10000;
   data = numeric(n);
   for (i in 1:n){
-    data[i] = ExponentialMechanism(u,eps,bs,us,ws,m,c)$Bounded;
+    data[i] = ExponentialMechanism(u,eps,bs,us,ws,m,c);
   }
   if (is.null(m)) m = rep(1,length(Z));
   th.probs = m*exp(eps*u/(2*bs));
@@ -921,7 +920,7 @@ test_Exponential <- function(){
   n = 10000;
   data = numeric(n);
   for (i in 1:n){
-    data[i] = ExponentialMechanism(u,eps,bs,us,ws,m,c)$Unbounded;
+    data[i] = ExponentialMechanism(u,eps,bs,us,ws,m,c);
   }
   if (is.null(m)) m = rep(1,length(Z));
   th.probs = m*exp(eps*u/(2*us));
@@ -943,7 +942,7 @@ test_Exponential <- function(){
   n = 10000;
   data = numeric(n);
   for (i in 1:n){
-    data[i] = ExponentialMechanism(u,eps,bs,us,ws,m,c)$Bounded;
+    data[i] = ExponentialMechanism(u,eps,bs,us,ws,m,c);
   }
   if (is.null(m)) m = rep(1,length(Z));
   th.probs = m*exp(eps*u/(2*bs));
@@ -965,7 +964,7 @@ test_Exponential <- function(){
   n = 10000;
   data = numeric(n);
   for (i in 1:n){
-    data[i] = ExponentialMechanism(u,eps,bs,us,ws,m,c)$Bounded;
+    data[i] = ExponentialMechanism(u,eps,bs,us,ws,m,c);
   }
   if (is.null(m)) m = rep(1,length(Z));
   th.probs = m*exp(eps*u/(2*bs));

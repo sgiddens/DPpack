@@ -58,8 +58,8 @@ in the sanitized histogram due to the added noise will be set to 0. If
 TRUE, the negative values (if any) will be returned.}
 }
 \value{
-A list of the sanitized histograms based on the bounded and/or
-unbounded definitions of differential privacy.
+Sanitized histogram(s) based on the bounded and/or unbounded definitions
+of differential privacy.
 }
 \description{
 This function computes a differentially private histogram from a vector at
@@ -70,11 +70,11 @@ examples).
 \examples{
 result <- histogramDP(c(1,1,-2,8,-6),1,which.sensitivity='bounded',
   mechanism='Laplace')
-plot(result$Bounded)
+plot(result)
 result <- histogramDP(c(1,1,-2,8,-6),.5,normalize=TRUE,
   which.sensitivity='unbounded',mechanism='Gaussian',delta=0.5,type.DP='aDP',
   allow.negative=FALSE)
-plot(result$Unbounded)
+plot(result)
 
 }
 \references{

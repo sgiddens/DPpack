@@ -38,8 +38,8 @@ See \code{\link{ExponentialMechanism}} for a description of the supported
 mechanisms.}
 }
 \value{
-A list of the sanitized medians based on the bounded and/or unbounded
-definitions of differential privacy.
+Sanitized median(s) based on the bounded and/or unbounded definitions
+of differential privacy.
 }
 \description{
 This function computes the differentially private median of an input vector

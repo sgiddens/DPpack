@@ -60,14 +60,14 @@ epsilon (and delta) to the statistics. For example, if this function is run
 on a two-column matrix and alloc.proportions = c(.75, .25), then 75\% of the
 privacy budget eps (and delta) is allocated to the statistical computation
 for column 1, and the remaining 25\% is allocated to the statistical
-computation for column 2. This ensures (eps, delta)-level privacy across all
-computations. By default, it distributes eps and delta evenly among the
+computation for column 2. This ensures (eps, delta)-level privacy across
+all computations. By default, it distributes eps and delta evenly among the
 calculations. Input does not need to be normalized, meaning
 alloc.proportions = c(3,1) produces the same result as the example above.}
 }
 \value{
-A list of the sanitized variances based on the bounded and/or
-unbounded definitions of differential privacy.
+Sanitized variance(s) based on the bounded and/or unbounded
+definitions of differential privacy.
 }
 \description{
 This function computes the differentially private variance(s) of a given

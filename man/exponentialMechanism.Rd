@@ -52,9 +52,8 @@ given, the function returns the candidate at the selected index rather than
 the index itself.}
 }
 \value{
-A list of indices (or values if candidates given) selected by the
-mechanism based on the bounded and/or unbounded definitions of differential
-privacy.
+Indices (or values if candidates given) selected by the mechanism
+based on the bounded and/or unbounded definitions of differential privacy.
 }
 \description{
 This function implements the Exponential mechanism for differential privacy

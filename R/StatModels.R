@@ -334,7 +334,7 @@ tune_classification_model<- function(models, X, y, upper.bounds, lower.bounds,
     z[i] <- sum(validatey!=validatey.hat)
   }
   res <- ExponentialMechanism(-z, models[[1]]$eps, 1, candidates=models)
-  res$Bounded[[1]]
+  res[[1]]
 }
 
 #' Privacy-preserving Empirical Risk Minimization for Binary Classification
@@ -1956,5 +1956,5 @@ tune_linear_regression_model<- function(models, X, y, upper.bounds, lower.bounds
   ub.y <- upper.bounds[length(upper.bounds)]
   lb.y <- lower.bounds[length(lower.bounds)]
   res <- ExponentialMechanism(-z, models[[1]]$eps, (ub.y-lb.y)^2, candidates=models)
-  res$Bounded[[1]]
+  res[[1]]
 }

@@ -66,8 +66,8 @@ calculations. Input does not need to be normalized, meaning
 alloc.proportions = c(3,1) produces the same result as the example above.}
 }
 \value{
-A list of the sanitized means based on the bounded and/or unbounded
-definitions of differential privacy.
+Sanitized mean(s) based on the bounded and/or unbounded definitions
+of differential privacy.
 }
 \description{
 This function computes the differentially private mean(s) of a given dataset

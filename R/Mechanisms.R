@@ -41,12 +41,11 @@
 #'   for the first element of true.values, and the remaining 25% is allocated to
 #'   the noise computation for the second element of true.values. This ensures
 #'   (eps, delta)-level privacy across all computations. By default, it
-#'   distributes eps and delta evenly among the calculations. Input does not need
-#'   to be normalized, meaning alloc.proportions = c(3,1) produces the same
+#'   distributes eps and delta evenly among the calculations. Input does not
+#'   need to be normalized, meaning alloc.proportions = c(3,1) produces the same
 #'   result as the example above.
-#' @return A list of the sanitized statistics based on the bounded and/or
-#'   unbounded definitions of differential privacy, sanitized via the Laplace
-#'   mechanism.
+#' @return Sanitized statistics based on the bounded and/or unbounded
+#'   definitions of differential privacy, sanitized via the Laplace mechanism.
 #' @examples
 #' LaplaceMechanism(5, 1, bounded.sensitivities=0.5,
 #'   which.sensitivity='bounded')
@@ -55,7 +54,7 @@
 #'
 #' @references \insertRef{Dwork2006a}{DPpack}
 #'
-#' \insertRef{Kifer2011}{DPpack}
+#'   \insertRef{Kifer2011}{DPpack}
 #'
 #' @export
 LaplaceMechanism <- function (true.values, eps, bounded.sensitivities=NULL,
@@ -152,7 +151,9 @@ LaplaceMechanism <- function (true.values, eps, bounded.sensitivities=NULL,
     unbounded.sanitized <- true.values + unbounded.noise;
     out[["Unbounded"]] <- unbounded.sanitized;
   }
-  return(out);
+  if (which.sensitivity=='both') return(out)
+  else if (which.sensitivity=='bounded') return(out$Bounded)
+  else return(out$Unbounded)
 }
 
 #' Gaussian Mechanism
@@ -207,9 +208,8 @@ LaplaceMechanism <- function (true.values, eps, bounded.sensitivities=NULL,
 #'   distributes eps and delta evenly among the calculations. Input does not
 #'   need to be normalized, meaning alloc.proportions = c(3,1) produces the same
 #'   result as the example above.
-#' @return A list of the sanitized statistics based on the bounded and/or
-#'   unbounded definitions of differential privacy, sanitized via the Gaussian
-#'   mechanism.
+#' @return Sanitized statistics based on the bounded and/or unbounded
+#'   definitions of differential privacy, sanitized via the Gaussian mechanism.
 #' @examples
 #' GaussianMechanism(5, 1, .5, bounded.sensitivities=0.5,
 #'   which.sensitivity='bounded')
@@ -349,7 +349,9 @@ GaussianMechanism <- function (true.values, eps, delta, bounded.sensitivities=NU
     unbounded.sanitized <- true.values + unbounded.noise;
     out[["Unbounded"]] <- unbounded.sanitized;
   }
-  return(out);
+  if (which.sensitivity=='both') return(out)
+  else if (which.sensitivity=='bounded') return(out$Bounded)
+  else return(out$Unbounded)
 }
 
 #' Exponential Mechanism
@@ -392,9 +394,8 @@ GaussianMechanism <- function (true.values, eps, delta, bounded.sensitivities=NU
 #' @param candidates Optional vector of candidates of same size as utility. If
 #'   given, the function returns the candidate at the selected index rather than
 #'   the index itself.
-#' @return A list of indices (or values if candidates given) selected by the
-#'   mechanism based on the bounded and/or unbounded definitions of differential
-#'   privacy.
+#' @return Indices (or values if candidates given) selected by the mechanism
+#'   based on the bounded and/or unbounded definitions of differential privacy.
 #' @examples
 #' ExponentialMechanism(c(0,1,2,3,2,1,0), 1, bounded.sensitivities=1,
 #'   which.sensitivity='bounded')
@@ -402,10 +403,9 @@ GaussianMechanism <- function (true.values, eps, delta, bounded.sensitivities=NU
 #'   which.sensitivity='unbounded', measure=c(1,1,2,1,2,1,1),
 #'   candidates=c('a','b','c','d','e','f','g'))
 #'
-#' @references
-#'   \insertRef{Dwork2006a}{DPpack}
+#' @references \insertRef{Dwork2006a}{DPpack}
 #'
-#'   \insertRef{Kifer2011}{DPpack}
+#' \insertRef{Kifer2011}{DPpack}
 #'
 #' @export
 ExponentialMechanism <- function (utility, eps, bounded.sensitivities=NULL,
@@ -498,5 +498,7 @@ ExponentialMechanism <- function (utility, eps, bounded.sensitivities=NULL,
     if (!is.null(candidates)) unbounded.sanitized <- candidates[unbounded.sanitized];
     out[["Unbounded"]] <- unbounded.sanitized;
   }
-  return(out);
+  if (which.sensitivity=='both') return(out)
+  else if (which.sensitivity=='bounded') return(out$Bounded)
+  else return(out$Unbounded)
 }

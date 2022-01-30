@@ -51,14 +51,13 @@ of the privacy budget eps (and delta) is allocated to the noise computation
 for the first element of true.values, and the remaining 25\% is allocated to
 the noise computation for the second element of true.values. This ensures
 (eps, delta)-level privacy across all computations. By default, it
-distributes eps and delta evenly among the calculations. Input does not need
-to be normalized, meaning alloc.proportions = c(3,1) produces the same
+distributes eps and delta evenly among the calculations. Input does not
+need to be normalized, meaning alloc.proportions = c(3,1) produces the same
 result as the example above.}
 }
 \value{
-A list of the sanitized statistics based on the bounded and/or
-unbounded definitions of differential privacy, sanitized via the Laplace
-mechanism.
+Sanitized statistics based on the bounded and/or unbounded
+definitions of differential privacy, sanitized via the Laplace mechanism.
 }
 \description{
 This function implements the Laplace mechanism for differential privacy by

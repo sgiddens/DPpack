@@ -55,8 +55,8 @@ DP \insertCite{Liu2019a}{DPpack} or 'aDP' for approximate DP
 be strictly less than 1.}
 }
 \value{
-A list of the sanitized covariances based on the bounded and/or
-unbounded definitions of differential privacy.
+Sanitized covariance(s) based on the bounded and/or unbounded
+definitions of differential privacy.
 }
 \description{
 This function computes the differentially private covariance of a pair of

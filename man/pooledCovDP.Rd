@@ -64,8 +64,8 @@ global sensitivity based on the upper and lower bounds of the data
 large.}
 }
 \value{
-A list of the sanitized pooled covariances based on the bounded
-and/or unbounded definitions of differential privacy.
+Sanitized pooled covariance(s) based on the bounded and/or unbounded
+definitions of differential privacy.
 }
 \description{
 This function computes the differentially private pooled covariance from two
