@@ -11,13 +11,16 @@ building more specific models via inheritance. See
 \code{\link{LinearRegressionDP}} for an example of this type of structure.
 }
 \details{
-After constructing an \code{EmpiricalRiskMinimizationDP.KST} object,
-the object can be fit to a provided dataset. In fitting, the model stores a
-vector of coefficients \code{coeff} which satisfy epsilon-level differential
-privacy. These can be released directly, or used in conjunction with the
-predict method to privately predict the value of new datapoints.
+To use this class for empirical risk minimization, first use the
+\code{new} method to construct an object of this class with the desired
+function values and hyperparameters. After constructing the object, the
+\code{fit} method can be applied with a provided dataset and data bounds to
+fit the model. In fitting, the model stores a vector of coefficients
+\code{coeff} which satisfy differential privacy. These can be released
+directly, or used in conjunction with the \code{predict} method to privately
+predict the outcomes of new datapoints.
 
-Note that in order to guarantee epsilon-level privacy for the empirical risk
+Note that in order to guarantee differential privacy for the empirical risk
 minimization model, certain constraints must be satisfied for the values
 used to construct the object, as well as for the data used to fit.
 Specifically, the following constraints must be met. Let \eqn{l} represent
@@ -115,7 +118,7 @@ If 0, reduces to pure eps-DP.}
 
 \item{\code{domain}}{List of constraint and jacobian functions representing the
 constraints on the search space for the objective perturbation algorithm
-used in \insertCite{Kifer2012}{DPpack}.}
+used in \insertCite{Kifer2012;textual}{DPpack}.}
 
 \item{\code{zeta}}{Positive real number denoting the upper bound on the l2-norm
 value of the gradient of the loss function, as required to ensure

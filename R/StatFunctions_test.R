@@ -1,4 +1,4 @@
-cur.dir <- '~/Desktop/DP Research/DP R Package/DPpack/R/';
+# cur.dir <- '~/Desktop/DP Research/DP R Package/DPpack/R/';
 library(MASS) # For CARS93 dataset
 
 test_meanDP <- function(){

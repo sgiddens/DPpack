@@ -263,16 +263,16 @@ regularizer.gr.l2 <- function(coeff) coeff
 #' Privacy-preserving Hyperparameter Tuning for Binary Classification Models
 #'
 #' This function implements the privacy-preserving hyperparameter tuning
-#' function \insertCite{chaudhuri2011}{DPpack} using the exponential mechanism.
-#' It accepts a list of models with various chosen hyperparameters, a dataset X
-#' with corresponding labels y, upper and lower bounds on the columns of X, and
-#' a boolean indicating whether to add bias in the construction of each of the
-#' models. The data are split into m+1 equal groups, where m is the number of
-#' models being compared. One group is set aside as the validation group, and
-#' each of the other m groups are used to train each of the given m models. The
-#' number of errors on the validation set is counted for each model and used as
-#' the utility values in the exponential mechanism
-#' (\code{\link{ExponentialMechanism}}) to select a tuned model in a
+#' function for binary classification \insertCite{chaudhuri2011}{DPpack} using
+#' the exponential mechanism. It accepts a list of models with various chosen
+#' hyperparameters, a dataset X with corresponding labels y, upper and lower
+#' bounds on the columns of X, and a boolean indicating whether to add bias in
+#' the construction of each of the models. The data are split into m+1 equal
+#' groups, where m is the number of models being compared. One group is set
+#' aside as the validation group, and each of the other m groups are used to
+#' train each of the given m models. The number of errors on the validation set
+#' is counted for each model and used as the utility values in the exponential
+#' mechanism (\code{\link{ExponentialMechanism}}) to select a tuned model in a
 #' privacy-preserving way.
 #'
 #' @param models Vector of binary classification model objects, each initialized
@@ -346,32 +346,34 @@ tune_classification_model<- function(models, X, y, upper.bounds, lower.bounds,
 #'   \code{\link{LogisticRegressionDP}} for an example of this type of
 #'   structure.
 #'
-#' @details After constructing an \code{EmpiricalRiskMinimizationDP.CMS} object,
-#'   the object can be fit to a provided dataset. In fitting, the model stores a
-#'   vector of coefficients \code{coeff} which satisfy epsilon-level
-#'   differential privacy. These can be released directly, or used in
-#'   conjunction with the predict method to privately predict the label of new
-#'   datapoints.
+#' @details To use this class for empirical risk minimization, first use the
+#'   \code{new} method to construct an object of this class with the desired
+#'   function values and hyperparameters. After constructing the object, the
+#'   \code{fit} method can be applied with a provided dataset and data bounds to
+#'   fit the model.  In fitting, the model stores a vector of coefficients
+#'   \code{coeff} which satisfy differential privacy. These can be released
+#'   directly, or used in conjunction with the \code{predict} method to
+#'   privately predict the outcomes of new datapoints.
 #'
-#'   Note that in order to guarantee epsilon-level privacy for the empirical
-#'   risk minimization model, certain constraints must be satisfied for the
-#'   values used to construct the object, as well as for the data used to fit.
-#'   These conditions depend on the chosen perturbation method. Specifically, the
-#'   provided loss function must be convex and differentiable with respect to
-#'   \code{y.hat}, and the absolute value of the first derivative of the loss
-#'   function must be at most 1. If objective perturbation is chosen, the loss
-#'   function must also be doubly differentiable and the absolute value of the
-#'   second derivative of the loss function must be bounded above by a constant
-#'   c for all possible values of \code{y.hat} and \code{y}, where \code{y.hat}
-#'   is the predicted label and \code{y} is the true label. The regularizer must
-#'   be 1-strongly convex and differentiable. It also must be doubly
-#'   differentiable if objective perturbation is chosen. Finally, it is assumed
-#'   that if x represents a single row of the dataset X, then the l2-norm of x
-#'   is at most 1 for all x. Note that because of this, a bias term cannot be
-#'   included without appropriate scaling/preprocessing of the dataset. To
-#'   ensure privacy, the add.bias argument in the \code{fit} and \code{predict}
-#'   methods should only be utilized in subclasses within this package where
-#'   appropriate preprocessing is implemented, not in this class.
+#'   Note that in order to guarantee differential privacy for empirical risk
+#'   minimization, certain constraints must be satisfied for the values used to
+#'   construct the object, as well as for the data used to fit. These conditions
+#'   depend on the chosen perturbation method. Specifically, the provided loss
+#'   function must be convex and differentiable with respect to \code{y.hat},
+#'   and the absolute value of the first derivative of the loss function must be
+#'   at most 1. If objective perturbation is chosen, the loss function must also
+#'   be doubly differentiable and the absolute value of the second derivative of
+#'   the loss function must be bounded above by a constant c for all possible
+#'   values of \code{y.hat} and \code{y}, where \code{y.hat} is the predicted
+#'   label and \code{y} is the true label. The regularizer must be 1-strongly
+#'   convex and differentiable. It also must be doubly differentiable if
+#'   objective perturbation is chosen. Finally, it is assumed that if x
+#'   represents a single row of the dataset X, then the l2-norm of x is at most
+#'   1 for all x. Note that because of this, a bias term cannot be included
+#'   without appropriate scaling/preprocessing of the dataset. To ensure
+#'   privacy, the add.bias argument in the \code{fit} and \code{predict} methods
+#'   should only be utilized in subclasses within this package where appropriate
+#'   preprocessing is implemented, not in this class.
 #'
 #' @references \insertRef{chaudhuri2011}{DPpack}
 #'
@@ -572,7 +574,7 @@ EmpiricalRiskMinimizationDP.CMS <- R6::R6Class("EmpiricalRiskMinimizationDP.CMS"
   },
   #' @description Fit the differentially private empirical risk minimization
   #'   model. This method runs either the output perturbation or the objective
-  #'   perturbation algorithm\insertCite{chaudhuri2011}{DPpack}, depending on
+  #'   perturbation algorithm \insertCite{chaudhuri2011}{DPpack}, depending on
   #'   the value of perturbation.method used to construct the object, to
   #'   generate an objective function. A numerical optimization method is then
   #'   run to find optimal coefficients for fitting the model given the training
@@ -761,30 +763,35 @@ EmpiricalRiskMinimizationDP.CMS <- R6::R6Class("EmpiricalRiskMinimizationDP.CMS"
 #'   \insertCite{chaudhuri2011}{DPpack}. Either the output or the objective
 #'   perturbation method can be used.
 #'
-#' @details After constructing a \code{LogisticRegressionDP} object, the object
-#'   can be fit to a provided dataset. In fitting, the model stores a vector of
-#'   coefficients \code{coeff} which satisfy epsilon-level differential privacy.
-#'   These can be released directly, or used in conjunction with the predict
-#'   method to privately predict the label of new datapoints.
+#' @details To use this class for logistic regression, first use the \code{new}
+#'   method to construct an object of this class with the desired function
+#'   values and hyperparameters. After constructing the object, the \code{fit}
+#'   method can be applied with a provided dataset and data bounds to fit the
+#'   model. In fitting, the model stores a vector of coefficients \code{coeff}
+#'   which satisfy differential privacy. These can be released directly, or used
+#'   in conjunction with the \code{predict} method to privately predict the
+#'   outcomes of new datapoints.
 #'
-#'   Note that in order to guarantee epsilon-level privacy for the logistic
-#'   regression model, certain constraints must be satisfied for the values used
-#'   to construct the object, as well as for the data used to fit. These
-#'   conditions depend on the chosen perturbation method. The regularizer must
-#'   be 1-strongly convex and differentiable. It also must be doubly
-#'   differentiable if objective perturbation is chosen. Additionally, it is
-#'   assumed that if x represents a single row of the dataset X, then the
-#'   l2-norm of x is at most 1 for all x. In order to ensure this constraint is
-#'   satisfied, the dataset is preprocessed and scaled, and the resulting
-#'   coefficients are postprocessed and un-scaled so that the stored
-#'   coefficients correspond to the original data. Due to this constraint on x,
-#'   it is best to avoid using a bias term in the model whenever possible. If a
-#'   bias term must be used, the issue can be partially circumvented by adding a
-#'   constant column to X before fitting the model, which will be scaled along
-#'   with the rest of X. The \code{fit} method contains functionality to add a
-#'   column of constant 1s to X before scaling, if desired.
+#'   Note that in order to guarantee differential privacy for logistic
+#'   regression, certain constraints must be satisfied for the values used to
+#'   construct the object, as well as for the data used to fit. These conditions
+#'   depend on the chosen perturbation method. The regularizer must be
+#'   1-strongly convex and differentiable. It also must be doubly differentiable
+#'   if objective perturbation is chosen. Additionally, it is assumed that if x
+#'   represents a single row of the dataset X, then the l2-norm of x is at most
+#'   1 for all x. In order to ensure this constraint is satisfied, the dataset
+#'   is preprocessed and scaled, and the resulting coefficients are
+#'   postprocessed and un-scaled so that the stored coefficients correspond to
+#'   the original data. Due to this constraint on x, it is best to avoid using a
+#'   bias term in the model whenever possible. If a bias term must be used, the
+#'   issue can be partially circumvented by adding a constant column to X before
+#'   fitting the model, which will be scaled along with the rest of X. The
+#'   \code{fit} method contains functionality to add a column of constant 1s to
+#'   X before scaling, if desired.
 #'
 #' @references \insertRef{chaudhuri2011}{DPpack}
+#'
+#'   \insertRef{Chaudhuri2009}{DPpack}
 #'
 #' @examples
 #' # Construct object for logistic regression
@@ -848,7 +855,7 @@ LogisticRegressionDP <- R6::R6Class("LogisticRegressionDP",
   },
   #' @description Fit the differentially private logistic regression model. This
   #'   method runs either the output perturbation or the objective perturbation
-  #'   algorithm\insertCite{chaudhuri2011}{DPpack}, depending on the value of
+  #'   algorithm \insertCite{chaudhuri2011}{DPpack}, depending on the value of
   #'   perturbation.method used to construct the object, to generate an
   #'   objective function. A numerical optimization method is then run to find
   #'   optimal coefficients for fitting the model given the training data and
@@ -994,8 +1001,7 @@ LogisticRegressionDP <- R6::R6Class("LogisticRegressionDP",
 #'
 #' This function generates and returns a sampling function corresponding to the
 #' Fourier transform of a Gaussian kernel with parameter gamma
-#' \insertCite{chaudhuri2011}{DPpack} of form needed for
-#' \code{\link{svmDP}}.
+#' \insertCite{chaudhuri2011}{DPpack} of form needed for \code{\link{svmDP}}.
 #'
 #' @param gamma Positive real number for the Gaussian (radial) kernel parameter.
 #' @return Sampling function for the Gaussian kernel of form required by
@@ -1050,30 +1056,33 @@ phi.gaussian <- function(x, theta){
 #'   machine (SVM) \insertCite{chaudhuri2011}{DPpack}. Either the output or the
 #'   objective perturbation method can be used.
 #'
-#' @details After constructing an \code{svmDP} object, the object can be fit to
-#'   a provided dataset. In fitting, the model stores a vector of coefficients
-#'   \code{coeff} which satisfy epsilon-level differential privacy.
-#'   Additionally, if a nonlinear kernel is chosen, the models stores a mapping
-#'   function from the input data X to a higher dimensional dataset V in the
-#'   form of a method \code{XtoV} as required
+#' @details To use this class for SVM, first use the \code{new} method to
+#'   construct an object of this class with the desired function values and
+#'   hyperparameters, including a choice of the desired kernel. After
+#'   constructing the object, the \code{fit} method can be applied with a
+#'   provided dataset and data bounds to fit the model. In fitting, the model
+#'   stores a vector of coefficients \code{coeff} which satisfy differential
+#'   privacy. Additionally, if a nonlinear kernel is chosen, the models stores a
+#'   mapping function from the input data X to a higher dimensional embedding V
+#'   in the form of a method \code{XtoV} as required
 #'   \insertCite{chaudhuri2011}{DPpack}. These can be released directly, or used
-#'   in conjunction with the predict method to privately predict the label of
-#'   new datapoints. Note that the mapping function \code{XtoV} is based on an
-#'   approximation method via Fourier transforms \insertCite{@see @Rahimi2007,
-#'   2008}{DPpack}.
+#'   in conjunction with the \code{predict} method to privately predict the
+#'   label of new datapoints. Note that the mapping function \code{XtoV} is
+#'   based on an approximation method via Fourier transforms
+#'   \insertCite{Rahimi2007,Rahimi2008}{DPpack}.
 #'
-#'   Note that in order to guarantee epsilon-level privacy for the SVM model,
+#'   Note that in order to guarantee differential privacy for the SVM model,
 #'   certain constraints must be satisfied for the values used to construct the
 #'   object, as well as for the data used to fit. These conditions depend on the
 #'   chosen perturbation method. First, the loss function is assumed to be
 #'   differentiable (and doubly differentiable if the objective perturbation
-#'   method is used). The hinge loss, which is typically used for support vector
-#'   machines, is not differentiable at 1. Thus, to satisfy this constraint,
-#'   this class utilizes the Huber loss, a smooth approximation to the hinge
-#'   loss \insertCite{Chapelle2007}{DPpack}. The level of approximation to the
-#'   hinge loss is determined by a user-specified constant, h, which defaults to
-#'   0.5, a typical value. Additionally, the regularizer must be 1-strongly convex and
-#'   differentiable. It also must be doubly differentiable if objective
+#'   method is used). The hinge loss, which is typically used for SVM, is not
+#'   differentiable at 1. Thus, to satisfy this constraint, this class utilizes
+#'   the Huber loss, a smooth approximation to the hinge loss
+#'   \insertCite{Chapelle2007}{DPpack}. The level of approximation to the hinge
+#'   loss is determined by a user-specified constant, h, which defaults to 0.5,
+#'   a typical value. Additionally, the regularizer must be 1-strongly convex
+#'   and differentiable. It also must be doubly differentiable if objective
 #'   perturbation is chosen. Finally, it is assumed that if x represents a
 #'   single row of the dataset X, then the l2-norm of x is at most 1 for all x.
 #'   In order to ensure this constraint is satisfied, the dataset is
@@ -1148,7 +1157,8 @@ svmDP <- R6::R6Class("svmDP",
   #' @param D Nonnegative integer indicating the dimensionality of the transform
   #'   space approximating the kernel if a nonlinear kernel is used. Higher
   #'   values of D provide better kernel approximations at a cost of
-  #'   computational efficiency. Defaults to NULL.
+  #'   computational efficiency. This value must be specified if a nonlinear
+  #'   kernel is used.
   #' @param gamma Positive real number corresponding to the Gaussian kernel
   #'   parameter. Defaults to 1.
   #' @param regularizer.gr Optional function representing the gradient of the
@@ -1178,9 +1188,9 @@ svmDP <- R6::R6Class("svmDP",
     } else if (kernel!="linear") stop("kernel must be one of {'linear',
                                       Gaussian'}")
   },
-  #' @description Fit the differentially private SVM model. This
-  #'   method runs either the output perturbation or the objective perturbation
-  #'   algorithm\insertCite{chaudhuri2011}{DPpack}, depending on the value of
+  #' @description Fit the differentially private SVM model. This method runs
+  #'   either the output perturbation or the objective perturbation algorithm
+  #'   \insertCite{chaudhuri2011}{DPpack}, depending on the value of
   #'   perturbation.method used to construct the object, to generate an
   #'   objective function. A numerical optimization method is then run to find
   #'   optimal coefficients for fitting the model given the training data and
@@ -1212,7 +1222,7 @@ svmDP <- R6::R6Class("svmDP",
   #'   pre-filter values and a mapping function based on the chosen kernel to
   #'   produce D-dimensional data V on which to train the model or predict
   #'   future values. This method is only used if the kernel is nonlinear. See
-  #'   \insertCite{chaudhuri2011}{DPpack} for more details.
+  #'   \insertCite{chaudhuri2011;textual}{DPpack} for more details.
   #' @param X Matrix corresponding to the original dataset.
   #' @return Matrix V of size n by D representing the transformed dataset, where
   #'   n is the number of rows of X, and D is the provided transformed space
@@ -1347,21 +1357,24 @@ svmDP <- R6::R6Class("svmDP",
   }
 ))
 
-#' Privacy-preserving Empirical Risk Minimization for Regression
+#'Privacy-preserving Empirical Risk Minimization for Regression
 #'
-#' @description This class implements differentially private empirical risk
+#'@description This class implements differentially private empirical risk
 #'  minimization using the objective perturbation technique
 #'  \insertCite{Kifer2012}{DPpack}. It is intended to be a framework for
 #'  building more specific models via inheritance. See
 #'  \code{\link{LinearRegressionDP}} for an example of this type of structure.
 #'
-#' @details After constructing an \code{EmpiricalRiskMinimizationDP.KST} object,
-#'  the object can be fit to a provided dataset. In fitting, the model stores a
-#'  vector of coefficients \code{coeff} which satisfy epsilon-level differential
-#'  privacy. These can be released directly, or used in conjunction with the
-#'  predict method to privately predict the value of new datapoints.
+#'@details To use this class for empirical risk minimization, first use the
+#'  \code{new} method to construct an object of this class with the desired
+#'  function values and hyperparameters. After constructing the object, the
+#'  \code{fit} method can be applied with a provided dataset and data bounds to
+#'  fit the model. In fitting, the model stores a vector of coefficients
+#'  \code{coeff} which satisfy differential privacy. These can be released
+#'  directly, or used in conjunction with the \code{predict} method to privately
+#'  predict the outcomes of new datapoints.
 #'
-#'  Note that in order to guarantee epsilon-level privacy for the empirical risk
+#'  Note that in order to guarantee differential privacy for the empirical risk
 #'  minimization model, certain constraints must be satisfied for the values
 #'  used to construct the object, as well as for the data used to fit.
 #'  Specifically, the following constraints must be met. Let \eqn{l} represent
@@ -1380,9 +1393,9 @@ svmDP <- R6::R6Class("svmDP",
 #'  \code{predict} methods should only be utilized in subclasses within this
 #'  package where appropriate preprocessing is implemented, not in this class.
 #'
-#' @keywords internal
+#'@keywords internal
 #'
-#' @references \insertRef{Kifer2012}{DPpack}
+#'@references \insertRef{Kifer2012}{DPpack}
 #'
 #' @examples
 #' # Construct object for linear regression
@@ -1458,7 +1471,7 @@ EmpiricalRiskMinimizationDP.KST <- R6::R6Class("EmpiricalRiskMinimizationDP.KST"
   delta = NULL,
   #' @field domain List of constraint and jacobian functions representing the
   #'   constraints on the search space for the objective perturbation algorithm
-  #'   used in \insertCite{Kifer2012}{DPpack}.
+  #'   used in \insertCite{Kifer2012;textual}{DPpack}.
   domain = NULL,
   #' @field zeta Positive real number denoting the upper bound on the l2-norm
   #'   value of the gradient of the loss function, as required to ensure
@@ -1768,27 +1781,30 @@ EmpiricalRiskMinimizationDP.KST <- R6::R6Class("EmpiricalRiskMinimizationDP.KST"
 #' @description This class implements differentially private linear regression
 #'   using the objective perturbation technique \insertCite{Kifer2012}{DPpack}.
 #'
-#' @details After constructing a \code{LinearRegressionDP} object, the object
-#'   can be fit to a provided dataset. In fitting, the model stores a vector of
-#'   coefficients \code{coeff} which satisfy epsilon-level differential privacy.
-#'   These can be released directly, or used in conjunction with the predict
-#'   method to privately predict the label of new datapoints.
+#' @details To use this class for linear regression, first use the \code{new}
+#'   method to construct an object of this class with the desired function
+#'   values and hyperparameters. After constructing the object, the \code{fit}
+#'   method can be applied with a provided dataset and data bounds to fit the
+#'   model. In fitting, the model stores a vector of coefficients \code{coeff}
+#'   which satisfy differential privacy. These can be released directly, or used
+#'   in conjunction with the \code{predict} method to privately predict the
+#'   outcomes of new datapoints.
 #'
-#'   Note that in order to guarantee epsilon-level privacy for the empirical
-#'   risk minimization model, certain constraints must be satisfied for the
-#'   values used to construct the object, as well as for the data used to fit.
-#'   The regularizer must be convex. Additionally, it is assumed that if x
-#'   represents a single row of the dataset X, then the l2-norm of x is at most
-#'   p for all x, where p is the number of predictors (including any possible
-#'   intercept term). In order to ensure this constraint is satisfied, the
-#'   dataset is preprocessed and scaled, and the resulting coefficients are
-#'   postprocessed and un-scaled so that the stored coefficients correspond to
-#'   the original data. Due to this constraint on x, it is best to avoid using
-#'   an intercept term in the model whenever possible. If an intercept term must
-#'   be used, the issue can be partially circumvented by adding a constant
-#'   column to X before fitting the model, which will be scaled along with the
-#'   rest of X. The \code{fit} method contains functionality to add a column of
-#'   constant 1s to X before scaling, if desired.
+#'   Note that in order to guarantee differential privacy for linear regression,
+#'   certain constraints must be satisfied for the values used to construct the
+#'   object, as well as for the data used to fit. The regularizer must be
+#'   convex. Additionally, it is assumed that if x represents a single row of
+#'   the dataset X, then the l2-norm of x is at most p for all x, where p is the
+#'   number of predictors (including any possible intercept term). In order to
+#'   ensure this constraint is satisfied, the dataset is preprocessed and
+#'   scaled, and the resulting coefficients are postprocessed and un-scaled so
+#'   that the stored coefficients correspond to the original data. Due to this
+#'   constraint on x, it is best to avoid using an intercept term in the model
+#'   whenever possible. If an intercept term must be used, the issue can be
+#'   partially circumvented by adding a constant column to X before fitting the
+#'   model, which will be scaled along with the rest of X. The \code{fit} method
+#'   contains functionality to add a column of constant 1s to X before scaling,
+#'   if desired.
 #'
 #' @references \insertRef{Kifer2012}{DPpack}
 #'
@@ -1966,16 +1982,17 @@ LinearRegressionDP <- R6::R6Class("LinearRegressionDP",
 #' Privacy-preserving Hyperparameter Tuning for Linear Regression Models
 #'
 #' This function implements the privacy-preserving hyperparameter tuning
-#' function \insertCite{Kifer2012}{DPpack} using the exponential mechanism. It
-#' accepts a list of models with various chosen hyperparameters, a dataset X
-#' with corresponding values y, upper and lower bounds on the columns of X and
-#' the values of y, and a boolean indicating whether to add bias in the
-#' construction of each of the models. The data are split into m+1 equal groups,
-#' where m is the number of models being compared. One group is set aside as the
-#' validation group, and each of the other m groups are used to train each of
-#' the given m models. The negative of the sum of the squared error for each
-#' model on the validation set is used as the utility values in the exponential
-#' mechanism (\code{\link{ExponentialMechanism}}) to select a tuned model in a
+#' function for linear regression \insertCite{Kifer2012}{DPpack} using the
+#' exponential mechanism. It accepts a list of models with various chosen
+#' hyperparameters, a dataset X with corresponding values y, upper and lower
+#' bounds on the columns of X and the values of y, and a boolean indicating
+#' whether to add bias in the construction of each of the models. The data are
+#' split into m+1 equal groups, where m is the number of models being compared.
+#' One group is set aside as the validation group, and each of the other m
+#' groups are used to train each of the given m models. The negative of the sum
+#' of the squared error for each model on the validation set is used as the
+#' utility values in the exponential mechanism
+#' (\code{\link{ExponentialMechanism}}) to select a tuned model in a
 #' privacy-preserving way.
 #'
 #' @param models Vector of linear regression model objects, each initialized

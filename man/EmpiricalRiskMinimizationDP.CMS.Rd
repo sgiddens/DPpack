@@ -12,32 +12,34 @@ for building more specific models via inheritance. See
 structure.
 }
 \details{
-After constructing an \code{EmpiricalRiskMinimizationDP.CMS} object,
-the object can be fit to a provided dataset. In fitting, the model stores a
-vector of coefficients \code{coeff} which satisfy epsilon-level
-differential privacy. These can be released directly, or used in
-conjunction with the predict method to privately predict the label of new
-datapoints.
+To use this class for empirical risk minimization, first use the
+\code{new} method to construct an object of this class with the desired
+function values and hyperparameters. After constructing the object, the
+\code{fit} method can be applied with a provided dataset and data bounds to
+fit the model.  In fitting, the model stores a vector of coefficients
+\code{coeff} which satisfy differential privacy. These can be released
+directly, or used in conjunction with the \code{predict} method to
+privately predict the outcomes of new datapoints.
 
-Note that in order to guarantee epsilon-level privacy for the empirical
-risk minimization model, certain constraints must be satisfied for the
-values used to construct the object, as well as for the data used to fit.
-These conditions depend on the chosen perturbation method. Specifically, the
-provided loss function must be convex and differentiable with respect to
-\code{y.hat}, and the absolute value of the first derivative of the loss
-function must be at most 1. If objective perturbation is chosen, the loss
-function must also be doubly differentiable and the absolute value of the
-second derivative of the loss function must be bounded above by a constant
-c for all possible values of \code{y.hat} and \code{y}, where \code{y.hat}
-is the predicted label and \code{y} is the true label. The regularizer must
-be 1-strongly convex and differentiable. It also must be doubly
-differentiable if objective perturbation is chosen. Finally, it is assumed
-that if x represents a single row of the dataset X, then the l2-norm of x
-is at most 1 for all x. Note that because of this, a bias term cannot be
-included without appropriate scaling/preprocessing of the dataset. To
-ensure privacy, the add.bias argument in the \code{fit} and \code{predict}
-methods should only be utilized in subclasses within this package where
-appropriate preprocessing is implemented, not in this class.
+Note that in order to guarantee differential privacy for empirical risk
+minimization, certain constraints must be satisfied for the values used to
+construct the object, as well as for the data used to fit. These conditions
+depend on the chosen perturbation method. Specifically, the provided loss
+function must be convex and differentiable with respect to \code{y.hat},
+and the absolute value of the first derivative of the loss function must be
+at most 1. If objective perturbation is chosen, the loss function must also
+be doubly differentiable and the absolute value of the second derivative of
+the loss function must be bounded above by a constant c for all possible
+values of \code{y.hat} and \code{y}, where \code{y.hat} is the predicted
+label and \code{y} is the true label. The regularizer must be 1-strongly
+convex and differentiable. It also must be doubly differentiable if
+objective perturbation is chosen. Finally, it is assumed that if x
+represents a single row of the dataset X, then the l2-norm of x is at most
+1 for all x. Note that because of this, a bias term cannot be included
+without appropriate scaling/preprocessing of the dataset. To ensure
+privacy, the add.bias argument in the \code{fit} and \code{predict} methods
+should only be utilized in subclasses within this package where appropriate
+preprocessing is implemented, not in this class.
 }
 \examples{
 # Construct object for logistic regression
@@ -261,7 +263,7 @@ A new \code{EmpiricalRiskMinimizationDP.CMS} object.
 \subsection{Method \code{fit()}}{
 Fit the differentially private empirical risk minimization
 model. This method runs either the output perturbation or the objective
-perturbation algorithm\insertCite{chaudhuri2011}{DPpack}, depending on
+perturbation algorithm \insertCite{chaudhuri2011}{DPpack}, depending on
 the value of perturbation.method used to construct the object, to
 generate an objective function. A numerical optimization method is then
 run to find optimal coefficients for fitting the model given the training

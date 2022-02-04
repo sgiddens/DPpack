@@ -23,9 +23,9 @@ bounded and unbounded differential privacy.
 \description{
 This function performs the data access step in the computation of a
 differentially private quantile. The utility vector is computed as in
-\insertCite{Smith2011a}{DPpack}, while the sensitivities are calculated based
+\insertCite{Smith2011a;textual}{DPpack}, while the sensitivities are calculated based
 on bounded and unbounded differential privacy \insertCite{Kifer2011}{DPpack}
-according to the theoretical values \link{TODO: PROVE THESE}.
+according to the theoretical values \insertCite{Gillenwater2021}{DPpack}.
 }
 \examples{
 quantileDataAccess(c(1,1,-2,8,-6),.25,-10,10)
@@ -35,5 +35,7 @@ quantileDataAccess(c(1,1,-2,8,-6),.25,-10,10)
 \insertRef{Kifer2011}{DPpack}
 
 \insertRef{Smith2011a}{DPpack}
+
+\insertRef{Gillenwater2021}{DPpack}
 }
 \keyword{internal}

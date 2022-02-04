@@ -48,16 +48,17 @@ parameters.
 }
 \description{
 This function implements the privacy-preserving hyperparameter tuning
-function \insertCite{Kifer2012}{DPpack} using the exponential mechanism. It
-accepts a list of models with various chosen hyperparameters, a dataset X
-with corresponding values y, upper and lower bounds on the columns of X and
-the values of y, and a boolean indicating whether to add bias in the
-construction of each of the models. The data are split into m+1 equal groups,
-where m is the number of models being compared. One group is set aside as the
-validation group, and each of the other m groups are used to train each of
-the given m models. The negative of the sum of the squared error for each
-model on the validation set is used as the utility values in the exponential
-mechanism (\code{\link{ExponentialMechanism}}) to select a tuned model in a
+function for linear regression \insertCite{Kifer2012}{DPpack} using the
+exponential mechanism. It accepts a list of models with various chosen
+hyperparameters, a dataset X with corresponding values y, upper and lower
+bounds on the columns of X and the values of y, and a boolean indicating
+whether to add bias in the construction of each of the models. The data are
+split into m+1 equal groups, where m is the number of models being compared.
+One group is set aside as the validation group, and each of the other m
+groups are used to train each of the given m models. The negative of the sum
+of the squared error for each model on the validation set is used as the
+utility values in the exponential mechanism
+(\code{\link{ExponentialMechanism}}) to select a tuned model in a
 privacy-preserving way.
 }
 \examples{

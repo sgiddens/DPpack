@@ -9,28 +9,31 @@ This class implements differentially private logistic regression
 perturbation method can be used.
 }
 \details{
-After constructing a \code{LogisticRegressionDP} object, the object
-can be fit to a provided dataset. In fitting, the model stores a vector of
-coefficients \code{coeff} which satisfy epsilon-level differential privacy.
-These can be released directly, or used in conjunction with the predict
-method to privately predict the label of new datapoints.
+To use this class for logistic regression, first use the \code{new}
+method to construct an object of this class with the desired function
+values and hyperparameters. After constructing the object, the \code{fit}
+method can be applied with a provided dataset and data bounds to fit the
+model. In fitting, the model stores a vector of coefficients \code{coeff}
+which satisfy differential privacy. These can be released directly, or used
+in conjunction with the \code{predict} method to privately predict the
+outcomes of new datapoints.
 
-Note that in order to guarantee epsilon-level privacy for the logistic
-regression model, certain constraints must be satisfied for the values used
-to construct the object, as well as for the data used to fit. These
-conditions depend on the chosen perturbation method. The regularizer must
-be 1-strongly convex and differentiable. It also must be doubly
-differentiable if objective perturbation is chosen. Additionally, it is
-assumed that if x represents a single row of the dataset X, then the
-l2-norm of x is at most 1 for all x. In order to ensure this constraint is
-satisfied, the dataset is preprocessed and scaled, and the resulting
-coefficients are postprocessed and un-scaled so that the stored
-coefficients correspond to the original data. Due to this constraint on x,
-it is best to avoid using a bias term in the model whenever possible. If a
-bias term must be used, the issue can be partially circumvented by adding a
-constant column to X before fitting the model, which will be scaled along
-with the rest of X. The \code{fit} method contains functionality to add a
-column of constant 1s to X before scaling, if desired.
+Note that in order to guarantee differential privacy for logistic
+regression, certain constraints must be satisfied for the values used to
+construct the object, as well as for the data used to fit. These conditions
+depend on the chosen perturbation method. The regularizer must be
+1-strongly convex and differentiable. It also must be doubly differentiable
+if objective perturbation is chosen. Additionally, it is assumed that if x
+represents a single row of the dataset X, then the l2-norm of x is at most
+1 for all x. In order to ensure this constraint is satisfied, the dataset
+is preprocessed and scaled, and the resulting coefficients are
+postprocessed and un-scaled so that the stored coefficients correspond to
+the original data. Due to this constraint on x, it is best to avoid using a
+bias term in the model whenever possible. If a bias term must be used, the
+issue can be partially circumvented by adding a constant column to X before
+fitting the model, which will be scaled along with the rest of X. The
+\code{fit} method contains functionality to add a column of constant 1s to
+X before scaling, if desired.
 }
 \examples{
 # Construct object for logistic regression
@@ -60,6 +63,8 @@ n.errors <- sum(predicted.y!=ytest)
 }
 \references{
 \insertRef{chaudhuri2011}{DPpack}
+
+\insertRef{Chaudhuri2009}{DPpack}
 }
 \section{Super class}{
 \code{\link[DPpack:EmpiricalRiskMinimizationDP.CMS]{DPpack::EmpiricalRiskMinimizationDP.CMS}} -> \code{LogisticRegressionDP}
@@ -135,7 +140,7 @@ A new \code{LogisticRegressionDP} object.
 \subsection{Method \code{fit()}}{
 Fit the differentially private logistic regression model. This
 method runs either the output perturbation or the objective perturbation
-algorithm\insertCite{chaudhuri2011}{DPpack}, depending on the value of
+algorithm \insertCite{chaudhuri2011}{DPpack}, depending on the value of
 perturbation.method used to construct the object, to generate an
 objective function. A numerical optimization method is then run to find
 optimal coefficients for fitting the model given the training data and

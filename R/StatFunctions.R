@@ -181,6 +181,8 @@ meanDP <- function (x, eps, lower.bounds, upper.bounds,
 #'
 #'   \insertRef{DPtextbook}{DPpack}
 #'
+#'   \insertRef{Liu2019b}{DPpack}
+#'
 #' @export
 varDP <- function (x, eps, lower.bounds, upper.bounds,
                    which.sensitivity='bounded', mechanism='Laplace', delta=0,
@@ -314,6 +316,8 @@ varDP <- function (x, eps, lower.bounds, upper.bounds,
 #'
 #'   \insertRef{DPtextbook}{DPpack}
 #'
+#'   \insertRef{Liu2019b}{DPpack}
+#'
 #' @export
 sdDP <- function (x, eps, lower.bounds, upper.bounds,
                   which.sensitivity='bounded', mechanism='Laplace', delta=0,
@@ -388,6 +392,8 @@ sdDP <- function (x, eps, lower.bounds, upper.bounds,
 #'   \insertRef{Liu2019a}{DPpack}
 #'
 #'   \insertRef{DPtextbook}{DPpack}
+#'
+#'   \insertRef{Liu2019b}{DPpack}
 #'
 #' @export
 covDP <- function (x1, x2, eps, lower.bound1, upper.bound1, lower.bound2,

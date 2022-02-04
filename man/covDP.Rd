@@ -79,4 +79,6 @@ covDP(c(1,4,-2,8,-6),c(1,3,2,2,4),.5,lower.bound1=-10,upper.bound110,
 \insertRef{Liu2019a}{DPpack}
 
 \insertRef{DPtextbook}{DPpack}
+
+\insertRef{Liu2019b}{DPpack}
 }

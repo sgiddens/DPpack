@@ -356,7 +356,7 @@ GaussianMechanism <- function (true.values, eps, delta, bounded.sensitivities=NU
 
 #' Exponential Mechanism
 #'
-#' This function implements the Exponential mechanism for differential privacy
+#' This function implements the exponential mechanism for differential privacy
 #' by selecting the index of a vector of candidates to return according to a
 #' user-specified vector of utility function values, epsilon, and global
 #' sensitivity. Sensitivity calculated based either on bounded or unbounded
@@ -389,8 +389,9 @@ GaussianMechanism <- function (true.values, eps, delta, bounded.sensitivities=NU
 #'   individually satisfies differential privacy at level eps, but may not do so
 #'   collectively. Care must be taken not to violate differential privacy in
 #'   this case.
-#' @param measure Optional numeric vector of scaling measures for each element
-#'   of utility. Should be same size as utility. Defaults to uniform scaling.
+#' @param measure Optional numeric vector of scaling measures for the
+#'   probabilities of selecting each value. Should be same size as utility.
+#'   Defaults to uniform scaling.
 #' @param candidates Optional vector of candidates of same size as utility. If
 #'   given, the function returns the candidate at the selected index rather than
 #'   the index itself.
@@ -405,7 +406,7 @@ GaussianMechanism <- function (true.values, eps, delta, bounded.sensitivities=NU
 #'
 #' @references \insertRef{Dwork2006a}{DPpack}
 #'
-#' \insertRef{Kifer2011}{DPpack}
+#'   \insertRef{Kifer2011}{DPpack}
 #'
 #' @export
 ExponentialMechanism <- function (utility, eps, bounded.sensitivities=NULL,

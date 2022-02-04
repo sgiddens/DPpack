@@ -9,30 +9,33 @@ machine (SVM) \insertCite{chaudhuri2011}{DPpack}. Either the output or the
 objective perturbation method can be used.
 }
 \details{
-After constructing an \code{svmDP} object, the object can be fit to
-a provided dataset. In fitting, the model stores a vector of coefficients
-\code{coeff} which satisfy epsilon-level differential privacy.
-Additionally, if a nonlinear kernel is chosen, the models stores a mapping
-function from the input data X to a higher dimensional dataset V in the
-form of a method \code{XtoV} as required
+To use this class for SVM, first use the \code{new} method to
+construct an object of this class with the desired function values and
+hyperparameters, including a choice of the desired kernel. After
+constructing the object, the \code{fit} method can be applied with a
+provided dataset and data bounds to fit the model. In fitting, the model
+stores a vector of coefficients \code{coeff} which satisfy differential
+privacy. Additionally, if a nonlinear kernel is chosen, the models stores a
+mapping function from the input data X to a higher dimensional embedding V
+in the form of a method \code{XtoV} as required
 \insertCite{chaudhuri2011}{DPpack}. These can be released directly, or used
-in conjunction with the predict method to privately predict the label of
-new datapoints. Note that the mapping function \code{XtoV} is based on an
-approximation method via Fourier transforms \insertCite{@see @Rahimi2007,
-2008}{DPpack}.
+in conjunction with the \code{predict} method to privately predict the
+label of new datapoints. Note that the mapping function \code{XtoV} is
+based on an approximation method via Fourier transforms
+\insertCite{Rahimi2007,Rahimi2008}{DPpack}.
 
-Note that in order to guarantee epsilon-level privacy for the SVM model,
+Note that in order to guarantee differential privacy for the SVM model,
 certain constraints must be satisfied for the values used to construct the
 object, as well as for the data used to fit. These conditions depend on the
 chosen perturbation method. First, the loss function is assumed to be
 differentiable (and doubly differentiable if the objective perturbation
-method is used). The hinge loss, which is typically used for support vector
-machines, is not differentiable at 1. Thus, to satisfy this constraint,
-this class utilizes the Huber loss, a smooth approximation to the hinge
-loss \insertCite{Chapelle2007}{DPpack}. The level of approximation to the
-hinge loss is determined by a user-specified constant, h, which defaults to
-0.5, a typical value. Additionally, the regularizer must be 1-strongly convex and
-differentiable. It also must be doubly differentiable if objective
+method is used). The hinge loss, which is typically used for SVM, is not
+differentiable at 1. Thus, to satisfy this constraint, this class utilizes
+the Huber loss, a smooth approximation to the hinge loss
+\insertCite{Chapelle2007}{DPpack}. The level of approximation to the hinge
+loss is determined by a user-specified constant, h, which defaults to 0.5,
+a typical value. Additionally, the regularizer must be 1-strongly convex
+and differentiable. It also must be doubly differentiable if objective
 perturbation is chosen. Finally, it is assumed that if x represents a
 single row of the dataset X, then the l2-norm of x is at most 1 for all x.
 In order to ensure this constraint is satisfied, the dataset is
@@ -150,7 +153,8 @@ Defaults to 'objective'.}
 \item{\code{D}}{Nonnegative integer indicating the dimensionality of the transform
 space approximating the kernel if a nonlinear kernel is used. Higher
 values of D provide better kernel approximations at a cost of
-computational efficiency. Defaults to NULL.}
+computational efficiency. This value must be specified if a nonlinear
+kernel is used.}
 
 \item{\code{gamma}}{Positive real number corresponding to the Gaussian kernel
 parameter. Defaults to 1.}
@@ -177,9 +181,9 @@ A new svmDP object.
 \if{html}{\out{<a id="method-fit"></a>}}
 \if{latex}{\out{\hypertarget{method-fit}{}}}
 \subsection{Method \code{fit()}}{
-Fit the differentially private SVM model. This
-method runs either the output perturbation or the objective perturbation
-algorithm\insertCite{chaudhuri2011}{DPpack}, depending on the value of
+Fit the differentially private SVM model. This method runs
+either the output perturbation or the objective perturbation algorithm
+\insertCite{chaudhuri2011}{DPpack}, depending on the value of
 perturbation.method used to construct the object, to generate an
 objective function. A numerical optimization method is then run to find
 optimal coefficients for fitting the model given the training data and
@@ -227,7 +231,7 @@ Convert input data X into transformed data V. Uses sampled
 pre-filter values and a mapping function based on the chosen kernel to
 produce D-dimensional data V on which to train the model or predict
 future values. This method is only used if the kernel is nonlinear. See
-\insertCite{chaudhuri2011}{DPpack} for more details.
+\insertCite{chaudhuri2011;textual}{DPpack} for more details.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{svmDP$XtoV(X)}\if{html}{\out{</div>}}
 }

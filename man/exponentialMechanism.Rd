@@ -44,8 +44,9 @@ individually satisfies differential privacy at level eps, but may not do so
 collectively. Care must be taken not to violate differential privacy in
 this case.}
 
-\item{measure}{Optional numeric vector of scaling measures for each element
-of utility. Should be same size as utility. Defaults to uniform scaling.}
+\item{measure}{Optional numeric vector of scaling measures for the
+probabilities of selecting each value. Should be same size as utility.
+Defaults to uniform scaling.}
 
 \item{candidates}{Optional vector of candidates of same size as utility. If
 given, the function returns the candidate at the selected index rather than
@@ -56,7 +57,7 @@ Indices (or values if candidates given) selected by the mechanism
 based on the bounded and/or unbounded definitions of differential privacy.
 }
 \description{
-This function implements the Exponential mechanism for differential privacy
+This function implements the exponential mechanism for differential privacy
 by selecting the index of a vector of candidates to return according to a
 user-specified vector of utility function values, epsilon, and global
 sensitivity. Sensitivity calculated based either on bounded or unbounded

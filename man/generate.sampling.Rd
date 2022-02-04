@@ -16,8 +16,7 @@ Sampling function for the Gaussian kernel of form required by
 \description{
 This function generates and returns a sampling function corresponding to the
 Fourier transform of a Gaussian kernel with parameter gamma
-\insertCite{chaudhuri2011}{DPpack} of form needed for
-\code{\link{svmDP}}.
+\insertCite{chaudhuri2011}{DPpack} of form needed for \code{\link{svmDP}}.
 }
 \examples{
   gamma <- 1

@@ -92,4 +92,6 @@ varDP(matrix(c(1,4,-2,8,-6,0),ncol=2),1,lower.bounds=c(-10,-10),
 \insertRef{Liu2019a}{DPpack}
 
 \insertRef{DPtextbook}{DPpack}
+
+\insertRef{Liu2019b}{DPpack}
 }

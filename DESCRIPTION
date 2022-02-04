@@ -5,13 +5,14 @@ Version: 0.0.0.9000
 Author: Spencer Giddens <giddens2spencer@gmail.com> with contributions from Fang 
     Liu <fliu2@nd.edu>
 Maintainer: Spencer Giddens <giddens2spencer@gmail.com>
-Description: An implementation of common statistical analysis and models using 
-    differential privacy. The package contains, for example, functions providing 
-    differentially private computations of mean, variance, median, histograms, 
-    and contingency tables. It also implements some statistical models and 
-    machine learning algorithms such as linear regression and SVM. In addition, 
-    it implements some popular randomization mechanisms such as the Laplace 
-    mechanism, Gaussian mechanism, and exponential mechanism.
+Description: An implementation of common statistical analysis and models with 
+    differential privacy guarantees. The package contains, for example, 
+    functions providing differentially private computations of mean, variance, 
+    median, histograms, and contingency tables. It also implements some 
+    statistical models and machine learning algorithms such as linear regression 
+    and SVM. In addition, it implements some popular randomization mechanisms 
+    such as the Laplace mechanism, Gaussian mechanism, and exponential 
+    mechanism.
 License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
