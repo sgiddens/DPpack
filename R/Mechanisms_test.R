@@ -297,16 +297,17 @@ test_Gaussian <- function(){
   print("")
 
   print("         Bad true.values:");
-  a = tryCatch(GaussianMechanism('a',1,1,1),error=function(e) print(paste("PASS --",e)));
+  a = tryCatch(GaussianMechanism('a',1,1,1,type.DP='pDP'),
+               error=function(e) print(paste("PASS --",e)));
   if (!is.character(a)) print("FAIL");
   print("")
 
   print("         Bad eps:")
-  a = tryCatch(GaussianMechanism(0,'a',1,1),error=function(e) print(paste("PASS --",e)));
+  a = tryCatch(GaussianMechanism(0,'a',1,1,type.DP='pDP'),error=function(e) print(paste("PASS --",e)));
   if (!is.character(a)) print("FAIL");
-  a = tryCatch(GaussianMechanism(0,-1,1,1),error=function(e) print(paste("PASS --",e)));
+  a = tryCatch(GaussianMechanism(0,-1,1,1,type.DP='pDP'),error=function(e) print(paste("PASS --",e)));
   if (!is.character(a)) print("FAIL");
-  a = tryCatch(GaussianMechanism(0,0,1,1),error=function(e) print(paste("PASS --",e)));
+  a = tryCatch(GaussianMechanism(0,0,1,1,type.DP='pDP'),error=function(e) print(paste("PASS --",e)));
   if (!is.character(a)) print("FAIL");
   a = tryCatch(GaussianMechanism(0,3,1,1,type.DP='aDP'),
                error=function(e) print(paste("PASS --",e)));
@@ -314,60 +315,60 @@ test_Gaussian <- function(){
   print("")
 
   print("         Bad delta:")
-  a = tryCatch(GaussianMechanism(0,1,'a',1),error=function(e) print(paste("PASS --",e)));
+  a = tryCatch(GaussianMechanism(0,1,'a',1,type.DP='pDP'),error=function(e) print(paste("PASS --",e)));
   if (!is.character(a)) print("FAIL");
-  a = tryCatch(GaussianMechanism(0,1,-1,1),error=function(e) print(paste("PASS --",e)));
+  a = tryCatch(GaussianMechanism(0,1,-1,1,type.DP='pDP'),error=function(e) print(paste("PASS --",e)));
   if (!is.character(a)) print("FAIL");
-  a = tryCatch(GaussianMechanism(0,1,0,1),error=function(e) print(paste("PASS --",e)));
+  a = tryCatch(GaussianMechanism(0,1,0,1,type.DP='pDP'),error=function(e) print(paste("PASS --",e)));
   if (!is.character(a)) print("FAIL");
   print("")
 
   print("         Bad bounded.sensitivities:")
-  a = tryCatch(GaussianMechanism(0,1,1),
+  a = tryCatch(GaussianMechanism(0,1,1,type.DP='pDP'),
                error=function(e) print(paste("PASS --",e)));
   if (!is.character(a)) print("FAIL");
-  a = tryCatch(GaussianMechanism(0,1,1,c(1,2)),
+  a = tryCatch(GaussianMechanism(0,1,1,c(1,2),type.DP='pDP'),
                error=function(e) print(paste("PASS --",e)));
   if (!is.character(a)) print("FAIL");
-  a = tryCatch(GaussianMechanism(c(0,1),1,1,1),
+  a = tryCatch(GaussianMechanism(c(0,1),1,1,1,type.DP='pDP'),
                error=function(e) print(paste("PASS --",e)));
   if (!is.character(a)) print("FAIL");
-  a = tryCatch(GaussianMechanism(0,1,1,1,bounded.sensitivities=-1),
+  a = tryCatch(GaussianMechanism(0,1,1,1,bounded.sensitivities=-1,type.DP='pDP'),
                error=function(e) print(paste("PASS --",e)));
   print("")
 
   print("         Bad unbounded.sensitivities:")
-  a = tryCatch(GaussianMechanism(0,1,1,which.sensitivity='unbounded'),
+  a = tryCatch(GaussianMechanism(0,1,1,which.sensitivity='unbounded',type.DP='pDP'),
                error=function(e) print(paste("PASS --",e)));
   if (!is.character(a)) print("FAIL");
   a = tryCatch(GaussianMechanism(0,1,1,unbounded.sensitivities=c(1,2),
-                                which.sensitivity='unbounded'),
+                                which.sensitivity='unbounded',type.DP='pDP'),
                error=function(e) print(paste("PASS --",e)));
   if (!is.character(a)) print("FAIL");
   a = tryCatch(GaussianMechanism(c(0,1),1,1,unbounded.sensitivities=1,
-                                which.sensitivity='unbounded'),
+                                which.sensitivity='unbounded',type.DP='pDP'),
                error=function(e) print(paste("PASS --",e)));
   if (!is.character(a)) print("FAIL");
   a = tryCatch(GaussianMechanism(0,1,1,unbounded.sensitivities=-1,
-                                which.sensitivity='unbounded'),
+                                which.sensitivity='unbounded',type.DP='pDP'),
                error=function(e) print(paste("PASS --",e)));
   if (!is.character(a)) print("FAIL");
   print("")
 
   print("         Bad which.sensitivity:")
-  a = tryCatch(GaussianMechanism(0,1,1,which.sensitivity='unbnd'),
+  a = tryCatch(GaussianMechanism(0,1,1,which.sensitivity='unbnd',type.DP='pDP'),
                error=function(e) print(paste("PASS --",e)));
   if (!is.character(a)) print("FAIL");
   a = tryCatch(GaussianMechanism(0,1,1,unbounded.sensitivities=c(1,2),
-                                which.sensitivity='bounded'),
+                                which.sensitivity='bounded',type.DP='pDP'),
                error=function(e) print(paste("PASS --",e)));
   if (!is.character(a)) print("FAIL");
   a = tryCatch(GaussianMechanism(c(0,1),1,1,unbounded.sensitivities=1,
-                                which.sensitivity='both'),
+                                which.sensitivity='both',type.DP='pDP'),
                error=function(e) print(paste("PASS --",e)));
   if (!is.character(a)) print("FAIL");
   a = tryCatch(GaussianMechanism(c(0,1),1,1,1,2,
-                                which.sensitivity='both'),
+                                which.sensitivity='both',type.DP='pDP'),
                error=function(e) print(paste("PASS --",e)));
   print("")
 
@@ -378,19 +379,19 @@ test_Gaussian <- function(){
   print("")
 
   print("         Bad alloc.proportions:")
-  a = tryCatch(GaussianMechanism(0,1,1,1,alloc.proportions='a'),
+  a = tryCatch(GaussianMechanism(0,1,1,1,type.DP='pDP',alloc.proportions='a'),
                error=function(e) print(paste("PASS --",e)));
   if (!is.character(a)) print("FAIL");
-  a = tryCatch(GaussianMechanism(0,1,1,1,alloc.proportions=-1),
+  a = tryCatch(GaussianMechanism(0,1,1,1,type.DP='pDP',alloc.proportions=-1),
                error=function(e) print(paste("PASS --",e)));
   if (!is.character(a)) print("FAIL");
-  a = tryCatch(GaussianMechanism(c(0,1),1,1,1,alloc.proportions=c(1,2,3)),
+  a = tryCatch(GaussianMechanism(c(0,1),1,1,1,type.DP='pDP',alloc.proportions=c(1,2,3)),
                error=function(e) print(paste("PASS --",e)));
   if (!is.character(a)) print("FAIL");
   print("")
 
   print("         Only bounded if bounded==unbounded:")
-  res = GaussianMechanism(0,1,1,1,1,'both');
+  res = GaussianMechanism(0,1,1,1,1,'both',type.DP='pDP');
   if (is.null(res$Unbounded)) {print("PASS")}
   else{print("FAIL")};
   print("")

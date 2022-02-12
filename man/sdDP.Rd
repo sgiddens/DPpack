@@ -12,7 +12,7 @@ sdDP(
   which.sensitivity = "bounded",
   mechanism = "Laplace",
   delta = 0,
-  type.DP = "pDP",
+  type.DP = "aDP",
   alloc.proportions = NULL
 )
 }
@@ -77,11 +77,12 @@ deviations are computed over columns and collectively satisfy differential
 privacy at the specified level.
 }
 \examples{
-sdDP(c(1,4,-2,8,-6),1,lower.bounds=-10,upper.bounds=10)
+sdDP(c(1,4,-2,8,-6),1,lower.bounds=-10,upper.bounds=10,type.DP='pDP')
 sdDP(c(1,4,-2,8,-6),.5,lower.bounds=-10,upper.bounds=10,
-  which.sensitivity='unbounded',mechanism='Gaussian',delta=0.5,type.DP='aDP')
+  which.sensitivity='unbounded',mechanism='Gaussian',delta=0.5)
 sdDP(matrix(c(1,4,-2,8,-6,0),ncol=2),1,lower.bounds=c(-10,-10),
-  upper.bounds=c(10,10),which.sensitivity='bounded',alloc.proportions=c(1,2))
+  upper.bounds=c(10,10),which.sensitivity='bounded',type.DP='pDP',
+  alloc.proportions=c(1,2))
 
 }
 \references{

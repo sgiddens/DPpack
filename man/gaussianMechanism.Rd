@@ -11,7 +11,7 @@ GaussianMechanism(
   bounded.sensitivities = NULL,
   unbounded.sensitivities = NULL,
   which.sensitivity = "bounded",
-  type.DP = "pDP",
+  type.DP = "aDP",
   alloc.proportions = NULL
 )
 }
@@ -81,9 +81,9 @@ how to divide epsilon and delta among the statistics using alloc.proportions.
 }
 \examples{
 GaussianMechanism(5, 1, .5, bounded.sensitivities=0.5,
-  which.sensitivity='bounded')
-GaussianMechanism(c(5,3), .5, .5, unbounded.sensitivities=1,
-  which.sensitivity='unbounded', type.DP='aDP', alloc.proportions=c(.4,.6))
+  which.sensitivity='bounded',type.DP='pDP')
+GaussianMechanism(c(5,3), .5, .5, unbounded.sensitivities=c(1,1),
+  which.sensitivity='unbounded', alloc.proportions=c(.4,.6))
 
 }
 \references{

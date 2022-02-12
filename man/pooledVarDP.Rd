@@ -12,7 +12,7 @@ pooledVarDP(
   which.sensitivity = "bounded",
   mechanism = "Laplace",
   delta = 0,
-  type.DP = "pDP",
+  type.DP = "aDP",
   approx.n.max = FALSE
 )
 }
@@ -68,10 +68,11 @@ more vectors of data at user-specified privacy levels of epsilon and delta.
 }
 \examples{
 pooledVarDP(c(1,4,-2,8,-6),c(1,2),c(-5,-7),eps=1,lower.bound=-10,
-  upper.bound=10,which.sensitivity='bounded',mechanism='Laplace')
+  upper.bound=10,which.sensitivity='bounded',mechanism='Laplace',
+  type.DP='pDP')
 pooledVarDP(c(1,4,-2,8,-6),c(1,2),c(-5,-7),eps=.5,
   lower.bound=-10,upper.bound=10,which.sensitivity='unbounded',
-  mechanism='Gaussian',delta=0.5,type.DP='aDP',approx.n.max=TRUE)
+  mechanism='Gaussian',delta=0.5,approx.n.max=TRUE)
 
 }
 \references{

@@ -12,7 +12,7 @@ histogramDP(
   which.sensitivity = "bounded",
   mechanism = "Laplace",
   delta = 0,
-  type.DP = "pDP",
+  type.DP = "aDP",
   allow.negative = FALSE
 )
 }
@@ -69,10 +69,10 @@ examples).
 }
 \examples{
 result <- histogramDP(c(1,1,-2,8,-6),1,which.sensitivity='bounded',
-  mechanism='Laplace')
+  mechanism='Laplace',type.DP='pDP')
 plot(result)
 result <- histogramDP(c(1,1,-2,8,-6),.5,normalize=TRUE,
-  which.sensitivity='unbounded',mechanism='Gaussian',delta=0.5,type.DP='aDP',
+  which.sensitivity='unbounded',mechanism='Gaussian',delta=0.5,
   allow.negative=FALSE)
 plot(result)
 

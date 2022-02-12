@@ -72,7 +72,7 @@ among the statistics using alloc.proportions.
 \examples{
 LaplaceMechanism(5, 1, bounded.sensitivities=0.5,
   which.sensitivity='bounded')
-LaplaceMechanism(c(5,3), 1, unbounded.sensitivities=1,
+LaplaceMechanism(c(5,3), 1, unbounded.sensitivities=c(1,1),
   which.sensitivity='unbounded', alloc.proportions=c(.4,.6))
 
 }

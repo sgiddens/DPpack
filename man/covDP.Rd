@@ -15,7 +15,7 @@ covDP(
   which.sensitivity = "bounded",
   mechanism = "Laplace",
   delta = 0,
-  type.DP = "pDP"
+  type.DP = "aDP"
 )
 }
 \arguments{
@@ -65,10 +65,10 @@ vectors at user-specified privacy levels of epsilon and delta.
 \examples{
 covDP(c(1,4,-2,8,-6),c(1,3,2,2,4),1,lower.bound1=-10,upper.bound1=10,
   lower.bound2=0,upper.bound2=5,which.sensitivity='bounded',
-  mechanism='Laplace')
+  mechanism='Laplace',type.DP='pDP')
 covDP(c(1,4,-2,8,-6),c(1,3,2,2,4),.5,lower.bound1=-10,upper.bound110,
   lower.bound2=0,upper.bound2=5,which.sensitivity='unbounded',
-  mechanism='Gaussian',delta=0.5,type.DP='aDP')
+  mechanism='Gaussian',delta=0.5)
 
 }
 \references{

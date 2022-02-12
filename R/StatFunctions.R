@@ -47,12 +47,12 @@
 #' @return Sanitized mean(s) based on the bounded and/or unbounded definitions
 #'   of differential privacy.
 #' @examples
-#' meanDP(c(1,4,-2,8,-6),1,lower.bounds=-10,upper.bounds=10)
+#' meanDP(c(1,4,-2,8,-6),1,lower.bounds=-10,upper.bounds=10,type.DP='pDP')
 #' meanDP(c(1,4,-2,8,-6),.5,lower.bounds=-10,upper.bounds=10,
 #'   which.sensitivity='unbounded',mechanism='Gaussian',
-#'   delta=0.5,type.DP='aDP')
+#'   delta=0.5)
 #' meanDP(matrix(c(1,4,-2,8,-6,0),ncol=2),1,lower.bounds=c(-10,-10),
-#'   upper.bounds=c(10,10),which.sensitivity='bounded',
+#'   upper.bounds=c(10,10),which.sensitivity='bounded',type.DP='pDP',
 #'   alloc.proportions=c(1,2))
 #'
 #' @references \insertRef{Dwork2006a}{DPpack}
@@ -66,7 +66,7 @@
 #' @export
 meanDP <- function (x, eps, lower.bounds, upper.bounds,
                     which.sensitivity='bounded', mechanism='Laplace',
-                    delta=0, type.DP='pDP', alloc.proportions=NULL){
+                    delta=0, type.DP='aDP', alloc.proportions=NULL){
   #### INPUT CHECKING ####
   {if (is.null(dim(x))){
     if (length(upper.bounds)!=1) stop("Length of upper.bounds must be 1.");
@@ -167,11 +167,12 @@ meanDP <- function (x, eps, lower.bounds, upper.bounds,
 #' @return Sanitized variance(s) based on the bounded and/or unbounded
 #'   definitions of differential privacy.
 #' @examples
-#' varDP(c(1,4,-2,8,-6),1,lower.bounds=-10,upper.bounds=10)
+#' varDP(c(1,4,-2,8,-6),1,lower.bounds=-10,upper.bounds=10,type.DP='pDP')
 #' varDP(c(1,4,-2,8,-6),.5,lower.bounds=-10,upper.bounds=10,
-#'   which.sensitivity='unbounded',mechanism='Gaussian',delta=0.5,type.DP='aDP')
+#'   which.sensitivity='unbounded',mechanism='Gaussian',delta=0.5)
 #' varDP(matrix(c(1,4,-2,8,-6,0),ncol=2),1,lower.bounds=c(-10,-10),
-#'   upper.bounds=c(10,10),which.sensitivity='bounded',alloc.proportions=c(1,2))
+#'   upper.bounds=c(10,10),which.sensitivity='bounded',type.DP='pDP',
+#'   alloc.proportions=c(1,2))
 #'
 #' @references \insertRef{Dwork2006a}{DPpack}
 #'
@@ -186,7 +187,7 @@ meanDP <- function (x, eps, lower.bounds, upper.bounds,
 #' @export
 varDP <- function (x, eps, lower.bounds, upper.bounds,
                    which.sensitivity='bounded', mechanism='Laplace', delta=0,
-                   type.DP='pDP', alloc.proportions=NULL){
+                   type.DP='aDP', alloc.proportions=NULL){
   #### INPUT CHECKING ####
   {if (is.null(dim(x))){
     if (length(upper.bounds)!=1) stop("Length of upper.bounds must be 1.");
@@ -302,11 +303,12 @@ varDP <- function (x, eps, lower.bounds, upper.bounds,
 #' @return Sanitized standard deviation(s) based on the bounded and/or unbounded
 #'   definitions of differential privacy.
 #' @examples
-#' sdDP(c(1,4,-2,8,-6),1,lower.bounds=-10,upper.bounds=10)
+#' sdDP(c(1,4,-2,8,-6),1,lower.bounds=-10,upper.bounds=10,type.DP='pDP')
 #' sdDP(c(1,4,-2,8,-6),.5,lower.bounds=-10,upper.bounds=10,
-#'   which.sensitivity='unbounded',mechanism='Gaussian',delta=0.5,type.DP='aDP')
+#'   which.sensitivity='unbounded',mechanism='Gaussian',delta=0.5)
 #' sdDP(matrix(c(1,4,-2,8,-6,0),ncol=2),1,lower.bounds=c(-10,-10),
-#'   upper.bounds=c(10,10),which.sensitivity='bounded',alloc.proportions=c(1,2))
+#'   upper.bounds=c(10,10),which.sensitivity='bounded',type.DP='pDP',
+#'   alloc.proportions=c(1,2))
 #'
 #' @references \insertRef{Dwork2006a}{DPpack}
 #'
@@ -321,7 +323,7 @@ varDP <- function (x, eps, lower.bounds, upper.bounds,
 #' @export
 sdDP <- function (x, eps, lower.bounds, upper.bounds,
                   which.sensitivity='bounded', mechanism='Laplace', delta=0,
-                  type.DP='pDP', alloc.proportions=NULL){
+                  type.DP='aDP', alloc.proportions=NULL){
   ########## Input checking
 
   ##########
@@ -380,10 +382,10 @@ sdDP <- function (x, eps, lower.bounds, upper.bounds,
 #' @examples
 #' covDP(c(1,4,-2,8,-6),c(1,3,2,2,4),1,lower.bound1=-10,upper.bound1=10,
 #'   lower.bound2=0,upper.bound2=5,which.sensitivity='bounded',
-#'   mechanism='Laplace')
+#'   mechanism='Laplace',type.DP='pDP')
 #' covDP(c(1,4,-2,8,-6),c(1,3,2,2,4),.5,lower.bound1=-10,upper.bound110,
 #'   lower.bound2=0,upper.bound2=5,which.sensitivity='unbounded',
-#'   mechanism='Gaussian',delta=0.5,type.DP='aDP')
+#'   mechanism='Gaussian',delta=0.5)
 #'
 #' @references \insertRef{Dwork2006a}{DPpack}
 #'
@@ -398,7 +400,7 @@ sdDP <- function (x, eps, lower.bounds, upper.bounds,
 #' @export
 covDP <- function (x1, x2, eps, lower.bound1, upper.bound1, lower.bound2,
                   upper.bound2, which.sensitivity='bounded',
-                  mechanism='Laplace', delta=0, type.DP='pDP'){
+                  mechanism='Laplace', delta=0, type.DP='aDP'){
   #### INPUT CHECKING ####
   {if (length(upper.bound1)!=1) stop("Length of upper.bound1 must be 1.");
   if (length(lower.bound1)!=1) stop("Length of lower.bound1 must be 1.");
@@ -480,10 +482,10 @@ covDP <- function (x1, x2, eps, lower.bound1, upper.bound1, lower.bound2,
 #'   of differential privacy.
 #' @examples
 #' result <- histogramDP(c(1,1,-2,8,-6),1,which.sensitivity='bounded',
-#'   mechanism='Laplace')
+#'   mechanism='Laplace',type.DP='pDP')
 #' plot(result)
 #' result <- histogramDP(c(1,1,-2,8,-6),.5,normalize=TRUE,
-#'   which.sensitivity='unbounded',mechanism='Gaussian',delta=0.5,type.DP='aDP',
+#'   which.sensitivity='unbounded',mechanism='Gaussian',delta=0.5,
 #'   allow.negative=FALSE)
 #' plot(result)
 #'
@@ -498,7 +500,7 @@ covDP <- function (x1, x2, eps, lower.bound1, upper.bound1, lower.bound2,
 #' @export
 histogramDP <- function(x, eps, breaks="Sturges", normalize=FALSE,
                         which.sensitivity='bounded', mechanism='Laplace',
-                        delta=0, type.DP='pDP', allow.negative=FALSE){
+                        delta=0, type.DP='aDP', allow.negative=FALSE){
   #### INPUT CHECKING ####
   {if (delta==0 & mechanism=='Gaussian') mechanism <- 'Laplace';
   if (mechanism!='Laplace' & mechanism!='Gaussian'){
@@ -606,9 +608,10 @@ histogramDP <- function(x, eps, breaks="Sturges", normalize=FALSE,
 #' x <- MASS::Cars93$Type;
 #' y <- MASS::Cars93$Origin;
 #' z <- MASS::Cars93$AirBags;
-#' tableDP(x,y,eps=1,which.sensitivity='bounded',mechanism='Laplace')
+#' tableDP(x,y,eps=1,which.sensitivity='bounded',mechanism='Laplace',
+#'   type.DP='pDP')
 #' tableDP(x,y,z,eps=.5,which.sensitivity='unbounded',mechanism='Gaussian',
-#'   delta=0.5,type.DP='aDP',allow.negative=FALSE)
+#'   delta=0.5,allow.negative=FALSE)
 #'
 #' @references \insertRef{Dwork2006a}{DPpack}
 #'
@@ -620,7 +623,7 @@ histogramDP <- function(x, eps, breaks="Sturges", normalize=FALSE,
 #'
 #' @export
 tableDP <- function(..., eps, which.sensitivity='bounded', mechanism='Laplace',
-                    delta=0, type.DP='pDP', allow.negative=FALSE){
+                    delta=0, type.DP='aDP', allow.negative=FALSE){
   #### INPUT CHECKING ####
   {if (delta==0 & mechanism=='Gaussian') mechanism <- 'Laplace';
   if (mechanism!='Laplace' & mechanism!='Gaussian'){
@@ -727,10 +730,11 @@ tableDP <- function(..., eps, which.sensitivity='bounded', mechanism='Laplace',
 #'   definitions of differential privacy.
 #' @examples
 #' pooledVarDP(c(1,4,-2,8,-6),c(1,2),c(-5,-7),eps=1,lower.bound=-10,
-#'   upper.bound=10,which.sensitivity='bounded',mechanism='Laplace')
+#'   upper.bound=10,which.sensitivity='bounded',mechanism='Laplace',
+#'   type.DP='pDP')
 #' pooledVarDP(c(1,4,-2,8,-6),c(1,2),c(-5,-7),eps=.5,
 #'   lower.bound=-10,upper.bound=10,which.sensitivity='unbounded',
-#'   mechanism='Gaussian',delta=0.5,type.DP='aDP',approx.n.max=TRUE)
+#'   mechanism='Gaussian',delta=0.5,approx.n.max=TRUE)
 #'
 #' @references \insertRef{Dwork2006a}{DPpack}
 #'
@@ -745,7 +749,7 @@ tableDP <- function(..., eps, which.sensitivity='bounded', mechanism='Laplace',
 #' @export
 pooledVarDP <- function(..., eps=1, lower.bound, upper.bound,
                         which.sensitivity='bounded', mechanism='Laplace',
-                        delta=0, type.DP='pDP', approx.n.max=FALSE){
+                        delta=0, type.DP='aDP', approx.n.max=FALSE){
   samples <- list(...);
   #### INPUT CHECKING ####
   {J = length(samples);
@@ -851,10 +855,11 @@ pooledVarDP <- function(..., eps=1, lower.bound, upper.bound,
 #' x1 <- matrix(c(1,4,-2,8,-6,-3),ncol=2)
 #' x2 <- matrix(c(1,2,-5,7),ncol=2)
 #' pooledVarDP(x1,x2,eps=1,lower.bound1=-10,upper.bound1=10,lower.bound2=-10,
-#'   upper.bound2=10,which.sensitivity='bounded',mechanism='Laplace')
+#'   upper.bound2=10,which.sensitivity='bounded',mechanism='Laplace',
+#'   type.DP='pDP')
 #' pooledVarDP(x1,x2,eps=.5,lower.bound1=-10,upper.bound1=10,lower.bound2=-10,
 #'   upper.bound2=10,which.sensitivity='unbounded',mechanism='Gaussian',
-#'   delta=0.5,type.DP='aDP',approx.n.max=TRUE)
+#'   delta=0.5,approx.n.max=TRUE)
 #'
 #' @references \insertRef{Dwork2006a}{DPpack}
 #'
@@ -869,7 +874,7 @@ pooledVarDP <- function(..., eps=1, lower.bound, upper.bound,
 #' @export
 pooledCovDP <- function(..., eps=1, lower.bound1, upper.bound1, lower.bound2,
                         upper.bound2, which.sensitivity='bounded',
-                        mechanism='Laplace', delta=0, type.DP='pDP',
+                        mechanism='Laplace', delta=0, type.DP='aDP',
                         approx.n.max=FALSE){
   samples <- list(...);
   #### INPUT CHECKING ####

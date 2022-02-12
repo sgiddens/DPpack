@@ -19,38 +19,42 @@ test_meanDP <- function(){
   print("")
 
   print("         Bad lower.bounds:")
-  a = tryCatch(meanDP(data1d,1,lower.bounds = c(1,2),upper.bounds=3),
+  a = tryCatch(meanDP(data1d,1,lower.bounds = c(1,2),upper.bounds=3,
+                      type.DP='pDP'),
                error=function(e) print(paste("PASS --",e)));
   if (!is.character(a)) print("FAIL");
   print("")
 
   print("         Bad upper.bounds:")
-  a = tryCatch(meanDP(data1d,1,lower.bounds=-3, upper.bounds = c(1,2)),
+  a = tryCatch(meanDP(data1d,1,lower.bounds=-3, upper.bounds = c(1,2),
+                      type.DP='pDP'),
                error=function(e) print(paste("PASS --",e)));
   if (!is.character(a)) print("FAIL");
   print("")
 
   print("         Bad lower.bounds2d:")
-  a = tryCatch(meanDP(data2d,1,lower.bounds = -.5,upper.bounds=c(3,3)),
+  a = tryCatch(meanDP(data2d,1,lower.bounds = -.5,upper.bounds=c(3,3),
+                      type.DP='pDP'),
                error=function(e) print(paste("PASS --",e)));
   if (!is.character(a)) print("FAIL");
   print("")
 
   print("         Bad upper.bounds 2d:")
-  a = tryCatch(meanDP(data2d,1,lower.bounds=c(-3,-3), upper.bounds = -.5),
+  a = tryCatch(meanDP(data2d,1,lower.bounds=c(-3,-3), upper.bounds = -.5,
+                      type.DP='pDP'),
                error=function(e) print(paste("PASS --",e)));
   if (!is.character(a)) print("FAIL");
   print("")
 
   print("         Missing bounds:")
-  a = tryCatch(meanDP(data2d,1),
+  a = tryCatch(meanDP(data2d,1,type.DP='pDP'),
                error=function(e) print(paste("PASS --",e)));
   if (!is.character(a)) print("FAIL");
   print("")
 
   print("         Bad mechanism:")
   a = tryCatch(meanDP(data2d,1,lower.bounds=c(-3,-3), upper.bounds=c(3,3),
-                      mechanism='abc'),
+                      mechanism='abc',type.DP='pDP'),
                error=function(e) print(paste("PASS --",e)));
   if (!is.character(a)) print("FAIL");
   print("")
@@ -210,38 +214,42 @@ test_varDP <- function(){
   print("")
 
   print("         Bad lower.bounds:")
-  a = tryCatch(varDP(data1d,1,lower.bounds = c(1,2), upper.bounds=6),
+  a = tryCatch(varDP(data1d,1,lower.bounds = c(1,2), upper.bounds=6,
+                     type.DP='pDP'),
                error=function(e) print(paste("PASS --",e)));
   if (!is.character(a)) print("FAIL");
   print("")
 
   print("         Bad upper.bounds:")
-  a = tryCatch(varDP(data1d,1,lower.bounds=-6,upper.bounds = c(1,2)),
+  a = tryCatch(varDP(data1d,1,lower.bounds=-6,upper.bounds = c(1,2),
+                     type.DP='pDP'),
                error=function(e) print(paste("PASS --",e)));
   if (!is.character(a)) print("FAIL");
   print("")
 
   print("         Bad lower.bounds2d:")
-  a = tryCatch(varDP(data2d,1,lower.bounds = -.5,upper.bounds=c(6,6)),
+  a = tryCatch(varDP(data2d,1,lower.bounds = -.5,upper.bounds=c(6,6),
+                     type.DP='pDP'),
                error=function(e) print(paste("PASS --",e)));
   if (!is.character(a)) print("FAIL");
   print("")
 
   print("         Bad upper.bounds 2d:")
-  a = tryCatch(varDP(data2d,1,lower.bounds=c(-6,-6),upper.bounds = -.5),
+  a = tryCatch(varDP(data2d,1,lower.bounds=c(-6,-6),upper.bounds = -.5,
+                     type.DP='pDP'),
                error=function(e) print(paste("PASS --",e)));
   if (!is.character(a)) print("FAIL");
   print("")
 
   print("         Missing bounds:")
-  a = tryCatch(varDP(data2d,1),
+  a = tryCatch(varDP(data2d,1,type.DP='pDP'),
                error=function(e) print(paste("PASS --",e)));
   if (!is.character(a)) print("FAIL");
   print("")
 
   print("         Bad mechanism:")
   a = tryCatch(varDP(data2d,1,lower.bounds=c(-6,-6),upper.bounds=c(6,6),
-                     mechanism='abc'),
+                     mechanism='abc',type.DP='pDP'),
                error=function(e) print(paste("PASS --",e)));
   if (!is.character(a)) print("FAIL");
   print("")
@@ -401,38 +409,42 @@ test_sdDP <- function(){
   print("")
 
   print("         Bad lower.bounds:")
-  a = tryCatch(sdDP(data1d,1,lower.bounds = c(1,2), upper.bounds = 6),
+  a = tryCatch(sdDP(data1d,1,lower.bounds = c(1,2), upper.bounds = 6,
+                    type.DP='pDP'),
                error=function(e) print(paste("PASS --",e)));
   if (!is.character(a)) print("FAIL");
   print("")
 
   print("         Bad upper.bounds:")
-  a = tryCatch(sdDP(data1d,1,lower.bounds=-6,upper.bounds = c(1,2)),
+  a = tryCatch(sdDP(data1d,1,lower.bounds=-6,upper.bounds = c(1,2),
+                    type.DP='pDP'),
                error=function(e) print(paste("PASS --",e)));
   if (!is.character(a)) print("FAIL");
   print("")
 
   print("         Bad lower.bounds2d:")
-  a = tryCatch(sdDP(data2d,1,lower.bounds = -.5,upper.bounds=c(6,6)),
+  a = tryCatch(sdDP(data2d,1,lower.bounds = -.5,upper.bounds=c(6,6),
+                    type.DP='pDP'),
                error=function(e) print(paste("PASS --",e)));
   if (!is.character(a)) print("FAIL");
   print("")
 
   print("         Bad upper.bounds 2d:")
-  a = tryCatch(sdDP(data2d,1,lower.bounds=c(-6,-6),upper.bounds = -.5),
+  a = tryCatch(sdDP(data2d,1,lower.bounds=c(-6,-6),upper.bounds = -.5,
+                    type.DP='pDP'),
                error=function(e) print(paste("PASS --",e)));
   if (!is.character(a)) print("FAIL");
   print("")
 
   print("         Missing bounds:")
-  a = tryCatch(varDP(data2d,1),
+  a = tryCatch(varDP(data2d,1,type.DP='pDP'),
                error=function(e) print(paste("PASS --",e)));
   if (!is.character(a)) print("FAIL");
   print("")
 
   print("         Bad mechanism:")
   a = tryCatch(sdDP(data2d,1,lower.bounds=c(-6,-6),upper.bounds=c(6,6),
-                    mechanism='abc'),
+                    mechanism='abc',type.DP='pDP'),
                error=function(e) print(paste("PASS --",e)));
   if (!is.character(a)) print("FAIL");
   print("")
@@ -593,27 +605,28 @@ test_covDP <- function(){
 
   print("         Bad lower.bounds:")
   a = tryCatch(covDP(data1d,data1d+1,1,lower.bound1 = c(1,2), upper.bound1=6,
-                     lower.bound2=-5,upper.bound2=7),
+                     lower.bound2=-5,upper.bound2=7,type.DP='pDP'),
                error=function(e) print(paste("PASS --",e)));
   if (!is.character(a)) print("FAIL");
   print("")
 
   print("         Bad upper.bounds:")
   a = tryCatch(covDP(data1d,data1d+1,1,lower.bound1=-6,upper.bound1 = c(1,2),
-                     lower.bound2=-5,upper.bound2=7),
+                     lower.bound2=-5,upper.bound2=7,type.DP='pDP'),
                error=function(e) print(paste("PASS --",e)));
   if (!is.character(a)) print("FAIL");
   print("")
 
   print("         No bounds:")
-  a = tryCatch(covDP(data1d,data1d+1,1),
+  a = tryCatch(covDP(data1d,data1d+1,1,type.DP='pDP'),
                error=function(e) print(paste("PASS --",e)));
   if (!is.character(a)) print("FAIL");
   print("")
 
   print("         Bad mechanism:")
   a = tryCatch(covDP(data1d,data1d+1,1,lower.bound1=-6,upper.bound1=6,
-                     lower.bound2=-5,upper.bound2=7,mechanism='abc'),
+                     lower.bound2=-5,upper.bound2=7,mechanism='abc',
+                     type.DP='pDP'),
                error=function(e) print(paste("PASS --",e)));
   if (!is.character(a)) print("FAIL");
   print("")
@@ -789,7 +802,7 @@ test_histogramDP <- function(){
   print("")
 
   print("         Bad mechanism:")
-  a = tryCatch(histogramDP(data1d,1,mechanism='abc'),
+  a = tryCatch(histogramDP(data1d,1,mechanism='abc',type.DP='pDP'),
                error=function(e) print(paste("PASS --",e)));
   if (!is.character(a)) print("FAIL");
   print("")
@@ -926,7 +939,7 @@ test_tableDP <- function(){
   print("")
 
   print("         Bad mechanism:")
-  a = tryCatch(tableDP(x,y,eps=1,mechanism='abc'),
+  a = tryCatch(tableDP(x,y,eps=1,mechanism='abc',type.DP='pDP'),
                error=function(e) print(paste("PASS --",e)));
   if (!is.character(a)) print("FAIL");
   print("")
@@ -1064,26 +1077,28 @@ test_pooledVarDP <- function(){
   print("")
 
   print("         Bad lower.bounds:")
-  a = tryCatch(pooledVarDP(x,y,z,eps=1,lower.bound = c(1,2),upper.bound=6),
+  a = tryCatch(pooledVarDP(x,y,z,eps=1,lower.bound = c(1,2),upper.bound=6,
+                           type.DP='pDP'),
                error=function(e) print(paste("PASS --",e)));
   if (!is.character(a)) print("FAIL");
   print("")
 
   print("         Bad upper.bounds:")
-  a = tryCatch(pooledVarDP(x,y,z,eps=1,lower.bound=-6,upper.bound = c(1,2)),
+  a = tryCatch(pooledVarDP(x,y,z,eps=1,lower.bound=-6,upper.bound = c(1,2),
+                           type.DP='pDP'),
                error=function(e) print(paste("PASS --",e)));
   if (!is.character(a)) print("FAIL");
   print("")
 
   print("         No bounds:")
-  a = tryCatch(pooledVarDP(x,y,z,eps=1),
+  a = tryCatch(pooledVarDP(x,y,z,eps=1,type.DP='pDP'),
                error=function(e) print(paste("PASS --",e)));
   if (!is.character(a)) print("FAIL");
   print("")
 
   print("         Bad mechanism:")
   a = tryCatch(pooledVarDP(x,y,z,eps=1,lower.bound=-6,upper.bound=6,
-                           mechanism='abc'),
+                           mechanism='abc',type.DP='pDP'),
                error=function(e) print(paste("PASS --",e)));
   if (!is.character(a)) print("FAIL");
   print("")
@@ -1322,35 +1337,36 @@ test_pooledCovDP <- function(){
 
   print("         Bad lower.bound1:")
   a = tryCatch(pooledCovDP(x,y,z,eps=1,lower.bound1 = c(1,2),upper.bound1=6,
-                           lower.bound2=-6,upper.bound2=6),
+                           lower.bound2=-6,upper.bound2=6,type.DP='pDP'),
                error=function(e) print(paste("PASS --",e)));
   if (!is.character(a)) print("FAIL");
   print("")
 
   print("         Bad upper.bound1:")
   a = tryCatch(pooledCovDP(x,y,z,eps=1,lower.bound1=-6,upper.bound1=c(1,2),
-                           lower.bound2=-6,upper.bound2=6),
+                           lower.bound2=-6,upper.bound2=6,type.DP='pDP'),
                error=function(e) print(paste("PASS --",e)));
   if (!is.character(a)) print("FAIL");
   print("")
 
   print("         Bad lower.bound2:")
   a = tryCatch(pooledCovDP(x,y,z,eps=1,lower.bound1 =-6,upper.bound1=6,
-                           lower.bound2=c(1,2),upper.bound2=6),
+                           lower.bound2=c(1,2),upper.bound2=6,type.DP='pDP'),
                error=function(e) print(paste("PASS --",e)));
   if (!is.character(a)) print("FAIL");
   print("")
 
   print("         Bad upper.bound2:")
   a = tryCatch(pooledCovDP(x,y,z,eps=1,lower.bound1 = -6,upper.bound1=6,
-                           lower.bound2=-6,upper.bound2=c(1,2)),
+                           lower.bound2=-6,upper.bound2=c(1,2),type.DP='pDP'),
                error=function(e) print(paste("PASS --",e)));
   if (!is.character(a)) print("FAIL");
   print("")
 
   print("         Bad mechanism:")
   a = tryCatch(pooledCovDP(x,y,z,eps=1,lower.bound1 = -6,upper.bound1=6,
-                           lower.bound2=-6,upper.bound2=6, mechanism='abc'),
+                           lower.bound2=-6,upper.bound2=6, mechanism='abc',
+                           type.DP='pDP'),
                error=function(e) print(paste("PASS --",e)));
   if (!is.character(a)) print("FAIL");
   print("")

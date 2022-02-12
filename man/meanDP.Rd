@@ -12,7 +12,7 @@ meanDP(
   which.sensitivity = "bounded",
   mechanism = "Laplace",
   delta = 0,
-  type.DP = "pDP",
+  type.DP = "aDP",
   alloc.proportions = NULL
 )
 }
@@ -76,12 +76,12 @@ is a matrix or data frame, differentially private means are computed over
 columns and collectively satisfy differential privacy at the specified level.
 }
 \examples{
-meanDP(c(1,4,-2,8,-6),1,lower.bounds=-10,upper.bounds=10)
+meanDP(c(1,4,-2,8,-6),1,lower.bounds=-10,upper.bounds=10,type.DP='pDP')
 meanDP(c(1,4,-2,8,-6),.5,lower.bounds=-10,upper.bounds=10,
   which.sensitivity='unbounded',mechanism='Gaussian',
-  delta=0.5,type.DP='aDP')
+  delta=0.5)
 meanDP(matrix(c(1,4,-2,8,-6,0),ncol=2),1,lower.bounds=c(-10,-10),
-  upper.bounds=c(10,10),which.sensitivity='bounded',
+  upper.bounds=c(10,10),which.sensitivity='bounded',type.DP='pDP',
   alloc.proportions=c(1,2))
 
 }

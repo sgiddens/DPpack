@@ -10,7 +10,7 @@ tableDP(
   which.sensitivity = "bounded",
   mechanism = "Laplace",
   delta = 0,
-  type.DP = "pDP",
+  type.DP = "aDP",
   allow.negative = FALSE
 )
 }
@@ -60,9 +60,10 @@ vectors of data at user-specified privacy levels of epsilon and delta.
 x <- MASS::Cars93$Type;
 y <- MASS::Cars93$Origin;
 z <- MASS::Cars93$AirBags;
-tableDP(x,y,eps=1,which.sensitivity='bounded',mechanism='Laplace')
+tableDP(x,y,eps=1,which.sensitivity='bounded',mechanism='Laplace',
+  type.DP='pDP')
 tableDP(x,y,z,eps=.5,which.sensitivity='unbounded',mechanism='Gaussian',
-  delta=0.5,type.DP='aDP',allow.negative=FALSE)
+  delta=0.5,allow.negative=FALSE)
 
 }
 \references{
