@@ -17,26 +17,41 @@ GaussianMechanism(
 }
 \arguments{
 \item{true.values}{Real number or numeric vector corresponding to the true
-value(s) of the desired statistic(s).}
+value(s) of the desired function(s).}
 
 \item{eps}{Positive real number defining the epsilon privacy budget.}
 
 \item{delta}{Positive real number defining the delta privacy parameter.}
 
 \item{bounded.sensitivities}{Real number or numeric vector corresponding to
-the global sensitivity(-ies) of the statistic based on bounded differential
-privacy \insertCite{Kifer2011}{DPpack}. This is defined to be the greatest
-amount by which the statistic could change in value by changing one entry
-in the dataset (i.e. the total number of elements in the dataset remain the
-same). This value can only be NULL if which.sensitivity is 'unbounded'.}
+the global sensitivity(-ies) of the function(s) based on bounded
+differential privacy \insertCite{Kifer2011}{DPpack}. This is defined to be
+the greatest amount by which the function could change in value by changing
+one entry in the dataset (i.e. the total number of elements in the dataset
+remain the same). This value can only be NULL if which.sensitivity is
+'unbounded'. This value must be of length 1 or of the same length as
+true.values. If it is of length 1 and true.values is a vector, this
+indicates that the given sensitivity applies simultaneously to all elements
+of true.values and that the privacy budget need not be allocated
+(alloc.proportions is unused in this case). If it is of length larger than
+1, this indicates that the Gaussian mechanism is being applied to each
+element of true.values individually. In this case the privacy budget is
+divided using alloc.proportions.}
 
 \item{unbounded.sensitivities}{Real number or numeric vector corresponding to
-the global sensitivity(-ies) of the statistic based on unbounded
+the global sensitivity(-ies) of the function(s) based on unbounded
 differential privacy \insertCite{Kifer2011}{DPpack}. This is defined to be
-the greatest amount by which the statistic could change in value by
+the greatest amount by which the function could change in value by
 adding/removing one entry of the dataset (i.e. the total number of elements
 in the dataset increases/decreases by one). This value can only be NULL if
-which.sensitivity is 'bounded'.}
+which.sensitivity is 'bounded'. This value must be of length 1 or of the
+same length as true.values. If it is of length 1 and true.values is a
+vector, this indicates that the given sensitivity applies simultaneously to
+all elements of true.values and that the privacy budget need not be
+allocated (alloc.proportions is unused in this case). If it is of length
+larger than 1, this indicates that the Gaussian mechanism is being applied
+to each element of true.values individually. In this case the privacy
+budget is divided using alloc.proportions.}
 
 \item{which.sensitivity}{String indicating which type of sensitivity to use.
 Can be one of {'bounded', 'unbounded', 'both'}. If 'bounded' (default),
@@ -55,7 +70,7 @@ the Gaussian mechanism. Can be either 'pDP' for probabilistic DP
 be strictly less than 1.}
 
 \item{alloc.proportions}{Numeric vector giving the allocation proportions of
-epsilon (and delta if relevant) to the statistics. For example, if
+epsilon (and delta if relevant) to the function values. For example, if
 true.values is of length two and alloc.proportions = c(.75, .25), then 75\%
 of the privacy budget eps (and delta) is allocated to the noise computation
 for the first element of true.values, and the remaining 25\% is allocated to
@@ -66,18 +81,19 @@ need to be normalized, meaning alloc.proportions = c(3,1) produces the same
 result as the example above.}
 }
 \value{
-Sanitized statistics based on the bounded and/or unbounded
+Sanitized function values based on the bounded and/or unbounded
 definitions of differential privacy, sanitized via the Gaussian mechanism.
 }
 \description{
 This function implements the Gaussian mechanism for differential privacy by
-adding noise to the true value of a statistic according to specified values
-of epsilon, delta, and global sensitivity. Sensitivity calculated based
-either on bounded or unbounded differential privacy can be used
+adding noise to the true value of a function according to specified values of
+epsilon, delta, and global sensitivity. Sensitivity calculated based either
+on bounded or unbounded differential privacy can be used
 \insertCite{Kifer2011}{DPpack}. If true.values is a vector, the provided
 epsilon and delta are divided such that (epsilon, delta)-level differential
-privacy is satisfied across all statistics. If desired, the user can specify
-how to divide epsilon and delta among the statistics using alloc.proportions.
+privacy is satisfied across all function values. If desired, the user can
+specify how to divide epsilon and delta among the function values using
+alloc.proportions.
 }
 \examples{
 GaussianMechanism(5, 1, .5, bounded.sensitivities=0.5,

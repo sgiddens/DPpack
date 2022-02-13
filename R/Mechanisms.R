@@ -1,30 +1,45 @@
 #' Laplace Mechanism
 #'
 #' This function implements the Laplace mechanism for differential privacy by
-#' adding noise to the true value of a statistic according to specified values
-#' of epsilon and global sensitivity. Sensitivity calculated based either on
+#' adding noise to the true value of a function according to specified values of
+#' epsilon and global sensitivity. Sensitivity calculated based either on
 #' bounded or unbounded differential privacy can be used
 #' \insertCite{Kifer2011}{DPpack}. If true.values is a vector, the provided
 #' epsilon is divided such that epsilon-level differential privacy is satisfied
-#' across all statistics. If desired, the user can specify how to divide epsilon
-#' among the statistics using alloc.proportions.
+#' across all function values. If desired, the user can specify how to divide
+#' epsilon among the function values using alloc.proportions.
 #'
 #' @param true.values Real number or numeric vector corresponding to the true
-#'   value(s) of the desired statistic(s).
+#'   value(s) of the desired function(s).
 #' @param eps Positive real number defining the epsilon privacy budget.
 #' @param bounded.sensitivities Real number or numeric vector corresponding to
-#'   the global sensitivity(-ies) of the statistic based on bounded differential
-#'   privacy \insertCite{Kifer2011}{DPpack}. This is defined to be the greatest
-#'   amount by which the statistic could change in value by changing one entry
-#'   in the dataset (i.e. the total number of elements in the dataset remain the
-#'   same). This value can only be NULL if which.sensitivity is 'unbounded'.
-#' @param unbounded.sensitivities Real number or numeric vector corresponding to
-#'   the global sensitivity(-ies) of the statistic based on unbounded
+#'   the global sensitivity(-ies) of the function(s) based on bounded
 #'   differential privacy \insertCite{Kifer2011}{DPpack}. This is defined to be
-#'   the greatest amount by which the statistic could change in value by
+#'   the greatest amount by which the function could change in value by changing
+#'   one entry in the dataset (i.e. the total number of elements in the dataset
+#'   remain the same). This value can only be NULL if which.sensitivity is
+#'   'unbounded'. This value must be of length 1 or of the same length as
+#'   true.values. If it is of length 1 and true.values is a vector, this
+#'   indicates that the given sensitivity applies simultaneously to all elements
+#'   of true.values and that the privacy budget need not be allocated
+#'   (alloc.proportions is unused in this case). If it is of length larger than
+#'   1, this indicates that the Laplace mechanism is being applied to each
+#'   element of true.values individually. In this case the privacy budget is
+#'   divided using alloc.proportions.
+#' @param unbounded.sensitivities Real number or numeric vector corresponding to
+#'   the global sensitivity(-ies) of the function(s) based on unbounded
+#'   differential privacy \insertCite{Kifer2011}{DPpack}. This is defined to be
+#'   the greatest amount by which the function could change in value by
 #'   adding/removing one entry of the dataset (i.e. the total number of elements
 #'   in the dataset increases/decreases by one). This value can only be NULL if
-#'   which.sensitivity is 'bounded'.
+#'   which.sensitivity is 'bounded'. This value must be of length 1 or of the
+#'   same length as true.values. If it is of length 1 and true.values is a
+#'   vector, this indicates that the given sensitivity applies simultaneously to
+#'   all elements of true.values and that the privacy budget need not be
+#'   allocated (alloc.proportions is unused in this case). If it is of length
+#'   larger than 1, this indicates that the Laplace mechanism is being applied
+#'   to each element of true.values individually. In this case the privacy
+#'   budget is divided using alloc.proportions.
 #' @param which.sensitivity String indicating which type of sensitivity to use.
 #'   Can be one of {'bounded', 'unbounded', 'both'}. If 'bounded' (default),
 #'   returns result plus noise based on bounded definition for differential
@@ -35,7 +50,7 @@
 #'   collectively. Care must be taken not to violate differential privacy in
 #'   this case.
 #' @param alloc.proportions Numeric vector giving the allocation proportions of
-#'   epsilon (and delta if relevant) to the statistics. For example, if
+#'   epsilon (and delta if relevant) to the function values For example, if
 #'   true.values is of length two and alloc.proportions = c(.75, .25), then 75%
 #'   of the privacy budget eps (and delta) is allocated to the noise computation
 #'   for the first element of true.values, and the remaining 25% is allocated to
@@ -44,7 +59,7 @@
 #'   distributes eps and delta evenly among the calculations. Input does not
 #'   need to be normalized, meaning alloc.proportions = c(3,1) produces the same
 #'   result as the example above.
-#' @return Sanitized statistics based on the bounded and/or unbounded
+#' @return Sanitized function values based on the bounded and/or unbounded
 #'   definitions of differential privacy, sanitized via the Laplace mechanism.
 #' @examples
 #' LaplaceMechanism(5, 1, bounded.sensitivities=0.5,
@@ -62,7 +77,8 @@ LaplaceMechanism <- function (true.values, eps, bounded.sensitivities=NULL,
                               which.sensitivity='bounded',
                               alloc.proportions=NULL) {
   ### INPUT CHECKING ###
-  {if (!is.numeric(true.values) || !is.atomic(true.values)){
+  {uniform.sensitivity <- FALSE
+  if (!is.numeric(true.values) || !is.atomic(true.values)){
     stop("true.values must be numeric atomic vectors or scalars.");
   }
   if (!is.numeric(eps) || length(eps)>1 || eps<=0) stop("eps must be a scalar > 0");
@@ -72,11 +88,20 @@ LaplaceMechanism <- function (true.values, eps, bounded.sensitivities=NULL,
     if (is.null(bounded.sensitivities)) {
       stop("Must provide bounded.sensitivities if which.sensitivity is 'bounded' or 'both'.")
     }
-    if (length(bounded.sensitivities)!=length(true.values)){
-      stop("Length of bounded.sensitivities must match length of true.values.");
+    if (length(bounded.sensitivities)!=length(true.values) &
+        length(bounded.sensitivities)!=1){
+      stop("Length of bounded.sensitivities must match length of true.values or be length 1.")
     }
     if (any(bounded.sensitivities<=0)){
       stop("Sensitivities must be > 0.");
+    }
+    # Case where sensitivity of length 1 and true.values of length > 1 implying
+    #   sensitivity should be applied uniformly over all true.values and
+    #   alloc.proportions should not be used
+    if (length(bounded.sensitivities)==1 &
+        length(true.values)>1){
+      uniform.sensitivity <- TRUE
+      bounded.sensitivities <- rep(bounded.sensitivities,length(true.values))
     }
   }
   else if (which.sensitivity=='unbounded') {
@@ -85,11 +110,20 @@ LaplaceMechanism <- function (true.values, eps, bounded.sensitivities=NULL,
     if (is.null(unbounded.sensitivities)) {
       stop("Must provide unbounded.sensitivities if which.sensitivity is 'unbounded' or 'both'.")
     }
-    if (length(unbounded.sensitivities)!=length(true.values)){
-      stop("Length of unbounded.sensitivities must match length of true.values.");
+    if (length(unbounded.sensitivities)!=length(true.values) &
+        length(unbounded.sensitivities)!=1){
+      stop("Length of unbounded.sensitivities must match length of true.values or be length 1.")
     }
     if (any(unbounded.sensitivities<=0)){
       stop("Sensitivities must be > 0.");
+    }
+    # Case where sensitivity of length 1 and true.values of length > 1 implying
+    #   sensitivity should be applied uniformly over all true.values and
+    #   alloc.proportions should not be used
+    if (length(unbounded.sensitivities)==1 &
+        length(true.values)>1){
+      uniform.sensitivity <- TRUE
+      unbounded.sensitivities <- rep(unbounded.sensitivities,length(true.values))
     }
   }
   else if (which.sensitivity=='both') {
@@ -98,37 +132,65 @@ LaplaceMechanism <- function (true.values, eps, bounded.sensitivities=NULL,
     if (is.null(bounded.sensitivities)) {
       stop("Must provide bounded.sensitivities if which.sensitivity is 'bounded' or 'both'.")
     }
-    if (length(bounded.sensitivities)!=length(true.values)){
-      stop("Length of bounded.sensitivities must match length of true.values.");
+    if (is.null(unbounded.sensitivities)) {
+      stop("Must provide unbounded.sensitivities if which.sensitivity is 'unbounded' or 'both'.")
+    }
+    if (length(bounded.sensitivities)!=length(true.values) &
+        length(bounded.sensitivities)!=1){
+      stop("Length of bounded.sensitivities must match length of true.values or be length 1.")
+    }
+    if (length(unbounded.sensitivities)!=length(true.values) &
+        length(unbounded.sensitivities)!=1){
+      stop("Length of unbounded.sensitivities must match length of true.values or be length 1.")
+    }
+    if (length(bounded.sensitivities)!=length(unbounded.sensitivities)){
+      stop("Length of bounded.sensitivities must be equal to length of unbounded.sensitivities.")
     }
     if (any(bounded.sensitivities<=0)){
       stop("Sensitivities must be > 0.");
     }
-    if (is.null(unbounded.sensitivities)) {
-      stop("Must provide unbounded.sensitivities if which.sensitivity is 'unbounded' or 'both'.")
-    }
-    if (length(unbounded.sensitivities)!=length(true.values)){
-      stop("Length of unbounded.sensitivities
-           must match length of true.values.");
-    }
     if (any(unbounded.sensitivities<=0)){
       stop("Sensitivities must be > 0.");
     }
+    # Case where sensitivity of length 1 and true.values of length > 1 implying
+    #   sensitivity should be applied uniformly over all true.values and
+    #   alloc.proportions should not be used
+    if (length(bounded.sensitivities)==1 &
+        length(true.values)>1){
+      uniform.sensitivity <- TRUE
+      bounded.sensitivities <- rep(bounded.sensitivities,length(true.values))
+    }
+    if (length(unbounded.sensitivities)==1 &
+        length(true.values)>1){
+      uniform.sensitivity <- TRUE
+      unbounded.sensitivities <- rep(unbounded.sensitivities,length(true.values))
+    }
     if (all(bounded.sensitivities==unbounded.sensitivities)){
       message("Bounded and unbounded sensitivities are identical. Only bounded will be returned.")
-      out.unbound = FALSE;
+      out.unbound = FALSE
     }
   }
-  else stop("which.sensitivity must be one of {'bounded', 'unbounded', 'both'}");
-  n <- length(true.values);
-  if (is.null(alloc.proportions)) alloc.proportions <- rep(1,n);
+  else stop("which.sensitivity must be one of {'bounded', 'unbounded', 'both'}")
+
+  n <- length(true.values)
+  # Default to uniform allocation
+  if (is.null(alloc.proportions)) alloc.proportions <- rep(1,n)
   if (length(alloc.proportions)!=length(true.values)) {
     stop("Length of alloc.proportions must match length of true.values.");
   }
   if (any(alloc.proportions<=0)){
-    stop("Values in alloc.proportions must be > 0.");
+    stop("Values in alloc.proportions must be > 0.")
   }
-  alloc.proportions <- alloc.proportions/sum(alloc.proportions);
+  alloc.proportions <- alloc.proportions/sum(alloc.proportions)
+  # Case where sensitivity of length 1 and true.values of length > 1 implying
+  #   sensitivity should be applied uniformly over all true.values and
+  #   alloc.proportions should not be used
+  if (!is.null(bounded.sensitivities)){
+    if (uniform.sensitivity) alloc.proportions <- rep(1,length(true.values))
+  }
+  if (!is.null(unbounded.sensitivities)){
+    if (uniform.sensitivity) alloc.proportions <- rep(1,length(true.values))
+  }
   }
   ########
   n <- length(true.values);
@@ -159,31 +221,47 @@ LaplaceMechanism <- function (true.values, eps, bounded.sensitivities=NULL,
 #' Gaussian Mechanism
 #'
 #' This function implements the Gaussian mechanism for differential privacy by
-#' adding noise to the true value of a statistic according to specified values
-#' of epsilon, delta, and global sensitivity. Sensitivity calculated based
-#' either on bounded or unbounded differential privacy can be used
+#' adding noise to the true value of a function according to specified values of
+#' epsilon, delta, and global sensitivity. Sensitivity calculated based either
+#' on bounded or unbounded differential privacy can be used
 #' \insertCite{Kifer2011}{DPpack}. If true.values is a vector, the provided
 #' epsilon and delta are divided such that (epsilon, delta)-level differential
-#' privacy is satisfied across all statistics. If desired, the user can specify
-#' how to divide epsilon and delta among the statistics using alloc.proportions.
+#' privacy is satisfied across all function values. If desired, the user can
+#' specify how to divide epsilon and delta among the function values using
+#' alloc.proportions.
 #'
 #' @param true.values Real number or numeric vector corresponding to the true
-#'   value(s) of the desired statistic(s).
+#'   value(s) of the desired function(s).
 #' @param eps Positive real number defining the epsilon privacy budget.
 #' @param delta Positive real number defining the delta privacy parameter.
 #' @param bounded.sensitivities Real number or numeric vector corresponding to
-#'   the global sensitivity(-ies) of the statistic based on bounded differential
-#'   privacy \insertCite{Kifer2011}{DPpack}. This is defined to be the greatest
-#'   amount by which the statistic could change in value by changing one entry
-#'   in the dataset (i.e. the total number of elements in the dataset remain the
-#'   same). This value can only be NULL if which.sensitivity is 'unbounded'.
-#' @param unbounded.sensitivities Real number or numeric vector corresponding to
-#'   the global sensitivity(-ies) of the statistic based on unbounded
+#'   the global sensitivity(-ies) of the function(s) based on bounded
 #'   differential privacy \insertCite{Kifer2011}{DPpack}. This is defined to be
-#'   the greatest amount by which the statistic could change in value by
+#'   the greatest amount by which the function could change in value by changing
+#'   one entry in the dataset (i.e. the total number of elements in the dataset
+#'   remain the same). This value can only be NULL if which.sensitivity is
+#'   'unbounded'. This value must be of length 1 or of the same length as
+#'   true.values. If it is of length 1 and true.values is a vector, this
+#'   indicates that the given sensitivity applies simultaneously to all elements
+#'   of true.values and that the privacy budget need not be allocated
+#'   (alloc.proportions is unused in this case). If it is of length larger than
+#'   1, this indicates that the Gaussian mechanism is being applied to each
+#'   element of true.values individually. In this case the privacy budget is
+#'   divided using alloc.proportions.
+#' @param unbounded.sensitivities Real number or numeric vector corresponding to
+#'   the global sensitivity(-ies) of the function(s) based on unbounded
+#'   differential privacy \insertCite{Kifer2011}{DPpack}. This is defined to be
+#'   the greatest amount by which the function could change in value by
 #'   adding/removing one entry of the dataset (i.e. the total number of elements
 #'   in the dataset increases/decreases by one). This value can only be NULL if
-#'   which.sensitivity is 'bounded'.
+#'   which.sensitivity is 'bounded'. This value must be of length 1 or of the
+#'   same length as true.values. If it is of length 1 and true.values is a
+#'   vector, this indicates that the given sensitivity applies simultaneously to
+#'   all elements of true.values and that the privacy budget need not be
+#'   allocated (alloc.proportions is unused in this case). If it is of length
+#'   larger than 1, this indicates that the Gaussian mechanism is being applied
+#'   to each element of true.values individually. In this case the privacy
+#'   budget is divided using alloc.proportions.
 #' @param which.sensitivity String indicating which type of sensitivity to use.
 #'   Can be one of {'bounded', 'unbounded', 'both'}. If 'bounded' (default),
 #'   returns result plus noise based on bounded definition for differential
@@ -199,7 +277,7 @@ LaplaceMechanism <- function (true.values, eps, bounded.sensitivities=NULL,
 #'   \insertCite{DPtextbook}{DPpack}. Note that if 'aDP' is chosen, epsilon must
 #'   be strictly less than 1.
 #' @param alloc.proportions Numeric vector giving the allocation proportions of
-#'   epsilon (and delta if relevant) to the statistics. For example, if
+#'   epsilon (and delta if relevant) to the function values. For example, if
 #'   true.values is of length two and alloc.proportions = c(.75, .25), then 75%
 #'   of the privacy budget eps (and delta) is allocated to the noise computation
 #'   for the first element of true.values, and the remaining 25% is allocated to
@@ -208,7 +286,7 @@ LaplaceMechanism <- function (true.values, eps, bounded.sensitivities=NULL,
 #'   distributes eps and delta evenly among the calculations. Input does not
 #'   need to be normalized, meaning alloc.proportions = c(3,1) produces the same
 #'   result as the example above.
-#' @return Sanitized statistics based on the bounded and/or unbounded
+#' @return Sanitized function values based on the bounded and/or unbounded
 #'   definitions of differential privacy, sanitized via the Gaussian mechanism.
 #' @examples
 #' GaussianMechanism(5, 1, .5, bounded.sensitivities=0.5,
@@ -232,7 +310,8 @@ GaussianMechanism <- function (true.values, eps, delta, bounded.sensitivities=NU
                                which.sensitivity='bounded',
                                type.DP='aDP', alloc.proportions=NULL){
   ### INPUT CHECKING ###
-  {if (!is.numeric(true.values) || !is.atomic(true.values)){
+  {uniform.sensitivity <- FALSE
+  if (!is.numeric(true.values) || !is.atomic(true.values)){
     stop("true.values must be numeric atomic vectors or scalars.");
   }
   if (!is.numeric(eps) || length(eps)>1 || eps<=0) stop("eps must be a scalar > 0");
@@ -243,11 +322,20 @@ GaussianMechanism <- function (true.values, eps, delta, bounded.sensitivities=NU
     if (is.null(bounded.sensitivities)) {
       stop("Must provide bounded.sensitivities if which.sensitivity is 'bounded' or 'both'.")
     }
-    if (length(bounded.sensitivities)!=length(true.values)){
-      stop("Length of bounded.sensitivities must match length of true.values.");
+    if (length(bounded.sensitivities)!=length(true.values) &
+        length(bounded.sensitivities)!=1){
+      stop("Length of bounded.sensitivities must match length of true.values or be length 1.")
     }
     if (any(bounded.sensitivities<=0)){
       stop("Sensitivities must be > 0.");
+    }
+    # Case where sensitivity of length 1 and true.values of length > 1 implying
+    #   sensitivity should be applied uniformly over all true.values and
+    #   alloc.proportions should not be used
+    if (length(bounded.sensitivities)==1 &
+        length(true.values)>1){
+      uniform.sensitivity <- TRUE
+      bounded.sensitivities <- rep(bounded.sensitivities,length(true.values))
     }
   }
   else if (which.sensitivity=='unbounded') {
@@ -256,11 +344,20 @@ GaussianMechanism <- function (true.values, eps, delta, bounded.sensitivities=NU
     if (is.null(unbounded.sensitivities)) {
       stop("Must provide unbounded.sensitivities if which.sensitivity is 'unbounded' or 'both'.")
     }
-    if (length(unbounded.sensitivities)!=length(true.values)){
-      stop("Length of unbounded.sensitivities must match length of true.values.");
+    if (length(unbounded.sensitivities)!=length(true.values) &
+        length(unbounded.sensitivities)!=1){
+      stop("Length of unbounded.sensitivities must match length of true.values or be length 1.")
     }
     if (any(unbounded.sensitivities<=0)){
       stop("Sensitivities must be > 0.");
+    }
+    # Case where sensitivity of length 1 and true.values of length > 1 implying
+    #   sensitivity should be applied uniformly over all true.values and
+    #   alloc.proportions should not be used
+    if (length(unbounded.sensitivities)==1 &
+        length(true.values)>1){
+      uniform.sensitivity <- TRUE
+      unbounded.sensitivities <- rep(unbounded.sensitivities,length(true.values))
     }
   }
   else if (which.sensitivity=='both') {
@@ -269,20 +366,38 @@ GaussianMechanism <- function (true.values, eps, delta, bounded.sensitivities=NU
     if (is.null(bounded.sensitivities)) {
       stop("Must provide bounded.sensitivities if which.sensitivity is 'bounded' or 'both'.")
     }
-    if (length(bounded.sensitivities)!=length(true.values)){
-      stop("Length of bounded.sensitivities must match length of true.values.");
+    if (is.null(unbounded.sensitivities)) {
+      stop("Must provide unbounded.sensitivities if which.sensitivity is 'unbounded' or 'both'.")
+    }
+    if (length(bounded.sensitivities)!=length(true.values) &
+        length(bounded.sensitivities)!=1){
+      stop("Length of bounded.sensitivities must match length of true.values or be length 1.")
+    }
+    if (length(unbounded.sensitivities)!=length(true.values) &
+        length(unbounded.sensitivities)!=1){
+      stop("Length of unbounded.sensitivities must match length of true.values or be length 1.")
+    }
+    if (length(bounded.sensitivities)!=length(unbounded.sensitivities)){
+      stop("Length of bounded.sensitivities must be equal to length of unbounded.sensitivities.")
     }
     if (any(bounded.sensitivities<=0)){
       stop("Sensitivities must be > 0.");
     }
-    if (is.null(unbounded.sensitivities)) {
-      stop("Must provide unbounded.sensitivities if which.sensitivity is 'unbounded' or 'both'.")
-    }
-    if (length(unbounded.sensitivities)!=length(true.values)){
-      stop("Length of unbounded.sensitivities must match length of true.values.");
-    }
     if (any(unbounded.sensitivities<=0)){
       stop("Sensitivities must be > 0.");
+    }
+    # Case where sensitivity of length 1 and true.values of length > 1 implying
+    #   sensitivity should be applied uniformly over all true.values and
+    #   alloc.proportions should not be used
+    if (length(bounded.sensitivities)==1 &
+        length(true.values)>1){
+      uniform.sensitivity <- TRUE
+      bounded.sensitivities <- rep(bounded.sensitivities,length(true.values))
+    }
+    if (length(unbounded.sensitivities)==1 &
+        length(true.values)>1){
+      uniform.sensitivity <- TRUE
+      unbounded.sensitivities <- rep(unbounded.sensitivities,length(true.values))
     }
     if (all(bounded.sensitivities==unbounded.sensitivities)){
       message("Bounded and unbounded sensitivities are identical. Only bounded will be returned.")
@@ -300,7 +415,16 @@ GaussianMechanism <- function (true.values, eps, delta, bounded.sensitivities=NU
   if (any(alloc.proportions<=0)){
     stop("Values in alloc.proportions must be > 0.");
   }
-  alloc.proportions <- alloc.proportions/sum(alloc.proportions);
+  alloc.proportions <- alloc.proportions/sum(alloc.proportions)
+  # Case where sensitivity of length 1 and true.values of length > 1 implying
+  #   sensitivity should be applied uniformly over all true.values and
+  #   alloc.proportions should not be used
+  if (!is.null(bounded.sensitivities)){
+    if (uniform.sensitivity) alloc.proportions <- rep(1,length(true.values))
+  }
+  if (!is.null(unbounded.sensitivities)){
+    if (uniform.sensitivity) alloc.proportions <- rep(1,length(true.values))
+  }
   }
   ########
   n <- length(true.values);
@@ -368,15 +492,15 @@ GaussianMechanism <- function (true.values, eps, delta, bounded.sensitivities=NU
 #' @param utility Numeric vector giving the utilities of the possible values.
 #' @param eps Positive real number defining the epsilon privacy budget.
 #' @param bounded.sensitivities Real number corresponding to the global
-#'   sensitivity(-ies) of the statistic based on bounded differential privacy
+#'   sensitivity(-ies) of the function based on bounded differential privacy
 #'   \insertCite{Kifer2011}{DPpack}. This is defined to be the greatest amount
-#'   by which the statistic could change in value by changing one entry in the
+#'   by which the function could change in value by changing one entry in the
 #'   dataset (i.e. the total number of elements in the dataset remain the same).
 #'   This value can only be NULL if which.sensitivity is 'unbounded'.
 #' @param unbounded.sensitivities Real number corresponding to the global
-#'   sensitivity(-ies) of the statistic based on unbounded differential privacy
+#'   sensitivity(-ies) of the function based on unbounded differential privacy
 #'   \insertCite{Kifer2011}{DPpack}. This is defined to be the greatest amount
-#'   by which the statistic could change in value by adding/removing one entry
+#'   by which the function could change in value by adding/removing one entry
 #'   of the dataset (i.e. the total number of elements in the dataset
 #'   increases/decreases by one). This value can only be NULL if
 #'   which.sensitivity is 'bounded'.

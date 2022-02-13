@@ -520,8 +520,8 @@ histogramDP <- function(x, eps, breaks="Sturges", normalize=FALSE,
   counts <- tv$counts;
   # This means that each param[i] in the mechanism becomes bs/eps rather
   #       than bs[i]/(alloc.proportions[i]*eps)
-  bs <- rep(bs, length(counts))/length(counts);
-  us <- rep(us, length(counts))/length(counts);
+  # bs <- rep(bs, length(counts))/length(counts)
+  # us <- rep(us, length(counts))/length(counts)
   if (mechanism=='Laplace'){
     sanitized.counts <- LaplaceMechanism(counts,eps,bs,us,which.sensitivity);
   } else if (mechanism=='Gaussian'){
@@ -647,8 +647,8 @@ tableDP <- function(..., eps, which.sensitivity='bounded', mechanism='Laplace',
   ########## Privacy layer
   # This means that each param[i] in the mechanism becomes bs/eps rather
   #       than bs[i]/(alloc.proportions[i]*eps)
-  bs <- rep(bs, length(tv))/length(tv);
-  us <- rep(us, length(tv))/length(tv);
+  # bs <- rep(bs, length(tv))/length(tv)
+  # us <- rep(us, length(tv))/length(tv)
   if (mechanism=='Laplace'){
     sanitized.tables <- LaplaceMechanism(tv,eps,bs,us,which.sensitivity);
   } else if (mechanism=='Gaussian'){

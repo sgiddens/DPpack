@@ -34,9 +34,6 @@ test_Laplace <- function(){
   a = tryCatch(LaplaceMechanism(0,1,c(1,2)),
                error=function(e) print(paste("PASS --",e)));
   if (!is.character(a)) print("FAIL");
-  a = tryCatch(LaplaceMechanism(c(0,1),1,1),
-               error=function(e) print(paste("PASS --",e)));
-  if (!is.character(a)) print("FAIL");
   a = tryCatch(LaplaceMechanism(0,1,bounded.sensitivities=-1),
                error=function(e) print(paste("PASS --",e)));
   print("")
@@ -46,10 +43,6 @@ test_Laplace <- function(){
                error=function(e) print(paste("PASS --",e)));
   if (!is.character(a)) print("FAIL");
   a = tryCatch(LaplaceMechanism(0,1,unbounded.sensitivities=c(1,2),
-                                which.sensitivity='unbounded'),
-               error=function(e) print(paste("PASS --",e)));
-  if (!is.character(a)) print("FAIL");
-  a = tryCatch(LaplaceMechanism(c(0,1),1,unbounded.sensitivities=1,
                                 which.sensitivity='unbounded'),
                error=function(e) print(paste("PASS --",e)));
   if (!is.character(a)) print("FAIL");
@@ -260,6 +253,27 @@ test_Laplace <- function(){
     Sys.sleep(2)
   }
 
+  print("         Single sensitivity for multiple values:")
+  tv = c(-5,0)
+  eps = 1
+  bs = 1
+  us = NULL
+  ws = 'bounded'
+  ap = NULL
+  n = 10000
+  data = matrix(NaN,nrow=n,ncol=length(tv))
+  for (i in 1:n){
+    data[i,] = LaplaceMechanism(tv,eps,bs,us,ws,ap)
+  }
+  th.s = rep(bs/eps,length(tv))
+  for (j in 1:length(tv)){
+    hist(data[,j],freq=FALSE,main=paste("Single sensitivity:",j));
+    x = seq(tv[j]-5*th.s[j], tv[j]+5*th.s[j],.1);
+    lines(x,dlaplace(x,m=tv[j],s=th.s[j]));
+    print("Verify line matches histogram...")
+    Sys.sleep(2)
+  }
+
   print("         Using allocation:");
   tv = c(-5,0);
   eps = 1;
@@ -330,11 +344,9 @@ test_Gaussian <- function(){
   a = tryCatch(GaussianMechanism(0,1,1,c(1,2),type.DP='pDP'),
                error=function(e) print(paste("PASS --",e)));
   if (!is.character(a)) print("FAIL");
-  a = tryCatch(GaussianMechanism(c(0,1),1,1,1,type.DP='pDP'),
-               error=function(e) print(paste("PASS --",e)));
-  if (!is.character(a)) print("FAIL");
   a = tryCatch(GaussianMechanism(0,1,1,1,bounded.sensitivities=-1,type.DP='pDP'),
                error=function(e) print(paste("PASS --",e)));
+  if (!is.character(a)) print("FAIL");
   print("")
 
   print("         Bad unbounded.sensitivities:")
@@ -342,10 +354,6 @@ test_Gaussian <- function(){
                error=function(e) print(paste("PASS --",e)));
   if (!is.character(a)) print("FAIL");
   a = tryCatch(GaussianMechanism(0,1,1,unbounded.sensitivities=c(1,2),
-                                which.sensitivity='unbounded',type.DP='pDP'),
-               error=function(e) print(paste("PASS --",e)));
-  if (!is.character(a)) print("FAIL");
-  a = tryCatch(GaussianMechanism(c(0,1),1,1,unbounded.sensitivities=1,
                                 which.sensitivity='unbounded',type.DP='pDP'),
                error=function(e) print(paste("PASS --",e)));
   if (!is.character(a)) print("FAIL");
@@ -646,6 +654,30 @@ test_Gaussian <- function(){
   th.s = bs*sqrt(2*log(1.25/(ap*delta)))/(ap*eps);
   for (j in 1:length(tv)){
     hist(data[,j],freq=FALSE,main=paste("Using multiple:",j));
+    x = seq(tv[j]-5*th.s[j], tv[j]+5*th.s[j],.1);
+    lines(x,dnorm(x,m=tv[j],sd=th.s[j]));
+    print("Verify line matches histogram...")
+    Sys.sleep(2)
+  }
+
+  print("         Single sensitivity for multiple values:")
+  tv = c(-5,0)
+  eps = .5;
+  delta = .5;
+  bs = 1
+  us = NULL
+  ws = 'bounded'
+  dp = 'pDP';
+  ap = NULL
+  n = 10000
+  data = matrix(NaN,nrow=n,ncol=length(tv))
+  for (i in 1:n){
+    data[i,] = GaussianMechanism(tv,eps,delta,bs,us,ws,dp,ap)
+  }
+  th.s = rep(bs*(sqrt(qnorm(delta/2)^2+2*eps)-qnorm((delta)/2))/(2*eps),
+             length(tv))
+  for (j in 1:length(tv)){
+    hist(data[,j],freq=FALSE,main=paste("Single sensitivity:",j));
     x = seq(tv[j]-5*th.s[j], tv[j]+5*th.s[j],.1);
     lines(x,dnorm(x,m=tv[j],sd=th.s[j]));
     print("Verify line matches histogram...")

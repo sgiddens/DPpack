@@ -20,16 +20,16 @@ ExponentialMechanism(
 \item{eps}{Positive real number defining the epsilon privacy budget.}
 
 \item{bounded.sensitivities}{Real number corresponding to the global
-sensitivity(-ies) of the statistic based on bounded differential privacy
+sensitivity(-ies) of the function based on bounded differential privacy
 \insertCite{Kifer2011}{DPpack}. This is defined to be the greatest amount
-by which the statistic could change in value by changing one entry in the
+by which the function could change in value by changing one entry in the
 dataset (i.e. the total number of elements in the dataset remain the same).
 This value can only be NULL if which.sensitivity is 'unbounded'.}
 
 \item{unbounded.sensitivities}{Real number corresponding to the global
-sensitivity(-ies) of the statistic based on unbounded differential privacy
+sensitivity(-ies) of the function based on unbounded differential privacy
 \insertCite{Kifer2011}{DPpack}. This is defined to be the greatest amount
-by which the statistic could change in value by adding/removing one entry
+by which the function could change in value by adding/removing one entry
 of the dataset (i.e. the total number of elements in the dataset
 increases/decreases by one). This value can only be NULL if
 which.sensitivity is 'bounded'.}
