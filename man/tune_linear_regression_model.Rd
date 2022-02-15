@@ -62,25 +62,38 @@ utility values in the exponential mechanism
 privacy-preserving way.
 }
 \examples{
-# Assume X is dataframe meeting assumptions for privacy
-# Assume 1 column of X bounded between -1 and 1
-# Assume y is bounded between -2 and 2
-upper.bounds <- c( 1, 2) # Bounds for X and y
-lower.bounds <- c(-1,-2) # Bounds for X and y
-eps <- 1
-delta <- 0.1
+# Build example dataset
+n <- 500
+X <- data.frame(X=seq(-1,1,length.out = n))
+true.theta <- c(-.3,.5) # First element is bias term
+p <- length(true.theta)
+y <- true.theta[1] + as.matrix(X)\%*\%true.theta[2:p] + rnorm(n=n,sd=.1)
 
 # Grid of possible gamma values for tuning linear regression model
 grid.search <- c(100, 1, .0001)
 
+# Construct objects for logistic regression parameter tuning
+# Privacy budget should be the same for all models
+eps <- 1
+delta <- 0.01
 linrdp1 <- LinearRegressionDP$new("l2", eps, delta, grid.search[1])
 linrdp2 <- LinearRegressionDP$new("l2", eps, delta, grid.search[2])
 linrdp3 <- LinearRegressionDP$new("l2", eps, delta, grid.search[3])
-models <- c(lrdp1, lrdp2, lrdp3)
+models <- c(linrdp1, linrdp2, linrdp3)
+
+# Tune using data and bounds for X and y based on their construction
+upper.bounds <- c( 1, 2) # Bounds for X and y
+lower.bounds <- c(-1,-2) # Bounds for X and y
 tuned.model <- tune_linear_regression_model(models, X, y, upper.bounds,
                                             lower.bounds, add.bias=TRUE)
-# tuned.model result can be used the same as a trained LinearRegressionDP model
-tuned.model$lambda # Gives resulting selected hyperparameter
+tuned.model$gamma # Gives resulting selected hyperparameter
+
+# tuned.model result can be used the same as a trained LogisticRegressionDP model
+tuned.model$coeff # Gives coefficients for tuned model
+
+# Build a test dataset for prediction
+Xtest <- data.frame(X=c(-.5, -.25, .1, .4))
+predicted.y <- tuned.model$predict(Xtest, add.bias=TRUE)
 
 }
 \references{

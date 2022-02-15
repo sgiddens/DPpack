@@ -296,23 +296,46 @@ regularizer.gr.l2 <- function(coeff) coeff
 #' @return Single model object selected from the input list models with tuned
 #'   parameters.
 #' @examples
-#' # Assume X is dataframe meeting assumptions for privacy
-#' # Assume 2 columns of X each bounded between -1 and 1
-#' # Assume y is 0 or 1 labels for each row of X
-#' upper.bounds <- c( 1, 1) # Bounds for X
-#' lower.bounds <- c(-1,-1) # Bounds for X
-#' eps <- 1
+#' # Build train dataset X and y, and test dataset Xtest and ytest
+#' N <- 200
+#' K <- 2
+#' X <- data.frame()
+#' y <- data.frame()
+#' for (j in (1:K)){
+#'   t <- seq(-.25,.25,length.out = N)
+#'   if (j==1) m <- rnorm(N,-.2,.1)
+#'   if (j==2) m <- rnorm(N, .2,.1)
+#'   Xtemp <- data.frame(x1 = 3*t , x2 = m - t)
+#'   ytemp <- data.frame(matrix(j-1, N, 1))
+#'   X <- rbind(X, Xtemp)
+#'   y <- rbind(y, ytemp)
+#' }
+#' Xtest <- X[seq(1,(N*K),10),]
+#' ytest <- y[seq(1,(N*K),10),,drop=FALSE]
+#' X <- X[-seq(1,(N*K),10),]
+#' y <- y[-seq(1,(N*K),10),,drop=FALSE]
+#' y <- as.matrix(y)
 #'
-#' # Grid of possible lambda values for tuning logistric regression model
+#' # Grid of possible lambda values for tuning logistic regression model
 #' grid.search <- c(100, 1, .0001)
 #'
+#' # Construct objects for logistic regression parameter tuning
+#' eps <- 1 # Privacy budget should be the same for all models
 #' lrdp1 <- LogisticRegressionDP$new("l2", eps, grid.search[1])
 #' lrdp2 <- LogisticRegressionDP$new("l2", eps, grid.search[2])
 #' lrdp3 <- LogisticRegressionDP$new("l2", eps, grid.search[3])
 #' models <- c(lrdp1, lrdp2, lrdp3)
+#'
+#' # Tune using data and bounds for X based on its construction
+#' upper.bounds <- c( 1, 1)
+#' lower.bounds <- c(-1,-1)
 #' tuned.model <- tune_classification_model(models, X, y, upper.bounds, lower.bounds)
-#' # tuned.model result can be used the same as a trained LogisticRegressionDP model
 #' tuned.model$lambda # Gives resulting selected hyperparameter
+#'
+#' # tuned.model result can be used the same as a trained LogisticRegressionDP model
+#' # Predict new data points
+#' predicted.y <- tuned.model$predict(Xtest)
+#' n.errors <- sum(predicted.y!=ytest)
 #'
 #' @references \insertRef{chaudhuri2011}{DPpack}
 #'
@@ -378,6 +401,25 @@ tune_classification_model<- function(models, X, y, upper.bounds, lower.bounds,
 #' @references \insertRef{chaudhuri2011}{DPpack}
 #'
 #' @examples
+#' # Build train dataset X and y, and test dataset Xtest and ytest
+#' N <- 200
+#' K <- 2
+#' X <- data.frame()
+#' y <- data.frame()
+#' for (j in (1:K)){
+#'   t <- seq(-.25, .25, length.out = N)
+#'   if (j==1) m <- rnorm(N,-.2, .1)
+#'   if (j==2) m <- rnorm(N, .2, .1)
+#'   Xtemp <- data.frame(x1 = 3*t , x2 = m - t)
+#'   ytemp <- data.frame(matrix(j-1, N, 1))
+#'   X <- rbind(X, Xtemp)
+#'   y <- rbind(y, ytemp)
+#' }
+#' Xtest <- X[seq(1,(N*K),10),]
+#' ytest <- y[seq(1,(N*K),10),,drop=FALSE]
+#' X <- X[-seq(1,(N*K),10),]
+#' y <- y[-seq(1,(N*K),10),,drop=FALSE]
+#'
 #' # Construct object for logistic regression
 #' mapXy <- function(X, coeff) e1071::sigmoid(X%*%coeff)
 #' # Cross entropy loss
@@ -396,19 +438,15 @@ tune_classification_model<- function(models, X, y, upper.bounds, lower.bounds,
 #'                                              regularizer.gr)
 #'
 #' # Fit with data
-#' # Assume X is dataframe meeting assumptions for privacy
-#' # Assume 2 columns of X each bounded between -1 and 1
-#' # Assume y is 0 or 1 labels for each row of X
-#' upper.bounds <- c( 1, 1) # Bounds for X and y
-#' lower.bounds <- c(-1,-1) # Bounds for X and y
-#' ermdp$fit(X, y, upper.bounds, lower.bounds)
+#' # Bounds for X based on construction
+#' upper.bounds <- c( 1, 1)
+#' lower.bounds <- c(-1,-1)
+#' ermdp$fit(X, y, upper.bounds, lower.bounds) # No bias term
 #' ermdp$coeff # Gets private coefficients
 #'
 #' # Predict new data points
-#' # Assume Xtest is a new dataframe of the same form as X from fit method
-#' #    example, with true labels ytest
-#' predicted.y <- ermdp$predict(Xtest) # Note these values need to be rounded
-#' n.errors <- sum(abs(round(predicted.y)-ytest))
+#' predicted.y <- ermdp$predict(Xtest)
+#' n.errors <- sum(round(predicted.y)!=ytest)
 #'
 #' @keywords internal
 #'
@@ -794,27 +832,39 @@ EmpiricalRiskMinimizationDP.CMS <- R6::R6Class("EmpiricalRiskMinimizationDP.CMS"
 #'   \insertRef{Chaudhuri2009}{DPpack}
 #'
 #' @examples
+#' # Build train dataset X and y, and test dataset Xtest and ytest
+#' N <- 200
+#' K <- 2
+#' X <- data.frame()
+#' y <- data.frame()
+#' for (j in (1:K)){
+#'   t <- seq(-.25, .25, length.out = N)
+#'   if (j==1) m <- rnorm(N,-.2, .1)
+#'   if (j==2) m <- rnorm(N, .2, .1)
+#'   Xtemp <- data.frame(x1 = 3*t , x2 = m - t)
+#'   ytemp <- data.frame(matrix(j-1, N, 1))
+#'   X <- rbind(X, Xtemp)
+#'   y <- rbind(y, ytemp)
+#' }
+#' Xtest <- X[seq(1,(N*K),10),]
+#' ytest <- y[seq(1,(N*K),10),,drop=FALSE]
+#' X <- X[-seq(1,(N*K),10),]
+#' y <- y[-seq(1,(N*K),10),,drop=FALSE]
+#'
 #' # Construct object for logistic regression
 #' regularizer <- 'l2' # Alternatively, function(coeff) coeff%*%coeff/2
 #' eps <- 1
 #' lambda <- 0.1
-#' perturbation.method <- 'objective'
-#' regularizer.gr <- function(coeff) coeff # If function given for regularizer
-#' lrdp <- LogisticRegressioinDP$new(regularizer, eps, lambda,
-#'                                   perturbation.method, regularizer.gr)
+#' lrdp <- LogisticRegressionDP$new(regularizer, eps, lambda)
 #'
 #' # Fit with data
-#' # Assume X is dataframe meeting assumptions for privacy
-#' # Assume 2 columns of X each bounded between -1 and 1
-#' # Assume y is 0 or 1 labels for each row of X
-#' upper.bounds <- c( 1, 1) # Bounds for X and y
-#' lower.bounds <- c(-1,-1) # Bounds for X and y
-#' lrdp$fit(X, y, upper.bounds, lower.bounds)
+#' # Bounds for X based on construction
+#' upper.bounds <- c( 1, 1)
+#' lower.bounds <- c(-1,-1)
+#' lrdp$fit(X, y, upper.bounds, lower.bounds) # No bias term
 #' lrdp$coeff # Gets private coefficients
 #'
 #' # Predict new data points
-#' # Assume Xtest is a new dataframe of the same form as X from fit method
-#' #      example, with true labels ytest
 #' predicted.y <- lrdp$predict(Xtest)
 #' n.errors <- sum(predicted.y!=ytest)
 #'
@@ -1104,30 +1154,37 @@ phi.gaussian <- function(x, theta){
 #'   \insertRef{Rahimi2008}{DPpack}
 #'
 #' @examples
+#' # Build train dataset X and y, and test dataset Xtest and ytest
+#' N <- 400
+#' X <- data.frame()
+#' y <- data.frame()
+#' for (i in (1:N)){
+#'   Xtemp <- data.frame(x1 = rnorm(1,sd=.28) , x2 = rnorm(1,sd=.28))
+#'   if (sum(Xtemp^2)<.15) ytemp <- data.frame(y=0)
+#'   else ytemp <- data.frame(y=1)
+#'   X <- rbind(X, Xtemp)
+#'   y <- rbind(y, ytemp)
+#' }
+#' Xtest <- X[seq(1,N,10),]
+#' ytest <- y[seq(1,N,10),,drop=FALSE]
+#' X <- X[-seq(1,N,10),]
+#' y <- y[-seq(1,N,10),,drop=FALSE]
+#'
 #' # Construct object for SVM
 #' regularizer <- 'l2' # Alternatively, function(coeff) coeff%*%coeff/2
 #' eps <- 1
 #' lambda <- 0.1
-#' perturbation.method <- 'objective'
-#' regularizer.gr <- function(coeff) coeff # If function given for regularizer
-#' huber.h <- 0.5
-#' svmdp <- svmDP$new(regularizer, eps, lambda, perturbation.method,
-#'                                   kernel='linear',
-#'                                   regularizer.gr=regularizer.gr,
-#'                                   huber.h=huber.h)
+#' kernel <- 'Gaussian'
+#' D <- 20
+#' svmdp <- svmDP$new(regularizer, eps, lambda, kernel=kernel, D=D)
 #'
 #' # Fit with data
-#' # Assume X is dataframe meeting assumptions for privacy
-#' # Assume 2 columns of X each bounded between -1 and 1
-#' # Assume y is 0 or 1 labels for each row of X
-#' upper.bounds <- c( 1, 1) # Bounds for X and y
-#' lower.bounds <- c(-1,-1) # Bounds for X and y
-#' svmdp$fit(X, y, upper.bounds, lower.bounds)
-#' svmdp$coeff # Gets private coefficients
+#' # Bounds for X based on construction
+#' upper.bounds <- c( 1, 1)
+#' lower.bounds <- c(-1,-1)
+#' svmdp$fit(X, y, upper.bounds, lower.bounds) # No bias term
 #'
 #' # Predict new data points
-#' # Assume Xtest is a new dataframe of the same form as X from fit method
-#' #    example, with true labels ytest
 #' predicted.y <- svmdp$predict(Xtest)
 #' n.errors <- sum(predicted.y!=ytest)
 #'
@@ -1318,8 +1375,8 @@ svmDP <- R6::R6Class("svmDP",
 
       V <- self$XtoV(X)
 
-      lbs <- c(numeric(ncol(V)) - sqrt(1/D))
-      ubs <- c(numeric(ncol(V)) + sqrt(1/D))
+      lbs <- c(numeric(ncol(V)) - sqrt(1/self$D))
+      ubs <- c(numeric(ncol(V)) + sqrt(1/self$D))
       res <- super$preprocess_data(V, y, ubs, lbs, add.bias=FALSE)
     } else res <- super$preprocess_data(X,y,upper.bounds,lower.bounds, add.bias)
 
@@ -1398,6 +1455,13 @@ svmDP <- R6::R6Class("svmDP",
 #'@references \insertRef{Kifer2012}{DPpack}
 #'
 #' @examples
+#' # Build example dataset
+#' n <- 500
+#' X <- data.frame(X=seq(-1,1,length.out = n))
+#' true.theta <- c(-.3,.5) # First element is bias term
+#' p <- length(true.theta)
+#' y <- true.theta[1] + as.matrix(X)%*%true.theta[2:p] + rnorm(n=n,sd=.1)
+#'
 #' # Construct object for linear regression
 #' mapXy <- function(X, coeff) X%*%coeff
 #' loss <- function(y.hat, y) (y.hat-y)^2/2
@@ -1420,19 +1484,17 @@ svmDP <- R6::R6Class("svmDP",
 #'                                              regularizer.gr)
 #'
 #' # Fit with data
-#' # Assume X is dataframe meeting assumptions for privacy
-#' # Assume 2 columns of X, with the first being all 1 (for intercept), and
-#' #   the second being between -1 and 1
-#' # Assume y is a matrix with values between -2 and 2
-#' upper.bounds <- c(1, 1, 2) # Bounds for X and y
-#' lower.bounds <- c(1,-1,-2) # Bounds for X and y
-#' ermdp$fit(X, y, upper.bounds, lower.bounds)
+#' # We must assume y is a matrix with values between -p and p (-2 and 2
+#' #   for this example)
+#' upper.bounds <- c(1, 2) # Bounds for X and y
+#' lower.bounds <- c(-1,-2) # Bounds for X and y
+#' ermdp$fit(X, y, upper.bounds, lower.bounds, add.bias=TRUE)
 #' ermdp$coeff # Gets private coefficients
 #'
 #' # Predict new data points
-#' # Assume Xtest is a new dataframe of the same form as X from fit method
-#' #     example, with true labels ytest
-#' predicted.y <- ermdp$predict(Xtest)
+#' # Build a test dataset
+#' Xtest <- data.frame(X=c(-.5, -.25, .1, .4))
+#' predicted.y <- ermdp$predict(Xtest, add.bias=TRUE)
 #'
 #'@export
 EmpiricalRiskMinimizationDP.KST <- R6::R6Class("EmpiricalRiskMinimizationDP.KST",
@@ -1809,30 +1871,34 @@ EmpiricalRiskMinimizationDP.KST <- R6::R6Class("EmpiricalRiskMinimizationDP.KST"
 #' @references \insertRef{Kifer2012}{DPpack}
 #'
 #' @examples
+#' # Build example dataset
+#' n <- 500
+#' X <- data.frame(X=seq(-1,1,length.out = n))
+#' true.theta <- c(-.3,.5) # First element is bias term
+#' p <- length(true.theta)
+#' y <- true.theta[1] + as.matrix(X)%*%true.theta[2:p] + rnorm(n=n,sd=.1)
+#'
 #' # Construct object for linear regression
 #' regularizer <- 'l2' # Alternatively, function(coeff) coeff%*%coeff/2
 #' eps <- 1
-#' delta <- 1
+#' delta <- 0 # Indicates to use pure eps-DP
 #' gamma <- 1
 #' regularizer.gr <- function(coeff) coeff
 #'
-#' lrdp <- LinearRegressionDP$new('l2', eps, delta, gamma,
-#'                                              regularizer.gr)
+#' lrdp <- LinearRegressionDP$new('l2', eps, delta, gamma, regularizer.gr)
 #'
 #' # Fit with data
-#' # Assume X is dataframe meeting assumptions for privacy
-#' # Assume 2 columns of X, with the first being all 1 (for intercept), and
-#' #   the second being between -1 and 1
-#' # Assume y is a matrix with values between -2 and 2
-#' upper.bounds <- c(1, 1, 2) # Bounds for X and y
-#' lower.bounds <- c(1,-1,-2) # Bounds for X and y
-#' lrdp$fit(X, y, upper.bounds, lower.bounds)
+#' # We must assume y is a matrix with values between -p and p (-2 and 2
+#' #   for this example)
+#' upper.bounds <- c(1, 2) # Bounds for X and y
+#' lower.bounds <- c(-1,-2) # Bounds for X and y
+#' lrdp$fit(X, y, upper.bounds, lower.bounds, add.bias=TRUE)
 #' lrdp$coeff # Gets private coefficients
 #'
 #' # Predict new data points
-#' # Assume Xtest is a new dataframe of the same form as X from fit method
-#' #     example, with true labels ytest
-#' predicted.y <- lrdp$predict(Xtest)
+#' # Build a test dataset
+#' Xtest <- data.frame(X=c(-.5, -.25, .1, .4))
+#' predicted.y <- lrdp$predict(Xtest, add.bias=TRUE)
 #'
 #' @export
 LinearRegressionDP <- R6::R6Class("LinearRegressionDP",
@@ -2020,25 +2086,38 @@ LinearRegressionDP <- R6::R6Class("LinearRegressionDP",
 #' @return Single model object selected from the input list models with tuned
 #'   parameters.
 #' @examples
-#' # Assume X is dataframe meeting assumptions for privacy
-#' # Assume 1 column of X bounded between -1 and 1
-#' # Assume y is bounded between -2 and 2
-#' upper.bounds <- c( 1, 2) # Bounds for X and y
-#' lower.bounds <- c(-1,-2) # Bounds for X and y
-#' eps <- 1
-#' delta <- 0.1
+#' # Build example dataset
+#' n <- 500
+#' X <- data.frame(X=seq(-1,1,length.out = n))
+#' true.theta <- c(-.3,.5) # First element is bias term
+#' p <- length(true.theta)
+#' y <- true.theta[1] + as.matrix(X)%*%true.theta[2:p] + rnorm(n=n,sd=.1)
 #'
 #' # Grid of possible gamma values for tuning linear regression model
 #' grid.search <- c(100, 1, .0001)
 #'
+#' # Construct objects for logistic regression parameter tuning
+#' # Privacy budget should be the same for all models
+#' eps <- 1
+#' delta <- 0.01
 #' linrdp1 <- LinearRegressionDP$new("l2", eps, delta, grid.search[1])
 #' linrdp2 <- LinearRegressionDP$new("l2", eps, delta, grid.search[2])
 #' linrdp3 <- LinearRegressionDP$new("l2", eps, delta, grid.search[3])
-#' models <- c(lrdp1, lrdp2, lrdp3)
+#' models <- c(linrdp1, linrdp2, linrdp3)
+#'
+#' # Tune using data and bounds for X and y based on their construction
+#' upper.bounds <- c( 1, 2) # Bounds for X and y
+#' lower.bounds <- c(-1,-2) # Bounds for X and y
 #' tuned.model <- tune_linear_regression_model(models, X, y, upper.bounds,
 #'                                             lower.bounds, add.bias=TRUE)
-#' # tuned.model result can be used the same as a trained LinearRegressionDP model
-#' tuned.model$lambda # Gives resulting selected hyperparameter
+#' tuned.model$gamma # Gives resulting selected hyperparameter
+#'
+#' # tuned.model result can be used the same as a trained LogisticRegressionDP model
+#' tuned.model$coeff # Gives coefficients for tuned model
+#'
+#' # Build a test dataset for prediction
+#' Xtest <- data.frame(X=c(-.5, -.25, .1, .4))
+#' predicted.y <- tuned.model$predict(Xtest, add.bias=TRUE)
 #'
 #' @references \insertRef{Kifer2012}{DPpack}
 #'

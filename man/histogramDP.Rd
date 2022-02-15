@@ -68,13 +68,15 @@ returned with sanitized values for the counts for easy plotting (see
 examples).
 }
 \examples{
-result <- histogramDP(c(1,1,-2,8,-6),1,which.sensitivity='bounded',
-  mechanism='Laplace',type.DP='pDP')
-plot(result)
-result <- histogramDP(c(1,1,-2,8,-6),.5,normalize=TRUE,
-  which.sensitivity='unbounded',mechanism='Gaussian',delta=0.5,
-  allow.negative=FALSE)
-plot(result)
+x <- rnorm(500)
+hist(x) # Non-private histogram
+result <- histogramDP(x, 1)
+plot(result) # Private histogram
+
+hist(x, freq=FALSE) # Normalized non-private histogram
+result <- histogramDP(x, .5, normalize=TRUE, which.sensitivity='unbounded',
+  mechanism='Gaussian',delta=0.01, allow.negative=TRUE)
+plot(result) # Normalized private histogram (note negative values allowed)
 
 }
 \references{

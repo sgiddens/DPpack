@@ -156,7 +156,7 @@ test_meanDP <- function(){
   lb = -3
   ub = 3
   mech = 'Gaussian'
-  delta = .5
+  delta = .01
   tdp = 'pDP'
   ap = NULL
   n = 10000;
@@ -178,7 +178,7 @@ test_meanDP <- function(){
   lb = -3
   ub = 3
   mech = 'Gaussian'
-  delta = .5
+  delta = .01
   tdp = 'aDP'
   ap = NULL
   n = 10000;
@@ -351,7 +351,7 @@ test_varDP <- function(){
   lb = -6
   ub = 6
   mech = 'Gaussian'
-  delta = .5
+  delta = .01
   tdp = 'pDP'
   ap = NULL
   n = 10000;
@@ -546,7 +546,7 @@ test_sdDP <- function(){
   lb = -6
   ub = 6
   mech = 'Gaussian'
-  delta = .5
+  delta = 0.01
   tdp = 'pDP'
   ap = NULL
   n = 10000;
@@ -568,7 +568,7 @@ test_sdDP <- function(){
   lb = -6
   ub = 6
   mech = 'Gaussian'
-  delta = .5
+  delta = .01
   tdp = 'aDP'
   ap = NULL
   n = 10000;
@@ -742,7 +742,7 @@ test_covDP <- function(){
   lb2 = -5
   ub2 = 7
   mech = 'Gaussian'
-  delta = .5
+  delta = .01
   tdp = 'pDP'
   ap = NULL
   n = 10000;
@@ -767,7 +767,7 @@ test_covDP <- function(){
   lb2 = -5
   ub2 = 7
   mech = 'Gaussian'
-  delta = .5
+  delta = .01
   tdp = 'aDP'
   ap = NULL
   n = 10000;
@@ -851,7 +851,7 @@ test_histogramDP <- function(){
   normal <- FALSE;
   ws = 'bounded'
   mech = 'Gaussian'
-  delta = .5
+  delta = .01
   tdp = 'pDP'
   an = FALSE;
 
@@ -869,7 +869,7 @@ test_histogramDP <- function(){
   normal <- FALSE;
   ws = 'bounded'
   mech = 'Gaussian'
-  delta = .5
+  delta = .01
   tdp = 'aDP'
   an = FALSE;
 
@@ -988,7 +988,7 @@ test_tableDP <- function(){
   eps <- 1;
   ws = 'bounded'
   mech = 'Gaussian'
-  delta = .5
+  delta = .01
   tdp = 'pDP'
   an = FALSE;
 
@@ -1006,7 +1006,7 @@ test_tableDP <- function(){
   eps <- .9;
   ws = 'bounded'
   mech = 'Gaussian'
-  delta = .5
+  delta = .01
   tdp = 'aDP'
   an = FALSE;
 
@@ -1237,7 +1237,7 @@ test_pooledVarDP <- function(){
   lb = -6
   ub = 6
   mech = 'Gaussian'
-  delta = .5
+  delta = .01
   tdp = 'pDP'
   anm = FALSE
   n = 10000;
@@ -1267,7 +1267,7 @@ test_pooledVarDP <- function(){
   lb = -6
   ub = 6
   mech = 'Gaussian'
-  delta = .5
+  delta = .01
   tdp = 'aDP'
   anm = FALSE
   n = 10000;
@@ -1523,7 +1523,7 @@ test_pooledCovDP <- function(){
   lb2 = -6
   ub2 = 6
   mech = 'Gaussian'
-  delta = .5
+  delta = .01
   tdp = 'pDP'
   anm = FALSE;
   n = 10000;
@@ -1557,7 +1557,7 @@ test_pooledCovDP <- function(){
   lb2 = -6
   ub2 = 6
   mech = 'Gaussian'
-  delta = .5
+  delta = .01
   tdp = 'aDP'
   anm = FALSE;
   n = 10000;

@@ -63,12 +63,16 @@ This function computes the differentially private covariance of a pair of
 vectors at user-specified privacy levels of epsilon and delta.
 }
 \examples{
-covDP(c(1,4,-2,8,-6),c(1,3,2,2,4),1,lower.bound1=-10,upper.bound1=10,
-  lower.bound2=0,upper.bound2=5,which.sensitivity='bounded',
-  mechanism='Laplace',type.DP='pDP')
-covDP(c(1,4,-2,8,-6),c(1,3,2,2,4),.5,lower.bound1=-10,upper.bound110,
-  lower.bound2=0,upper.bound2=5,which.sensitivity='unbounded',
-  mechanism='Gaussian',delta=0.5)
+D1 <- sort(rnorm(500, mean=3, sd=2))
+D2 <- sort(rnorm(500, mean=-1,sd=0.5))
+lb1 <- -3 # 3 std devs below mean
+lb2 <- -2.5 # 3 std devs below mean
+ub1 <- 9 # 3 std devs above mean
+ub2 <- .5 # 3 std devs above mean
+covDP(D1, D2, 1, lb1, ub1, lb2, ub2)
+covDP(D1, D2, .5, lb1, ub1, lb2, ub2, which.sensitivity='unbounded',
+  mechanism='Gaussian', delta=0.01)
+
 
 }
 \references{

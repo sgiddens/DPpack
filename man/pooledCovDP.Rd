@@ -75,12 +75,12 @@ epsilon and delta.
 \examples{
 x1 <- matrix(c(1,4,-2,8,-6,-3),ncol=2)
 x2 <- matrix(c(1,2,-5,7),ncol=2)
-pooledVarDP(x1,x2,eps=1,lower.bound1=-10,upper.bound1=10,lower.bound2=-10,
+pooledCovDP(x1,x2,eps=1,lower.bound1=-10,upper.bound1=10,lower.bound2=-10,
   upper.bound2=10,which.sensitivity='bounded',mechanism='Laplace',
   type.DP='pDP')
-pooledVarDP(x1,x2,eps=.5,lower.bound1=-10,upper.bound1=10,lower.bound2=-10,
+pooledCovDP(x1,x2,eps=.5,lower.bound1=-10,upper.bound1=10,lower.bound2=-10,
   upper.bound2=10,which.sensitivity='unbounded',mechanism='Gaussian',
-  delta=0.5,approx.n.max=TRUE)
+  delta=0.01,approx.n.max=TRUE)
 
 }
 \references{

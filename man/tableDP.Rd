@@ -63,7 +63,7 @@ z <- MASS::Cars93$AirBags;
 tableDP(x,y,eps=1,which.sensitivity='bounded',mechanism='Laplace',
   type.DP='pDP')
 tableDP(x,y,z,eps=.5,which.sensitivity='unbounded',mechanism='Gaussian',
-  delta=0.5,allow.negative=FALSE)
+  delta=0.01)
 
 }
 \references{

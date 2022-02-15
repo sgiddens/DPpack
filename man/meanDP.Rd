@@ -76,13 +76,16 @@ is a matrix or data frame, differentially private means are computed over
 columns and collectively satisfy differential privacy at the specified level.
 }
 \examples{
-meanDP(c(1,4,-2,8,-6),1,lower.bounds=-10,upper.bounds=10,type.DP='pDP')
-meanDP(c(1,4,-2,8,-6),.5,lower.bounds=-10,upper.bounds=10,
-  which.sensitivity='unbounded',mechanism='Gaussian',
-  delta=0.5)
-meanDP(matrix(c(1,4,-2,8,-6,0),ncol=2),1,lower.bounds=c(-10,-10),
-  upper.bounds=c(10,10),which.sensitivity='bounded',type.DP='pDP',
-  alloc.proportions=c(1,2))
+D <- rnorm(500, mean=3, sd=2)
+lb <- -3 # 3 std devs below mean
+ub <- 9 # 3 std devs above mean
+meanDP(D, 1, lb, ub)
+meanDP(D,.5, lb, ub, which.sensitivity='unbounded', mechanism='Gaussian',
+  delta=0.01)
+D.2col <- matrix(D,ncol=2)
+meanDP(D.2col, 1, lower.bounds=c(lb,lb), upper.bounds=c(ub,ub),
+  which.sensitivity='bounded', type.DP='pDP', alloc.proportions=c(1,2))
+
 
 }
 \references{

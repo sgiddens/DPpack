@@ -36,27 +36,39 @@ fitting the model, which will be scaled along with the rest of X. The
 X before scaling, if desired.
 }
 \examples{
+# Build train dataset X and y, and test dataset Xtest and ytest
+N <- 200
+K <- 2
+X <- data.frame()
+y <- data.frame()
+for (j in (1:K)){
+  t <- seq(-.25, .25, length.out = N)
+  if (j==1) m <- rnorm(N,-.2, .1)
+  if (j==2) m <- rnorm(N, .2, .1)
+  Xtemp <- data.frame(x1 = 3*t , x2 = m - t)
+  ytemp <- data.frame(matrix(j-1, N, 1))
+  X <- rbind(X, Xtemp)
+  y <- rbind(y, ytemp)
+}
+Xtest <- X[seq(1,(N*K),10),]
+ytest <- y[seq(1,(N*K),10),,drop=FALSE]
+X <- X[-seq(1,(N*K),10),]
+y <- y[-seq(1,(N*K),10),,drop=FALSE]
+
 # Construct object for logistic regression
 regularizer <- 'l2' # Alternatively, function(coeff) coeff\%*\%coeff/2
 eps <- 1
 lambda <- 0.1
-perturbation.method <- 'objective'
-regularizer.gr <- function(coeff) coeff # If function given for regularizer
-lrdp <- LogisticRegressioinDP$new(regularizer, eps, lambda,
-                                  perturbation.method, regularizer.gr)
+lrdp <- LogisticRegressionDP$new(regularizer, eps, lambda)
 
 # Fit with data
-# Assume X is dataframe meeting assumptions for privacy
-# Assume 2 columns of X each bounded between -1 and 1
-# Assume y is 0 or 1 labels for each row of X
-upper.bounds <- c( 1, 1) # Bounds for X and y
-lower.bounds <- c(-1,-1) # Bounds for X and y
-lrdp$fit(X, y, upper.bounds, lower.bounds)
+# Bounds for X based on construction
+upper.bounds <- c( 1, 1)
+lower.bounds <- c(-1,-1)
+lrdp$fit(X, y, upper.bounds, lower.bounds) # No bias term
 lrdp$coeff # Gets private coefficients
 
 # Predict new data points
-# Assume Xtest is a new dataframe of the same form as X from fit method
-#      example, with true labels ytest
 predicted.y <- lrdp$predict(Xtest)
 n.errors <- sum(predicted.y!=ytest)
 

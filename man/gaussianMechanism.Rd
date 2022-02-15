@@ -96,9 +96,9 @@ specify how to divide epsilon and delta among the function values using
 alloc.proportions.
 }
 \examples{
-GaussianMechanism(5, 1, .5, bounded.sensitivities=0.5,
+GaussianMechanism(5, 1, .01, bounded.sensitivities=0.5,
   which.sensitivity='bounded',type.DP='pDP')
-GaussianMechanism(c(5,3), .5, .5, unbounded.sensitivities=c(1,1),
+GaussianMechanism(c(5,3), .5, .01, unbounded.sensitivities=c(1,1),
   which.sensitivity='unbounded', alloc.proportions=c(.4,.6))
 
 }

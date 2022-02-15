@@ -57,23 +57,46 @@ mechanism (\code{\link{ExponentialMechanism}}) to select a tuned model in a
 privacy-preserving way.
 }
 \examples{
-# Assume X is dataframe meeting assumptions for privacy
-# Assume 2 columns of X each bounded between -1 and 1
-# Assume y is 0 or 1 labels for each row of X
-upper.bounds <- c( 1, 1) # Bounds for X
-lower.bounds <- c(-1,-1) # Bounds for X
-eps <- 1
+# Build train dataset X and y, and test dataset Xtest and ytest
+N <- 200
+K <- 2
+X <- data.frame()
+y <- data.frame()
+for (j in (1:K)){
+  t <- seq(-.25,.25,length.out = N)
+  if (j==1) m <- rnorm(N,-.2,.1)
+  if (j==2) m <- rnorm(N, .2,.1)
+  Xtemp <- data.frame(x1 = 3*t , x2 = m - t)
+  ytemp <- data.frame(matrix(j-1, N, 1))
+  X <- rbind(X, Xtemp)
+  y <- rbind(y, ytemp)
+}
+Xtest <- X[seq(1,(N*K),10),]
+ytest <- y[seq(1,(N*K),10),,drop=FALSE]
+X <- X[-seq(1,(N*K),10),]
+y <- y[-seq(1,(N*K),10),,drop=FALSE]
+y <- as.matrix(y)
 
-# Grid of possible lambda values for tuning logistric regression model
+# Grid of possible lambda values for tuning logistic regression model
 grid.search <- c(100, 1, .0001)
 
+# Construct objects for logistic regression parameter tuning
+eps <- 1 # Privacy budget should be the same for all models
 lrdp1 <- LogisticRegressionDP$new("l2", eps, grid.search[1])
 lrdp2 <- LogisticRegressionDP$new("l2", eps, grid.search[2])
 lrdp3 <- LogisticRegressionDP$new("l2", eps, grid.search[3])
 models <- c(lrdp1, lrdp2, lrdp3)
+
+# Tune using data and bounds for X based on its construction
+upper.bounds <- c( 1, 1)
+lower.bounds <- c(-1,-1)
 tuned.model <- tune_classification_model(models, X, y, upper.bounds, lower.bounds)
-# tuned.model result can be used the same as a trained LogisticRegressionDP model
 tuned.model$lambda # Gives resulting selected hyperparameter
+
+# tuned.model result can be used the same as a trained LogisticRegressionDP model
+# Predict new data points
+predicted.y <- tuned.model$predict(Xtest)
+n.errors <- sum(predicted.y!=ytest)
 
 }
 \references{

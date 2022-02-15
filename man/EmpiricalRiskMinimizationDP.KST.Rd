@@ -40,6 +40,13 @@ dataset. To ensure privacy, the add.bias argument in the \code{fit} and
 package where appropriate preprocessing is implemented, not in this class.
 }
 \examples{
+# Build example dataset
+n <- 500
+X <- data.frame(X=seq(-1,1,length.out = n))
+true.theta <- c(-.3,.5) # First element is bias term
+p <- length(true.theta)
+y <- true.theta[1] + as.matrix(X)\%*\%true.theta[2:p] + rnorm(n=n,sd=.1)
+
 # Construct object for linear regression
 mapXy <- function(X, coeff) X\%*\%coeff
 loss <- function(y.hat, y) (y.hat-y)^2/2
@@ -62,19 +69,17 @@ ermdp <- EmpiricalRiskMinimizationDP.KST$new(mapXy, loss, 'l2', eps, delta,
                                              regularizer.gr)
 
 # Fit with data
-# Assume X is dataframe meeting assumptions for privacy
-# Assume 2 columns of X, with the first being all 1 (for intercept), and
-#   the second being between -1 and 1
-# Assume y is a matrix with values between -2 and 2
-upper.bounds <- c(1, 1, 2) # Bounds for X and y
-lower.bounds <- c(1,-1,-2) # Bounds for X and y
-ermdp$fit(X, y, upper.bounds, lower.bounds)
+# We must assume y is a matrix with values between -p and p (-2 and 2
+#   for this example)
+upper.bounds <- c(1, 2) # Bounds for X and y
+lower.bounds <- c(-1,-2) # Bounds for X and y
+ermdp$fit(X, y, upper.bounds, lower.bounds, add.bias=TRUE)
 ermdp$coeff # Gets private coefficients
 
 # Predict new data points
-# Assume Xtest is a new dataframe of the same form as X from fit method
-#     example, with true labels ytest
-predicted.y <- ermdp$predict(Xtest)
+# Build a test dataset
+Xtest <- data.frame(X=c(-.5, -.25, .1, .4))
+predicted.y <- ermdp$predict(Xtest, add.bias=TRUE)
 
 }
 \references{

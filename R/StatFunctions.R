@@ -47,13 +47,16 @@
 #' @return Sanitized mean(s) based on the bounded and/or unbounded definitions
 #'   of differential privacy.
 #' @examples
-#' meanDP(c(1,4,-2,8,-6),1,lower.bounds=-10,upper.bounds=10,type.DP='pDP')
-#' meanDP(c(1,4,-2,8,-6),.5,lower.bounds=-10,upper.bounds=10,
-#'   which.sensitivity='unbounded',mechanism='Gaussian',
-#'   delta=0.5)
-#' meanDP(matrix(c(1,4,-2,8,-6,0),ncol=2),1,lower.bounds=c(-10,-10),
-#'   upper.bounds=c(10,10),which.sensitivity='bounded',type.DP='pDP',
-#'   alloc.proportions=c(1,2))
+#' D <- rnorm(500, mean=3, sd=2)
+#' lb <- -3 # 3 std devs below mean
+#' ub <- 9 # 3 std devs above mean
+#' meanDP(D, 1, lb, ub)
+#' meanDP(D,.5, lb, ub, which.sensitivity='unbounded', mechanism='Gaussian',
+#'   delta=0.01)
+#' D.2col <- matrix(D,ncol=2)
+#' meanDP(D.2col, 1, lower.bounds=c(lb,lb), upper.bounds=c(ub,ub),
+#'   which.sensitivity='bounded', type.DP='pDP', alloc.proportions=c(1,2))
+#'
 #'
 #' @references \insertRef{Dwork2006a}{DPpack}
 #'
@@ -167,12 +170,15 @@ meanDP <- function (x, eps, lower.bounds, upper.bounds,
 #' @return Sanitized variance(s) based on the bounded and/or unbounded
 #'   definitions of differential privacy.
 #' @examples
-#' varDP(c(1,4,-2,8,-6),1,lower.bounds=-10,upper.bounds=10,type.DP='pDP')
-#' varDP(c(1,4,-2,8,-6),.5,lower.bounds=-10,upper.bounds=10,
-#'   which.sensitivity='unbounded',mechanism='Gaussian',delta=0.5)
-#' varDP(matrix(c(1,4,-2,8,-6,0),ncol=2),1,lower.bounds=c(-10,-10),
-#'   upper.bounds=c(10,10),which.sensitivity='bounded',type.DP='pDP',
-#'   alloc.proportions=c(1,2))
+#' D <- rnorm(500, mean=3, sd=2)
+#' lb <- -3 # 3 std devs below mean
+#' ub <- 9 # 3 std devs above mean
+#' varDP(D, 1, lb, ub)
+#' varDP(D,.5, lb, ub, which.sensitivity='unbounded', mechanism='Gaussian',
+#'   delta=0.01)
+#' D.2col <- matrix(D,ncol=2)
+#' varDP(D.2col, 1, lower.bounds=c(lb,lb), upper.bounds=c(ub,ub),
+#'   which.sensitivity='bounded', type.DP='pDP', alloc.proportions=c(1,2))
 #'
 #' @references \insertRef{Dwork2006a}{DPpack}
 #'
@@ -303,12 +309,15 @@ varDP <- function (x, eps, lower.bounds, upper.bounds,
 #' @return Sanitized standard deviation(s) based on the bounded and/or unbounded
 #'   definitions of differential privacy.
 #' @examples
-#' sdDP(c(1,4,-2,8,-6),1,lower.bounds=-10,upper.bounds=10,type.DP='pDP')
-#' sdDP(c(1,4,-2,8,-6),.5,lower.bounds=-10,upper.bounds=10,
-#'   which.sensitivity='unbounded',mechanism='Gaussian',delta=0.5)
-#' sdDP(matrix(c(1,4,-2,8,-6,0),ncol=2),1,lower.bounds=c(-10,-10),
-#'   upper.bounds=c(10,10),which.sensitivity='bounded',type.DP='pDP',
-#'   alloc.proportions=c(1,2))
+#' D <- rnorm(500, mean=3, sd=2)
+#' lb <- -3 # 3 std devs below mean
+#' ub <- 9 # 3 std devs above mean
+#' sdDP(D, 1, lb, ub)
+#' sdDP(D,.5, lb, ub, which.sensitivity='unbounded', mechanism='Gaussian',
+#'   delta=0.01)
+#' D.2col <- matrix(D,ncol=2)
+#' sdDP(D.2col, 1, lower.bounds=c(lb,lb), upper.bounds=c(ub,ub),
+#'   which.sensitivity='bounded', type.DP='pDP', alloc.proportions=c(1,2))
 #'
 #' @references \insertRef{Dwork2006a}{DPpack}
 #'
@@ -380,12 +389,16 @@ sdDP <- function (x, eps, lower.bounds, upper.bounds,
 #' @return Sanitized covariance(s) based on the bounded and/or unbounded
 #'   definitions of differential privacy.
 #' @examples
-#' covDP(c(1,4,-2,8,-6),c(1,3,2,2,4),1,lower.bound1=-10,upper.bound1=10,
-#'   lower.bound2=0,upper.bound2=5,which.sensitivity='bounded',
-#'   mechanism='Laplace',type.DP='pDP')
-#' covDP(c(1,4,-2,8,-6),c(1,3,2,2,4),.5,lower.bound1=-10,upper.bound110,
-#'   lower.bound2=0,upper.bound2=5,which.sensitivity='unbounded',
-#'   mechanism='Gaussian',delta=0.5)
+#' D1 <- sort(rnorm(500, mean=3, sd=2))
+#' D2 <- sort(rnorm(500, mean=-1,sd=0.5))
+#' lb1 <- -3 # 3 std devs below mean
+#' lb2 <- -2.5 # 3 std devs below mean
+#' ub1 <- 9 # 3 std devs above mean
+#' ub2 <- .5 # 3 std devs above mean
+#' covDP(D1, D2, 1, lb1, ub1, lb2, ub2)
+#' covDP(D1, D2, .5, lb1, ub1, lb2, ub2, which.sensitivity='unbounded',
+#'   mechanism='Gaussian', delta=0.01)
+#'
 #'
 #' @references \insertRef{Dwork2006a}{DPpack}
 #'
@@ -481,13 +494,15 @@ covDP <- function (x1, x2, eps, lower.bound1, upper.bound1, lower.bound2,
 #' @return Sanitized histogram(s) based on the bounded and/or unbounded definitions
 #'   of differential privacy.
 #' @examples
-#' result <- histogramDP(c(1,1,-2,8,-6),1,which.sensitivity='bounded',
-#'   mechanism='Laplace',type.DP='pDP')
-#' plot(result)
-#' result <- histogramDP(c(1,1,-2,8,-6),.5,normalize=TRUE,
-#'   which.sensitivity='unbounded',mechanism='Gaussian',delta=0.5,
-#'   allow.negative=FALSE)
-#' plot(result)
+#' x <- rnorm(500)
+#' hist(x) # Non-private histogram
+#' result <- histogramDP(x, 1)
+#' plot(result) # Private histogram
+#'
+#' hist(x, freq=FALSE) # Normalized non-private histogram
+#' result <- histogramDP(x, .5, normalize=TRUE, which.sensitivity='unbounded',
+#'   mechanism='Gaussian',delta=0.01, allow.negative=TRUE)
+#' plot(result) # Normalized private histogram (note negative values allowed)
 #'
 #' @references \insertRef{Dwork2006a}{DPpack}
 #'
@@ -611,7 +626,7 @@ histogramDP <- function(x, eps, breaks="Sturges", normalize=FALSE,
 #' tableDP(x,y,eps=1,which.sensitivity='bounded',mechanism='Laplace',
 #'   type.DP='pDP')
 #' tableDP(x,y,z,eps=.5,which.sensitivity='unbounded',mechanism='Gaussian',
-#'   delta=0.5,allow.negative=FALSE)
+#'   delta=0.01)
 #'
 #' @references \insertRef{Dwork2006a}{DPpack}
 #'
@@ -734,7 +749,7 @@ tableDP <- function(..., eps, which.sensitivity='bounded', mechanism='Laplace',
 #'   type.DP='pDP')
 #' pooledVarDP(c(1,4,-2,8,-6),c(1,2),c(-5,-7),eps=.5,
 #'   lower.bound=-10,upper.bound=10,which.sensitivity='unbounded',
-#'   mechanism='Gaussian',delta=0.5,approx.n.max=TRUE)
+#'   mechanism='Gaussian',delta=0.01,approx.n.max=TRUE)
 #'
 #' @references \insertRef{Dwork2006a}{DPpack}
 #'
@@ -854,12 +869,12 @@ pooledVarDP <- function(..., eps=1, lower.bound, upper.bound,
 #' @examples
 #' x1 <- matrix(c(1,4,-2,8,-6,-3),ncol=2)
 #' x2 <- matrix(c(1,2,-5,7),ncol=2)
-#' pooledVarDP(x1,x2,eps=1,lower.bound1=-10,upper.bound1=10,lower.bound2=-10,
+#' pooledCovDP(x1,x2,eps=1,lower.bound1=-10,upper.bound1=10,lower.bound2=-10,
 #'   upper.bound2=10,which.sensitivity='bounded',mechanism='Laplace',
 #'   type.DP='pDP')
-#' pooledVarDP(x1,x2,eps=.5,lower.bound1=-10,upper.bound1=10,lower.bound2=-10,
+#' pooledCovDP(x1,x2,eps=.5,lower.bound1=-10,upper.bound1=10,lower.bound2=-10,
 #'   upper.bound2=10,which.sensitivity='unbounded',mechanism='Gaussian',
-#'   delta=0.5,approx.n.max=TRUE)
+#'   delta=0.01,approx.n.max=TRUE)
 #'
 #' @references \insertRef{Dwork2006a}{DPpack}
 #'
@@ -947,13 +962,19 @@ pooledCovDP <- function(..., eps=1, lower.bound1, upper.bound1, lower.bound2,
 #'   privacy. Currently the following mechanisms are supported: {'exponential'}.
 #'   See \code{\link{ExponentialMechanism}} for a description of the supported
 #'   mechanisms.
+#' @param uniform.sampling Boolean indicating whether to sample uniformly
+#'   between sorted dataset values when returning the private quantile. If TRUE,
+#'   it is possible for this function to return any number in the range
+#'   [lower.bound, upper.bound]. If FALSE, only a value present in the dataset
+#'   or the lower bound can be returned.
 #' @return Sanitized quantile(s) based on the bounded and/or unbounded
 #'   definitions of differential privacy.
 #' @examples
 #' quantileDP(c(1,1,-2,8,-6),.25,1,lower.bound=-10,upper.bound=10,
 #'   which.sensitivity='bounded',mechanism='exponential')
 #' quantileDP(c(1,1,-2,8,-6),.75,1,lower.bound=-10,upper.bound=10,
-#'   which.sensitivity='unbounded',mechanism='exponential')
+#'   which.sensitivity='unbounded',mechanism='exponential',
+#'   uniform.sampling=FALSE)
 #'
 #' @references \insertRef{Dwork2006a}{DPpack}
 #'
@@ -963,7 +984,8 @@ pooledCovDP <- function(..., eps=1, lower.bound1, upper.bound1, lower.bound2,
 #'
 #' @export
 quantileDP <- function (x, quant, eps, lower.bound, upper.bound,
-                        which.sensitivity='bounded', mechanism='exponential'){
+                        which.sensitivity='bounded', mechanism='exponential',
+                        uniform.sampling=TRUE){
   # NOTE: See
   # https://github.com/IBM/differential-privacy-library/blob/main/diffprivlib/tools/quantiles.py
   #
@@ -1000,20 +1022,26 @@ quantileDP <- function (x, quant, eps, lower.bound, upper.bound,
     if (which.sensitivity=='both'){
       sanitized.quantile <- list();
 
-      bounded.idx <- sanitized.indices$Bounded;
-      bounded.sanitized <- runif(1)*(sorted[bounded.idx+1]-sorted[bounded.idx]) +
-        sorted[bounded.idx];
-      sanitized.quantile[["Bounded"]] <- bounded.sanitized;
+      bounded.idx <- sanitized.indices$Bounded
+      if (uniform.sampling){
+        bounded.sanitized <- runif(1)*(sorted[bounded.idx+1]-sorted[bounded.idx]) +
+          sorted[bounded.idx]
+      } else bounded.sanitized <- sorted[bounded.idx]
+      sanitized.quantile[["Bounded"]] <- bounded.sanitized
 
-      unbounded.idx <- sanitized.indices$Unbounded;
-      unbounded.sanitized <- runif(1)*(sorted[unbounded.idx+1]-sorted[unbounded.idx]) +
-        sorted[unbounded.idx];
+      unbounded.idx <- sanitized.indices$Unbounded
+      if (uniform.sampling){
+        unbounded.sanitized <- runif(1)*(sorted[unbounded.idx+1]-sorted[unbounded.idx]) +
+          sorted[unbounded.idx]
+      } else unbounded.sanitized <- sorted[unbounded.idx]
       sanitized.quantile[["Unbounded"]] <- unbounded.sanitized;
 
       class(sanitized.quantile)<-"Sanitized Quantile";
     } else{
-      sanitized.quantile <- runif(1)*(sorted[sanitized.indices+1]-sorted[sanitized.indices]) +
-        sorted[sanitized.indices]
+      if (uniform.sampling){
+        sanitized.quantile <- runif(1)*(sorted[sanitized.indices+1]-sorted[sanitized.indices]) +
+          sorted[sanitized.indices]
+      } else sanitized.quantile <- sorted[sanitized.indices]
     }
   }
   ##########
@@ -1045,13 +1073,19 @@ quantileDP <- function (x, quant, eps, lower.bound, upper.bound,
 #'   privacy. Currently the following mechanisms are supported: {'exponential'}.
 #'   See \code{\link{ExponentialMechanism}} for a description of the supported
 #'   mechanisms.
+#' @param uniform.sampling Boolean indicating whether to sample uniformly
+#'   between sorted dataset values when returning the private median. If TRUE,
+#'   it is possible for this function to return any number in the range
+#'   [lower.bound, upper.bound]. If FALSE, only a value present in the dataset
+#'   or the lower.bound can be returned.
 #' @return Sanitized median(s) based on the bounded and/or unbounded definitions
 #'   of differential privacy.
 #' @examples
 #' medianDP(c(1,1,-2,8,-6),1,lower.bound=-10,upper.bound=10,
 #'   which.sensitivity='bounded',mechanism='exponential')
 #' medianDP(c(1,1,-2,8,-6),1,lower.bound=-10,upper.bound=10,
-#'   which.sensitivity='unbounded',mechanism='exponential')
+#'   which.sensitivity='unbounded',mechanism='exponential',
+#'   uniform.sampling=FALSE)
 #'
 #' @references \insertRef{Dwork2006a}{DPpack}
 #'
@@ -1061,9 +1095,10 @@ quantileDP <- function (x, quant, eps, lower.bound, upper.bound,
 #'
 #' @export
 medianDP <- function (x, eps, lower.bound, upper.bound,
-                      which.sensitivity='bounded', mechanism='exponential'){
+                      which.sensitivity='bounded', mechanism='exponential',
+                      uniform.sampling=TRUE){
   sanitized.median <- quantileDP(x,.5,eps,lower.bound,upper.bound,
-                                 which.sensitivity,mechanism)
+                                 which.sensitivity,mechanism,uniform.sampling)
   if (which.sensitivity=='both') class(sanitized.median)<-"Sanitized Median"
   return(sanitized.median);
   ##########

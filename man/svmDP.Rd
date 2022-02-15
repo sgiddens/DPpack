@@ -49,30 +49,37 @@ contains functionality to add a column of constant 1s to X before scaling,
 if desired.
 }
 \examples{
+# Build train dataset X and y, and test dataset Xtest and ytest
+N <- 400
+X <- data.frame()
+y <- data.frame()
+for (i in (1:N)){
+  Xtemp <- data.frame(x1 = rnorm(1,sd=.28) , x2 = rnorm(1,sd=.28))
+  if (sum(Xtemp^2)<.15) ytemp <- data.frame(y=0)
+  else ytemp <- data.frame(y=1)
+  X <- rbind(X, Xtemp)
+  y <- rbind(y, ytemp)
+}
+Xtest <- X[seq(1,N,10),]
+ytest <- y[seq(1,N,10),,drop=FALSE]
+X <- X[-seq(1,N,10),]
+y <- y[-seq(1,N,10),,drop=FALSE]
+
 # Construct object for SVM
 regularizer <- 'l2' # Alternatively, function(coeff) coeff\%*\%coeff/2
 eps <- 1
 lambda <- 0.1
-perturbation.method <- 'objective'
-regularizer.gr <- function(coeff) coeff # If function given for regularizer
-huber.h <- 0.5
-svmdp <- svmDP$new(regularizer, eps, lambda, perturbation.method,
-                                  kernel='linear',
-                                  regularizer.gr=regularizer.gr,
-                                  huber.h=huber.h)
+kernel <- 'Gaussian'
+D <- 20
+svmdp <- svmDP$new(regularizer, eps, lambda, kernel=kernel, D=D)
 
 # Fit with data
-# Assume X is dataframe meeting assumptions for privacy
-# Assume 2 columns of X each bounded between -1 and 1
-# Assume y is 0 or 1 labels for each row of X
-upper.bounds <- c( 1, 1) # Bounds for X and y
-lower.bounds <- c(-1,-1) # Bounds for X and y
-svmdp$fit(X, y, upper.bounds, lower.bounds)
-svmdp$coeff # Gets private coefficients
+# Bounds for X based on construction
+upper.bounds <- c( 1, 1)
+lower.bounds <- c(-1,-1)
+svmdp$fit(X, y, upper.bounds, lower.bounds) # No bias term
 
 # Predict new data points
-# Assume Xtest is a new dataframe of the same form as X from fit method
-#    example, with true labels ytest
 predicted.y <- svmdp$predict(Xtest)
 n.errors <- sum(predicted.y!=ytest)
 

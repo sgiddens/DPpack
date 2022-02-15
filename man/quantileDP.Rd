@@ -11,7 +11,8 @@ quantileDP(
   lower.bound,
   upper.bound,
   which.sensitivity = "bounded",
-  mechanism = "exponential"
+  mechanism = "exponential",
+  uniform.sampling = TRUE
 )
 }
 \arguments{
@@ -39,6 +40,12 @@ differential privacy in this case.}
 privacy. Currently the following mechanisms are supported: {'exponential'}.
 See \code{\link{ExponentialMechanism}} for a description of the supported
 mechanisms.}
+
+\item{uniform.sampling}{Boolean indicating whether to sample uniformly
+between sorted dataset values when returning the private quantile. If TRUE,
+it is possible for this function to return any number in the range
+\link{lower.bound, upper.bound}. If FALSE, only a value present in the dataset
+or the lower bound can be returned.}
 }
 \value{
 Sanitized quantile(s) based on the bounded and/or unbounded
@@ -52,7 +59,8 @@ at user-specified privacy levels of epsilon and delta.
 quantileDP(c(1,1,-2,8,-6),.25,1,lower.bound=-10,upper.bound=10,
   which.sensitivity='bounded',mechanism='exponential')
 quantileDP(c(1,1,-2,8,-6),.75,1,lower.bound=-10,upper.bound=10,
-  which.sensitivity='unbounded',mechanism='exponential')
+  which.sensitivity='unbounded',mechanism='exponential',
+  uniform.sampling=FALSE)
 
 }
 \references{

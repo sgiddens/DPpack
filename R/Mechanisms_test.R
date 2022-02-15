@@ -409,7 +409,7 @@ test_Gaussian <- function(){
   print("         Simple bounded example (pDP):");
   tv = 0;
   eps = .5;
-  delta = .5;
+  delta = .01;
   bs = 1;
   us = NULL;
   ws = 'bounded';
@@ -430,7 +430,7 @@ test_Gaussian <- function(){
   print("         Simple bounded example (aDP):");
   tv = 0;
   eps = .5;
-  delta = .5;
+  delta = .01
   bs = 1;
   us = NULL;
   ws = 'bounded';
@@ -451,7 +451,7 @@ test_Gaussian <- function(){
   print("         Simple unbounded example (pDP):");
   tv = 0;
   eps = .5;
-  delta = .5;
+  delta = .01
   bs = NULL;
   us = 1;
   ws = 'unbounded';
@@ -472,7 +472,7 @@ test_Gaussian <- function(){
   print("         Simple unbounded example (aDP):");
   tv = 0;
   eps = .5;
-  delta = .5;
+  delta = .01
   bs = NULL;
   us = 1;
   ws = 'unbounded';
@@ -493,7 +493,7 @@ test_Gaussian <- function(){
   print("         Simple both example (pDP):");
   tv = 0;
   eps = .5;
-  delta = .5;
+  delta = .01
   bs = 2;
   us = 1;
   ws = 'both';
@@ -524,7 +524,7 @@ test_Gaussian <- function(){
   print("         Simple both example (aDP):");
   tv = 0;
   eps = .5;
-  delta = .5;
+  delta = .01
   bs = 2;
   us = 1;
   ws = 'both';
@@ -555,7 +555,7 @@ test_Gaussian <- function(){
   print("         Changing true.values:");
   tv = 5;
   eps = .5;
-  delta = .5;
+  delta = .01
   bs = 1;
   us = NULL;
   ws = 'bounded';
@@ -576,7 +576,7 @@ test_Gaussian <- function(){
   print("         Changing true.values/epsilon:");
   tv = -5;
   eps = .1;
-  delta = .5;
+  delta = .01
   bs = 1;
   us = NULL;
   ws = 'bounded';
@@ -618,7 +618,7 @@ test_Gaussian <- function(){
   print("         Using unbounded:");
   tv = 10;
   eps = .5;
-  delta = .5
+  delta = .01
   bs = NULL;
   us = .2;
   ws = 'unbounded';
@@ -639,7 +639,7 @@ test_Gaussian <- function(){
   print("         Using multiple:");
   tv = c(-5,0,10);
   eps = .5
-  delta = .5;
+  delta = .01
   bs = c(.5,1,2);
   us = NULL;
   ws = 'bounded';
@@ -663,7 +663,7 @@ test_Gaussian <- function(){
   print("         Single sensitivity for multiple values:")
   tv = c(-5,0)
   eps = .5;
-  delta = .5;
+  delta = .01
   bs = 1
   us = NULL
   ws = 'bounded'
@@ -687,7 +687,7 @@ test_Gaussian <- function(){
   print("         Using allocation:");
   tv = c(-5,0);
   eps = .5;
-  delta = .5;
+  delta = .01
   bs = c(.5,1);
   us = NULL;
   ws = 'bounded';

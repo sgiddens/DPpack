@@ -34,30 +34,34 @@ contains functionality to add a column of constant 1s to X before scaling,
 if desired.
 }
 \examples{
+# Build example dataset
+n <- 500
+X <- data.frame(X=seq(-1,1,length.out = n))
+true.theta <- c(-.3,.5) # First element is bias term
+p <- length(true.theta)
+y <- true.theta[1] + as.matrix(X)\%*\%true.theta[2:p] + rnorm(n=n,sd=.1)
+
 # Construct object for linear regression
 regularizer <- 'l2' # Alternatively, function(coeff) coeff\%*\%coeff/2
 eps <- 1
-delta <- 1
+delta <- 0 # Indicates to use pure eps-DP
 gamma <- 1
 regularizer.gr <- function(coeff) coeff
 
-lrdp <- LinearRegressionDP$new('l2', eps, delta, gamma,
-                                             regularizer.gr)
+lrdp <- LinearRegressionDP$new('l2', eps, delta, gamma, regularizer.gr)
 
 # Fit with data
-# Assume X is dataframe meeting assumptions for privacy
-# Assume 2 columns of X, with the first being all 1 (for intercept), and
-#   the second being between -1 and 1
-# Assume y is a matrix with values between -2 and 2
-upper.bounds <- c(1, 1, 2) # Bounds for X and y
-lower.bounds <- c(1,-1,-2) # Bounds for X and y
-lrdp$fit(X, y, upper.bounds, lower.bounds)
+# We must assume y is a matrix with values between -p and p (-2 and 2
+#   for this example)
+upper.bounds <- c(1, 2) # Bounds for X and y
+lower.bounds <- c(-1,-2) # Bounds for X and y
+lrdp$fit(X, y, upper.bounds, lower.bounds, add.bias=TRUE)
 lrdp$coeff # Gets private coefficients
 
 # Predict new data points
-# Assume Xtest is a new dataframe of the same form as X from fit method
-#     example, with true labels ytest
-predicted.y <- lrdp$predict(Xtest)
+# Build a test dataset
+Xtest <- data.frame(X=c(-.5, -.25, .1, .4))
+predicted.y <- lrdp$predict(Xtest, add.bias=TRUE)
 
 }
 \references{

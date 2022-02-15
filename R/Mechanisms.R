@@ -289,9 +289,9 @@ LaplaceMechanism <- function (true.values, eps, bounded.sensitivities=NULL,
 #' @return Sanitized function values based on the bounded and/or unbounded
 #'   definitions of differential privacy, sanitized via the Gaussian mechanism.
 #' @examples
-#' GaussianMechanism(5, 1, .5, bounded.sensitivities=0.5,
+#' GaussianMechanism(5, 1, .01, bounded.sensitivities=0.5,
 #'   which.sensitivity='bounded',type.DP='pDP')
-#' GaussianMechanism(c(5,3), .5, .5, unbounded.sensitivities=c(1,1),
+#' GaussianMechanism(c(5,3), .5, .01, unbounded.sensitivities=c(1,1),
 #'   which.sensitivity='unbounded', alloc.proportions=c(.4,.6))
 #'
 #' @importFrom Rdpack reprompt

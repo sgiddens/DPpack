@@ -592,9 +592,7 @@ y <- data.frame() # class labels
 set.seed(56)
 
 for (j in (1:K)){
-  # t, m are parameters of parametric equations x1, x2
   t <- seq(-.25,.25,length.out = N)
-  # add randomness
   if (j==1) m <- rnorm(N,-.2,.1)
   if (j==2) m <- rnorm(N, .2,.1)
   Xtemp <- data.frame(x1 = 3*t , x2 = m - t)
