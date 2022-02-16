@@ -24,12 +24,12 @@ value(s) of the desired function(s).}
 \item{delta}{Positive real number defining the delta privacy parameter.}
 
 \item{bounded.sensitivities}{Real number or numeric vector corresponding to
-the global sensitivity(-ies) of the function(s) based on bounded
+the l2-global sensitivity(-ies) of the function(s) based on bounded
 differential privacy \insertCite{Kifer2011}{DPpack}. This is defined to be
-the greatest amount by which the function could change in value by changing
-one entry in the dataset (i.e. the total number of elements in the dataset
-remain the same). This value can only be NULL if which.sensitivity is
-'unbounded'. This value must be of length 1 or of the same length as
+the greatest amount by which the function could change in l2-norm by
+changing one entry in the dataset (i.e. the total number of elements in the
+dataset remain the same). This value can only be NULL if which.sensitivity
+is 'unbounded'. This value must be of length 1 or of the same length as
 true.values. If it is of length 1 and true.values is a vector, this
 indicates that the given sensitivity applies simultaneously to all elements
 of true.values and that the privacy budget need not be allocated
@@ -39,9 +39,9 @@ element of true.values individually. In this case the privacy budget is
 divided using alloc.proportions.}
 
 \item{unbounded.sensitivities}{Real number or numeric vector corresponding to
-the global sensitivity(-ies) of the function(s) based on unbounded
+the l2-global sensitivity(-ies) of the function(s) based on unbounded
 differential privacy \insertCite{Kifer2011}{DPpack}. This is defined to be
-the greatest amount by which the function could change in value by
+the greatest amount by which the function could change in l2-norm by
 adding/removing one entry of the dataset (i.e. the total number of elements
 in the dataset increases/decreases by one). This value can only be NULL if
 which.sensitivity is 'bounded'. This value must be of length 1 or of the
@@ -87,8 +87,8 @@ definitions of differential privacy, sanitized via the Gaussian mechanism.
 \description{
 This function implements the Gaussian mechanism for differential privacy by
 adding noise to the true value of a function according to specified values of
-epsilon, delta, and global sensitivity. Sensitivity calculated based either
-on bounded or unbounded differential privacy can be used
+epsilon, delta, and l2-global sensitivity. Sensitivity calculated based
+either on bounded or unbounded differential privacy can be used
 \insertCite{Kifer2011}{DPpack}. If true.values is a vector, the provided
 epsilon and delta are divided such that (epsilon, delta)-level differential
 privacy is satisfied across all function values. If desired, the user can

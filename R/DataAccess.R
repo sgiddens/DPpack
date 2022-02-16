@@ -124,6 +124,10 @@ covDataAccess <- function (x1, x2, lower.bound1, upper.bound1,
 #' @param x Numeric vector.
 #' @param breaks Identical to the argument with the same name from
 #'   \code{\link[graphics]{hist}}.
+#' @param mechanism String indicating which mechanism to use for differential
+#'   privacy. If the 'Laplace' mechanism is chosen, l1 sensitivities are
+#'   returned. If the 'Gaussian' mechanism is chosen, l2 sensitivities are
+#'   returned.
 #' @return List of the true histogram and the sensitivities calculated based on
 #'   bounded and unbounded differential privacy.
 #' @examples
@@ -131,16 +135,21 @@ covDataAccess <- function (x1, x2, lower.bound1, upper.bound1,
 #'
 #' @references \insertRef{Liu2019b}{DPpack}
 #'
-#' \insertRef{Kifer2011}{DPpack}
+#'   \insertRef{Kifer2011}{DPpack}
 #'
 #' @keywords internal
-histogramDataAccess <- function (x, breaks){
-  tv <- hist(x,breaks,plot=FALSE);
-  tv$density <- NULL;
-  bs <- 2;
-  us <- 1;
+histogramDataAccess <- function (x, breaks, mechanism){
+  tv <- hist(x,breaks,plot=FALSE)
+  tv$density <- NULL
+  if (mechanism=='Laplace'){
+    bs <- 2
+    us <- 1
+  } else if (mechanism=='Gaussian'){
+    bs <- sqrt(2)
+    us <- 1
+  }
   return(list("True.Values"=tv, "Bounded.Sensitivities"=bs,
-              "Unbounded.Sensitivities"=us));
+              "Unbounded.Sensitivities"=us))
 }
 
 #' Differentially Private Contingency Table Data Access Function
@@ -152,6 +161,10 @@ histogramDataAccess <- function (x, breaks){
 #' according to the theoretical values \insertCite{Liu2019b}{DPpack}.
 #'
 #' @param ... Vectors of data from which to create the contingency table.
+#' @param mechanism String indicating which mechanism to use for differential
+#'   privacy. If the 'Laplace' mechanism is chosen, l1 sensitivities are
+#'   returned. If the 'Gaussian' mechanism is chosen, l2 sensitivities are
+#'   returned.
 #' @return List of the true contingency table and the sensitivities calculated
 #'   based on bounded and unbounded differential privacy.
 #' @examples
@@ -164,12 +177,17 @@ histogramDataAccess <- function (x, breaks){
 #' \insertRef{Kifer2011}{DPpack}
 #'
 #' @keywords internal
-tableDataAccess <- function(...){
-  tv <- table(...);
-  bs <- 2;
-  us <- 1;
+tableDataAccess <- function(..., mechanism='Laplace'){
+  tv <- table(...)
+  if (mechanism=='Laplace'){
+    bs <- 2
+    us <- 1
+  } else if (mechanism=='Gaussian'){
+    bs <- sqrt(2)
+    us <- 1
+  }
   return(list("True.Values"=tv, "Bounded.Sensitivities"=bs,
-              "Unbounded.Sensitivities"=us));
+              "Unbounded.Sensitivities"=us))
 }
 
 #' Differentially Private Pooled Variance Data Access Function

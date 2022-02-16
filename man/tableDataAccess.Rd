@@ -4,10 +4,15 @@
 \alias{tableDataAccess}
 \title{Differentially Private Contingency Table Data Access Function}
 \usage{
-tableDataAccess(...)
+tableDataAccess(..., mechanism = "Laplace")
 }
 \arguments{
 \item{...}{Vectors of data from which to create the contingency table.}
+
+\item{mechanism}{String indicating which mechanism to use for differential
+privacy. If the 'Laplace' mechanism is chosen, l1 sensitivities are
+returned. If the 'Gaussian' mechanism is chosen, l2 sensitivities are
+returned.}
 }
 \value{
 List of the true contingency table and the sensitivities calculated

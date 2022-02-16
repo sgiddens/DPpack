@@ -4,13 +4,18 @@
 \alias{histogramDataAccess}
 \title{Differentially Private Histogram Data Access Function}
 \usage{
-histogramDataAccess(x, breaks)
+histogramDataAccess(x, breaks, mechanism)
 }
 \arguments{
 \item{x}{Numeric vector.}
 
 \item{breaks}{Identical to the argument with the same name from
 \code{\link[graphics]{hist}}.}
+
+\item{mechanism}{String indicating which mechanism to use for differential
+privacy. If the 'Laplace' mechanism is chosen, l1 sensitivities are
+returned. If the 'Gaussian' mechanism is chosen, l2 sensitivities are
+returned.}
 }
 \value{
 List of the true histogram and the sensitivities calculated based on

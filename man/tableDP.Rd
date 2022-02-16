@@ -6,7 +6,7 @@
 \usage{
 tableDP(
   ...,
-  eps,
+  eps = 1,
   which.sensitivity = "bounded",
   mechanism = "Laplace",
   delta = 0,

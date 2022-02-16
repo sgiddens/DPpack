@@ -525,18 +525,14 @@ histogramDP <- function(x, eps, breaks="Sturges", normalize=FALSE,
   ##########
 
   ########## Data access layer
-  results <- histogramDataAccess(x, breaks);
-  tv <- results$True.Values;
-  bs <- results$Bounded.Sensitivities;
-  us <- results$Unbounded.Sensitivities;
+  results <- histogramDataAccess(x, breaks, mechanism)
+  tv <- results$True.Values
+  bs <- results$Bounded.Sensitivities
+  us <- results$Unbounded.Sensitivities
   ##########
 
   ########## Privacy layer
-  counts <- tv$counts;
-  # This means that each param[i] in the mechanism becomes bs/eps rather
-  #       than bs[i]/(alloc.proportions[i]*eps)
-  # bs <- rep(bs, length(counts))/length(counts)
-  # us <- rep(us, length(counts))/length(counts)
+  counts <- tv$counts
   if (mechanism=='Laplace'){
     sanitized.counts <- LaplaceMechanism(counts,eps,bs,us,which.sensitivity);
   } else if (mechanism=='Gaussian'){
@@ -637,8 +633,9 @@ histogramDP <- function(x, eps, breaks="Sturges", normalize=FALSE,
 #'   \insertRef{DPtextbook}{DPpack}
 #'
 #' @export
-tableDP <- function(..., eps, which.sensitivity='bounded', mechanism='Laplace',
-                    delta=0, type.DP='aDP', allow.negative=FALSE){
+tableDP <- function(..., eps=1, which.sensitivity='bounded',
+                    mechanism='Laplace', delta=0, type.DP='aDP',
+                    allow.negative=FALSE){
   #### INPUT CHECKING ####
   {if (delta==0 & mechanism=='Gaussian') mechanism <- 'Laplace';
   if (mechanism!='Laplace' & mechanism!='Gaussian'){
@@ -648,7 +645,7 @@ tableDP <- function(..., eps, which.sensitivity='bounded', mechanism='Laplace',
   ##########
 
   ########## Data access layer
-  results <- tableDataAccess(...);
+  results <- tableDataAccess(..., mechanism=mechanism);
   tv <- results$True.Values;
   bs <- results$Bounded.Sensitivities;
   us <- results$Unbounded.Sensitivities;
