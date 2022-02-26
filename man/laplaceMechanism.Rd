@@ -85,10 +85,36 @@ across all function values. If desired, the user can specify how to divide
 epsilon among the function values using alloc.proportions.
 }
 \examples{
-LaplaceMechanism(5, 1, bounded.sensitivities=0.5,
-  which.sensitivity='bounded')
-LaplaceMechanism(c(5,3), 1, unbounded.sensitivities=c(1,1),
-  which.sensitivity='unbounded', alloc.proportions=c(.4,.6))
+# Build dataset
+n <- 100
+c0 <- 5 # Lower bound
+c1 <- 10 # Upper bound
+D1 <- runif(n, c0, c1)
+epsilon <- 1 # Privacy budget
+sensitivity <- (c1-c0)/n
+
+private.mean <- LaplaceMechanism(mean(D1), epsilon, sensitivity)
+private.mean
+
+# Construct second dataset
+d0 <- 3 # Lower bound
+d1 <- 6 # Upper bound
+D2 <- runif(n, d0, d1)
+D <- matrix(c(D1,D2),ncol=2)
+sensitivities <- c((c1-c0)/n, (d1-d0)/n)
+epsilon <- 1 # Total privacy budget for all means
+
+# Here, privacy budget is split evenly between each column mean. Each mean
+# individually satisfies privacy with epsilon=0.5 so that collectively the two
+# means satisfy (1,0)-differential privacy.
+private.means <- LaplaceMechanism(apply(D, 2, mean), epsilon, sensitivities)
+private.means
+
+# Here, privacy budget is split so that 75\% is given to the first vector element
+# and 25\% is given to the second.
+private.means <- LaplaceMechanism(apply(D, 2, mean), epsilon, sensitivities,
+                                  alloc.proportions = c(0.75, 0.25))
+private.means
 
 }
 \references{

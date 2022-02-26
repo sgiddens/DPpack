@@ -29,8 +29,8 @@ This value can only be NULL if which.sensitivity is 'unbounded'.}
 \item{unbounded.sensitivities}{Real number corresponding to the global
 sensitivity(-ies) of the function based on unbounded differential privacy
 \insertCite{Kifer2011}{DPpack}. This is defined to be the greatest amount
-by which the function could change in value by adding/removing one entry
-of the dataset (i.e. the total number of elements in the dataset
+by which the function could change in value by adding/removing one entry of
+the dataset (i.e. the total number of elements in the dataset
 increases/decreases by one). This value can only be NULL if
 which.sensitivity is 'bounded'.}
 
@@ -62,20 +62,27 @@ by selecting the index of a vector of candidates to return according to a
 user-specified vector of utility function values, epsilon, and global
 sensitivity. Sensitivity calculated based either on bounded or unbounded
 differential privacy can be used \insertCite{Kifer2011}{DPpack}. If measure
-is provided, the elements of the utility vector are scaled according to the
-values in measure. If candidates is provided, the function returns the value
-of candidates at the selected index, rather than the index itself.
+is provided, the probabilities of selecting each value are scaled according
+to the values in measure. If candidates is provided, the function returns the
+value of candidates at the selected index, rather than the index itself.
 }
 \examples{
-ExponentialMechanism(c(0,1,2,3,2,1,0), 1, bounded.sensitivities=1,
-  which.sensitivity='bounded')
+candidates <- c('a','b','c','d','e','f','g')
+# Release index
+idx <- ExponentialMechanism(c(0,1,2,3,2,1,0), 1, bounded.sensitivities=1,
+          which.sensitivity='bounded')
+candidates[idx] # Randomly chosen candidate
+
+# Release candidate
 ExponentialMechanism(c(0,1,2,3,2,1,0), 1, unbounded.sensitivities=.5,
   which.sensitivity='unbounded', measure=c(1,1,2,1,2,1,1),
-  candidates=c('a','b','c','d','e','f','g'))
+  candidates=candidates)
 
 }
 \references{
 \insertRef{Dwork2006a}{DPpack}
 
 \insertRef{Kifer2011}{DPpack}
+
+\insertRef{McSherry2007}{DPpack}
 }

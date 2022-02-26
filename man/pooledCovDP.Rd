@@ -73,14 +73,31 @@ or more two-column matrices of data at user-specified privacy levels of
 epsilon and delta.
 }
 \examples{
-x1 <- matrix(c(1,4,-2,8,-6,-3),ncol=2)
-x2 <- matrix(c(1,2,-5,7),ncol=2)
-pooledCovDP(x1,x2,eps=1,lower.bound1=-10,upper.bound1=10,lower.bound2=-10,
-  upper.bound2=10,which.sensitivity='bounded',mechanism='Laplace',
-  type.DP='pDP')
-pooledCovDP(x1,x2,eps=.5,lower.bound1=-10,upper.bound1=10,lower.bound2=-10,
-  upper.bound2=10,which.sensitivity='unbounded',mechanism='Gaussian',
-  delta=0.01,approx.n.max=TRUE)
+# Build datasets
+D1 <- sort(rnorm(500, mean=3, sd=2))
+D2 <- sort(rnorm(500, mean=-1, sd=0.5))
+D3 <- sort(rnorm(200, mean=3, sd=2))
+D4 <- sort(rnorm(200, mean=-1, sd=0.5))
+M1 <- matrix(c(D1, D2), ncol=2)
+M2 <- matrix(c(D3, D4), ncol=2)
+
+lb1 <- -3 # 3 std devs below mean
+lb2 <- -2.5 # 3 std devs below mean
+ub1 <- 9 # 3 std devs above mean
+ub2 <- .5 # 3 std devs above mean
+# Pooled covariance satisfying pure 1-differential privacy
+private.pooled.cov <- pooledCovDP(M1, M2, eps = 1, lower.bound1 = lb1,
+                                  lower.bound2 = lb2, upper.bound1 = ub1,
+                                  upper.bound2 = ub2)
+private.pooled.cov
+
+# Pooled covariance satisfying approximate (0.9, 0.01)-differential privacy
+# and approximating n.max in the sensitivity calculation
+private.pooled.cov <- pooledCovDP(M1, M2, eps = 0.9, lower.bound1 = lb1,
+                                  lower.bound2 = lb2, upper.bound1 = ub1,
+                                  upper.bound2 = ub2, mechanism = 'Gaussian',
+                                  delta = 0.01, approx.n.max = TRUE)
+private.pooled.cov
 
 }
 \references{

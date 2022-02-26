@@ -67,12 +67,23 @@ This function computes the differentially private pooled variance from two or
 more vectors of data at user-specified privacy levels of epsilon and delta.
 }
 \examples{
-pooledVarDP(c(1,4,-2,8,-6),c(1,2),c(-5,-7),eps=1,lower.bound=-10,
-  upper.bound=10,which.sensitivity='bounded',mechanism='Laplace',
-  type.DP='pDP')
-pooledVarDP(c(1,4,-2,8,-6),c(1,2),c(-5,-7),eps=.5,
-  lower.bound=-10,upper.bound=10,which.sensitivity='unbounded',
-  mechanism='Gaussian',delta=0.01,approx.n.max=TRUE)
+# Build datasets
+D1 <- rnorm(500, mean=3, sd=2)
+D2 <- rnorm(200, mean=3, sd=2)
+D3 <- rnorm(100, mean=3, sd=2)
+lower.bound <- -3 # 3 standard deviations below mean
+upper.bound <- 9 # 3 standard deviations above mean
+
+# Get private pooled variance without approximating n.max
+private.pooled.var <- pooledVarDP(D1, D2, D3, eps=1, lower.bound=lower.bound,
+                                  upper.bound = upper.bound)
+private.pooled.var
+
+# If n.max is sensitive, we can also use
+private.pooled.var <- pooledVarDP(D1, D2, D3, eps=1, lower.bound=lower.bound,
+                                  upper.bound = upper.bound,
+                                  approx.n.max = FALSE)
+private.pooled.var
 
 }
 \references{

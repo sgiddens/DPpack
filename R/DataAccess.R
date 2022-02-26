@@ -357,8 +357,8 @@ quantileDataAccess <- function (x, quant, lower.bound, upper.bound){
   sorted[sorted>upper.bound] <- upper.bound;
   sorted <- c(lower.bound, sorted, upper.bound);
 
-  bs <- 1; # Need to prove this in paper
-  us <- 1; # Need to prove this in paper
+  bs <- 1;
+  us <- 1;
   return(list("Utility"=utility, "Sorted"=sorted, "Bounded.Sensitivities"=bs,
               "Unbounded.Sensitivities"=us));
 }

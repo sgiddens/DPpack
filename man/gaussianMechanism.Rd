@@ -96,10 +96,40 @@ specify how to divide epsilon and delta among the function values using
 alloc.proportions.
 }
 \examples{
-GaussianMechanism(5, 1, .01, bounded.sensitivities=0.5,
-  which.sensitivity='bounded',type.DP='pDP')
-GaussianMechanism(c(5,3), .5, .01, unbounded.sensitivities=c(1,1),
-  which.sensitivity='unbounded', alloc.proportions=c(.4,.6))
+# Privacy budget
+epsilon <- 0.9 # eps must be in (0, 1) for approximate differential privacy
+delta <- 0.01
+sensitivity <- (c1-c0)/n
+
+# Approximate differential privacy
+private.mean.approx <- GaussianMechanism(mean(D1), epsilon, delta, sensitivity)
+private.mean.approx
+
+# Probabilistic differential privacy
+private.mean.prob <- GaussianMechanism(mean(D1), epsilon, delta, sensitivity,
+                                       type.DP = 'pDP')
+private.mean.prob
+
+# Construct second dataset
+d0 <- 3 # Lower bound
+d1 <- 6 # Upper bound
+D2 <- runif(n, d0, d1)
+D <- matrix(c(D1,D2),ncol=2)
+sensitivities <- c((c1-c0)/n, (d1-d0)/n)
+epsilon <- 0.9 # Total privacy budget for all means
+delta <- 0.01
+
+# Here, privacy budget is split evenly between each column mean. Each mean
+# individually satisfies privacy with epsilon=0.5 so that collectively the two
+# means satisfy (1,0)-differential privacy.
+private.means <- GaussianMechanism(apply(D, 2, mean), epsilon, delta, sensitivities)
+private.means
+
+# Here, privacy budget is split so that 75\% is given to the first vector element
+# and 25\% is given to the second.
+private.means <- GaussianMechanism(apply(D, 2, mean), epsilon, delta, sensitivities,
+                                  alloc.proportions = c(0.75, 0.25))
+private.means
 
 }
 \references{

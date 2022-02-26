@@ -56,11 +56,21 @@ This function computes the differentially private quantile of an input vector
 at user-specified privacy levels of epsilon and delta.
 }
 \examples{
-quantileDP(c(1,1,-2,8,-6),.25,1,lower.bound=-10,upper.bound=10,
-  which.sensitivity='bounded',mechanism='exponential')
-quantileDP(c(1,1,-2,8,-6),.75,1,lower.bound=-10,upper.bound=10,
-  which.sensitivity='unbounded',mechanism='exponential',
-  uniform.sampling=FALSE)
+D <- rnorm(500)
+lower.bound <- -3 # 3 standard deviations below mean
+upper.bound <- 3 # 3 standard deviations above mean
+
+quant <- 0.25
+eps <- 1
+# Get 25th quantile satisfying pure 1-differential privacy
+private.quantile <- quantileDP(D, quant, eps, lower.bound, upper.bound)
+private.quantile
+
+# Get 75th quantile requiring released value to be in dataset
+quant <- 0.75
+private.quantile <- quantileDP(D, quant, eps, lower.bound, upper.bound,
+                               uniform.sampling = FALSE)
+private.quantile
 
 }
 \references{

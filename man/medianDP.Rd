@@ -53,11 +53,18 @@ This function computes the differentially private median of an input vector
 at user-specified privacy levels of epsilon and delta.
 }
 \examples{
-medianDP(c(1,1,-2,8,-6),1,lower.bound=-10,upper.bound=10,
-  which.sensitivity='bounded',mechanism='exponential')
-medianDP(c(1,1,-2,8,-6),1,lower.bound=-10,upper.bound=10,
-  which.sensitivity='unbounded',mechanism='exponential',
-  uniform.sampling=FALSE)
+D <- rnorm(500)
+lower.bound <- -3 # 3 standard deviations below mean
+upper.bound <- 3 # 3 standard deviations above mean
+
+eps <- 1
+# Get median satisfying pure 1-differential privacy
+private.median <- medianDP(D, eps, lower.bound, upper.bound)
+private.median
+
+# Require released value to be in dataset
+private.median <- medianDP(c(1,0,3,3,2), eps, 0, 4, uniform.sampling = FALSE)
+private.median
 
 }
 \references{

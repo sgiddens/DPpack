@@ -62,10 +62,36 @@
 #' @return Sanitized function values based on the bounded and/or unbounded
 #'   definitions of differential privacy, sanitized via the Laplace mechanism.
 #' @examples
-#' LaplaceMechanism(5, 1, bounded.sensitivities=0.5,
-#'   which.sensitivity='bounded')
-#' LaplaceMechanism(c(5,3), 1, unbounded.sensitivities=c(1,1),
-#'   which.sensitivity='unbounded', alloc.proportions=c(.4,.6))
+#' # Build dataset
+#' n <- 100
+#' c0 <- 5 # Lower bound
+#' c1 <- 10 # Upper bound
+#' D1 <- runif(n, c0, c1)
+#' epsilon <- 1 # Privacy budget
+#' sensitivity <- (c1-c0)/n
+#'
+#' private.mean <- LaplaceMechanism(mean(D1), epsilon, sensitivity)
+#' private.mean
+#'
+#' # Construct second dataset
+#' d0 <- 3 # Lower bound
+#' d1 <- 6 # Upper bound
+#' D2 <- runif(n, d0, d1)
+#' D <- matrix(c(D1,D2),ncol=2)
+#' sensitivities <- c((c1-c0)/n, (d1-d0)/n)
+#' epsilon <- 1 # Total privacy budget for all means
+#'
+#' # Here, privacy budget is split evenly between each column mean. Each mean
+#' # individually satisfies privacy with epsilon=0.5 so that collectively the two
+#' # means satisfy (1,0)-differential privacy.
+#' private.means <- LaplaceMechanism(apply(D, 2, mean), epsilon, sensitivities)
+#' private.means
+#'
+#' # Here, privacy budget is split so that 75% is given to the first vector element
+#' # and 25% is given to the second.
+#' private.means <- LaplaceMechanism(apply(D, 2, mean), epsilon, sensitivities,
+#'                                   alloc.proportions = c(0.75, 0.25))
+#' private.means
 #'
 #' @references \insertRef{Dwork2006a}{DPpack}
 #'
@@ -289,10 +315,40 @@ LaplaceMechanism <- function (true.values, eps, bounded.sensitivities=NULL,
 #' @return Sanitized function values based on the bounded and/or unbounded
 #'   definitions of differential privacy, sanitized via the Gaussian mechanism.
 #' @examples
-#' GaussianMechanism(5, 1, .01, bounded.sensitivities=0.5,
-#'   which.sensitivity='bounded',type.DP='pDP')
-#' GaussianMechanism(c(5,3), .5, .01, unbounded.sensitivities=c(1,1),
-#'   which.sensitivity='unbounded', alloc.proportions=c(.4,.6))
+#' # Privacy budget
+#' epsilon <- 0.9 # eps must be in (0, 1) for approximate differential privacy
+#' delta <- 0.01
+#' sensitivity <- (c1-c0)/n
+#'
+#' # Approximate differential privacy
+#' private.mean.approx <- GaussianMechanism(mean(D1), epsilon, delta, sensitivity)
+#' private.mean.approx
+#'
+#' # Probabilistic differential privacy
+#' private.mean.prob <- GaussianMechanism(mean(D1), epsilon, delta, sensitivity,
+#'                                        type.DP = 'pDP')
+#' private.mean.prob
+#'
+#' # Construct second dataset
+#' d0 <- 3 # Lower bound
+#' d1 <- 6 # Upper bound
+#' D2 <- runif(n, d0, d1)
+#' D <- matrix(c(D1,D2),ncol=2)
+#' sensitivities <- c((c1-c0)/n, (d1-d0)/n)
+#' epsilon <- 0.9 # Total privacy budget for all means
+#' delta <- 0.01
+#'
+#' # Here, privacy budget is split evenly between each column mean. Each mean
+#' # individually satisfies privacy with epsilon=0.5 so that collectively the two
+#' # means satisfy (1,0)-differential privacy.
+#' private.means <- GaussianMechanism(apply(D, 2, mean), epsilon, delta, sensitivities)
+#' private.means
+#'
+#' # Here, privacy budget is split so that 75% is given to the first vector element
+#' # and 25% is given to the second.
+#' private.means <- GaussianMechanism(apply(D, 2, mean), epsilon, delta, sensitivities,
+#'                                   alloc.proportions = c(0.75, 0.25))
+#' private.means
 #'
 #' @importFrom Rdpack reprompt
 #'
@@ -485,9 +541,9 @@ GaussianMechanism <- function (true.values, eps, delta, bounded.sensitivities=NU
 #' user-specified vector of utility function values, epsilon, and global
 #' sensitivity. Sensitivity calculated based either on bounded or unbounded
 #' differential privacy can be used \insertCite{Kifer2011}{DPpack}. If measure
-#' is provided, the elements of the utility vector are scaled according to the
-#' values in measure. If candidates is provided, the function returns the value
-#' of candidates at the selected index, rather than the index itself.
+#' is provided, the probabilities of selecting each value are scaled according
+#' to the values in measure. If candidates is provided, the function returns the
+#' value of candidates at the selected index, rather than the index itself.
 #'
 #' @param utility Numeric vector giving the utilities of the possible values.
 #' @param eps Positive real number defining the epsilon privacy budget.
@@ -500,8 +556,8 @@ GaussianMechanism <- function (true.values, eps, delta, bounded.sensitivities=NU
 #' @param unbounded.sensitivities Real number corresponding to the global
 #'   sensitivity(-ies) of the function based on unbounded differential privacy
 #'   \insertCite{Kifer2011}{DPpack}. This is defined to be the greatest amount
-#'   by which the function could change in value by adding/removing one entry
-#'   of the dataset (i.e. the total number of elements in the dataset
+#'   by which the function could change in value by adding/removing one entry of
+#'   the dataset (i.e. the total number of elements in the dataset
 #'   increases/decreases by one). This value can only be NULL if
 #'   which.sensitivity is 'bounded'.
 #' @param which.sensitivity String indicating which type of sensitivity to use.
@@ -522,15 +578,22 @@ GaussianMechanism <- function (true.values, eps, delta, bounded.sensitivities=NU
 #' @return Indices (or values if candidates given) selected by the mechanism
 #'   based on the bounded and/or unbounded definitions of differential privacy.
 #' @examples
-#' ExponentialMechanism(c(0,1,2,3,2,1,0), 1, bounded.sensitivities=1,
-#'   which.sensitivity='bounded')
+#' candidates <- c('a','b','c','d','e','f','g')
+#' # Release index
+#' idx <- ExponentialMechanism(c(0,1,2,3,2,1,0), 1, bounded.sensitivities=1,
+#'           which.sensitivity='bounded')
+#' candidates[idx] # Randomly chosen candidate
+#'
+#' # Release candidate
 #' ExponentialMechanism(c(0,1,2,3,2,1,0), 1, unbounded.sensitivities=.5,
 #'   which.sensitivity='unbounded', measure=c(1,1,2,1,2,1,1),
-#'   candidates=c('a','b','c','d','e','f','g'))
+#'   candidates=candidates)
 #'
 #' @references \insertRef{Dwork2006a}{DPpack}
 #'
 #'   \insertRef{Kifer2011}{DPpack}
+#'
+#'   \insertRef{McSherry2007}{DPpack}
 #'
 #' @export
 ExponentialMechanism <- function (utility, eps, bounded.sensitivities=NULL,

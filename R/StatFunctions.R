@@ -741,12 +741,23 @@ tableDP <- function(..., eps=1, which.sensitivity='bounded',
 #' @return Sanitized pooled variance(s) based on the bounded and/or unbounded
 #'   definitions of differential privacy.
 #' @examples
-#' pooledVarDP(c(1,4,-2,8,-6),c(1,2),c(-5,-7),eps=1,lower.bound=-10,
-#'   upper.bound=10,which.sensitivity='bounded',mechanism='Laplace',
-#'   type.DP='pDP')
-#' pooledVarDP(c(1,4,-2,8,-6),c(1,2),c(-5,-7),eps=.5,
-#'   lower.bound=-10,upper.bound=10,which.sensitivity='unbounded',
-#'   mechanism='Gaussian',delta=0.01,approx.n.max=TRUE)
+#' # Build datasets
+#' D1 <- rnorm(500, mean=3, sd=2)
+#' D2 <- rnorm(200, mean=3, sd=2)
+#' D3 <- rnorm(100, mean=3, sd=2)
+#' lower.bound <- -3 # 3 standard deviations below mean
+#' upper.bound <- 9 # 3 standard deviations above mean
+#'
+#' # Get private pooled variance without approximating n.max
+#' private.pooled.var <- pooledVarDP(D1, D2, D3, eps=1, lower.bound=lower.bound,
+#'                                   upper.bound = upper.bound)
+#' private.pooled.var
+#'
+#' # If n.max is sensitive, we can also use
+#' private.pooled.var <- pooledVarDP(D1, D2, D3, eps=1, lower.bound=lower.bound,
+#'                                   upper.bound = upper.bound,
+#'                                   approx.n.max = FALSE)
+#' private.pooled.var
 #'
 #' @references \insertRef{Dwork2006a}{DPpack}
 #'
@@ -864,14 +875,31 @@ pooledVarDP <- function(..., eps=1, lower.bound, upper.bound,
 #' @return Sanitized pooled covariance(s) based on the bounded and/or unbounded
 #'   definitions of differential privacy.
 #' @examples
-#' x1 <- matrix(c(1,4,-2,8,-6,-3),ncol=2)
-#' x2 <- matrix(c(1,2,-5,7),ncol=2)
-#' pooledCovDP(x1,x2,eps=1,lower.bound1=-10,upper.bound1=10,lower.bound2=-10,
-#'   upper.bound2=10,which.sensitivity='bounded',mechanism='Laplace',
-#'   type.DP='pDP')
-#' pooledCovDP(x1,x2,eps=.5,lower.bound1=-10,upper.bound1=10,lower.bound2=-10,
-#'   upper.bound2=10,which.sensitivity='unbounded',mechanism='Gaussian',
-#'   delta=0.01,approx.n.max=TRUE)
+#' # Build datasets
+#' D1 <- sort(rnorm(500, mean=3, sd=2))
+#' D2 <- sort(rnorm(500, mean=-1, sd=0.5))
+#' D3 <- sort(rnorm(200, mean=3, sd=2))
+#' D4 <- sort(rnorm(200, mean=-1, sd=0.5))
+#' M1 <- matrix(c(D1, D2), ncol=2)
+#' M2 <- matrix(c(D3, D4), ncol=2)
+#'
+#' lb1 <- -3 # 3 std devs below mean
+#' lb2 <- -2.5 # 3 std devs below mean
+#' ub1 <- 9 # 3 std devs above mean
+#' ub2 <- .5 # 3 std devs above mean
+#' # Pooled covariance satisfying pure 1-differential privacy
+#' private.pooled.cov <- pooledCovDP(M1, M2, eps = 1, lower.bound1 = lb1,
+#'                                   lower.bound2 = lb2, upper.bound1 = ub1,
+#'                                   upper.bound2 = ub2)
+#' private.pooled.cov
+#'
+#' # Pooled covariance satisfying approximate (0.9, 0.01)-differential privacy
+#' # and approximating n.max in the sensitivity calculation
+#' private.pooled.cov <- pooledCovDP(M1, M2, eps = 0.9, lower.bound1 = lb1,
+#'                                   lower.bound2 = lb2, upper.bound1 = ub1,
+#'                                   upper.bound2 = ub2, mechanism = 'Gaussian',
+#'                                   delta = 0.01, approx.n.max = TRUE)
+#' private.pooled.cov
 #'
 #' @references \insertRef{Dwork2006a}{DPpack}
 #'
@@ -967,11 +995,21 @@ pooledCovDP <- function(..., eps=1, lower.bound1, upper.bound1, lower.bound2,
 #' @return Sanitized quantile(s) based on the bounded and/or unbounded
 #'   definitions of differential privacy.
 #' @examples
-#' quantileDP(c(1,1,-2,8,-6),.25,1,lower.bound=-10,upper.bound=10,
-#'   which.sensitivity='bounded',mechanism='exponential')
-#' quantileDP(c(1,1,-2,8,-6),.75,1,lower.bound=-10,upper.bound=10,
-#'   which.sensitivity='unbounded',mechanism='exponential',
-#'   uniform.sampling=FALSE)
+#' D <- rnorm(500)
+#' lower.bound <- -3 # 3 standard deviations below mean
+#' upper.bound <- 3 # 3 standard deviations above mean
+#'
+#' quant <- 0.25
+#' eps <- 1
+#' # Get 25th quantile satisfying pure 1-differential privacy
+#' private.quantile <- quantileDP(D, quant, eps, lower.bound, upper.bound)
+#' private.quantile
+#'
+#' # Get 75th quantile requiring released value to be in dataset
+#' quant <- 0.75
+#' private.quantile <- quantileDP(D, quant, eps, lower.bound, upper.bound,
+#'                                uniform.sampling = FALSE)
+#' private.quantile
 #'
 #' @references \insertRef{Dwork2006a}{DPpack}
 #'
@@ -1078,11 +1116,18 @@ quantileDP <- function (x, quant, eps, lower.bound, upper.bound,
 #' @return Sanitized median(s) based on the bounded and/or unbounded definitions
 #'   of differential privacy.
 #' @examples
-#' medianDP(c(1,1,-2,8,-6),1,lower.bound=-10,upper.bound=10,
-#'   which.sensitivity='bounded',mechanism='exponential')
-#' medianDP(c(1,1,-2,8,-6),1,lower.bound=-10,upper.bound=10,
-#'   which.sensitivity='unbounded',mechanism='exponential',
-#'   uniform.sampling=FALSE)
+#' D <- rnorm(500)
+#' lower.bound <- -3 # 3 standard deviations below mean
+#' upper.bound <- 3 # 3 standard deviations above mean
+#'
+#' eps <- 1
+#' # Get median satisfying pure 1-differential privacy
+#' private.median <- medianDP(D, eps, lower.bound, upper.bound)
+#' private.median
+#'
+#' # Require released value to be in dataset
+#' private.median <- medianDP(c(1,0,3,3,2), eps, 0, 4, uniform.sampling = FALSE)
+#' private.median
 #'
 #' @references \insertRef{Dwork2006a}{DPpack}
 #'
