@@ -58,8 +58,8 @@ y <- y[-seq(1,(N*K),10),,drop=FALSE]
 # Construct object for logistic regression
 regularizer <- 'l2' # Alternatively, function(coeff) coeff\%*\%coeff/2
 eps <- 1
-lambda <- 0.1
-lrdp <- LogisticRegressionDP$new(regularizer, eps, lambda)
+gamma <- 0.1
+lrdp <- LogisticRegressionDP$new(regularizer, eps, gamma)
 
 # Fit with data
 # Bounds for X based on construction
@@ -105,7 +105,7 @@ Create a new \code{LogisticRegressionDP} object.
 \if{html}{\out{<div class="r">}}\preformatted{LogisticRegressionDP$new(
   regularizer,
   eps,
-  lambda,
+  gamma,
   perturbation.method = "objective",
   regularizer.gr = NULL
 )}\if{html}{\out{</div>}}
@@ -125,7 +125,7 @@ doubly differentiable.}
 \item{\code{eps}}{Positive real number defining the epsilon privacy budget. If set
 to Inf, runs algorithm without differential privacy.}
 
-\item{\code{lambda}}{Nonnegative real number representing the regularization
+\item{\code{gamma}}{Nonnegative real number representing the regularization
 constant.}
 
 \item{\code{perturbation.method}}{String indicating whether to use the 'output' or

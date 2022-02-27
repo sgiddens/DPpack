@@ -316,7 +316,7 @@ regularizer.gr.l2 <- function(coeff) coeff
 #' y <- y[-seq(1,(N*K),10),,drop=FALSE]
 #' y <- as.matrix(y)
 #'
-#' # Grid of possible lambda values for tuning logistic regression model
+#' # Grid of possible gamma values for tuning logistic regression model
 #' grid.search <- c(100, 1, .0001)
 #'
 #' # Construct objects for logistic regression parameter tuning
@@ -330,7 +330,7 @@ regularizer.gr.l2 <- function(coeff) coeff
 #' upper.bounds <- c( 1, 1)
 #' lower.bounds <- c(-1,-1)
 #' tuned.model <- tune_classification_model(models, X, y, upper.bounds, lower.bounds)
-#' tuned.model$lambda # Gives resulting selected hyperparameter
+#' tuned.model$gamma # Gives resulting selected hyperparameter
 #'
 #' # tuned.model result can be used the same as a trained LogisticRegressionDP model
 #' # Predict new data points
@@ -426,14 +426,14 @@ tune_classification_model<- function(models, X, y, upper.bounds, lower.bounds,
 #' loss <- function(y.hat,y) -(y*log(y.hat) + (1-y)*log(1-y.hat))
 #' regularizer <- 'l2' # Alternatively, function(coeff) coeff%*%coeff/2
 #' eps <- 1
-#' lambda <- 0.1
+#' gamma <- 0.1
 #' perturbation.method <- 'objective'
 #' c <- 1/4 # Required value for logistic regression
 #' mapXy.gr <- function(X, coeff) as.numeric(e1071::dsigmoid(X%*%coeff))*t(X)
 #' loss.gr <- function(y.hat, y) -y/y.hat + (1-y)/(1-y.hat)
 #' regularizer.gr <- function(coeff) coeff
 #' ermdp <- EmpiricalRiskMinimizationDP.CMS$new(mapXy, loss, regularizer, eps,
-#'                                              lambda, perturbation.method, c,
+#'                                              gamma, perturbation.method, c,
 #'                                              mapXy.gr, loss.gr,
 #'                                              regularizer.gr)
 #'
@@ -476,9 +476,9 @@ EmpiricalRiskMinimizationDP.CMS <- R6::R6Class("EmpiricalRiskMinimizationDP.CMS"
   #'   regularization function with respect to \code{coeff} and of the form
   #'   \code{regularizer.gr(coeff)}.
   regularizer.gr = NULL,
-  #' @field lambda Nonnegative real number representing the regularization
+  #' @field gamma Nonnegative real number representing the regularization
   #'   constant.
-  lambda = NULL,
+  gamma = NULL,
   #' @field eps Positive real number defining the epsilon privacy budget. If set
   #'   to Inf, runs algorithm without differential privacy.
   eps = NULL,
@@ -515,9 +515,9 @@ EmpiricalRiskMinimizationDP.CMS <- R6::R6Class("EmpiricalRiskMinimizationDP.CMS"
   #'   scalar corresponding to the pre-filtered value at the given row with the
   #'   given sampled vector.
   phi=NULL,
-  #' @field gamma Value only used in child class \code{\link{svmDP}}. Positive
-  #'   real number corresponding to the Gaussian kernel parameter.
-  gamma=NULL,
+  #' @field kernel.param Value only used in child class \code{\link{svmDP}}.
+  #'   Positive real number corresponding to the Gaussian kernel parameter.
+  kernel.param=NULL,
   #' @field prefilter Value only used in child class \code{\link{svmDP}}. Matrix
   #'   of pre-filter values used in converting data into transform space.
   prefilter=NULL,
@@ -546,7 +546,7 @@ EmpiricalRiskMinimizationDP.CMS <- R6::R6Class("EmpiricalRiskMinimizationDP.CMS"
   #'   also be doubly differentiable.
   #' @param eps Positive real number defining the epsilon privacy budget. If set
   #'   to Inf, runs algorithm without differential privacy.
-  #' @param lambda Nonnegative real number representing the regularization
+  #' @param gamma Nonnegative real number representing the regularization
   #'   constant.
   #' @param perturbation.method String indicating whether to use the 'output' or
   #'   the 'objective' perturbation methods \insertCite{chaudhuri2011}{DPpack}.
@@ -581,7 +581,7 @@ EmpiricalRiskMinimizationDP.CMS <- R6::R6Class("EmpiricalRiskMinimizationDP.CMS"
   #'   are used to compute the coefficient values in fitting the model.
   #'
   #' @return A new \code{EmpiricalRiskMinimizationDP.CMS} object.
-  initialize = function(mapXy, loss, regularizer, eps, lambda,
+  initialize = function(mapXy, loss, regularizer, eps, gamma,
                         perturbation.method = 'objective', c = NULL,
                         mapXy.gr = NULL, loss.gr = NULL, regularizer.gr = NULL){
     self$mapXy <- mapXy
@@ -600,7 +600,7 @@ EmpiricalRiskMinimizationDP.CMS <- R6::R6Class("EmpiricalRiskMinimizationDP.CMS"
       self$regularizer.gr <- regularizer.gr
     }
     self$eps <- eps
-    self$lambda <- lambda
+    self$gamma <- gamma
     if (perturbation.method != 'output' & perturbation.method != 'objective'){
       stop("perturbation.method must be one of 'output' or 'objective'.")
     }
@@ -645,13 +645,13 @@ EmpiricalRiskMinimizationDP.CMS <- R6::R6Class("EmpiricalRiskMinimizationDP.CMS"
     n <- length(y)
     d <- ncol(X)
     if (!is.infinite(self$eps) & self$perturbation.method=='objective'){
-      eps.prime <- self$eps - log(1 + 2*self$c/(n*self$lambda) +
-                                    self$c^2/(n^2*self$lambda^2))
+      eps.prime <- self$eps - log(1 + 2*self$c/(n*self$gamma) +
+                                    self$c^2/(n^2*self$gamma^2))
       if (eps.prime > 0) {
         Delta <- 0
       }
       else {
-        Delta <- self$c/(n*(exp(self$eps/4) - 1)) - self$lambda
+        Delta <- self$c/(n*(exp(self$eps/4) - 1)) - self$gamma
         eps.prime <- self$eps/2
       }
       beta <- eps.prime/2
@@ -666,7 +666,7 @@ EmpiricalRiskMinimizationDP.CMS <- R6::R6Class("EmpiricalRiskMinimizationDP.CMS"
 
     tmp.coeff <- private$optimize_coeff(X, y, Delta, b)
     if (self$perturbation.method=='output'){
-      beta <- n*self$lambda*self$eps/2
+      beta <- n*self$gamma*self$eps/2
       norm.b <- rgamma(1, d, rate=beta)
       direction.b <- rnorm(d)
       direction.b <- direction.b/sqrt(sum(direction.b^2))
@@ -773,7 +773,7 @@ EmpiricalRiskMinimizationDP.CMS <- R6::R6Class("EmpiricalRiskMinimizationDP.CMS"
     # Get objective function
     objective <- function(par, X, y, Delta, b){
       as.numeric(sum(self$loss(self$mapXy(X,par),y))/n +
-                   self$lambda*self$regularizer(par)/n + t(b)%*%par/n +
+                   self$gamma*self$regularizer(par)/n + t(b)%*%par/n +
                    Delta*par%*%par/2)
     }
 
@@ -782,7 +782,7 @@ EmpiricalRiskMinimizationDP.CMS <- R6::R6Class("EmpiricalRiskMinimizationDP.CMS"
         !is.null(self$regularizer.gr)) {
       objective.gr <- function(par, X, y, Delta, b){
         as.numeric(self$mapXy.gr(X,par)%*%self$loss.gr(self$mapXy(X,par),y)/n +
-                     self$lambda*self$regularizer.gr(par)/n + b/n + Delta*par)
+                     self$gamma*self$regularizer.gr(par)/n + b/n + Delta*par)
       }
     }
     else objective.gr <- NULL
@@ -854,8 +854,8 @@ EmpiricalRiskMinimizationDP.CMS <- R6::R6Class("EmpiricalRiskMinimizationDP.CMS"
 #' # Construct object for logistic regression
 #' regularizer <- 'l2' # Alternatively, function(coeff) coeff%*%coeff/2
 #' eps <- 1
-#' lambda <- 0.1
-#' lrdp <- LogisticRegressionDP$new(regularizer, eps, lambda)
+#' gamma <- 0.1
+#' lrdp <- LogisticRegressionDP$new(regularizer, eps, gamma)
 #'
 #' # Fit with data
 #' # Bounds for X based on construction
@@ -882,7 +882,7 @@ LogisticRegressionDP <- R6::R6Class("LogisticRegressionDP",
   #'   doubly differentiable.
   #' @param eps Positive real number defining the epsilon privacy budget. If set
   #'   to Inf, runs algorithm without differential privacy.
-  #' @param lambda Nonnegative real number representing the regularization
+  #' @param gamma Nonnegative real number representing the regularization
   #'   constant.
   #' @param perturbation.method String indicating whether to use the 'output' or
   #'   the 'objective' perturbation methods \insertCite{chaudhuri2011}{DPpack}.
@@ -896,11 +896,11 @@ LogisticRegressionDP <- R6::R6Class("LogisticRegressionDP",
   #'   are used to compute the coefficient values in fitting the model.
   #'
   #' @return A new \code{LogisticRegressionDP} object.
-  initialize = function(regularizer, eps, lambda,
+  initialize = function(regularizer, eps, gamma,
                         perturbation.method = 'objective',
                         regularizer.gr = NULL){
     super$initialize(mapXy.sigmoid, loss.cross.entropy, regularizer, eps,
-                    lambda, perturbation.method, 1/4, mapXy.gr.sigmoid,
+                    gamma, perturbation.method, 1/4, mapXy.gr.sigmoid,
                     loss.gr.cross.entropy, regularizer.gr)
   },
   #' @description Fit the differentially private logistic regression model. This
@@ -1023,18 +1023,18 @@ LogisticRegressionDP <- R6::R6Class("LogisticRegressionDP",
     d <- ncol(X)
 
     # Get objective function
-    objective <- function(par, X, y, lambda, Delta, b){
+    objective <- function(par, X, y, gamma, Delta, b){
       as.numeric(sum(self$loss(self$mapXy(X,par),y))/n +
-                   lambda*self$regularizer(par)/n + t(b)%*%par/n +
+                   gamma*self$regularizer(par)/n + t(b)%*%par/n +
                    Delta*par%*%par/2)
     }
 
     # Get gradient function
     if (!is.null(self$mapXy.gr) && !is.null(self$loss.gr) &&
         !is.null(self$regularizer.gr)) {
-      objective.gr <- function(par, X, y, lambda, Delta, b){
+      objective.gr <- function(par, X, y, gamma, Delta, b){
         as.numeric(t(X)%*%(self$mapXy(X, par)-y)/n +
-                     lambda*self$regularizer.gr(par)/n + b/n + Delta*par)
+                     gamma*self$regularizer.gr(par)/n + b/n + Delta*par)
       }
     }
     else objective.gr <- NULL
@@ -1042,7 +1042,7 @@ LogisticRegressionDP <- R6::R6Class("LogisticRegressionDP",
     # Run optimization
     coeff0 <- numeric(ncol(X))
     opt.res <- optim(coeff0, fn=objective, gr=objective.gr, method="BFGS",
-                     X=X, y=y, lambda=lambda, Delta=Delta, b=b)
+                     X=X, y=y, gamma=gamma, Delta=Delta, b=b)
     opt.res$par
   }
 ))
@@ -1050,15 +1050,16 @@ LogisticRegressionDP <- R6::R6Class("LogisticRegressionDP",
 #' Generator for Sampling Distribution Function for Gaussian Kernel
 #'
 #' This function generates and returns a sampling function corresponding to the
-#' Fourier transform of a Gaussian kernel with parameter gamma
+#' Fourier transform of a Gaussian kernel with given parameter
 #' \insertCite{chaudhuri2011}{DPpack} of form needed for \code{\link{svmDP}}.
 #'
-#' @param gamma Positive real number for the Gaussian (radial) kernel parameter.
+#' @param kernel.param Positive real number for the Gaussian (radial) kernel
+#'   parameter.
 #' @return Sampling function for the Gaussian kernel of form required by
 #'   \code{\link{svmDP}}.
 #' @examples
-#'   gamma <- 1
-#'   sample <- generate.sampling(gamma)
+#'   kernel.param <- 1
+#'   sample <- generate.sampling(kernel.param)
 #'   d <- 5
 #'   sample(d)
 #'
@@ -1067,9 +1068,9 @@ LogisticRegressionDP <- R6::R6Class("LogisticRegressionDP",
 #' @references \insertRef{chaudhuri2011}{DPpack}
 #'
 #' @export
-generate.sampling <- function(gamma){
+generate.sampling <- function(kernel.param){
   function(d){
-    omega <- rnorm(d,sd=sqrt(2*gamma))
+    omega <- rnorm(d,sd=sqrt(2*kernel.param))
     phi <- runif(1,-pi,pi)
     c(omega,phi)
   }
@@ -1173,10 +1174,10 @@ phi.gaussian <- function(x, theta){
 #' # Construct object for SVM
 #' regularizer <- 'l2' # Alternatively, function(coeff) coeff%*%coeff/2
 #' eps <- 1
-#' lambda <- 0.1
+#' gamma <- 0.1
 #' kernel <- 'Gaussian'
 #' D <- 20
-#' svmdp <- svmDP$new(regularizer, eps, lambda, kernel=kernel, D=D)
+#' svmdp <- svmDP$new(regularizer, eps, gamma, kernel=kernel, D=D)
 #'
 #' # Fit with data
 #' # Bounds for X based on construction
@@ -1202,7 +1203,7 @@ svmDP <- R6::R6Class("svmDP",
   #'   doubly differentiable.
   #' @param eps Positive real number defining the epsilon privacy budget. If set
   #'   to Inf, runs algorithm without differential privacy.
-  #' @param lambda Nonnegative real number representing the regularization
+  #' @param gamma Nonnegative real number representing the regularization
   #'   constant.
   #' @param perturbation.method String indicating whether to use the 'output' or
   #'   the 'objective' perturbation methods \insertCite{chaudhuri2011}{DPpack}.
@@ -1216,8 +1217,8 @@ svmDP <- R6::R6Class("svmDP",
   #'   values of D provide better kernel approximations at a cost of
   #'   computational efficiency. This value must be specified if a nonlinear
   #'   kernel is used.
-  #' @param gamma Positive real number corresponding to the Gaussian kernel
-  #'   parameter. Defaults to 1.
+  #' @param kernel.param Positive real number corresponding to the Gaussian
+  #'   kernel parameter. Defaults to 1.
   #' @param regularizer.gr Optional function representing the gradient of the
   #'   regularization function with respect to \code{coeff} and of the form
   #'   \code{regularizer.gr(coeff)}. Should return a vector. See
@@ -1230,15 +1231,15 @@ svmDP <- R6::R6Class("svmDP",
   #'   \insertCite{Chapelle2007}{DPpack}.
   #'
   #' @return A new svmDP object.
-  initialize = function(regularizer, eps, lambda,
+  initialize = function(regularizer, eps, gamma,
                         perturbation.method = 'objective', kernel='linear',
-                        D=NULL, gamma=1, regularizer.gr=NULL, huber.h=0.5){
+                        D=NULL, kernel.param=1, regularizer.gr=NULL, huber.h=0.5){
     super$initialize(mapXy.linear, generate.loss.huber(huber.h), regularizer, eps,
-                     lambda, perturbation.method, 1/(2*huber.h), mapXy.gr.linear,
+                     gamma, perturbation.method, 1/(2*huber.h), mapXy.gr.linear,
                      generate.loss.gr.huber(huber.h), regularizer.gr)
     self$kernel <- kernel
     if (kernel=="Gaussian"){
-      self$sampling <- generate.sampling(gamma)
+      self$sampling <- generate.sampling(kernel.param)
       self$phi <- phi.gaussian
       if (is.null(D)) stop("D must be specified for nonlinear kernel.")
       self$D <- D

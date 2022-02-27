@@ -67,14 +67,14 @@ mapXy <- function(X, coeff) e1071::sigmoid(X\%*\%coeff)
 loss <- function(y.hat,y) -(y*log(y.hat) + (1-y)*log(1-y.hat))
 regularizer <- 'l2' # Alternatively, function(coeff) coeff\%*\%coeff/2
 eps <- 1
-lambda <- 0.1
+gamma <- 0.1
 perturbation.method <- 'objective'
 c <- 1/4 # Required value for logistic regression
 mapXy.gr <- function(X, coeff) as.numeric(e1071::dsigmoid(X\%*\%coeff))*t(X)
 loss.gr <- function(y.hat, y) -y/y.hat + (1-y)/(1-y.hat)
 regularizer.gr <- function(coeff) coeff
 ermdp <- EmpiricalRiskMinimizationDP.CMS$new(mapXy, loss, regularizer, eps,
-                                             lambda, perturbation.method, c,
+                                             gamma, perturbation.method, c,
                                              mapXy.gr, loss.gr,
                                              regularizer.gr)
 
@@ -120,7 +120,7 @@ respect to \code{y.hat} and of the form \code{loss.gr(y.hat, y)}, where
 regularization function with respect to \code{coeff} and of the form
 \code{regularizer.gr(coeff)}.}
 
-\item{\code{lambda}}{Nonnegative real number representing the regularization
+\item{\code{gamma}}{Nonnegative real number representing the regularization
 constant.}
 
 \item{\code{eps}}{Positive real number defining the epsilon privacy budget. If set
@@ -159,8 +159,8 @@ from the Fourier transform of the kernel to be approximated, where
 scalar corresponding to the pre-filtered value at the given row with the
 given sampled vector.}
 
-\item{\code{gamma}}{Value only used in child class \code{\link{svmDP}}. Positive
-real number corresponding to the Gaussian kernel parameter.}
+\item{\code{kernel.param}}{Value only used in child class \code{\link{svmDP}}.
+Positive real number corresponding to the Gaussian kernel parameter.}
 
 \item{\code{prefilter}}{Value only used in child class \code{\link{svmDP}}. Matrix
 of pre-filter values used in converting data into transform space.}
@@ -187,7 +187,7 @@ Create a new \code{EmpiricalRiskMinimizationDP.CMS} object.
   loss,
   regularizer,
   eps,
-  lambda,
+  gamma,
   perturbation.method = "objective",
   c = NULL,
   mapXy.gr = NULL,
@@ -227,7 +227,7 @@ also be doubly differentiable.}
 \item{\code{eps}}{Positive real number defining the epsilon privacy budget. If set
 to Inf, runs algorithm without differential privacy.}
 
-\item{\code{lambda}}{Nonnegative real number representing the regularization
+\item{\code{gamma}}{Nonnegative real number representing the regularization
 constant.}
 
 \item{\code{perturbation.method}}{String indicating whether to use the 'output' or

@@ -77,7 +77,7 @@ X <- X[-seq(1,(N*K),10),]
 y <- y[-seq(1,(N*K),10),,drop=FALSE]
 y <- as.matrix(y)
 
-# Grid of possible lambda values for tuning logistic regression model
+# Grid of possible gamma values for tuning logistic regression model
 grid.search <- c(100, 1, .0001)
 
 # Construct objects for logistic regression parameter tuning
@@ -91,7 +91,7 @@ models <- c(lrdp1, lrdp2, lrdp3)
 upper.bounds <- c( 1, 1)
 lower.bounds <- c(-1,-1)
 tuned.model <- tune_classification_model(models, X, y, upper.bounds, lower.bounds)
-tuned.model$lambda # Gives resulting selected hyperparameter
+tuned.model$gamma # Gives resulting selected hyperparameter
 
 # tuned.model result can be used the same as a trained LogisticRegressionDP model
 # Predict new data points

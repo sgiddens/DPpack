@@ -68,10 +68,10 @@ y <- y[-seq(1,N,10),,drop=FALSE]
 # Construct object for SVM
 regularizer <- 'l2' # Alternatively, function(coeff) coeff\%*\%coeff/2
 eps <- 1
-lambda <- 0.1
+gamma <- 0.1
 kernel <- 'Gaussian'
 D <- 20
-svmdp <- svmDP$new(regularizer, eps, lambda, kernel=kernel, D=D)
+svmdp <- svmDP$new(regularizer, eps, gamma, kernel=kernel, D=D)
 
 # Fit with data
 # Bounds for X based on construction
@@ -121,11 +121,11 @@ Create a new \code{svmDP} object.
 \if{html}{\out{<div class="r">}}\preformatted{svmDP$new(
   regularizer,
   eps,
-  lambda,
+  gamma,
   perturbation.method = "objective",
   kernel = "linear",
   D = NULL,
-  gamma = 1,
+  kernel.param = 1,
   regularizer.gr = NULL,
   huber.h = 0.5
 )}\if{html}{\out{</div>}}
@@ -145,7 +145,7 @@ doubly differentiable.}
 \item{\code{eps}}{Positive real number defining the epsilon privacy budget. If set
 to Inf, runs algorithm without differential privacy.}
 
-\item{\code{lambda}}{Nonnegative real number representing the regularization
+\item{\code{gamma}}{Nonnegative real number representing the regularization
 constant.}
 
 \item{\code{perturbation.method}}{String indicating whether to use the 'output' or
@@ -163,8 +163,8 @@ values of D provide better kernel approximations at a cost of
 computational efficiency. This value must be specified if a nonlinear
 kernel is used.}
 
-\item{\code{gamma}}{Positive real number corresponding to the Gaussian kernel
-parameter. Defaults to 1.}
+\item{\code{kernel.param}}{Positive real number corresponding to the Gaussian
+kernel parameter. Defaults to 1.}
 
 \item{\code{regularizer.gr}}{Optional function representing the gradient of the
 regularization function with respect to \code{coeff} and of the form

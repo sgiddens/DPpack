@@ -47,19 +47,19 @@ ggplot(data) + geom_point(aes(x=x1, y=x2, color = as.character(label)),
   theme_bw(base_size = 12) + xlim(-.8, .8) + ylim(-.7, .7)
 
 ### No DP, no regularization
-# lambda <- 0
+# gamma <- 0
 # eps <- Inf
 
 ### No DP, regularization
-# lambda <- .01
+# gamma <- .01
 # eps <- Inf
 
 ### DP, no regularization
-# lambda <- 0
+# gamma <- 0
 # eps <- 1
 
 ### DP, regularization
-lambda <- .01
+gamma <- .01
 eps <- 1
 
 set.seed(round(runif(1, 0, 100)))
@@ -69,7 +69,7 @@ c <- 1/4 # Necessary constant for logistic regression if objective used
 # pm <- 'output'
 # c <- NULL
 ermdp <- EmpiricalRiskMinimizationDP.CMS$new(mapXy.sigmoid, loss.cross.entropy,
-                                             'l2', eps, lambda, pm, c,
+                                             'l2', eps, gamma, pm, c,
                                              mapXy.gr.sigmoid,
                                              loss.gr.cross.entropy)
 
@@ -177,26 +177,26 @@ ggplot(data) + geom_point(aes(x=x1, y=x2, color = as.character(label)),
 ### End build dataset
 
 ### No DP, no regularization
-# lambda <- 0
+# gamma <- 0
 # eps <- Inf
 
 ### No DP, regularization
-# lambda <- .01
+# gamma <- .01
 # eps <- Inf
 
 ### DP, no regularization
-# lambda <- 0
+# gamma <- 0
 # eps <- 1
 
 ### DP, regularization
-lambda <- .01
+gamma <- .01
 eps <- 1
 
 set.seed(round(runif(1,0,100)))
 
 pm <- 'objective'
 # pm <- 'output'
-lrdp <- LogisticRegressionDP$new('l2', eps, lambda, pm)
+lrdp <- LogisticRegressionDP$new('l2', eps, gamma, pm)
 
 ### No bias, satisfies constraints
 lrdp$fit(X,y,upper.bounds=upper.bounds,lower.bounds=lower.bounds)
@@ -323,26 +323,26 @@ ggplot(data) + geom_point(aes(x=x1, y=x2, color = as.character(label)),
 ### End build dataset
 
 ### No DP, no regularization
-# lambda <- 0
+# gamma <- 0
 # eps <- Inf
 
 ### No DP, regularization
-# lambda <- .01
+# gamma <- .01
 # eps <- Inf
 
 ### DP, no regularization
-# lambda <- 0
+# gamma <- 0
 # eps <- 1
 
 ### DP, regularization
-lambda <- .01
+gamma <- .01
 eps <- 1
 
 set.seed(round(runif(1,0,100)))
 
 pm <- 'objective'
 # pm <- 'output'
-svmdp <- svmDP$new('l2', eps, lambda, pm, kernel='linear')
+svmdp <- svmDP$new('l2', eps, gamma, pm, kernel='linear')
 
 ### No bias, satisfies constraints
 svmdp$fit(X,y,upper.bounds=upper.bounds,lower.bounds=lower.bounds)
@@ -437,25 +437,25 @@ ggplot(data) + geom_point(aes(x=x1, y=x2, color = as.character(label)),
 
 # Hard-margin
 # eps <- Inf
-# # lambda <- 1
-# lambda <- 0
+# # gamma <- 1
+# gamma <- 0
 # D <- 20
 
 # Soft-margin
 # eps <- Inf
-# lambda <- .01
+# gamma <- .01
 # D <- 20
 
 # With DP
 eps <- 1
-lambda <- .01
+gamma <- .01
 D <- 5
 
 set.seed(round(runif(1,0,100)))
 
 pm <- 'objective'
 # pm <- 'output'
-ksvmdp <- svmDP$new('l2', eps, lambda, pm, kernel='Gaussian', D)
+ksvmdp <- svmDP$new('l2', eps, gamma, pm, kernel='Gaussian', D)
 
 ksvmdp$fit(X,y) # Note bounds unnecessary for Gaussian kernel
 
@@ -544,16 +544,16 @@ ggplot(data) + geom_point(aes(x=x1, y=x2, color = as.character(label)), size = 2
   theme_bw(base_size = 12)
 
 eps <- 5
-lambda <- 0.01
+gamma <- 0.01
 D <- 20
-gamma<-1
+kernel.param<-1
 
 set.seed(round(runif(1,0,100)))
 
 # pm <- 'objective'
 pm <- 'output'
-ksvmdp <- svmDP$new('l2', eps, lambda, pm, kernel='Gaussian',
-                                     D, gamma=gamma)
+ksvmdp <- svmDP$new('l2', eps, gamma, pm, kernel='Gaussian',
+                                     D, kernel.param=kernel.param)
 
 # Note bounds unnecessary with Gaussian kernel
 ksvmdp$fit(X,y)
@@ -652,7 +652,7 @@ ggplot() +   geom_point(data = data,
             alpha = 0.3, show.legend = F)+
   coord_fixed(ratio = 1) +
   theme_bw(base_size = 12)
-model$lambda
+model$gamma
 
 ### END TESTING PARAMETER TUNING FUNCTION ###
 
