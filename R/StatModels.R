@@ -170,7 +170,7 @@ loss.gr.squared.error <- function(y.hat,y) y.hat-y
 #' @return Huber loss function with parameter h in the form required by
 #'   \code{\link{EmpiricalRiskMinimizationDP.CMS}}.
 #' @examples
-#'   h <- 1
+#'   h <- 0.5
 #'   huber <- generate.loss.huber(h)
 #'   y.hat <- c(-.5, 1.2, -0.9)
 #'   y <- c(-1, 1, -1)
