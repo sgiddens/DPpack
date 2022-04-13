@@ -4,30 +4,29 @@
 \alias{varDataAccess}
 \title{Differentially Private Variance Data Access Function}
 \usage{
-varDataAccess(x, lower.bounds, upper.bounds)
+varDataAccess(x, lower.bound, upper.bound)
 }
 \arguments{
-\item{x}{Numeric vector, matrix, or data frame. Variances taken over columns
-(when applicable).}
+\item{x}{Dataset whose variance is desired.}
 
-\item{lower.bounds}{Numeric vector of lower bounds on each column of x. The
-length of lower.bounds must match the number of columns of x (length 1 if x
-is a vector).}
+\item{lower.bound}{Scalar representing the global or public lower bound on
+values of x.}
 
-\item{upper.bounds}{Numeric vector of upper bounds on each column of x. The
-length of upper.bounds must match the number of columns of x (length 1 if x
-is a vector).}
+\item{upper.bound}{Scalar representing the global or public upper bound on
+values of x.}
 }
 \value{
-List of the true variance and the sensitivities calculated based on
-bounded and unbounded differential privacy.
+List of the true variance and the sensitivity calculated based on
+theoretical values.
 }
 \description{
 This function performs the data access step in the computation of a
 differentially private variance. The true values are computed using
 \code{\link[stats]{var}}, while the sensitivities are calculated based on
 bounded and unbounded differential privacy \insertCite{Kifer2011}{DPpack}
-according to the theoretical values \insertCite{Liu2019b}{DPpack}.
+according to the theoretical values \insertCite{Liu2019b}{DPpack}. For the
+variance, the sensitivities based on bounded and unbounded differential
+privacy are identical, so only one value is returned.
 }
 \examples{
 varDataAccess(c(1,4,3,2), 0, 5)

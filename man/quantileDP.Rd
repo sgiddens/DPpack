@@ -28,13 +28,12 @@ quantileDP(
 
 \item{which.sensitivity}{String indicating which type of sensitivity to use.
 Can be one of {'bounded', 'unbounded', 'both'}. If 'bounded' (default),
-returns result plus noise based on bounded definition for differential
-privacy. If 'unbounded', returns result plus noise based on unbounded
-definition. If 'both', returns result based on both methods
-\insertCite{Kifer2011}{DPpack}. Note that if 'both' is chosen, each result
-individually satisfies differential privacy at level eps, but may not do so
-collectively and in composition. Care must be taken not to violate
-differential privacy in this case.}
+returns result based on bounded definition for differential privacy. If
+'unbounded', returns result based on unbounded definition. If 'both',
+returns result based on both methods \insertCite{Kifer2011}{DPpack}. Note
+that if 'both' is chosen, each result individually satisfies (eps,
+0)-differential privacy, but may not do so collectively and in composition.
+Care must be taken not to violate differential privacy in this case.}
 
 \item{mechanism}{String indicating which mechanism to use for differential
 privacy. Currently the following mechanisms are supported: {'exponential'}.
@@ -48,12 +47,12 @@ it is possible for this function to return any number in the range
 or the lower bound can be returned.}
 }
 \value{
-Sanitized quantile(s) based on the bounded and/or unbounded
-definitions of differential privacy.
+Sanitized quantile based on the bounded and/or unbounded definitions
+of differential privacy.
 }
 \description{
 This function computes the differentially private quantile of an input vector
-at user-specified privacy levels of epsilon and delta.
+at a user-specified privacy level of epsilon.
 }
 \examples{
 D <- rnorm(500)

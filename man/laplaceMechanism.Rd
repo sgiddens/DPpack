@@ -4,71 +4,34 @@
 \alias{LaplaceMechanism}
 \title{Laplace Mechanism}
 \usage{
-LaplaceMechanism(
-  true.values,
-  eps,
-  bounded.sensitivities = NULL,
-  unbounded.sensitivities = NULL,
-  which.sensitivity = "bounded",
-  alloc.proportions = NULL
-)
+LaplaceMechanism(true.values, eps, sensitivities, alloc.proportions = NULL)
 }
 \arguments{
 \item{true.values}{Real number or numeric vector corresponding to the true
-value(s) of the desired function(s).}
+value(s) of the desired function.}
 
-\item{eps}{Positive real number defining the epsilon privacy budget.}
+\item{eps}{Positive real number defining the epsilon privacy parameter.}
 
-\item{bounded.sensitivities}{Real number or numeric vector corresponding to
-the l1-global sensitivity(-ies) of the function(s) based on bounded
-differential privacy \insertCite{Kifer2011}{DPpack}. This is defined to be
-the greatest amount by which the function could change in l1-norm by
-changing one entry in the dataset (i.e. the total number of elements in the
-dataset remain the same). This value can only be NULL if which.sensitivity
-is 'unbounded'. This value must be of length 1 or of the same length as
-true.values. If it is of length 1 and true.values is a vector, this
-indicates that the given sensitivity applies simultaneously to all elements
-of true.values and that the privacy budget need not be allocated
-(alloc.proportions is unused in this case). If it is of length larger than
-1, this indicates that the Laplace mechanism is being applied to each
-element of true.values individually. In this case the privacy budget is
-divided using alloc.proportions.}
+\item{sensitivities}{Real number or numeric vector corresponding to the
+l1-global sensitivity(-ies) of the function(s) generating true.values. This
+value must be of length 1 or of the same length as true.values. If it is of
+length 1 and true.values is a vector, this indicates that the given
+sensitivity applies simultaneously to all elements of true.values and that
+the privacy budget need not be allocated (alloc.proportions is unused in
+this case). If it is of the same length as true.values, this indicates that
+each element of true.values comes from its own function with different
+corresponding sensitivities. In this case, the sum of the provided
+sensitivities is used to generate the Laplace noise.}
 
-\item{unbounded.sensitivities}{Real number or numeric vector corresponding to
-the l1-global sensitivity(-ies) of the function(s) based on unbounded
-differential privacy \insertCite{Kifer2011}{DPpack}. This is defined to be
-the greatest amount by which the function could change in l1-norm by
-adding/removing one entry of the dataset (i.e. the total number of elements
-in the dataset increases/decreases by one). This value can only be NULL if
-which.sensitivity is 'bounded'. This value must be of length 1 or of the
-same length as true.values. If it is of length 1 and true.values is a
-vector, this indicates that the given sensitivity applies simultaneously to
-all elements of true.values and that the privacy budget need not be
-allocated (alloc.proportions is unused in this case). If it is of length
-larger than 1, this indicates that the Laplace mechanism is being applied
-to each element of true.values individually. In this case the privacy
-budget is divided using alloc.proportions.}
-
-\item{which.sensitivity}{String indicating which type of sensitivity to use.
-Can be one of {'bounded', 'unbounded', 'both'}. If 'bounded' (default),
-returns result plus noise based on bounded definition for differential
-privacy. If 'unbounded', returns result plus noise based on unbounded
-definition. If 'both', returns result based on both methods
-\insertCite{Kifer2011}{DPpack}. Note that if 'both' is chosen, each result
-individually satisfies differential privacy at level eps, but may not do so
-collectively. Care must be taken not to violate differential privacy in
-this case.}
-
-\item{alloc.proportions}{Numeric vector giving the allocation proportions of
-epsilon (and delta if relevant) to the function values For example, if
-true.values is of length two and alloc.proportions = c(.75, .25), then 75\%
-of the privacy budget eps (and delta) is allocated to the noise computation
-for the first element of true.values, and the remaining 25\% is allocated to
-the noise computation for the second element of true.values. This ensures
-(eps, delta)-level privacy across all computations. By default, it
-distributes eps and delta evenly among the calculations. Input does not
-need to be normalized, meaning alloc.proportions = c(3,1) produces the same
-result as the example above.}
+\item{alloc.proportions}{Optional numeric vector giving the allocation
+proportions of epsilon to the function values in the case of vector-valued
+sensitivities. For example, if sensitivities is of length two and
+alloc.proportions = c(.75, .25), then 75\% of the privacy budget eps is
+allocated to the noise computation for the first element of true.values,
+and the remaining 25\% is allocated to the noise computation for the second
+element of true.values. This ensures eps-level privacy across all
+computations. Input does not need to be normalized, meaning
+alloc.proportions = c(3,1) produces the same result as the example above.}
 }
 \value{
 Sanitized function values based on the bounded and/or unbounded
@@ -76,16 +39,18 @@ definitions of differential privacy, sanitized via the Laplace mechanism.
 }
 \description{
 This function implements the Laplace mechanism for differential privacy by
-adding noise to the true value of a function according to specified values of
-epsilon and l1-global sensitivity. Sensitivity calculated based either on
-bounded or unbounded differential privacy can be used
+adding noise to the true value(s) of a function according to specified values
+of epsilon and l1-global sensitivity(-ies). Global sensitivity calculated
+based either on bounded or unbounded differential privacy can be used
 \insertCite{Kifer2011}{DPpack}. If true.values is a vector, the provided
-epsilon is divided such that epsilon-level differential privacy is satisfied
-across all function values. If desired, the user can specify how to divide
-epsilon among the function values using alloc.proportions.
+epsilon is divided such that epsilon-differential privacy is satisfied across
+all function values. In the case that each element of true.values comes from
+its own function with different corresponding sensitivities, a vector of
+sensitivities may be provided. In this case, if desired, the user can specify
+how to divide epsilon among the function values using alloc.proportions.
 }
 \examples{
-# Build dataset
+# Simulate dataset
 n <- 100
 c0 <- 5 # Lower bound
 c1 <- 10 # Upper bound
@@ -96,7 +61,7 @@ sensitivity <- (c1-c0)/n
 private.mean <- LaplaceMechanism(mean(D1), epsilon, sensitivity)
 private.mean
 
-# Construct second dataset
+# Simulate second dataset
 d0 <- 3 # Lower bound
 d1 <- 6 # Upper bound
 D2 <- runif(n, d0, d1)
@@ -104,14 +69,14 @@ D <- matrix(c(D1,D2),ncol=2)
 sensitivities <- c((c1-c0)/n, (d1-d0)/n)
 epsilon <- 1 # Total privacy budget for all means
 
-# Here, privacy budget is split evenly between each column mean. Each mean
-# individually satisfies privacy with epsilon=0.5 so that collectively the two
-# means satisfy (1,0)-differential privacy.
+# Here, sensitivities are summed and the result is used to generate Laplace
+# noise. This is essentially the same as allocating epsilon proportional to
+# the corresponding sensitivity. The results satisfy 1-differential privacy.
 private.means <- LaplaceMechanism(apply(D, 2, mean), epsilon, sensitivities)
 private.means
 
-# Here, privacy budget is split so that 75\% is given to the first vector element
-# and 25\% is given to the second.
+# Here, privacy budget is explicitly split so that 75\% is given to the first
+# vector element and 25\% is given to the second.
 private.means <- LaplaceMechanism(apply(D, 2, mean), epsilon, sensitivities,
                                   alloc.proportions = c(0.75, 0.25))
 private.means

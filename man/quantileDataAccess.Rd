@@ -17,15 +17,16 @@ quantileDataAccess(x, quant, lower.bound, upper.bound)
 }
 \value{
 List of a vector corresponding to the utility function, the sorted
-and clipped vector of inputs and the sensitivities calculated based on
-bounded and unbounded differential privacy.
+and clipped vector of inputs and the sensitivity calculated based on
+theoretical values.
 }
 \description{
 This function performs the data access step in the computation of a
 differentially private quantile. The utility vector is computed as in
-\insertCite{Smith2011a;textual}{DPpack}, while the sensitivities are calculated based
-on bounded and unbounded differential privacy \insertCite{Kifer2011}{DPpack}
-according to the theoretical values \insertCite{Gillenwater2021}{DPpack}.
+\insertCite{Smith2011a;textual}{DPpack}, while the sensitivities are
+calculated based on bounded and unbounded differential privacy
+\insertCite{Kifer2011}{DPpack} according to the theoretical values
+\insertCite{Gillenwater2021}{DPpack}.
 }
 \examples{
 quantileDataAccess(c(1,1,-2,8,-6),.25,-10,10)

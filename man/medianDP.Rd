@@ -25,13 +25,12 @@ medianDP(
 
 \item{which.sensitivity}{String indicating which type of sensitivity to use.
 Can be one of {'bounded', 'unbounded', 'both'}. If 'bounded' (default),
-returns result plus noise based on bounded definition for differential
-privacy. If 'unbounded', returns result plus noise based on unbounded
-definition. If 'both', returns result based on both methods
-\insertCite{Kifer2011}{DPpack}. Note that if 'both' is chosen, each result
-individually satisfies differential privacy at level eps, but may not do so
-collectively and in composition. Care must be taken not to violate
-differential privacy in this case.}
+returns result based on bounded definition for differential privacy. If
+'unbounded', returns result based on unbounded definition. If 'both',
+returns result based on both methods \insertCite{Kifer2011}{DPpack}. Note
+that if 'both' is chosen, each result individually satisfies (eps,
+0)-differential privacy, but may not do so collectively and in composition.
+Care must be taken not to violate differential privacy in this case.}
 
 \item{mechanism}{String indicating which mechanism to use for differential
 privacy. Currently the following mechanisms are supported: {'exponential'}.
@@ -39,18 +38,18 @@ See \code{\link{ExponentialMechanism}} for a description of the supported
 mechanisms.}
 
 \item{uniform.sampling}{Boolean indicating whether to sample uniformly
-between sorted dataset values when returning the private median. If TRUE,
+between sorted dataset values when returning the private quantile. If TRUE,
 it is possible for this function to return any number in the range
 \link{lower.bound, upper.bound}. If FALSE, only a value present in the dataset
-or the lower.bound can be returned.}
+or the lower bound can be returned.}
 }
 \value{
-Sanitized median(s) based on the bounded and/or unbounded definitions
+Sanitized median based on the bounded and/or unbounded definitions
 of differential privacy.
 }
 \description{
 This function computes the differentially private median of an input vector
-at user-specified privacy levels of epsilon and delta.
+at a user-specified privacy level of epsilon.
 }
 \examples{
 D <- rnorm(500)

@@ -7,7 +7,7 @@
 covDataAccess(x1, x2, lower.bound1, upper.bound1, lower.bound2, upper.bound2)
 }
 \arguments{
-\item{x1, x2}{Numeric vectors.}
+\item{x1, x2}{Numeric vectors whose covariance is desired.}
 
 \item{lower.bound1, lower.bound2}{Real numbers giving the lower bounds of x1
 and x2, respectively.}
@@ -16,15 +16,17 @@ and x2, respectively.}
 and x2, respectively.}
 }
 \value{
-List of the true covariance and the sensitivities calculated based on
-bounded and unbounded differential privacy.
+List of the true covariance and the sensitivity calculated based on
+theoretical values.
 }
 \description{
 This function performs the data access step in the computation of a
 differentially private covariance. The true values are computed using
 \code{\link[stats]{cov}}, while the sensitivities are calculated based on
 bounded and unbounded differential privacy \insertCite{Kifer2011}{DPpack}
-according to the theoretical values \insertCite{Liu2019b}{DPpack}.
+according to the theoretical values \insertCite{Liu2019b}{DPpack}. For the
+covariance, the sensitivities based on bounded and unbounded differential
+privacy are identical, so only one value is returned.
 }
 \examples{
 covDataAccess(c(1,4,3,2), c(-2,-3,-4,-1), 0, 5, -5, 0)

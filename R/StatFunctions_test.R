@@ -18,29 +18,29 @@ test_meanDP <- function(){
   if (!is.character(a)) print("FAIL");
   print("")
 
-  print("         Bad lower.bounds:")
-  a = tryCatch(meanDP(data1d,1,lower.bounds = c(1,2),upper.bounds=3,
+  print("         Bad lower.bound:")
+  a = tryCatch(meanDP(data1d,1,lower.bound = c(1,2),upper.bound=3,
                       type.DP='pDP'),
                error=function(e) print(paste("PASS --",e)));
   if (!is.character(a)) print("FAIL");
   print("")
 
-  print("         Bad upper.bounds:")
-  a = tryCatch(meanDP(data1d,1,lower.bounds=-3, upper.bounds = c(1,2),
+  print("         Bad upper.bound:")
+  a = tryCatch(meanDP(data1d,1,lower.bound=-3, upper.bound = c(1,2),
                       type.DP='pDP'),
                error=function(e) print(paste("PASS --",e)));
   if (!is.character(a)) print("FAIL");
   print("")
 
-  print("         Bad lower.bounds2d:")
-  a = tryCatch(meanDP(data2d,1,lower.bounds = -.5,upper.bounds=c(3,3),
+  print("         Bad lower.bound 2d:")
+  a = tryCatch(meanDP(data2d,1,lower.bound=c(-3,-3), upper.bound = -.5,
                       type.DP='pDP'),
                error=function(e) print(paste("PASS --",e)));
   if (!is.character(a)) print("FAIL");
   print("")
 
-  print("         Bad upper.bounds 2d:")
-  a = tryCatch(meanDP(data2d,1,lower.bounds=c(-3,-3), upper.bounds = -.5,
+  print("         Bad upper.bound 2d:")
+  a = tryCatch(meanDP(data2d,1,lower.bound=-.5,upper.bound=c(3,3),
                       type.DP='pDP'),
                error=function(e) print(paste("PASS --",e)));
   if (!is.character(a)) print("FAIL");
@@ -53,9 +53,23 @@ test_meanDP <- function(){
   print("")
 
   print("         Bad mechanism:")
-  a = tryCatch(meanDP(data2d,1,lower.bounds=c(-3,-3), upper.bounds=c(3,3),
+  a = tryCatch(meanDP(data2d,1,lower.bound=-3, upper.bound=3,
                       mechanism='abc',type.DP='pDP'),
                error=function(e) print(paste("PASS --",e)));
+  if (!is.character(a)) print("FAIL");
+  print("")
+
+  print("         Bad which.sensitivity:")
+  a = tryCatch(meanDP(data2d,1,lower.bound=-3, upper.bound=3,
+                      which.sensitivity='abc',type.DP='pDP'),
+               error=function(e) print(paste("PASS --",e)));
+  if (!is.character(a)) print("FAIL");
+  print("")
+
+  print("         Warning for 'both':")
+  a = tryCatch(meanDP(data2d,1,lower.bound=-3, upper.bound=3,
+                      which.sensitivity='both',type.DP='pDP'),
+               warning=function(w) print(paste("PASS --",w)));
   if (!is.character(a)) print("FAIL");
   print("")
   ### END TEST INPUT ###
@@ -69,12 +83,11 @@ test_meanDP <- function(){
   ub = 3
   mech = 'Laplace'
   delta = 0
-  tdp = 'pDp'
-  ap = NULL
+  tdp = 'pDP'
   n = 10000;
   data <- numeric(n);
   for (i in 1:n){
-    data[i] <- meanDP(x, eps, lb, ub, ws, mech, delta, tdp, ap)
+    data[i] <- meanDP(x, eps, lb, ub, ws, mech, delta, tdp)
   }
 
   tv = mean(x)
@@ -91,12 +104,11 @@ test_meanDP <- function(){
   ub = 3
   mech = 'Laplace'
   delta = 0
-  tdp = 'pDp'
-  ap = NULL
+  tdp = 'pDP'
   n = 10000;
   data <- numeric(n);
   for (i in 1:n){
-    data[i] <- meanDP(x, eps, lb, ub, ws, mech, delta, tdp, ap)
+    data[i] <- meanDP(x, eps, lb, ub, ws, mech, delta, tdp)
   }
 
   tv = mean(x)
@@ -113,12 +125,11 @@ test_meanDP <- function(){
   ub = 3
   mech = 'Laplace'
   delta = 0
-  tdp = 'pDp'
-  ap = NULL
+  tdp = 'pDP'
   n = 10000;
   data <- numeric(n);
   for (i in 1:n){
-    data[i] <- meanDP(x, eps, lb, ub, ws, mech, delta, tdp, ap)
+    data[i] <- meanDP(x, eps, lb, ub, ws, mech, delta, tdp)
   }
 
   tv = mean(x)
@@ -127,7 +138,7 @@ test_meanDP <- function(){
   print("Verify histogram right of line...")
   Sys.sleep(2)
 
-  print("         Laplace with upper.bounds:")
+  print("         Laplace with upper.bound:")
   x <- data1d;
   eps <- 1;
   ws = 'bounded'
@@ -135,16 +146,15 @@ test_meanDP <- function(){
   ub = .5
   mech = 'Laplace'
   delta = 0
-  tdp = 'pDp'
-  ap = NULL
+  tdp = 'pDP'
   n = 10000;
   data <- numeric(n);
   for (i in 1:n){
-    data[i] <- meanDP(x, eps, lb, ub, ws, mech, delta, tdp, ap)
+    data[i] <- meanDP(x, eps, lb, ub, ws, mech, delta, tdp)
   }
 
   tv = mean(x)
-  hist(data,freq=FALSE,main="Laplace with upper.bounds");
+  hist(data,freq=FALSE,main="Laplace with upper.bound");
   abline(v=tv,col='blue')
   print("Verify histogram left of line...")
   Sys.sleep(2)
@@ -158,11 +168,10 @@ test_meanDP <- function(){
   mech = 'Gaussian'
   delta = .01
   tdp = 'pDP'
-  ap = NULL
   n = 10000;
   data <- numeric(n);
   for (i in 1:n){
-    data[i] <- meanDP(x, eps, lb, ub, ws, mech, delta, tdp, ap)
+    data[i] <- meanDP(x, eps, lb, ub, ws, mech, delta, tdp)
   }
 
   tv = mean(x)
@@ -180,15 +189,35 @@ test_meanDP <- function(){
   mech = 'Gaussian'
   delta = .01
   tdp = 'aDP'
-  ap = NULL
   n = 10000;
   data <- numeric(n);
   for (i in 1:n){
-    data[i] <- meanDP(x, eps, lb, ub, ws, mech, delta, tdp, ap)
+    data[i] <- meanDP(x, eps, lb, ub, ws, mech, delta, tdp)
   }
 
   tv = mean(x)
   hist(data,freq=FALSE,main="Gaussian aDP");
+  abline(v=tv,col='blue')
+  print("Verify histogram centered at line...")
+  Sys.sleep(2)
+
+  print("         Multidimensional x:")
+  x <- data2d;
+  eps <- 1;
+  ws = 'bounded'
+  lb = -3
+  ub = 3
+  mech = 'Laplace'
+  delta = 0
+  tdp = 'pDP'
+  n = 10000;
+  data <- numeric(n);
+  for (i in 1:n){
+    data[i] <- meanDP(x, eps, lb, ub, ws, mech, delta, tdp)
+  }
+
+  tv = mean(x)
+  hist(data,freq=FALSE,main="Multidimensional x");
   abline(v=tv,col='blue')
   print("Verify histogram centered at line...")
   Sys.sleep(2)
@@ -213,44 +242,51 @@ test_varDP <- function(){
   if (!is.character(a)) print("FAIL");
   print("")
 
-  print("         Bad lower.bounds:")
-  a = tryCatch(varDP(data1d,1,lower.bounds = c(1,2), upper.bounds=6,
+  print("         Bad x:")
+  a = tryCatch(varDP(data2d,1,lower.bound = -6, upper.bound=6,
                      type.DP='pDP'),
                error=function(e) print(paste("PASS --",e)));
   if (!is.character(a)) print("FAIL");
   print("")
 
-  print("         Bad upper.bounds:")
-  a = tryCatch(varDP(data1d,1,lower.bounds=-6,upper.bounds = c(1,2),
+  print("         Bad lower.bound:")
+  a = tryCatch(varDP(data1d,1,lower.bound = c(1,2), upper.bound=6,
                      type.DP='pDP'),
                error=function(e) print(paste("PASS --",e)));
   if (!is.character(a)) print("FAIL");
   print("")
 
-  print("         Bad lower.bounds2d:")
-  a = tryCatch(varDP(data2d,1,lower.bounds = -.5,upper.bounds=c(6,6),
-                     type.DP='pDP'),
-               error=function(e) print(paste("PASS --",e)));
-  if (!is.character(a)) print("FAIL");
-  print("")
-
-  print("         Bad upper.bounds 2d:")
-  a = tryCatch(varDP(data2d,1,lower.bounds=c(-6,-6),upper.bounds = -.5,
+  print("         Bad upper.bound:")
+  a = tryCatch(varDP(data1d,1,lower.bound=-6,upper.bound = c(1,2),
                      type.DP='pDP'),
                error=function(e) print(paste("PASS --",e)));
   if (!is.character(a)) print("FAIL");
   print("")
 
   print("         Missing bounds:")
-  a = tryCatch(varDP(data2d,1,type.DP='pDP'),
+  a = tryCatch(varDP(data1d,1,type.DP='pDP'),
                error=function(e) print(paste("PASS --",e)));
   if (!is.character(a)) print("FAIL");
   print("")
 
   print("         Bad mechanism:")
-  a = tryCatch(varDP(data2d,1,lower.bounds=c(-6,-6),upper.bounds=c(6,6),
+  a = tryCatch(varDP(data1d,1,lower.bound=-6,upper.bound=6,
                      mechanism='abc',type.DP='pDP'),
                error=function(e) print(paste("PASS --",e)));
+  if (!is.character(a)) print("FAIL");
+  print("")
+
+  print("         Bad which.sensitivity:")
+  a = tryCatch(varDP(data1d,1,lower.bound=-6, upper.bound=6,
+                      which.sensitivity='abc',type.DP='pDP'),
+               error=function(e) print(paste("PASS --",e)));
+  if (!is.character(a)) print("FAIL");
+  print("")
+
+  print("         Warning for 'both':")
+  a = tryCatch(varDP(data1d,1,lower.bound=-6, upper.bound=6,
+                      which.sensitivity='both',type.DP='pDP'),
+               warning=function(w) print(paste("PASS --",w)));
   if (!is.character(a)) print("FAIL");
   print("")
   ### END TEST INPUT ###
@@ -264,12 +300,11 @@ test_varDP <- function(){
   ub = 6
   mech = 'Laplace'
   delta = 0
-  tdp = 'pDp'
-  ap = NULL
+  tdp = 'pDP'
   n = 10000;
   data <- numeric(n);
   for (i in 1:n){
-    data[i] <- varDP(x, eps, lb, ub, ws, mech, delta, tdp, ap)
+    data[i] <- varDP(x, eps, lb, ub, ws, mech, delta, tdp)
   }
 
   tv = var(x)
@@ -286,12 +321,11 @@ test_varDP <- function(){
   ub = 6
   mech = 'Laplace'
   delta = 0
-  tdp = 'pDp'
-  ap = NULL
+  tdp = 'pDP'
   n = 10000;
   data <- numeric(n);
   for (i in 1:n){
-    data[i] <- varDP(x, eps, lb, ub, ws, mech, delta, tdp, ap)
+    data[i] <- varDP(x, eps, lb, ub, ws, mech, delta, tdp)
   }
 
   tv = var(x)
@@ -300,7 +334,7 @@ test_varDP <- function(){
   print("Verify histogram centered at line...")
   Sys.sleep(2)
 
-  print("         Laplace with lower.bounds:")
+  print("         Laplace with lower.bound:")
   x <- data1d;
   eps <- 1;
   ws = 'bounded'
@@ -308,21 +342,20 @@ test_varDP <- function(){
   ub = 6
   mech = 'Laplace'
   delta = 0
-  tdp = 'pDp'
-  ap = NULL
+  tdp = 'pDP'
   n = 10000;
   data <- numeric(n);
   for (i in 1:n){
-    data[i] <- varDP(x, eps, lb, ub, ws, mech, delta, tdp, ap)
+    data[i] <- varDP(x, eps, lb, ub, ws, mech, delta, tdp)
   }
 
   tv = var(x)
-  hist(data,freq=FALSE,main="Laplace with lower.bounds");
+  hist(data,freq=FALSE,main="Laplace with lower.bound");
   abline(v=tv,col='blue')
   print("Verify histogram left of line...")
   Sys.sleep(2)
 
-  print("         Laplace with upper.bounds:")
+  print("         Laplace with upper.bound:")
   x <- data1d;
   eps <- 1;
   ws = 'bounded'
@@ -331,15 +364,14 @@ test_varDP <- function(){
   mech = 'Laplace'
   delta = 0
   tdp = 'pDp'
-  ap = NULL
   n = 10000;
   data <- numeric(n);
   for (i in 1:n){
-    data[i] <- varDP(x, eps, lb, ub, ws, mech, delta, tdp, ap)
+    data[i] <- varDP(x, eps, lb, ub, ws, mech, delta, tdp)
   }
 
   tv = var(x)
-  hist(data,freq=FALSE,main="Laplace with upper.bounds");
+  hist(data,freq=FALSE,main="Laplace with upper.bound");
   abline(v=tv,col='blue')
   print("Verify histogram left of line...")
   Sys.sleep(2)
@@ -353,11 +385,10 @@ test_varDP <- function(){
   mech = 'Gaussian'
   delta = .01
   tdp = 'pDP'
-  ap = NULL
   n = 10000;
   data <- numeric(n);
   for (i in 1:n){
-    data[i] <- varDP(x, eps, lb, ub, ws, mech, delta, tdp, ap)
+    data[i] <- varDP(x, eps, lb, ub, ws, mech, delta, tdp)
   }
 
   tv = var(x)
@@ -375,11 +406,10 @@ test_varDP <- function(){
   mech = 'Gaussian'
   delta = .5
   tdp = 'aDP'
-  ap = NULL
   n = 10000;
   data <- numeric(n);
   for (i in 1:n){
-    data[i] <- varDP(x, eps, lb, ub, ws, mech, delta, tdp, ap)
+    data[i] <- varDP(x, eps, lb, ub, ws, mech, delta, tdp)
   }
 
   tv = var(x)
@@ -408,44 +438,51 @@ test_sdDP <- function(){
   if (!is.character(a)) print("FAIL");
   print("")
 
-  print("         Bad lower.bounds:")
-  a = tryCatch(sdDP(data1d,1,lower.bounds = c(1,2), upper.bounds = 6,
-                    type.DP='pDP'),
+  print("         Bad x:")
+  a = tryCatch(sdDP(data2d,1,lower.bound = -6, upper.bound=6,
+                     type.DP='pDP'),
                error=function(e) print(paste("PASS --",e)));
   if (!is.character(a)) print("FAIL");
   print("")
 
-  print("         Bad upper.bounds:")
-  a = tryCatch(sdDP(data1d,1,lower.bounds=-6,upper.bounds = c(1,2),
-                    type.DP='pDP'),
+  print("         Bad lower.bound:")
+  a = tryCatch(sdDP(data1d,1,lower.bound = c(1,2), upper.bound=6,
+                     type.DP='pDP'),
                error=function(e) print(paste("PASS --",e)));
   if (!is.character(a)) print("FAIL");
   print("")
 
-  print("         Bad lower.bounds2d:")
-  a = tryCatch(sdDP(data2d,1,lower.bounds = -.5,upper.bounds=c(6,6),
-                    type.DP='pDP'),
-               error=function(e) print(paste("PASS --",e)));
-  if (!is.character(a)) print("FAIL");
-  print("")
-
-  print("         Bad upper.bounds 2d:")
-  a = tryCatch(sdDP(data2d,1,lower.bounds=c(-6,-6),upper.bounds = -.5,
-                    type.DP='pDP'),
+  print("         Bad upper.bound:")
+  a = tryCatch(sdDP(data1d,1,lower.bound=-6,upper.bound = c(1,2),
+                     type.DP='pDP'),
                error=function(e) print(paste("PASS --",e)));
   if (!is.character(a)) print("FAIL");
   print("")
 
   print("         Missing bounds:")
-  a = tryCatch(varDP(data2d,1,type.DP='pDP'),
+  a = tryCatch(sdDP(data1d,1,type.DP='pDP'),
                error=function(e) print(paste("PASS --",e)));
   if (!is.character(a)) print("FAIL");
   print("")
 
   print("         Bad mechanism:")
-  a = tryCatch(sdDP(data2d,1,lower.bounds=c(-6,-6),upper.bounds=c(6,6),
-                    mechanism='abc',type.DP='pDP'),
+  a = tryCatch(sdDP(data1d,1,lower.bound=-6,upper.bound=6,
+                     mechanism='abc',type.DP='pDP'),
                error=function(e) print(paste("PASS --",e)));
+  if (!is.character(a)) print("FAIL");
+  print("")
+
+  print("         Bad which.sensitivity:")
+  a = tryCatch(sdDP(data1d,1,lower.bound=-6, upper.bound=6,
+                     which.sensitivity='abc',type.DP='pDP'),
+               error=function(e) print(paste("PASS --",e)));
+  if (!is.character(a)) print("FAIL");
+  print("")
+
+  print("         Warning for 'both':")
+  a = tryCatch(sdDP(data1d,1,lower.bound=-6, upper.bound=6,
+                     which.sensitivity='both',type.DP='pDP'),
+               warning=function(w) print(paste("PASS --",w)));
   if (!is.character(a)) print("FAIL");
   print("")
   ### END TEST INPUT ###
@@ -459,12 +496,11 @@ test_sdDP <- function(){
   ub = 6
   mech = 'Laplace'
   delta = 0
-  tdp = 'pDp'
-  ap = NULL
+  tdp = 'pDP'
   n = 10000;
   data <- numeric(n);
   for (i in 1:n){
-    data[i] <- sdDP(x, eps, lb, ub, ws, mech, delta, tdp, ap)
+    data[i] <- sdDP(x, eps, lb, ub, ws, mech, delta, tdp)
   }
 
   tv = sd(x)
@@ -481,12 +517,11 @@ test_sdDP <- function(){
   ub = 6
   mech = 'Laplace'
   delta = 0
-  tdp = 'pDp'
-  ap = NULL
+  tdp = 'pDP'
   n = 10000;
   data <- numeric(n);
   for (i in 1:n){
-    data[i] <- sdDP(x, eps, lb, ub, ws, mech, delta, tdp, ap)
+    data[i] <- sdDP(x, eps, lb, ub, ws, mech, delta, tdp)
   }
 
   tv = sd(x)
@@ -495,7 +530,7 @@ test_sdDP <- function(){
   print("Verify histogram centered at line...")
   Sys.sleep(2)
 
-  print("         Laplace with lower.bounds:")
+  print("         Laplace with lower.bound:")
   x <- data1d;
   eps <- 1;
   ws = 'bounded'
@@ -503,21 +538,20 @@ test_sdDP <- function(){
   ub = 6
   mech = 'Laplace'
   delta = 0
-  tdp = 'pDp'
-  ap = NULL
+  tdp = 'pDP'
   n = 10000;
   data <- numeric(n);
   for (i in 1:n){
-    data[i] <- sdDP(x, eps, lb, ub, ws, mech, delta, tdp, ap)
+    data[i] <- sdDP(x, eps, lb, ub, ws, mech, delta, tdp)
   }
 
   tv = sd(x)
-  hist(data,freq=FALSE,main="Laplace with lower.bounds");
+  hist(data,freq=FALSE,main="Laplace with lower.bound");
   abline(v=tv,col='blue')
   print("Verify histogram left of line...")
   Sys.sleep(2)
 
-  print("         Laplace with upper.bounds:")
+  print("         Laplace with upper.bound:")
   x <- data1d;
   eps <- 1;
   ws = 'bounded'
@@ -526,15 +560,14 @@ test_sdDP <- function(){
   mech = 'Laplace'
   delta = 0
   tdp = 'pDp'
-  ap = NULL
   n = 10000;
   data <- numeric(n);
   for (i in 1:n){
-    data[i] <- sdDP(x, eps, lb, ub, ws, mech, delta, tdp, ap)
+    data[i] <- sdDP(x, eps, lb, ub, ws, mech, delta, tdp)
   }
 
   tv = sd(x)
-  hist(data,freq=FALSE,main="Laplace with upper.bounds");
+  hist(data,freq=FALSE,main="Laplace with upper.bound");
   abline(v=tv,col='blue')
   print("Verify histogram left of line...")
   Sys.sleep(2)
@@ -546,13 +579,12 @@ test_sdDP <- function(){
   lb = -6
   ub = 6
   mech = 'Gaussian'
-  delta = 0.01
+  delta = .01
   tdp = 'pDP'
-  ap = NULL
   n = 10000;
   data <- numeric(n);
   for (i in 1:n){
-    data[i] <- sdDP(x, eps, lb, ub, ws, mech, delta, tdp, ap)
+    data[i] <- sdDP(x, eps, lb, ub, ws, mech, delta, tdp)
   }
 
   tv = sd(x)
@@ -568,13 +600,12 @@ test_sdDP <- function(){
   lb = -6
   ub = 6
   mech = 'Gaussian'
-  delta = .01
+  delta = .5
   tdp = 'aDP'
-  ap = NULL
   n = 10000;
   data <- numeric(n);
   for (i in 1:n){
-    data[i] <- sdDP(x, eps, lb, ub, ws, mech, delta, tdp, ap)
+    data[i] <- sdDP(x, eps, lb, ub, ws, mech, delta, tdp)
   }
 
   tv = sd(x)
@@ -628,6 +659,22 @@ test_covDP <- function(){
                      lower.bound2=-5,upper.bound2=7,mechanism='abc',
                      type.DP='pDP'),
                error=function(e) print(paste("PASS --",e)));
+  if (!is.character(a)) print("FAIL");
+  print("")
+
+  print("         Bad which.sensitivity:")
+  a = tryCatch(covDP(data1d,data1d+1,1,lower.bound1=-6,upper.bound1=6,
+                     lower.bound2=-5,upper.bound2=7,which.sensitivity='abc',
+                     type.DP='pDP'),
+               error=function(e) print(paste("PASS --",e)));
+  if (!is.character(a)) print("FAIL");
+  print("")
+
+  print("         Warning for 'both':")
+  a = tryCatch(covDP(data1d,data1d+1,1,lower.bound1=-6,upper.bound1=6,
+                     lower.bound2=-5,upper.bound2=7,which.sensitivity='both',
+                     type.DP='pDP'),
+               warning=function(w) print(paste("PASS --",w)));
   if (!is.character(a)) print("FAIL");
   print("")
   ### END TEST INPUT ###
@@ -806,6 +853,12 @@ test_histogramDP <- function(){
                error=function(e) print(paste("PASS --",e)));
   if (!is.character(a)) print("FAIL");
   print("")
+
+  print("         Bad which.sensitivity:")
+  a = tryCatch(histogramDP(data1d,1,which.sensitivity='abc',type.DP='pDP'),
+               error=function(e) print(paste("PASS --",e)));
+  if (!is.character(a)) print("FAIL");
+  print("")
   ### END TEST INPUT ###
 
   ### TEST FUNCTIONALITY ###
@@ -819,13 +872,14 @@ test_histogramDP <- function(){
   tdp = 'pDP'
   an = FALSE;
 
-  result <- histogramDP(x, eps, "Sturges",normal, ws, mech, delta, tdp, an)
+  result <- histogramDP(x, eps, "Sturges", normal, ws, mech, delta, tdp, an)
 
   par(mfrow=c(1,2))
   plot(result,main="Simple bounded Laplace");
   hist(x,freq=TRUE,main="Original");
   print("Verify similarity...")
   Sys.sleep(2)
+  par(mfrow=c(1,1))
 
   print("         Simple unbounded Laplace:")
   x <- rnorm(100,mean=3,sd=2);
@@ -837,13 +891,14 @@ test_histogramDP <- function(){
   tdp = 'pDP'
   an = FALSE;
 
-  result <- histogramDP(x, eps, "Sturges",normal, ws, mech, delta, tdp, an)
+  result <- histogramDP(x, eps, "Sturges", normal, ws, mech, delta, tdp, an)
 
   par(mfrow=c(1,2))
   plot(result,main="Simple unbounded Laplace");
   hist(x,freq=TRUE,main="Original");
   print("Verify similarity...")
   Sys.sleep(2)
+  par(mfrow=c(1,1))
 
   print("         Gaussian pDP:")
   x <- rnorm(100,mean=3,sd=2);
@@ -855,13 +910,14 @@ test_histogramDP <- function(){
   tdp = 'pDP'
   an = FALSE;
 
-  result <- histogramDP(x, eps, "Sturges",normal, ws, mech, delta, tdp, an)
+  result <- histogramDP(x, eps, "Sturges", normal, ws, mech, delta, tdp, an)
 
   par(mfrow=c(1,2))
   plot(result,main="Gaussian pDP");
   hist(x,freq=TRUE,main="Original");
   print("Verify similarity...")
   Sys.sleep(2)
+  par(mfrow=c(1,1))
 
   print("         Gaussian aDP:")
   x <- rnorm(100,mean=3,sd=2);
@@ -873,13 +929,14 @@ test_histogramDP <- function(){
   tdp = 'aDP'
   an = FALSE;
 
-  result <- histogramDP(x, eps, "Sturges",normal, ws, mech, delta, tdp, an)
+  result <- histogramDP(x, eps, "Sturges", normal, ws, mech, delta, tdp, an)
 
   par(mfrow=c(1,2))
   plot(result,main="Gaussian aDP");
   hist(x,freq=TRUE,main="Original");
   print("Verify similarity...")
   Sys.sleep(2)
+  par(mfrow=c(1,1))
 
   print("         Normalized:")
   x <- rnorm(100,mean=3,sd=2);
@@ -891,13 +948,14 @@ test_histogramDP <- function(){
   tdp = 'pDP'
   an = FALSE;
 
-  result <- histogramDP(x, eps, "Sturges",normal, ws, mech, delta, tdp, an)
+  result <- histogramDP(x, eps, "Sturges", normal, ws, mech, delta, tdp, an)
 
   par(mfrow=c(1,2))
   plot(result,main="Normalized");
   hist(x,freq=FALSE,main="Original");
   print("Verify similarity...")
   Sys.sleep(2)
+  par(mfrow=c(1,1))
 
   print("         Allow Negative:")
   x <- rnorm(100,mean=3,sd=2);
@@ -909,13 +967,14 @@ test_histogramDP <- function(){
   tdp = 'pDP'
   an = TRUE;
 
-  result <- histogramDP(x, eps, "Sturges",normal, ws, mech, delta, tdp, an)
+  result <- histogramDP(x, eps, "Sturges", normal, ws, mech, delta, tdp, an)
 
   par(mfrow=c(1,2))
   plot(result,main="Allow Negative");
   hist(x,freq=FALSE,main="Original");
   print("Verify similarity...")
   Sys.sleep(2)
+  par(mfrow=c(1,1))
 
   ### END TEST FUNCTIONALITY ###
 }
@@ -940,6 +999,12 @@ test_tableDP <- function(){
 
   print("         Bad mechanism:")
   a = tryCatch(tableDP(x,y,eps=1,mechanism='abc',type.DP='pDP'),
+               error=function(e) print(paste("PASS --",e)));
+  if (!is.character(a)) print("FAIL");
+  print("")
+
+  print("         Bad which.sensitivity:")
+  a = tryCatch(tableDP(x,y,eps=1,which.sensitivity='abc',type.DP='pDP'),
                error=function(e) print(paste("PASS --",e)));
   if (!is.character(a)) print("FAIL");
   print("")
@@ -1100,6 +1165,20 @@ test_pooledVarDP <- function(){
   a = tryCatch(pooledVarDP(x,y,z,eps=1,lower.bound=-6,upper.bound=6,
                            mechanism='abc',type.DP='pDP'),
                error=function(e) print(paste("PASS --",e)));
+  if (!is.character(a)) print("FAIL");
+  print("")
+
+  print("         Bad which.sensitivity:")
+  a = tryCatch(pooledVarDP(x,y,z,eps=1,lower.bound=-6,upper.bound=6,
+                           which.sensitivity='abc',type.DP='pDP'),
+               error=function(e) print(paste("PASS --",e)));
+  if (!is.character(a)) print("FAIL");
+  print("")
+
+  print("         Warning for 'both':")
+  a = tryCatch(pooledVarDP(x,y,z,eps=1,lower.bound=-6,upper.bound=6,
+                           which.sensitivity='both',type.DP='pDP'),
+               warning=function(w) print(paste("PASS --",w)));
   if (!is.character(a)) print("FAIL");
   print("")
   ### END TEST INPUT ###
@@ -1367,6 +1446,14 @@ test_pooledCovDP <- function(){
   a = tryCatch(pooledCovDP(x,y,z,eps=1,lower.bound1 = -6,upper.bound1=6,
                            lower.bound2=-6,upper.bound2=6, mechanism='abc',
                            type.DP='pDP'),
+               error=function(e) print(paste("PASS --",e)));
+  if (!is.character(a)) print("FAIL");
+  print("")
+
+  print("         Bad which.sensitivity:")
+  a = tryCatch(pooledCovDP(x,y,z,eps=1,lower.bound1=-6,upper.bound1=6,
+                           lower.bound2=-6,upper.bound2=6,
+                           which.sensitivity='abc',type.DP='pDP'),
                error=function(e) print(paste("PASS --",e)));
   if (!is.character(a)) print("FAIL");
   print("")
@@ -1657,6 +1744,18 @@ test_quantileDP <- function(){
   print("         Bad mechanism:")
   a = tryCatch(quantileDP(x,.25,1,-3,3,mechanism='abc'),
                error=function(e) print(paste("PASS --",e)));
+  if (!is.character(a)) print("FAIL");
+  print("")
+
+  print("         Bad which.sensitivity:")
+  a = tryCatch(quantileDP(x,.25,1,-3,3,which.sensitivity='abc'),
+               error=function(e) print(paste("PASS --",e)));
+  if (!is.character(a)) print("FAIL");
+  print("")
+
+  print("         Warning for 'both':")
+  a = tryCatch(quantileDP(x,.25,1,-3,3,which.sensitivity='both'),
+               warning=function(w) print(paste("PASS --",w)));
   if (!is.character(a)) print("FAIL");
   print("")
   ### END TEST INPUT ###

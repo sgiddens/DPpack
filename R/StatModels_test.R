@@ -686,7 +686,7 @@ ggplot(data) + geom_point(aes(x=X, y=y), size = 2) +
   theme_bw(base_size = 12)
 
 eps <- 1
-delta <- 1
+delta <- .01
 domain <- list("constraints"=function(coeff) coeff%*%coeff - length(coeff),
                "jacobian"=function(coeff) 2*coeff)
 zeta <- 2*p^(3/2)
@@ -744,7 +744,7 @@ ggplot(data) + geom_point(aes(x=X, y=y), size = 2) +
 regularizer <- function(coeff) coeff%*%coeff/2
 regularizer.gr <- function(coeff) coeff
 eps <- 1
-delta <- 1
+delta <- 0.01
 gamma <- 1
 
 linrdp <- LinearRegressionDP$new(regularizer, eps, delta, gamma, regularizer.gr)
@@ -794,7 +794,7 @@ ggplot(data) + geom_point(aes(x=X, y=y), size = 2) +
 set.seed(round(runif(1,0,100)))
 
 eps <- 1
-delta <- 1
+delta <- 0.01
 
 linrdp1 <- LinearRegressionDP$new("l2", eps, delta, 100)
 linrdp2 <- LinearRegressionDP$new("l2", eps, delta, 1)

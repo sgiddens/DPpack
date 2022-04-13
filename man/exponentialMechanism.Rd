@@ -7,9 +7,7 @@
 ExponentialMechanism(
   utility,
   eps,
-  bounded.sensitivities = NULL,
-  unbounded.sensitivities = NULL,
-  which.sensitivity = "bounded",
+  sensitivity,
   measure = NULL,
   candidates = NULL
 )
@@ -19,30 +17,8 @@ ExponentialMechanism(
 
 \item{eps}{Positive real number defining the epsilon privacy budget.}
 
-\item{bounded.sensitivities}{Real number corresponding to the global
-sensitivity(-ies) of the function based on bounded differential privacy
-\insertCite{Kifer2011}{DPpack}. This is defined to be the greatest amount
-by which the function could change in value by changing one entry in the
-dataset (i.e. the total number of elements in the dataset remain the same).
-This value can only be NULL if which.sensitivity is 'unbounded'.}
-
-\item{unbounded.sensitivities}{Real number corresponding to the global
-sensitivity(-ies) of the function based on unbounded differential privacy
-\insertCite{Kifer2011}{DPpack}. This is defined to be the greatest amount
-by which the function could change in value by adding/removing one entry of
-the dataset (i.e. the total number of elements in the dataset
-increases/decreases by one). This value can only be NULL if
-which.sensitivity is 'bounded'.}
-
-\item{which.sensitivity}{String indicating which type of sensitivity to use.
-Can be one of {'bounded', 'unbounded', 'both'}. If 'bounded' (default),
-returns result plus noise based on bounded definition for differential
-privacy. If 'unbounded', returns result plus noise based on unbounded
-definition. If 'both', returns result based on both methods
-\insertCite{Kifer2011}{DPpack}. Note that if 'both' is chosen, each result
-individually satisfies differential privacy at level eps, but may not do so
-collectively. Care must be taken not to violate differential privacy in
-this case.}
+\item{sensitivity}{Real number corresponding to the l1-global sensitivity of
+the function generating utility.}
 
 \item{measure}{Optional numeric vector of scaling measures for the
 probabilities of selecting each value. Should be same size as utility.
@@ -69,13 +45,11 @@ value of candidates at the selected index, rather than the index itself.
 \examples{
 candidates <- c('a','b','c','d','e','f','g')
 # Release index
-idx <- ExponentialMechanism(c(0,1,2,3,2,1,0), 1, bounded.sensitivities=1,
-          which.sensitivity='bounded')
+idx <- ExponentialMechanism(c(0,1,2,3,2,1,0), 1, 1)
 candidates[idx] # Randomly chosen candidate
 
 # Release candidate
-ExponentialMechanism(c(0,1,2,3,2,1,0), 1, unbounded.sensitivities=.5,
-  which.sensitivity='unbounded', measure=c(1,1,2,1,2,1,1),
+ExponentialMechanism(c(0,1,2,3,2,1,0), 1, .5, measure=c(1,1,2,1,2,1,1),
   candidates=candidates)
 
 }

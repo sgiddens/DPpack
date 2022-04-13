@@ -7,7 +7,7 @@
 histogramDataAccess(x, breaks, mechanism)
 }
 \arguments{
-\item{x}{Numeric vector.}
+\item{x}{Numeric vector from which the histogram will be formed..}
 
 \item{breaks}{Identical to the argument with the same name from
 \code{\link[graphics]{hist}}.}
@@ -29,7 +29,7 @@ bounded and unbounded differential privacy \insertCite{Kifer2011}{DPpack}
 according to the theoretical values \insertCite{Liu2019b}{DPpack}.
 }
 \examples{
-histogramDataAccess(c(1,4,3,2,3), 'Sturges')
+histogramDataAccess(c(1,4,3,2,3), 'Sturges', 'Laplace')
 
 }
 \references{

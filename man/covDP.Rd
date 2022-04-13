@@ -19,7 +19,7 @@ covDP(
 )
 }
 \arguments{
-\item{x1, x2}{Numeric vectors.}
+\item{x1, x2}{Numeric vectors whose covariance is desired.}
 
 \item{eps}{Positive real number defining the epsilon privacy budget.}
 
@@ -31,17 +31,17 @@ upper bounds of x1 and x2, respectively.}
 
 \item{which.sensitivity}{String indicating which type of sensitivity to use.
 Can be one of {'bounded', 'unbounded', 'both'}. If 'bounded' (default),
-returns result plus noise based on bounded definition for differential
-privacy. If 'unbounded', returns result plus noise based on unbounded
-definition. If 'both', returns result based on both methods
-\insertCite{Kifer2011}{DPpack}. Note that if 'both' is chosen, each result
-individually satisfies differential privacy at level eps, but may not do so
-collectively and in composition. Care must be taken not to violate
-differential privacy in this case.}
+returns result based on bounded definition for differential privacy. If
+'unbounded', returns result based on unbounded definition. If 'both',
+returns result based on both methods \insertCite{Kifer2011}{DPpack}. Note
+that if 'both' is chosen, each result individually satisfies (eps,
+delta)-differential privacy, but may not do so collectively and in
+composition. Care must be taken not to violate differential privacy in this
+case.}
 
 \item{mechanism}{String indicating which mechanism to use for differential
 privacy. Currently the following mechanisms are supported: {'Laplace',
-'Gaussian'}. See \code{\link{LaplaceMechanism}} and
+'Gaussian'}. Default is Laplace. See \code{\link{LaplaceMechanism}} and
 \code{\link{GaussianMechanism}} for a description of the supported
 mechanisms.}
 
@@ -50,12 +50,12 @@ mechanisms.}
 
 \item{type.DP}{String indicating the type of differential privacy desired for
 the Gaussian mechanism (if selected). Can be either 'pDP' for probabilistic
-DP \insertCite{Liu2019a}{DPpack} or 'aDP' for approximate DP
-\insertCite{DPtextbook}{DPpack}. Note that if 'aDP' is chosen, epsilon must
+DP \insertCite{Machanavajjhala2008}{DPpack} or 'aDP' for approximate DP
+\insertCite{Dwork2006b}{DPpack}. Note that if 'aDP' is chosen, epsilon must
 be strictly less than 1.}
 }
 \value{
-Sanitized covariance(s) based on the bounded and/or unbounded
+Sanitized covariance based on the bounded and/or unbounded
 definitions of differential privacy.
 }
 \description{
@@ -80,9 +80,9 @@ covDP(D1, D2, .5, lb1, ub1, lb2, ub2, which.sensitivity='unbounded',
 
 \insertRef{Kifer2011}{DPpack}
 
-\insertRef{Liu2019a}{DPpack}
+\insertRef{Machanavajjhala2008}{DPpack}
 
-\insertRef{DPtextbook}{DPpack}
+\insertRef{Dwork2006b}{DPpack}
 
 \insertRef{Liu2019b}{DPpack}
 }

@@ -7,38 +7,34 @@
 meanDP(
   x,
   eps,
-  lower.bounds,
-  upper.bounds,
+  lower.bound,
+  upper.bound,
   which.sensitivity = "bounded",
   mechanism = "Laplace",
   delta = 0,
-  type.DP = "aDP",
-  alloc.proportions = NULL
+  type.DP = "aDP"
 )
 }
 \arguments{
-\item{x}{Numeric vector, matrix, or data frame. Means taken over columns
-(when applicable).}
+\item{x}{Dataset whose mean is desired.}
 
 \item{eps}{Positive real number defining the epsilon privacy budget.}
 
-\item{lower.bounds}{Numeric vector of global or public lower bounds on each
-column of x. The length of lower.bounds must match the number of columns of
-x (length 1 if x is a vector).}
+\item{lower.bound}{Scalar representing the global or public lower bound on
+values of x.}
 
-\item{upper.bounds}{Numeric vector of global or public upper bounds on each
-column of x. The length of upper.bounds must match the number of columns of
-x (length 1 if x is a vector).}
+\item{upper.bound}{Scalar representing the global or public upper bound on
+values of x.}
 
 \item{which.sensitivity}{String indicating which type of sensitivity to use.
 Can be one of {'bounded', 'unbounded', 'both'}. If 'bounded' (default),
-returns result plus noise based on bounded definition for differential
-privacy. If 'unbounded', returns result plus noise based on unbounded
-definition. If 'both', returns result based on both methods
-\insertCite{Kifer2011}{DPpack}. Note that if 'both' is chosen, each result
-individually satisfies differential privacy at level eps, but may not do so
-collectively and in composition. Care must be taken not to violate
-differential privacy in this case.}
+returns result based on bounded definition for differential privacy. If
+'unbounded', returns result based on unbounded definition. If 'both',
+returns result based on both methods \insertCite{Kifer2011}{DPpack}. Note
+that if 'both' is chosen, each result individually satisfies (eps,
+delta)-differential privacy, but may not do so collectively and in
+composition. Care must be taken not to violate differential privacy in this
+case.}
 
 \item{mechanism}{String indicating which mechanism to use for differential
 privacy. Currently the following mechanisms are supported: {'Laplace',
@@ -51,41 +47,25 @@ mechanisms.}
 
 \item{type.DP}{String indicating the type of differential privacy desired for
 the Gaussian mechanism (if selected). Can be either 'pDP' for probabilistic
-DP \insertCite{Liu2019a}{DPpack} or 'aDP' for approximate DP
-\insertCite{DPtextbook}{DPpack}. Note that if 'aDP' is chosen, epsilon must
+DP \insertCite{Machanavajjhala2008}{DPpack} or 'aDP' for approximate DP
+\insertCite{Dwork2006b}{DPpack}. Note that if 'aDP' is chosen, epsilon must
 be strictly less than 1.}
-
-\item{alloc.proportions}{Numeric vector giving the allocation proportions of
-epsilon (and delta) to the statistics. For example, if this function is run
-on a two-column matrix and alloc.proportions = c(.75, .25), then 75\% of the
-privacy budget eps (and delta) is allocated to the statistical computation
-for column 1, and the remaining 25\% is allocated to the statistical
-computation for column 2. This ensures (eps, delta)-level privacy across
-all computations. By default, it distributes eps and delta evenly among the
-calculations. Input does not need to be normalized, meaning
-alloc.proportions = c(3,1) produces the same result as the example above.}
 }
 \value{
-Sanitized mean(s) based on the bounded and/or unbounded definitions
-of differential privacy.
+Sanitized mean based on the bounded and/or unbounded definitions of
+differential privacy.
 }
 \description{
-This function computes the differentially private mean(s) of a given dataset
-at user-specified privacy levels of epsilon and delta. If the given dataset
-is a matrix or data frame, differentially private means are computed over
-columns and collectively satisfy differential privacy at the specified level.
+This function computes the differentially private mean of a given dataset at
+user-specified privacy levels of epsilon and delta.
 }
 \examples{
 D <- rnorm(500, mean=3, sd=2)
 lb <- -3 # 3 std devs below mean
 ub <- 9 # 3 std devs above mean
-meanDP(D, 1, lb, ub)
-meanDP(D,.5, lb, ub, which.sensitivity='unbounded', mechanism='Gaussian',
+meanDP(D,  1, lb, ub)
+meanDP(D, .5, lb, ub, which.sensitivity='unbounded', mechanism='Gaussian',
   delta=0.01)
-D.2col <- matrix(D,ncol=2)
-meanDP(D.2col, 1, lower.bounds=c(lb,lb), upper.bounds=c(ub,ub),
-  which.sensitivity='bounded', type.DP='pDP', alloc.proportions=c(1,2))
-
 
 }
 \references{
@@ -93,7 +73,7 @@ meanDP(D.2col, 1, lower.bounds=c(lb,lb), upper.bounds=c(ub,ub),
 
 \insertRef{Kifer2011}{DPpack}
 
-\insertRef{Liu2019a}{DPpack}
+\insertRef{Machanavajjhala2008}{DPpack}
 
-\insertRef{DPtextbook}{DPpack}
+\insertRef{Dwork2006b}{DPpack}
 }

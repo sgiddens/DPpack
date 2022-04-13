@@ -30,17 +30,17 @@ densities (i.e. area of histogram is one).}
 
 \item{which.sensitivity}{String indicating which type of sensitivity to use.
 Can be one of {'bounded', 'unbounded', 'both'}. If 'bounded' (default),
-returns result plus noise based on bounded definition for differential
-privacy. If 'unbounded', returns result plus noise based on unbounded
-definition. If 'both', returns result based on both methods
-\insertCite{Kifer2011}{DPpack}. Note that if 'both' is chosen, each result
-individually satisfies differential privacy at level eps, but may not do so
-collectively and in composition. Care must be taken not to violate
-differential privacy in this case.}
+returns result based on bounded definition for differential privacy. If
+'unbounded', returns result based on unbounded definition. If 'both',
+returns result based on both methods \insertCite{Kifer2011}{DPpack}. Note
+that if 'both' is chosen, each result individually satisfies (eps,
+delta)-differential privacy, but may not do so collectively and in
+composition. Care must be taken not to violate differential privacy in this
+case.}
 
 \item{mechanism}{String indicating which mechanism to use for differential
 privacy. Currently the following mechanisms are supported: {'Laplace',
-'Gaussian'}. See \code{\link{LaplaceMechanism}} and
+'Gaussian'}. Default is Laplace. See \code{\link{LaplaceMechanism}} and
 \code{\link{GaussianMechanism}} for a description of the supported
 mechanisms.}
 
@@ -49,8 +49,8 @@ mechanisms.}
 
 \item{type.DP}{String indicating the type of differential privacy desired for
 the Gaussian mechanism (if selected). Can be either 'pDP' for probabilistic
-DP \insertCite{Liu2019a}{DPpack} or 'aDP' for approximate DP
-\insertCite{DPtextbook}{DPpack}. Note that if 'aDP' is chosen, epsilon must
+DP \insertCite{Machanavajjhala2008}{DPpack} or 'aDP' for approximate DP
+\insertCite{Dwork2006b}{DPpack}. Note that if 'aDP' is chosen, epsilon must
 be strictly less than 1.}
 
 \item{allow.negative}{Logical value. If FALSE (default), any negative values
@@ -58,14 +58,13 @@ in the sanitized histogram due to the added noise will be set to 0. If
 TRUE, the negative values (if any) will be returned.}
 }
 \value{
-Sanitized histogram(s) based on the bounded and/or unbounded definitions
+Sanitized histogram based on the bounded and/or unbounded definitions
 of differential privacy.
 }
 \description{
 This function computes a differentially private histogram from a vector at
 user-specified privacy levels of epsilon and delta. A histogram object is
-returned with sanitized values for the counts for easy plotting (see
-examples).
+returned with sanitized values for the counts for easy plotting.
 }
 \examples{
 x <- rnorm(500)
@@ -84,7 +83,7 @@ plot(result) # Normalized private histogram (note negative values allowed)
 
 \insertRef{Kifer2011}{DPpack}
 
-\insertRef{Liu2019a}{DPpack}
+\insertRef{Machanavajjhala2008}{DPpack}
 
-\insertRef{DPtextbook}{DPpack}
+\insertRef{Dwork2006b}{DPpack}
 }

@@ -28,7 +28,7 @@ according to the theoretical values \insertCite{Liu2019b}{DPpack}.
 \examples{
 x <- MASS::Cars93$Type;
 y <- MASS::Cars93$Origin;
-tableDataAccess(x,y)
+tableDataAccess(x, y, mechanism='Laplace')
 
 }
 \references{
