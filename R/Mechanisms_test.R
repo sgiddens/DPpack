@@ -368,7 +368,7 @@ test_Gaussian <- function(){
   for (i in 1:n){
     data[i,] = GaussianMechanism(tv,eps,delta,sens,dp,ap);
   }
-  th.s = sum(sens)*sqrt(2*log(1.25/delta))/eps;
+  th.s = sqrt(sum(sens^2))*sqrt(2*log(1.25/delta))/eps;
   for (j in 1:length(tv)){
     hist(data[,j],freq=FALSE,main=paste("Using multiple:",j));
     x = seq(tv[j]-5*th.s, tv[j]+5*th.s,.1);

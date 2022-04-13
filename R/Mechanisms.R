@@ -22,7 +22,7 @@
 #'   the privacy budget need not be allocated (alloc.proportions is unused in
 #'   this case). If it is of the same length as true.values, this indicates that
 #'   each element of true.values comes from its own function with different
-#'   corresponding sensitivities. In this case, the sum of the provided
+#'   corresponding sensitivities. In this case, the l1-norm of the provided
 #'   sensitivities is used to generate the Laplace noise.
 #' @param alloc.proportions Optional numeric vector giving the allocation
 #'   proportions of epsilon to the function values in the case of vector-valued
@@ -135,7 +135,7 @@ LaplaceMechanism <- function (true.values, eps, sensitivities,
 #'   the privacy budget need not be allocated (alloc.proportions is unused in
 #'   this case). If it is of the same length as true.values, this indicates that
 #'   each element of true.values comes from its own function with different
-#'   corresponding sensitivities. In this case, the sum of the provided
+#'   corresponding sensitivities. In this case, the l2-norm of the provided
 #'   sensitivities is used to generate the Gaussian noise.
 #' @param type.DP String indicating the type of differential privacy desired for
 #'   the Gaussian mechanism. Can be either 'pDP' for probabilistic DP
@@ -242,26 +242,11 @@ GaussianMechanism <- function (true.values, eps, delta, sensitivities,
   n <- length(true.values)
   if (is.null(alloc.proportions)){
     if (type.DP == 'pDP'){ # Equation 17 from Gaussian paper
-      # For reference in case sum(sensitivities) doesn't work...
-      # bounded.noise <- double(n)
-      # for (i in 1:n){
-      #   bounded.param <- bounded.sensitivities[i]*
-      #     (sqrt(qnorm(alloc.delta[i]/2)^2+2*alloc.eps[i])-
-      #        qnorm(alloc.delta[i]/2))/(2*alloc.eps[i])
-      #   bounded.noise[i] <- rnorm(1,sd=bounded.param)
-      # }
-      param <- sum(sensitivities)*(sqrt(qnorm(delta/2)^2+2*eps)-qnorm(delta/2))/
-        (2*eps)
+      param <- sqrt(sum(sensitivities^2))*(sqrt(qnorm(delta/2)^2+2*eps)-
+                                             qnorm(delta/2))/(2*eps)
       noise <- rnorm(n, sd=param)
     } else if (type.DP == 'aDP'){ # Equation 18 from Gaussian paper
-      # For reference in case sum(sensitivities) doesn't work...
-      # bounded.noise <- double(n)
-      # for (i in 1:n){
-      #   bounded.param <- bounded.sensitivities[i]*
-      #     (sqrt(2*log(1.25/alloc.delta[i])))/alloc.eps[i];
-      #   bounded.noise[i] <- rnorm(1,sd=bounded.param);
-      # }
-      param <- sum(sensitivities)*(sqrt(2*log(1.25/delta)))/eps
+      param <- sqrt(sum(sensitivities^2))*(sqrt(2*log(1.25/delta)))/eps
       noise <- rnorm(n, sd=param)
     }
   } else{

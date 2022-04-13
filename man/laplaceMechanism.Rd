@@ -20,7 +20,7 @@ sensitivity applies simultaneously to all elements of true.values and that
 the privacy budget need not be allocated (alloc.proportions is unused in
 this case). If it is of the same length as true.values, this indicates that
 each element of true.values comes from its own function with different
-corresponding sensitivities. In this case, the sum of the provided
+corresponding sensitivities. In this case, the l1-norm of the provided
 sensitivities is used to generate the Laplace noise.}
 
 \item{alloc.proportions}{Optional numeric vector giving the allocation

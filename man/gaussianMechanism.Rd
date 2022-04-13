@@ -29,7 +29,7 @@ sensitivity applies simultaneously to all elements of true.values and that
 the privacy budget need not be allocated (alloc.proportions is unused in
 this case). If it is of the same length as true.values, this indicates that
 each element of true.values comes from its own function with different
-corresponding sensitivities. In this case, the sum of the provided
+corresponding sensitivities. In this case, the l2-norm of the provided
 sensitivities is used to generate the Gaussian noise.}
 
 \item{type.DP}{String indicating the type of differential privacy desired for
