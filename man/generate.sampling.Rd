@@ -20,7 +20,7 @@ Fourier transform of a Gaussian kernel with given parameter
 \insertCite{chaudhuri2011}{DPpack} of form needed for \code{\link{svmDP}}.
 }
 \examples{
-  kernel.param <- 1
+  kernel.param <- 0.1
   sample <- generate.sampling(kernel.param)
   d <- 5
   sample(d)

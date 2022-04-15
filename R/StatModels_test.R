@@ -546,14 +546,12 @@ ggplot(data) + geom_point(aes(x=x1, y=x2, color = as.character(label)), size = 2
 eps <- 5
 gamma <- 0.01
 D <- 20
-kernel.param<-1
 
 set.seed(round(runif(1,0,100)))
 
 # pm <- 'objective'
 pm <- 'output'
-ksvmdp <- svmDP$new('l2', eps, gamma, pm, kernel='Gaussian',
-                                     D, kernel.param=kernel.param)
+ksvmdp <- svmDP$new('l2', eps, gamma, pm, kernel='Gaussian', D)
 
 # Note bounds unnecessary with Gaussian kernel
 ksvmdp$fit(X,y)

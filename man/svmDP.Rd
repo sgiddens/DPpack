@@ -125,7 +125,7 @@ Create a new \code{svmDP} object.
   perturbation.method = "objective",
   kernel = "linear",
   D = NULL,
-  kernel.param = 1,
+  kernel.param = NULL,
   regularizer.gr = NULL,
   huber.h = 0.5
 )}\if{html}{\out{</div>}}
@@ -164,7 +164,7 @@ computational efficiency. This value must be specified if a nonlinear
 kernel is used.}
 
 \item{\code{kernel.param}}{Positive real number corresponding to the Gaussian
-kernel parameter. Defaults to 1.}
+kernel parameter. Defaults to 1/p, where p is the number of predictors.}
 
 \item{\code{regularizer.gr}}{Optional function representing the gradient of the
 regularization function with respect to \code{coeff} and of the form

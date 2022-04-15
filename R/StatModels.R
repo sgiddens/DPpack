@@ -1058,7 +1058,7 @@ LogisticRegressionDP <- R6::R6Class("LogisticRegressionDP",
 #' @return Sampling function for the Gaussian kernel of form required by
 #'   \code{\link{svmDP}}.
 #' @examples
-#'   kernel.param <- 1
+#'   kernel.param <- 0.1
 #'   sample <- generate.sampling(kernel.param)
 #'   d <- 5
 #'   sample(d)
@@ -1218,7 +1218,7 @@ svmDP <- R6::R6Class("svmDP",
   #'   computational efficiency. This value must be specified if a nonlinear
   #'   kernel is used.
   #' @param kernel.param Positive real number corresponding to the Gaussian
-  #'   kernel parameter. Defaults to 1.
+  #'   kernel parameter. Defaults to 1/p, where p is the number of predictors.
   #' @param regularizer.gr Optional function representing the gradient of the
   #'   regularization function with respect to \code{coeff} and of the form
   #'   \code{regularizer.gr(coeff)}. Should return a vector. See
@@ -1233,14 +1233,14 @@ svmDP <- R6::R6Class("svmDP",
   #' @return A new svmDP object.
   initialize = function(regularizer, eps, gamma,
                         perturbation.method = 'objective', kernel='linear',
-                        D=NULL, kernel.param=1, regularizer.gr=NULL, huber.h=0.5){
+                        D=NULL, kernel.param=NULL, regularizer.gr=NULL, huber.h=0.5){
     super$initialize(mapXy.linear, generate.loss.huber(huber.h), regularizer, eps,
                      gamma, perturbation.method, 1/(2*huber.h), mapXy.gr.linear,
                      generate.loss.gr.huber(huber.h), regularizer.gr)
     self$kernel <- kernel
     if (kernel=="Gaussian"){
-      self$sampling <- generate.sampling(kernel.param)
       self$phi <- phi.gaussian
+      self$kernel.param <- kernel.param
       if (is.null(D)) stop("D must be specified for nonlinear kernel.")
       self$D <- D
     } else if (kernel!="linear") stop("kernel must be one of {'linear',
@@ -1274,6 +1274,10 @@ svmDP <- R6::R6Class("svmDP",
   #' @param add.bias Boolean indicating whether to add a bias term to \code{X}.
   #'   Defaults to FALSE.
   fit = function(X, y, upper.bounds, lower.bounds, add.bias=FALSE){
+    if (self$kernel=='Gaussian'){
+      if (is.null(self$kernel.param)) self$kernel.param <- 1/ncol(X)
+      self$sampling <- generate.sampling(self$kernel.param)
+    }
     super$fit(X,y,upper.bounds,lower.bounds,add.bias)
   },
   #' @description Convert input data X into transformed data V. Uses sampled
