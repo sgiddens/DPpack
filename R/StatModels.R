@@ -1233,7 +1233,8 @@ svmDP <- R6::R6Class("svmDP",
   #' @return A new svmDP object.
   initialize = function(regularizer, eps, gamma,
                         perturbation.method = 'objective', kernel='linear',
-                        D=NULL, kernel.param=NULL, regularizer.gr=NULL, huber.h=0.5){
+                        D=NULL, kernel.param=NULL, regularizer.gr=NULL,
+                        huber.h=0.5){
     super$initialize(mapXy.linear, generate.loss.huber(huber.h), regularizer, eps,
                      gamma, perturbation.method, 1/(2*huber.h), mapXy.gr.linear,
                      generate.loss.gr.huber(huber.h), regularizer.gr)
