@@ -23,6 +23,8 @@
 #'   \insertRef{Kifer2011}{DPpack}
 #'
 #' @keywords internal
+#'
+#' @export
 meanDataAccess <- function (x, lower.bound, upper.bound){
   f <- mean # Function to evaluate over x
   tv <- f(x)
@@ -56,6 +58,8 @@ meanDataAccess <- function (x, lower.bound, upper.bound){
 #'   \insertRef{Kifer2011}{DPpack}
 #'
 #' @keywords internal
+#'
+#' @export
 varDataAccess <- function (x, lower.bound, upper.bound){
   f <- stats::var # Function to evaluate over x
   tv <- f(x)
@@ -89,6 +93,8 @@ varDataAccess <- function (x, lower.bound, upper.bound){
 #' \insertRef{Kifer2011}{DPpack}
 #'
 #' @keywords internal
+#'
+#' @export
 covDataAccess <- function (x1, x2, lower.bound1, upper.bound1,
                            lower.bound2, upper.bound2){
   tv <- stats::cov(x1,x2)
@@ -122,6 +128,8 @@ covDataAccess <- function (x1, x2, lower.bound1, upper.bound1,
 #'   \insertRef{Kifer2011}{DPpack}
 #'
 #' @keywords internal
+#'
+#' @export
 histogramDataAccess <- function (x, breaks, mechanism){
   tv <- graphics::hist(x, breaks, plot=FALSE)
   tv$density <- NULL
@@ -161,6 +169,8 @@ histogramDataAccess <- function (x, breaks, mechanism){
 #' \insertRef{Kifer2011}{DPpack}
 #'
 #' @keywords internal
+#'
+#' @export
 tableDataAccess <- function(..., mechanism='Laplace'){
   tv <- table(...)
   if (mechanism=='Laplace'){
@@ -199,6 +209,8 @@ tableDataAccess <- function(..., mechanism='Laplace'){
 #' \insertRef{Kifer2011}{DPpack}
 #'
 #' @keywords internal
+#'
+#' @export
 pooledVarDataAccess <- function(samples, lower.bound, upper.bound,approx.n.max){
   J <- length(samples)
   n <- 0
@@ -269,6 +281,8 @@ pooledVarDataAccess <- function(samples, lower.bound, upper.bound,approx.n.max){
 #' \insertRef{Kifer2011}{DPpack}
 #'
 #' @keywords internal
+#'
+#' @export
 pooledCovDataAccess <- function(samples, lower.bound1, upper.bound1,
                                 lower.bound2, upper.bound2,
                                 approx.n.max){
@@ -331,6 +345,8 @@ pooledCovDataAccess <- function(samples, lower.bound1, upper.bound1,
 #'   \insertRef{Gillenwater2021}{DPpack}
 #'
 #' @keywords internal
+#'
+#' @export
 quantileDataAccess <- function (x, quant, lower.bound, upper.bound){
   n <- length(x)
   utility <- -abs(0:n - quant*n)
