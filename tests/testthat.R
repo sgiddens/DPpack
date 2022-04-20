@@ -1,4 +1,4 @@
-library(testthat)
-library(DPpack)
-
-test_check("DPpack")
+# library(testthat)
+# library(DPpack)
+#
+# test_check("DPpack")

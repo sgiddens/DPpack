@@ -25,7 +25,9 @@ Imports:
     dplyr (>= 1.0.1),
     MASS (>= 7.3-51.6),
     nloptr (>= 1.2.2.2),
-    e1071 (>= 1.7-9)
+    e1071 (>= 1.7-9),
+    stats (>= 4.0.2),
+    graphics (>= 4.0.2)
 RdMacros: Rdpack
 Suggests: 
     testthat (>= 3.0.0)

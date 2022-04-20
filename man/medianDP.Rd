@@ -39,9 +39,9 @@ mechanisms.}
 
 \item{uniform.sampling}{Boolean indicating whether to sample uniformly
 between sorted dataset values when returning the private quantile. If TRUE,
-it is possible for this function to return any number in the range
-\link{lower.bound, upper.bound}. If FALSE, only a value present in the dataset
-or the lower bound can be returned.}
+it is possible for this function to return any number between lower.bound
+and upper.bound. If FALSE, only a value present in the dataset or the lower
+bound can be returned.}
 }
 \value{
 Sanitized median based on the bounded and/or unbounded definitions

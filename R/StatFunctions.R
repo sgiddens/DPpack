@@ -1013,9 +1013,9 @@ pooledCovDP <- function(..., eps=1, lower.bound1, upper.bound1, lower.bound2,
 #'   mechanisms.
 #' @param uniform.sampling Boolean indicating whether to sample uniformly
 #'   between sorted dataset values when returning the private quantile. If TRUE,
-#'   it is possible for this function to return any number in the range
-#'   [lower.bound, upper.bound]. If FALSE, only a value present in the dataset
-#'   or the lower bound can be returned.
+#'   it is possible for this function to return any number between lower.bound
+#'   and upper.bound. If FALSE, only a value present in the dataset or the lower
+#'   bound can be returned.
 #' @return Sanitized quantile based on the bounded and/or unbounded definitions
 #'   of differential privacy.
 #' @examples
@@ -1122,9 +1122,9 @@ quantileDP <- function (x, quant, eps, lower.bound, upper.bound,
 #'   mechanisms.
 #' @param uniform.sampling Boolean indicating whether to sample uniformly
 #'   between sorted dataset values when returning the private quantile. If TRUE,
-#'   it is possible for this function to return any number in the range
-#'   [lower.bound, upper.bound]. If FALSE, only a value present in the dataset
-#'   or the lower bound can be returned.
+#'   it is possible for this function to return any number between lower.bound
+#'   and upper.bound. If FALSE, only a value present in the dataset or the lower
+#'   bound can be returned.
 #' @return Sanitized median based on the bounded and/or unbounded definitions
 #'   of differential privacy.
 #' @examples
