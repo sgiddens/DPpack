@@ -68,9 +68,9 @@ more vectors of data at user-specified privacy levels of epsilon and delta.
 }
 \examples{
 # Build datasets
-D1 <- rnorm(500, mean=3, sd=2)
-D2 <- rnorm(200, mean=3, sd=2)
-D3 <- rnorm(100, mean=3, sd=2)
+D1 <- stats::rnorm(500, mean=3, sd=2)
+D2 <- stats::rnorm(200, mean=3, sd=2)
+D3 <- stats::rnorm(100, mean=3, sd=2)
 lower.bound <- -3 # 3 standard deviations below mean
 upper.bound <- 9 # 3 standard deviations above mean
 

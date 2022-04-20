@@ -54,7 +54,7 @@ N <- 400
 X <- data.frame()
 y <- data.frame()
 for (i in (1:N)){
-  Xtemp <- data.frame(x1 = rnorm(1,sd=.28) , x2 = rnorm(1,sd=.28))
+  Xtemp <- data.frame(x1 = stats::rnorm(1,sd=.28) , x2 = stats::rnorm(1,sd=.28))
   if (sum(Xtemp^2)<.15) ytemp <- data.frame(y=0)
   else ytemp <- data.frame(y=1)
   X <- rbind(X, Xtemp)

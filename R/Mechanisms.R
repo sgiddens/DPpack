@@ -40,7 +40,7 @@
 #' n <- 100
 #' c0 <- 5 # Lower bound
 #' c1 <- 10 # Upper bound
-#' D1 <- runif(n, c0, c1)
+#' D1 <- stats::runif(n, c0, c1)
 #' epsilon <- 1 # Privacy budget
 #' sensitivity <- (c1-c0)/n
 #'
@@ -50,7 +50,7 @@
 #' # Simulate second dataset
 #' d0 <- 3 # Lower bound
 #' d1 <- 6 # Upper bound
-#' D2 <- runif(n, d0, d1)
+#' D2 <- stats::runif(n, d0, d1)
 #' D <- matrix(c(D1,D2),ncol=2)
 #' sensitivities <- c((c1-c0)/n, (d1-d0)/n)
 #' epsilon <- 1 # Total privacy budget for all means
@@ -159,7 +159,7 @@ LaplaceMechanism <- function (true.values, eps, sensitivities,
 #' n <- 100
 #' c0 <- 5 # Lower bound
 #' c1 <- 10 # Upper bound
-#' D1 <- runif(n, c0, c1)
+#' D1 <- stats::runif(n, c0, c1)
 #'
 #' # Privacy budget
 #' epsilon <- 0.9 # eps must be in (0, 1) for approximate differential privacy
@@ -179,7 +179,7 @@ LaplaceMechanism <- function (true.values, eps, sensitivities,
 #' # Simulate second dataset
 #' d0 <- 3 # Lower bound
 #' d1 <- 6 # Upper bound
-#' D2 <- runif(n, d0, d1)
+#' D2 <- stats::runif(n, d0, d1)
 #' D <- matrix(c(D1,D2),ncol=2)
 #' sensitivities <- c((c1-c0)/n, (d1-d0)/n)
 #' epsilon <- 0.9 # Total privacy budget for all means
@@ -242,12 +242,12 @@ GaussianMechanism <- function (true.values, eps, delta, sensitivities,
   n <- length(true.values)
   if (is.null(alloc.proportions)){
     if (type.DP == 'pDP'){ # Equation 17 from Gaussian paper
-      param <- sqrt(sum(sensitivities^2))*(sqrt(qnorm(delta/2)^2+2*eps)-
-                                             qnorm(delta/2))/(2*eps)
-      noise <- rnorm(n, sd=param)
+      param <- sqrt(sum(sensitivities^2))*(sqrt(stats::qnorm(delta/2)^2+2*eps)-
+                                             stats::qnorm(delta/2))/(2*eps)
+      noise <- stats::rnorm(n, sd=param)
     } else if (type.DP == 'aDP'){ # Equation 18 from Gaussian paper
       param <- sqrt(sum(sensitivities^2))*(sqrt(2*log(1.25/delta)))/eps
-      noise <- rnorm(n, sd=param)
+      noise <- stats::rnorm(n, sd=param)
     }
   } else{
     noise <- double(n)
@@ -256,14 +256,14 @@ GaussianMechanism <- function (true.values, eps, delta, sensitivities,
     if (type.DP == 'pDP'){
       for (i in 1:n){
         param <- sensitivities[i]*
-          (sqrt(qnorm(alloc.delta[i]/2)^2+2*alloc.eps[i])-
-             qnorm(alloc.delta[i]/2))/(2*alloc.eps[i])
-        noise[i] <- rnorm(n=1, sd=param)
+          (sqrt(stats::qnorm(alloc.delta[i]/2)^2+2*alloc.eps[i])-
+             stats::qnorm(alloc.delta[i]/2))/(2*alloc.eps[i])
+        noise[i] <- stats::rnorm(n=1, sd=param)
       }
     } else if (type.DP == 'aDP'){
       for (i in 1:n){
         param <- sensitivities[i]*(sqrt(2*log(1.25/alloc.delta[i])))/alloc.eps[i]
-        noise[i] <- rnorm(n=1, sd=param)
+        noise[i] <- stats::rnorm(n=1, sd=param)
       }
     }
   }
@@ -336,7 +336,7 @@ ExponentialMechanism <- function (utility, eps, sensitivity, measure=NULL,
   probabilities <- exp(eps*utility/(2*sensitivity))
   probabilities <- probabilities * measure
   probabilities <- probabilities/sum(probabilities)
-  selected <- which.max(runif(1)<=cumsum(probabilities))
+  selected <- which.max(stats::runif(1)<=cumsum(probabilities))
   if (!is.null(candidates)) selected <- candidates[selected]
   return(selected)
 }

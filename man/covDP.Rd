@@ -63,8 +63,8 @@ This function computes the differentially private covariance of a pair of
 vectors at user-specified privacy levels of epsilon and delta.
 }
 \examples{
-D1 <- sort(rnorm(500, mean=3, sd=2))
-D2 <- sort(rnorm(500, mean=-1,sd=0.5))
+D1 <- sort(stats::rnorm(500, mean=3, sd=2))
+D2 <- sort(stats::rnorm(500, mean=-1,sd=0.5))
 lb1 <- -3 # 3 std devs below mean
 lb2 <- -2.5 # 3 std devs below mean
 ub1 <- 9 # 3 std devs above mean

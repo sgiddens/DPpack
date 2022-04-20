@@ -11,10 +11,10 @@ y <- data.frame()
 set.seed(56)
 for (j in (1:K)){
   t <- seq(-.25, .25, length.out = N)
-  if (j==1) m <- rnorm(N,-.2, .1) # Soft margin
-  if (j==2) m <- rnorm(N, .2, .1)
-  # if (j==1) m <- rnorm(N,-.2, .05) # Hard margin
-  # if (j==2) m <- rnorm(N, .2, .05)
+  if (j==1) m <- stats::rnorm(N,-.2, .1) # Soft margin
+  if (j==2) m <- stats::rnorm(N, .2, .1)
+  # if (j==1) m <- stats::rnorm(N,-.2, .05) # Hard margin
+  # if (j==2) m <- stats::rnorm(N, .2, .05)
   Xtemp <- data.frame(x1 = 3*t , x2 = m - t)
   ytemp <- data.frame(matrix(j-1, N, 1))
   X <- rbind(X, Xtemp)
@@ -59,7 +59,7 @@ ggplot2::ggplot(data) + ggplot2::geom_point(ggplot2::aes(x=x1, y=x2, color = as.
 gamma <- .01
 eps <- 1
 
-set.seed(round(runif(1, 0, 100)))
+set.seed(round(stats::runif(1, 0, 100)))
 
 pm <- 'objective'
 c <- 1/4 # Necessary constant for logistic regression if objective used
@@ -105,10 +105,10 @@ y <- data.frame()
 set.seed(56)
 for (j in (1:K)){
   t <- seq(-.25, .25, length.out = N)
-  if (j==1) m <- rnorm(N,-.2, .1) # Soft margin
-  if (j==2) m <- rnorm(N, .2, .1)
-  # if (j==1) m <- rnorm(N,-.2, .05) # Hard margin
-  # if (j==2) m <- rnorm(N, .2, .05)
+  if (j==1) m <- stats::rnorm(N,-.2, .1) # Soft margin
+  if (j==2) m <- stats::rnorm(N, .2, .1)
+  # if (j==1) m <- stats::rnorm(N,-.2, .05) # Hard margin
+  # if (j==2) m <- stats::rnorm(N, .2, .05)
   Xtemp <- data.frame(x1 = 3*t , x2 = m - t)
   ytemp <- data.frame(matrix(j-1, N, 1))
   X <- rbind(X, Xtemp)
@@ -151,7 +151,7 @@ ggplot2::ggplot(data) + ggplot2::geom_point(ggplot2::aes(x=x1, y=x2, color = as.
 #   # t, m are parameters of parametric equations x1, x2
 #   t <- seq(0,1,length.out = N)
 #   # add randomness
-#   m <- rnorm(N, j+0.5, 0.25)
+#   m <- stats::rnorm(N, j+0.5, 0.25)
 #   Xtemp <- data.frame(x1 = 3*t , x2 = m - t)
 #   ytemp <- data.frame(matrix(j-1, N, 1))
 #   X <- rbind(X, Xtemp)
@@ -189,7 +189,7 @@ ggplot2::ggplot(data) + ggplot2::geom_point(ggplot2::aes(x=x1, y=x2, color = as.
 gamma <- .01
 eps <- 1
 
-set.seed(round(runif(1,0,100)))
+set.seed(round(stats::runif(1,0,100)))
 
 pm <- 'objective'
 # pm <- 'output'
@@ -251,10 +251,10 @@ y <- data.frame()
 set.seed(56)
 for (j in (1:K)){
   t <- seq(-.25, .25, length.out = N)
-  if (j==1) m <- rnorm(N,-.2, .1) # Soft margin
-  if (j==2) m <- rnorm(N, .2, .1)
-  # if (j==1) m <- rnorm(N,-.2, .05) # Hard margin
-  # if (j==2) m <- rnorm(N, .2, .05)
+  if (j==1) m <- stats::rnorm(N,-.2, .1) # Soft margin
+  if (j==2) m <- stats::rnorm(N, .2, .1)
+  # if (j==1) m <- stats::rnorm(N,-.2, .05) # Hard margin
+  # if (j==2) m <- stats::rnorm(N, .2, .05)
   Xtemp <- data.frame(x1 = 3*t , x2 = m - t)
   ytemp <- data.frame(matrix(j-1, N, 1))
   X <- rbind(X, Xtemp)
@@ -297,7 +297,7 @@ ggplot2::ggplot(data) + ggplot2::geom_point(ggplot2::aes(x=x1, y=x2, color = as.
 #   # t, m are parameters of parametric equations x1, x2
 #   t <- seq(0,1,length.out = N)
 #   # add randomness
-#   m <- rnorm(N, j+0.5, 0.25)
+#   m <- stats::rnorm(N, j+0.5, 0.25)
 #   Xtemp <- data.frame(x1 = 3*t , x2 = m - t)
 #   ytemp <- data.frame(matrix(j-1, N, 1))
 #   X <- rbind(X, Xtemp)
@@ -335,7 +335,7 @@ ggplot2::ggplot(data) + ggplot2::geom_point(ggplot2::aes(x=x1, y=x2, color = as.
 gamma <- .01
 eps <- 1
 
-set.seed(round(runif(1,0,100)))
+set.seed(round(stats::runif(1,0,100)))
 
 pm <- 'objective'
 # pm <- 'output'
@@ -399,10 +399,10 @@ set.seed(56)
 for (j in (1:K)){
   t <- seq(-.25,.25,length.out = N)
   # add randomness
-  if (j==1) m <- rnorm(N,-.2,.1) # Soft margin
-  if (j==2) m <- rnorm(N, .2,.1)
-  # if (j==1) m <- rnorm(N,-.2, .05) # Hard margin
-  # if (j==2) m <- rnorm(N, .2, .05)
+  if (j==1) m <- stats::rnorm(N,-.2,.1) # Soft margin
+  if (j==2) m <- stats::rnorm(N, .2,.1)
+  # if (j==1) m <- stats::rnorm(N,-.2, .05) # Hard margin
+  # if (j==2) m <- stats::rnorm(N, .2, .05)
   Xtemp <- data.frame(x1 = 3*t , x2 = m - t)
   ytemp <- data.frame(matrix(j-1, N, 1))
   X <- rbind(X, Xtemp)
@@ -448,7 +448,7 @@ eps <- 1
 gamma <- .01
 D <- 5
 
-set.seed(round(runif(1,0,100)))
+set.seed(round(stats::runif(1,0,100)))
 
 pm <- 'objective'
 # pm <- 'output'
@@ -510,7 +510,7 @@ y <- data.frame() # class labels
 set.seed(56)
 
 for (i in (1:N)){
-  Xtemp <- data.frame(x1 = rnorm(1,sd=.28) , x2 = rnorm(1,sd=.28))
+  Xtemp <- data.frame(x1 = stats::rnorm(1,sd=.28) , x2 = stats::rnorm(1,sd=.28))
   if (sum(Xtemp^2)<.15) ytemp <- data.frame(y=0)
   else ytemp <- data.frame(y=1)
   X <- rbind(X, Xtemp)
@@ -544,7 +544,7 @@ eps <- 5
 gamma <- 0.01
 D <- 20
 
-set.seed(round(runif(1,0,100)))
+set.seed(round(stats::runif(1,0,100)))
 
 # pm <- 'objective'
 pm <- 'output'
@@ -588,8 +588,8 @@ set.seed(56)
 
 for (j in (1:K)){
   t <- seq(-.25,.25,length.out = N)
-  if (j==1) m <- rnorm(N,-.2,.1)
-  if (j==2) m <- rnorm(N, .2,.1)
+  if (j==1) m <- stats::rnorm(N,-.2,.1)
+  if (j==2) m <- stats::rnorm(N, .2,.1)
   Xtemp <- data.frame(x1 = 3*t , x2 = m - t)
   ytemp <- data.frame(matrix(j-1, N, 1))
   X <- rbind(X, Xtemp)
@@ -619,7 +619,7 @@ ggplot2::ggplot(data) + ggplot2::geom_point(ggplot2::aes(x=x1, y=x2, color = as.
   ggplot2::theme_bw(base_size = 12) +
   ggplot2::theme(legend.position=c(0.85, 0.87))
 
-set.seed(round(runif(1,0,100)))
+set.seed(round(stats::runif(1,0,100)))
 
 eps <- 1
 
@@ -661,7 +661,7 @@ p <- 2 # for easy visualization
 X <- data.frame(X=seq(-1,1,length.out = n))
 true.theta <- c(-.3,.5) # Normal case (within search space bounds - shows variation)
 # true.theta <- c(1,2) # Too large coeff case (outside search space bounds - no variation)
-y <- true.theta[1] + as.matrix(X)%*%true.theta[2:length(true.theta)] + rnorm(n=n,sd=.1)
+y <- true.theta[1] + as.matrix(X)%*%true.theta[2:length(true.theta)] + stats::rnorm(n=n,sd=.1)
 y[y< -p] <- -p
 y[y>p] <- p
 
@@ -720,7 +720,7 @@ n <- 500
 X <- data.frame(X=seq(-1,1,length.out = n))
 true.theta <- c(-.3,.5) # Normal case
 # true.theta <- c(1,2) # Too large coeff case
-y <- true.theta[1] + as.matrix(X)%*%true.theta[2:length(true.theta)] + rnorm(n=n,sd=.1)
+y <- true.theta[1] + as.matrix(X)%*%true.theta[2:length(true.theta)] + stats::rnorm(n=n,sd=.1)
 p <- length(true.theta)
 y[y< -p] <- -p
 y[y> p] <- p
@@ -770,7 +770,7 @@ n <- 500
 X <- data.frame(X=seq(-1,1,length.out = n))
 true.theta <- c(-.3,.5) # Normal case
 # true.theta <- c(1,2) # Too large coeff case
-y <- true.theta[1] + as.matrix(X)%*%true.theta[2:length(true.theta)] + rnorm(n=n,sd=.1)
+y <- true.theta[1] + as.matrix(X)%*%true.theta[2:length(true.theta)] + stats::rnorm(n=n,sd=.1)
 p <- length(true.theta)
 y[y< -p] <- -p
 y[y> p] <- p
@@ -786,7 +786,7 @@ ggplot2::ggplot(data) + ggplot2::geom_point(ggplot2::aes(x=X, y=y), size = 2) +
   ggplot2::ggtitle('Data to be regressed') +
   ggplot2::theme_bw(base_size = 12)
 
-set.seed(round(runif(1,0,100)))
+set.seed(round(stats::runif(1,0,100)))
 
 eps <- 1
 delta <- 0.01

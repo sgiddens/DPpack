@@ -67,12 +67,12 @@ user-specified privacy levels of epsilon and delta. A histogram object is
 returned with sanitized values for the counts for easy plotting.
 }
 \examples{
-x <- rnorm(500)
-hist(x) # Non-private histogram
+x <- stats::rnorm(500)
+graphics::hist(x) # Non-private histogram
 result <- histogramDP(x, 1)
 plot(result) # Private histogram
 
-hist(x, freq=FALSE) # Normalized non-private histogram
+graphics::hist(x, freq=FALSE) # Normalized non-private histogram
 result <- histogramDP(x, .5, normalize=TRUE, which.sensitivity='unbounded',
   mechanism='Gaussian',delta=0.01, allow.negative=TRUE)
 plot(result) # Normalized private histogram (note negative values allowed)

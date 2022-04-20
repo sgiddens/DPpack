@@ -52,7 +52,7 @@ This function computes the differentially private median of an input vector
 at a user-specified privacy level of epsilon.
 }
 \examples{
-D <- rnorm(500)
+D <- stats::rnorm(500)
 lower.bound <- -3 # 3 standard deviations below mean
 upper.bound <- 3 # 3 standard deviations above mean
 

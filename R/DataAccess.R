@@ -57,7 +57,7 @@ meanDataAccess <- function (x, lower.bound, upper.bound){
 #'
 #' @keywords internal
 varDataAccess <- function (x, lower.bound, upper.bound){
-  f <- var # Function to evaluate over x
+  f <- stats::var # Function to evaluate over x
   tv <- f(x)
   n <- length(x)
   sens <- (upper.bound-lower.bound)^2/n
@@ -91,7 +91,7 @@ varDataAccess <- function (x, lower.bound, upper.bound){
 #' @keywords internal
 covDataAccess <- function (x1, x2, lower.bound1, upper.bound1,
                            lower.bound2, upper.bound2){
-  tv <- cov(x1,x2)
+  tv <- stats::cov(x1,x2)
   n <- length(x1)
   sens <- (upper.bound1-lower.bound1)*(upper.bound2-lower.bound2)/n
   return(list("True.Values"=tv, "Sensitivity"=sens))
@@ -123,7 +123,7 @@ covDataAccess <- function (x1, x2, lower.bound1, upper.bound1,
 #'
 #' @keywords internal
 histogramDataAccess <- function (x, breaks, mechanism){
-  tv <- hist(x, breaks, plot=FALSE)
+  tv <- graphics::hist(x, breaks, plot=FALSE)
   tv$density <- NULL
   if (mechanism=='Laplace'){
     bs <- 2
@@ -214,7 +214,7 @@ pooledVarDataAccess <- function(samples, lower.bound, upper.bound,approx.n.max){
   # Compute true value
   tv <- 0
   for (j in 1:J){
-    tv <- tv + (length(samples[[j]])-1)*var(samples[[j]])
+    tv <- tv + (length(samples[[j]])-1)*stats::var(samples[[j]])
   }
   tv <- tv/(n-J)
 
@@ -286,7 +286,7 @@ pooledCovDataAccess <- function(samples, lower.bound1, upper.bound1,
   # Compute true value
   tv <- 0
   for (j in 1:J){
-    tv <- tv + (nrow(samples[[j]])-1)*cov(samples[[j]][,1], samples[[j]][,2])
+    tv <- tv + (nrow(samples[[j]])-1)*stats::cov(samples[[j]][,1], samples[[j]][,2])
   }
   tv <- tv/(n-J)
 

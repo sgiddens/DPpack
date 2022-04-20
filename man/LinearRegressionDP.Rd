@@ -39,7 +39,7 @@ n <- 500
 X <- data.frame(X=seq(-1,1,length.out = n))
 true.theta <- c(-.3,.5) # First element is bias term
 p <- length(true.theta)
-y <- true.theta[1] + as.matrix(X)\%*\%true.theta[2:p] + rnorm(n=n,sd=.1)
+y <- true.theta[1] + as.matrix(X)\%*\%true.theta[2:p] + stats::rnorm(n=n,sd=.1)
 
 # Construct object for linear regression
 regularizer <- 'l2' # Alternatively, function(coeff) coeff\%*\%coeff/2

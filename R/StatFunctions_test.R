@@ -7,8 +7,8 @@ test_meanDP <- function(){
   # source(paste(cur.dir,'DataAccess.R',sep=""))
 
   ### Test input ###
-  data1d <- rnorm(50);
-  data2d <- matrix(data=rnorm(1000),ncol=2);
+  data1d <- stats::rnorm(50);
+  data2d <- matrix(data=stats::rnorm(1000),ncol=2);
 
   print("         No input:")
   a = tryCatch(meanDP(),error=function(e) print(paste("PASS --",e)));
@@ -88,8 +88,8 @@ test_meanDP <- function(){
   }
 
   tv = mean(x)
-  hist(data,freq=FALSE,main="Simple bounded Laplace");
-  abline(v=tv,col='blue')
+  graphics::hist(data,freq=FALSE,main="Simple bounded Laplace");
+  graphics::abline(v=tv,col='blue')
   print("Verify histogram centered at line...")
   Sys.sleep(2)
 
@@ -109,8 +109,8 @@ test_meanDP <- function(){
   }
 
   tv = mean(x)
-  hist(data,freq=FALSE,main="Simple unbounded Laplace");
-  abline(v=tv,col='blue')
+  graphics::hist(data,freq=FALSE,main="Simple unbounded Laplace");
+  graphics::abline(v=tv,col='blue')
   print("Verify histogram centered at line...")
   Sys.sleep(2)
 
@@ -130,8 +130,8 @@ test_meanDP <- function(){
   }
 
   tv = mean(x)
-  hist(data,freq=FALSE,main="Laplace with lower.bounds");
-  abline(v=tv,col='blue')
+  graphics::hist(data,freq=FALSE,main="Laplace with lower.bounds");
+  graphics::abline(v=tv,col='blue')
   print("Verify histogram right of line...")
   Sys.sleep(2)
 
@@ -151,8 +151,8 @@ test_meanDP <- function(){
   }
 
   tv = mean(x)
-  hist(data,freq=FALSE,main="Laplace with upper.bound");
-  abline(v=tv,col='blue')
+  graphics::hist(data,freq=FALSE,main="Laplace with upper.bound");
+  graphics::abline(v=tv,col='blue')
   print("Verify histogram left of line...")
   Sys.sleep(2)
 
@@ -172,8 +172,8 @@ test_meanDP <- function(){
   }
 
   tv = mean(x)
-  hist(data,freq=FALSE,main="Gaussian pDP");
-  abline(v=tv,col='blue')
+  graphics::hist(data,freq=FALSE,main="Gaussian pDP");
+  graphics::abline(v=tv,col='blue')
   print("Verify histogram centered at line...")
   Sys.sleep(2)
 
@@ -193,8 +193,8 @@ test_meanDP <- function(){
   }
 
   tv = mean(x)
-  hist(data,freq=FALSE,main="Gaussian aDP");
-  abline(v=tv,col='blue')
+  graphics::hist(data,freq=FALSE,main="Gaussian aDP");
+  graphics::abline(v=tv,col='blue')
   print("Verify histogram centered at line...")
   Sys.sleep(2)
 
@@ -214,8 +214,8 @@ test_meanDP <- function(){
   }
 
   tv = mean(x)
-  hist(data,freq=FALSE,main="Multidimensional x");
-  abline(v=tv,col='blue')
+  graphics::hist(data,freq=FALSE,main="Multidimensional x");
+  graphics::abline(v=tv,col='blue')
   print("Verify histogram centered at line...")
   Sys.sleep(2)
 
@@ -231,8 +231,8 @@ test_varDP <- function(){
   # source(paste(cur.dir,'DataAccess.R',sep=""))
 
   ### Test input ###
-  data1d <- rnorm(50,sd=2);
-  data2d <- matrix(data=rnorm(1000),ncol=2);
+  data1d <- stats::rnorm(50,sd=2);
+  data2d <- matrix(data=stats::rnorm(1000),ncol=2);
 
   print("         No input:")
   a = tryCatch(varDP(),error=function(e) print(paste("PASS --",e)));
@@ -304,9 +304,9 @@ test_varDP <- function(){
     data[i] <- varDP(x, eps, lb, ub, ws, mech, delta, tdp)
   }
 
-  tv = var(x)
-  hist(data,freq=FALSE,main="Simple bounded Laplace");
-  abline(v=tv,col='blue')
+  tv = stats::var(x)
+  graphics::hist(data,freq=FALSE,main="Simple bounded Laplace");
+  graphics::abline(v=tv,col='blue')
   print("Verify histogram centered at line...")
   Sys.sleep(2)
 
@@ -325,9 +325,9 @@ test_varDP <- function(){
     data[i] <- varDP(x, eps, lb, ub, ws, mech, delta, tdp)
   }
 
-  tv = var(x)
-  hist(data,freq=FALSE,main="Simple unbounded Laplace");
-  abline(v=tv,col='blue')
+  tv = stats::var(x)
+  graphics::hist(data,freq=FALSE,main="Simple unbounded Laplace");
+  graphics::abline(v=tv,col='blue')
   print("Verify histogram centered at line...")
   Sys.sleep(2)
 
@@ -346,9 +346,9 @@ test_varDP <- function(){
     data[i] <- varDP(x, eps, lb, ub, ws, mech, delta, tdp)
   }
 
-  tv = var(x)
-  hist(data,freq=FALSE,main="Laplace with lower.bound");
-  abline(v=tv,col='blue')
+  tv = stats::var(x)
+  graphics::hist(data,freq=FALSE,main="Laplace with lower.bound");
+  graphics::abline(v=tv,col='blue')
   print("Verify histogram left of line...")
   Sys.sleep(2)
 
@@ -367,9 +367,9 @@ test_varDP <- function(){
     data[i] <- varDP(x, eps, lb, ub, ws, mech, delta, tdp)
   }
 
-  tv = var(x)
-  hist(data,freq=FALSE,main="Laplace with upper.bound");
-  abline(v=tv,col='blue')
+  tv = stats::var(x)
+  graphics::hist(data,freq=FALSE,main="Laplace with upper.bound");
+  graphics::abline(v=tv,col='blue')
   print("Verify histogram left of line...")
   Sys.sleep(2)
 
@@ -388,9 +388,9 @@ test_varDP <- function(){
     data[i] <- varDP(x, eps, lb, ub, ws, mech, delta, tdp)
   }
 
-  tv = var(x)
-  hist(data,freq=FALSE,main="Gaussian pDP");
-  abline(v=tv,col='blue')
+  tv = stats::var(x)
+  graphics::hist(data,freq=FALSE,main="Gaussian pDP");
+  graphics::abline(v=tv,col='blue')
   print("Verify histogram centered at line...")
   Sys.sleep(2)
 
@@ -409,9 +409,9 @@ test_varDP <- function(){
     data[i] <- varDP(x, eps, lb, ub, ws, mech, delta, tdp)
   }
 
-  tv = var(x)
-  hist(data,freq=FALSE,main="Gaussian aDP");
-  abline(v=tv,col='blue')
+  tv = stats::var(x)
+  graphics::hist(data,freq=FALSE,main="Gaussian aDP");
+  graphics::abline(v=tv,col='blue')
   print("Verify histogram centered at line...")
   Sys.sleep(2)
 
@@ -427,8 +427,8 @@ test_sdDP <- function(){
   # source(paste(cur.dir,'DataAccess.R',sep=""))
 
   ### Test input ###
-  data1d <- rnorm(50,sd=2);
-  data2d <- matrix(data=rnorm(1000),ncol=2);
+  data1d <- stats::rnorm(50,sd=2);
+  data2d <- matrix(data=stats::rnorm(1000),ncol=2);
 
   print("         No input:")
   a = tryCatch(sdDP(),error=function(e) print(paste("PASS --",e)));
@@ -500,9 +500,9 @@ test_sdDP <- function(){
     data[i] <- sdDP(x, eps, lb, ub, ws, mech, delta, tdp)
   }
 
-  tv = sd(x)
-  hist(data,freq=FALSE,main="Simple bounded Laplace");
-  abline(v=tv,col='blue')
+  tv = stats::sd(x)
+  graphics::hist(data,freq=FALSE,main="Simple bounded Laplace");
+  graphics::abline(v=tv,col='blue')
   print("Verify histogram centered at line...")
   Sys.sleep(2)
 
@@ -521,9 +521,9 @@ test_sdDP <- function(){
     data[i] <- sdDP(x, eps, lb, ub, ws, mech, delta, tdp)
   }
 
-  tv = sd(x)
-  hist(data,freq=FALSE,main="Simple unbounded Laplace");
-  abline(v=tv,col='blue')
+  tv = stats::sd(x)
+  graphics::hist(data,freq=FALSE,main="Simple unbounded Laplace");
+  graphics::abline(v=tv,col='blue')
   print("Verify histogram centered at line...")
   Sys.sleep(2)
 
@@ -542,9 +542,9 @@ test_sdDP <- function(){
     data[i] <- sdDP(x, eps, lb, ub, ws, mech, delta, tdp)
   }
 
-  tv = sd(x)
-  hist(data,freq=FALSE,main="Laplace with lower.bound");
-  abline(v=tv,col='blue')
+  tv = stats::sd(x)
+  graphics::hist(data,freq=FALSE,main="Laplace with lower.bound");
+  graphics::abline(v=tv,col='blue')
   print("Verify histogram left of line...")
   Sys.sleep(2)
 
@@ -563,9 +563,9 @@ test_sdDP <- function(){
     data[i] <- sdDP(x, eps, lb, ub, ws, mech, delta, tdp)
   }
 
-  tv = sd(x)
-  hist(data,freq=FALSE,main="Laplace with upper.bound");
-  abline(v=tv,col='blue')
+  tv = stats::sd(x)
+  graphics::hist(data,freq=FALSE,main="Laplace with upper.bound");
+  graphics::abline(v=tv,col='blue')
   print("Verify histogram left of line...")
   Sys.sleep(2)
 
@@ -584,9 +584,9 @@ test_sdDP <- function(){
     data[i] <- sdDP(x, eps, lb, ub, ws, mech, delta, tdp)
   }
 
-  tv = sd(x)
-  hist(data,freq=FALSE,main="Gaussian pDP");
-  abline(v=tv,col='blue')
+  tv = stats::sd(x)
+  graphics::hist(data,freq=FALSE,main="Gaussian pDP");
+  graphics::abline(v=tv,col='blue')
   print("Verify histogram centered at line...")
   Sys.sleep(2)
 
@@ -605,9 +605,9 @@ test_sdDP <- function(){
     data[i] <- sdDP(x, eps, lb, ub, ws, mech, delta, tdp)
   }
 
-  tv = sd(x)
-  hist(data,freq=FALSE,main="Gaussian aDP");
-  abline(v=tv,col='blue')
+  tv = stats::sd(x)
+  graphics::hist(data,freq=FALSE,main="Gaussian aDP");
+  graphics::abline(v=tv,col='blue')
   print("Verify histogram centered at line...")
   Sys.sleep(2)
 
@@ -623,8 +623,8 @@ test_covDP <- function(){
   # source(paste(cur.dir,'DataAccess.R',sep=""))
 
   ### Test input ###
-  data1d <- rnorm(50,sd=2);
-  data2d <- matrix(data=rnorm(1000),ncol=2);
+  data1d <- stats::rnorm(50,sd=2);
+  data2d <- matrix(data=stats::rnorm(1000),ncol=2);
 
   print("         No input:")
   a = tryCatch(covDP(),error=function(e) print(paste("PASS --",e)));
@@ -695,9 +695,9 @@ test_covDP <- function(){
     data[i] <- covDP(x1, x2, eps, lb1, ub1, lb2, ub2, ws, mech, delta, tdp)
   }
 
-  tv = cov(x1,x2)
-  hist(data,freq=FALSE,main="Simple bounded Laplace");
-  abline(v=tv,col='blue')
+  tv = stats::cov(x1,x2)
+  graphics::hist(data,freq=FALSE,main="Simple bounded Laplace");
+  graphics::abline(v=tv,col='blue')
   print("Verify histogram centered at line...")
   Sys.sleep(2)
 
@@ -720,9 +720,9 @@ test_covDP <- function(){
     data[i] <- covDP(x1, x2, eps, lb1, ub1, lb2, ub2, ws, mech, delta, tdp)
   }
 
-  tv = cov(x1,x2)
-  hist(data,freq=FALSE,main="Simple unbounded Laplace");
-  abline(v=tv,col='blue')
+  tv = stats::cov(x1,x2)
+  graphics::hist(data,freq=FALSE,main="Simple unbounded Laplace");
+  graphics::abline(v=tv,col='blue')
   print("Verify histogram centered at line...")
   Sys.sleep(2)
 
@@ -745,9 +745,9 @@ test_covDP <- function(){
     data[i] <- covDP(x1, x2, eps, lb1, ub1, lb2, ub2, ws, mech, delta, tdp)
   }
 
-  tv = cov(x1,x2)
-  hist(data,freq=FALSE,main="Laplace with lower.bounds");
-  abline(v=tv,col='blue')
+  tv = stats::cov(x1,x2)
+  graphics::hist(data,freq=FALSE,main="Laplace with lower.bounds");
+  graphics::abline(v=tv,col='blue')
   print("Verify histogram left of line...")
   Sys.sleep(2)
 
@@ -770,9 +770,9 @@ test_covDP <- function(){
     data[i] <- covDP(x1, x2, eps, lb1, ub1, lb2, ub2, ws, mech, delta, tdp)
   }
 
-  tv = cov(x1,x2)
-  hist(data,freq=FALSE,main="Laplace with upper.bounds");
-  abline(v=tv,col='blue')
+  tv = stats::cov(x1,x2)
+  graphics::hist(data,freq=FALSE,main="Laplace with upper.bounds");
+  graphics::abline(v=tv,col='blue')
   print("Verify histogram left of line...")
   Sys.sleep(2)
 
@@ -795,9 +795,9 @@ test_covDP <- function(){
     data[i] <- covDP(x1, x2, eps, lb1, ub1, lb2, ub2, ws, mech, delta, tdp)
   }
 
-  tv = cov(x1,x2)
-  hist(data,freq=FALSE,main="Gaussian pDP");
-  abline(v=tv,col='blue')
+  tv = stats::cov(x1,x2)
+  graphics::hist(data,freq=FALSE,main="Gaussian pDP");
+  graphics::abline(v=tv,col='blue')
   print("Verify histogram centered at line...")
   Sys.sleep(2)
 
@@ -820,9 +820,9 @@ test_covDP <- function(){
     data[i] <- covDP(x1, x2, eps, lb1, ub1, lb2, ub2, ws, mech, delta, tdp)
   }
 
-  tv = cov(x1,x2)
-  hist(data,freq=FALSE,main="Gaussian aDP");
-  abline(v=tv,col='blue')
+  tv = stats::cov(x1,x2)
+  graphics::hist(data,freq=FALSE,main="Gaussian aDP");
+  graphics::abline(v=tv,col='blue')
   print("Verify histogram centered at line...")
   Sys.sleep(2)
 
@@ -838,7 +838,7 @@ test_histogramDP <- function(){
   # source(paste(cur.dir,'DataAccess.R',sep=""))
 
   ### Test input ###
-  data1d <- rnorm(50)
+  data1d <- stats::rnorm(50)
 
   print("         No input:")
   a = tryCatch(histogramDP(),error=function(e) print(paste("PASS --",e)));
@@ -860,7 +860,7 @@ test_histogramDP <- function(){
 
   ### TEST FUNCTIONALITY ###
   print("         Simple bounded Laplace:")
-  x <- rnorm(100,mean=3,sd=2);
+  x <- stats::rnorm(100,mean=3,sd=2);
   eps <- 1;
   normal <- FALSE;
   ws = 'bounded'
@@ -871,15 +871,15 @@ test_histogramDP <- function(){
 
   result <- histogramDP(x, eps, "Sturges", normal, ws, mech, delta, tdp, an)
 
-  par(mfrow=c(1,2))
+  graphics::par(mfrow=c(1,2))
   plot(result,main="Simple bounded Laplace");
-  hist(x,freq=TRUE,main="Original");
+  graphics::hist(x,freq=TRUE,main="Original");
   print("Verify similarity...")
   Sys.sleep(2)
-  par(mfrow=c(1,1))
+  graphics::par(mfrow=c(1,1))
 
   print("         Simple unbounded Laplace:")
-  x <- rnorm(100,mean=3,sd=2);
+  x <- stats::rnorm(100,mean=3,sd=2);
   eps <- 1;
   normal <- FALSE;
   ws = 'unbounded'
@@ -890,15 +890,15 @@ test_histogramDP <- function(){
 
   result <- histogramDP(x, eps, "Sturges", normal, ws, mech, delta, tdp, an)
 
-  par(mfrow=c(1,2))
+  graphics::par(mfrow=c(1,2))
   plot(result,main="Simple unbounded Laplace");
-  hist(x,freq=TRUE,main="Original");
+  graphics::hist(x,freq=TRUE,main="Original");
   print("Verify similarity...")
   Sys.sleep(2)
-  par(mfrow=c(1,1))
+  graphics::par(mfrow=c(1,1))
 
   print("         Gaussian pDP:")
-  x <- rnorm(100,mean=3,sd=2);
+  x <- stats::rnorm(100,mean=3,sd=2);
   eps <- 1;
   normal <- FALSE;
   ws = 'bounded'
@@ -909,15 +909,15 @@ test_histogramDP <- function(){
 
   result <- histogramDP(x, eps, "Sturges", normal, ws, mech, delta, tdp, an)
 
-  par(mfrow=c(1,2))
+  graphics::par(mfrow=c(1,2))
   plot(result,main="Gaussian pDP");
-  hist(x,freq=TRUE,main="Original");
+  graphics::hist(x,freq=TRUE,main="Original");
   print("Verify similarity...")
   Sys.sleep(2)
-  par(mfrow=c(1,1))
+  graphics::par(mfrow=c(1,1))
 
   print("         Gaussian aDP:")
-  x <- rnorm(100,mean=3,sd=2);
+  x <- stats::rnorm(100,mean=3,sd=2);
   eps <- .9;
   normal <- FALSE;
   ws = 'bounded'
@@ -928,15 +928,15 @@ test_histogramDP <- function(){
 
   result <- histogramDP(x, eps, "Sturges", normal, ws, mech, delta, tdp, an)
 
-  par(mfrow=c(1,2))
+  graphics::par(mfrow=c(1,2))
   plot(result,main="Gaussian aDP");
-  hist(x,freq=TRUE,main="Original");
+  graphics::hist(x,freq=TRUE,main="Original");
   print("Verify similarity...")
   Sys.sleep(2)
-  par(mfrow=c(1,1))
+  graphics::par(mfrow=c(1,1))
 
   print("         Normalized:")
-  x <- rnorm(100,mean=3,sd=2);
+  x <- stats::rnorm(100,mean=3,sd=2);
   eps <- 1;
   normal <- TRUE;
   ws = 'bounded'
@@ -947,15 +947,15 @@ test_histogramDP <- function(){
 
   result <- histogramDP(x, eps, "Sturges", normal, ws, mech, delta, tdp, an)
 
-  par(mfrow=c(1,2))
+  graphics::par(mfrow=c(1,2))
   plot(result,main="Normalized");
-  hist(x,freq=FALSE,main="Original");
+  graphics::hist(x,freq=FALSE,main="Original");
   print("Verify similarity...")
   Sys.sleep(2)
-  par(mfrow=c(1,1))
+  graphics::par(mfrow=c(1,1))
 
   print("         Allow Negative:")
-  x <- rnorm(100,mean=3,sd=2);
+  x <- stats::rnorm(100,mean=3,sd=2);
   eps <- 1;
   normal <- TRUE;
   ws = 'bounded'
@@ -966,12 +966,12 @@ test_histogramDP <- function(){
 
   result <- histogramDP(x, eps, "Sturges", normal, ws, mech, delta, tdp, an)
 
-  par(mfrow=c(1,2))
+  graphics::par(mfrow=c(1,2))
   plot(result,main="Allow Negative");
-  hist(x,freq=FALSE,main="Original");
+  graphics::hist(x,freq=FALSE,main="Original");
   print("Verify similarity...")
   Sys.sleep(2)
-  par(mfrow=c(1,1))
+  graphics::par(mfrow=c(1,1))
 
   ### END TEST FUNCTIONALITY ###
 }
@@ -1129,9 +1129,9 @@ test_pooledVarDP <- function(){
   # source(paste(cur.dir,'DataAccess.R',sep=""))
 
   ### Test input ###
-  x <- rnorm(10,sd=2);
-  y <- rnorm(15,sd=2);
-  z <- rnorm(20,sd=2);
+  x <- stats::rnorm(10,sd=2);
+  y <- stats::rnorm(15,sd=2);
+  z <- stats::rnorm(20,sd=2);
 
   print("         No input:")
   a = tryCatch(pooledVarDP(),error=function(e) print(paste("PASS --",e)));
@@ -1185,9 +1185,9 @@ test_pooledVarDP <- function(){
   n1 = 10
   n2 = 15
   n3 = 20
-  x <- rnorm(n1,sd=2);
-  y <- rnorm(n2,sd=2);
-  z <- rnorm(n3,sd=2);
+  x <- stats::rnorm(n1,sd=2);
+  y <- stats::rnorm(n2,sd=2);
+  z <- stats::rnorm(n3,sd=2);
   eps <- 1;
   ws = 'bounded'
   lb = -6
@@ -1205,9 +1205,9 @@ test_pooledVarDP <- function(){
                            approx.n.max=anm)
   }
 
-  tv = ((n1-1)*var(x) + (n2-1)*var(y) + (n3-1)*var(z))/(n1+n2+n3-3);
-  hist(data,freq=FALSE,main="Simple bounded Laplace");
-  abline(v=tv,col='blue')
+  tv = ((n1-1)*stats::var(x) + (n2-1)*stats::var(y) + (n3-1)*stats::var(z))/(n1+n2+n3-3);
+  graphics::hist(data,freq=FALSE,main="Simple bounded Laplace");
+  graphics::abline(v=tv,col='blue')
   print("Verify histogram centered at line...")
   Sys.sleep(2)
 
@@ -1215,9 +1215,9 @@ test_pooledVarDP <- function(){
   n1 = 10
   n2 = 15
   n3 = 20
-  x <- rnorm(n1,sd=2);
-  y <- rnorm(n2,sd=2);
-  z <- rnorm(n3,sd=2);
+  x <- stats::rnorm(n1,sd=2);
+  y <- stats::rnorm(n2,sd=2);
+  z <- stats::rnorm(n3,sd=2);
   eps <- 1;
   ws = 'unbounded'
   lb = -6
@@ -1235,9 +1235,9 @@ test_pooledVarDP <- function(){
                            approx.n.max=anm)
   }
 
-  tv = ((n1-1)*var(x) + (n2-1)*var(y) + (n3-1)*var(z))/(n1+n2+n3-3);
-  hist(data,freq=FALSE,main="Simple unbounded Laplace");
-  abline(v=tv,col='blue')
+  tv = ((n1-1)*stats::var(x) + (n2-1)*stats::var(y) + (n3-1)*stats::var(z))/(n1+n2+n3-3);
+  graphics::hist(data,freq=FALSE,main="Simple unbounded Laplace");
+  graphics::abline(v=tv,col='blue')
   print("Verify histogram centered at line...")
   Sys.sleep(2)
 
@@ -1245,9 +1245,9 @@ test_pooledVarDP <- function(){
   n1 = 10
   n2 = 15
   n3 = 20
-  x <- rnorm(n1,sd=2);
-  y <- rnorm(n2,sd=2);
-  z <- rnorm(n3,sd=2);
+  x <- stats::rnorm(n1,sd=2);
+  y <- stats::rnorm(n2,sd=2);
+  z <- stats::rnorm(n3,sd=2);
   eps <- 1;
   ws = 'bounded'
   lb = -2
@@ -1265,9 +1265,9 @@ test_pooledVarDP <- function(){
                            approx.n.max=anm)
   }
 
-  tv = ((n1-1)*var(x) + (n2-1)*var(y) + (n3-1)*var(z))/(n1+n2+n3-3);
-  hist(data,freq=FALSE,main="Laplace with lower.bounds");
-  abline(v=tv,col='blue')
+  tv = ((n1-1)*stats::var(x) + (n2-1)*stats::var(y) + (n3-1)*stats::var(z))/(n1+n2+n3-3);
+  graphics::hist(data,freq=FALSE,main="Laplace with lower.bounds");
+  graphics::abline(v=tv,col='blue')
   print("Verify histogram centered at line...")
   Sys.sleep(2)
 
@@ -1275,9 +1275,9 @@ test_pooledVarDP <- function(){
   n1 = 10
   n2 = 15
   n3 = 20
-  x <- rnorm(n1,sd=2);
-  y <- rnorm(n2,sd=2);
-  z <- rnorm(n3,sd=2);
+  x <- stats::rnorm(n1,sd=2);
+  y <- stats::rnorm(n2,sd=2);
+  z <- stats::rnorm(n3,sd=2);
   eps <- 1;
   ws = 'bounded'
   lb = -6
@@ -1295,9 +1295,9 @@ test_pooledVarDP <- function(){
                            approx.n.max=anm)
   }
 
-  tv = ((n1-1)*var(x) + (n2-1)*var(y) + (n3-1)*var(z))/(n1+n2+n3-3);
-  hist(data,freq=FALSE,main="Laplace with upper.bounds");
-  abline(v=tv,col='blue')
+  tv = ((n1-1)*stats::var(x) + (n2-1)*stats::var(y) + (n3-1)*stats::var(z))/(n1+n2+n3-3);
+  graphics::hist(data,freq=FALSE,main="Laplace with upper.bounds");
+  graphics::abline(v=tv,col='blue')
   print("Verify histogram centered at line...")
   Sys.sleep(2)
 
@@ -1305,9 +1305,9 @@ test_pooledVarDP <- function(){
   n1 = 10
   n2 = 15
   n3 = 20
-  x <- rnorm(n1,sd=2);
-  y <- rnorm(n2,sd=2);
-  z <- rnorm(n3,sd=2);
+  x <- stats::rnorm(n1,sd=2);
+  y <- stats::rnorm(n2,sd=2);
+  z <- stats::rnorm(n3,sd=2);
   eps <- 1;
   ws = 'bounded'
   lb = -6
@@ -1325,9 +1325,9 @@ test_pooledVarDP <- function(){
                            approx.n.max=anm)
   }
 
-  tv = ((n1-1)*var(x) + (n2-1)*var(y) + (n3-1)*var(z))/(n1+n2+n3-3);
-  hist(data,freq=FALSE,main="Gaussian pDP");
-  abline(v=tv,col='blue')
+  tv = ((n1-1)*stats::var(x) + (n2-1)*stats::var(y) + (n3-1)*stats::var(z))/(n1+n2+n3-3);
+  graphics::hist(data,freq=FALSE,main="Gaussian pDP");
+  graphics::abline(v=tv,col='blue')
   print("Verify histogram centered at line...")
   Sys.sleep(2)
 
@@ -1335,9 +1335,9 @@ test_pooledVarDP <- function(){
   n1 = 10
   n2 = 15
   n3 = 20
-  x <- rnorm(n1,sd=2);
-  y <- rnorm(n2,sd=2);
-  z <- rnorm(n3,sd=2);
+  x <- stats::rnorm(n1,sd=2);
+  y <- stats::rnorm(n2,sd=2);
+  z <- stats::rnorm(n3,sd=2);
   eps <- .9;
   ws = 'bounded'
   lb = -6
@@ -1355,9 +1355,9 @@ test_pooledVarDP <- function(){
                            approx.n.max=anm)
   }
 
-  tv = ((n1-1)*var(x) + (n2-1)*var(y) + (n3-1)*var(z))/(n1+n2+n3-3);
-  hist(data,freq=FALSE,main="Gaussian aDP");
-  abline(v=tv,col='blue')
+  tv = ((n1-1)*stats::var(x) + (n2-1)*stats::var(y) + (n3-1)*stats::var(z))/(n1+n2+n3-3);
+  graphics::hist(data,freq=FALSE,main="Gaussian aDP");
+  graphics::abline(v=tv,col='blue')
   print("Verify histogram centered at line...")
   Sys.sleep(2)
 
@@ -1365,9 +1365,9 @@ test_pooledVarDP <- function(){
   n1 = 10
   n2 = 15
   n3 = 20
-  x <- rnorm(n1,sd=2);
-  y <- rnorm(n2,sd=2);
-  z <- rnorm(n3,sd=2);
+  x <- stats::rnorm(n1,sd=2);
+  y <- stats::rnorm(n2,sd=2);
+  z <- stats::rnorm(n3,sd=2);
   eps <- 1;
   ws = 'bounded'
   lb = -6
@@ -1385,9 +1385,9 @@ test_pooledVarDP <- function(){
                            approx.n.max=anm)
   }
 
-  tv = ((n1-1)*var(x) + (n2-1)*var(y) + (n3-1)*var(z))/(n1+n2+n3-3);
-  hist(data,freq=FALSE,main="Approx n.max");
-  abline(v=tv,col='blue')
+  tv = ((n1-1)*stats::var(x) + (n2-1)*stats::var(y) + (n3-1)*stats::var(z))/(n1+n2+n3-3);
+  graphics::hist(data,freq=FALSE,main="Approx n.max");
+  graphics::abline(v=tv,col='blue')
   print("Verify histogram centered at line...")
   Sys.sleep(2)
   ### END TEST FUNCTIONALITY ###
@@ -1402,9 +1402,9 @@ test_pooledCovDP <- function(){
   # source(paste(cur.dir,'DataAccess.R',sep=""))
 
   ### Test input ###
-  x <- matrix(rnorm(20,sd=2),ncol=2);
-  y <- matrix(rnorm(30,sd=2),ncol=2);
-  z <- matrix(rnorm(40,sd=2),ncol=2);
+  x <- matrix(stats::rnorm(20,sd=2),ncol=2);
+  y <- matrix(stats::rnorm(30,sd=2),ncol=2);
+  z <- matrix(stats::rnorm(40,sd=2),ncol=2);
 
   print("         No input:")
   a = tryCatch(pooledCovDP(),error=function(e) print(paste("PASS --",e)));
@@ -1461,9 +1461,9 @@ test_pooledCovDP <- function(){
   n1 = 10;
   n2 = 15;
   n3 = 20;
-  x <- matrix(rnorm(2*n1,sd=2),ncol=2);
-  y <- matrix(rnorm(2*n2,sd=2),ncol=2);
-  z <- matrix(rnorm(2*n3,sd=2),ncol=2);
+  x <- matrix(stats::rnorm(2*n1,sd=2),ncol=2);
+  y <- matrix(stats::rnorm(2*n2,sd=2),ncol=2);
+  z <- matrix(stats::rnorm(2*n3,sd=2),ncol=2);
   eps <- 1;
   ws = 'bounded'
   lb1 = -6
@@ -1484,10 +1484,10 @@ test_pooledCovDP <- function(){
                            type.DP=tdp, approx.n.max=anm)
   }
 
-  tv = ((n1-1)*cov(x[,1],x[,2])+(n2-1)*cov(y[,1],y[,2])+(n3-1)*cov(z[,1],z[,2]))/
+  tv = ((n1-1)*stats::cov(x[,1],x[,2])+(n2-1)*stats::cov(y[,1],y[,2])+(n3-1)*stats::cov(z[,1],z[,2]))/
     (n1+n2+n3-3);
-  hist(data,freq=FALSE,main="Simple bounded Laplace");
-  abline(v=tv,col='blue')
+  graphics::hist(data,freq=FALSE,main="Simple bounded Laplace");
+  graphics::abline(v=tv,col='blue')
   print("Verify histogram centered at line...")
   Sys.sleep(2)
 
@@ -1495,9 +1495,9 @@ test_pooledCovDP <- function(){
   n1 = 10;
   n2 = 15;
   n3 = 20;
-  x <- matrix(rnorm(2*n1,sd=2),ncol=2);
-  y <- matrix(rnorm(2*n2,sd=2),ncol=2);
-  z <- matrix(rnorm(2*n3,sd=2),ncol=2);
+  x <- matrix(stats::rnorm(2*n1,sd=2),ncol=2);
+  y <- matrix(stats::rnorm(2*n2,sd=2),ncol=2);
+  z <- matrix(stats::rnorm(2*n3,sd=2),ncol=2);
   eps <- 1;
   ws = 'unbounded'
   lb1 = -6
@@ -1518,10 +1518,10 @@ test_pooledCovDP <- function(){
                            approx.n.max=anm)
   }
 
-  tv = ((n1-1)*cov(x[,1],x[,2])+(n2-1)*cov(y[,1],y[,2])+(n3-1)*cov(z[,1],z[,2]))/
+  tv = ((n1-1)*stats::cov(x[,1],x[,2])+(n2-1)*stats::cov(y[,1],y[,2])+(n3-1)*stats::cov(z[,1],z[,2]))/
     (n1+n2+n3-3);
-  hist(data,freq=FALSE,main="Simple unbounded Laplace");
-  abline(v=tv,col='blue')
+  graphics::hist(data,freq=FALSE,main="Simple unbounded Laplace");
+  graphics::abline(v=tv,col='blue')
   print("Verify histogram centered at line...")
   Sys.sleep(2)
 
@@ -1529,9 +1529,9 @@ test_pooledCovDP <- function(){
   n1 = 10;
   n2 = 15;
   n3 = 20;
-  x <- matrix(rnorm(2*n1,sd=2),ncol=2);
-  y <- matrix(rnorm(2*n2,sd=2),ncol=2);
-  z <- matrix(rnorm(2*n3,sd=2),ncol=2);
+  x <- matrix(stats::rnorm(2*n1,sd=2),ncol=2);
+  y <- matrix(stats::rnorm(2*n2,sd=2),ncol=2);
+  z <- matrix(stats::rnorm(2*n3,sd=2),ncol=2);
   eps <- 1;
   ws = 'bounded'
   lb1 = -2
@@ -1552,10 +1552,10 @@ test_pooledCovDP <- function(){
                            approx.n.max=anm)
   }
 
-  tv = ((n1-1)*cov(x[,1],x[,2])+(n2-1)*cov(y[,1],y[,2])+(n3-1)*cov(z[,1],z[,2]))/
+  tv = ((n1-1)*stats::cov(x[,1],x[,2])+(n2-1)*stats::cov(y[,1],y[,2])+(n3-1)*stats::cov(z[,1],z[,2]))/
     (n1+n2+n3-3);
-  hist(data,freq=FALSE,main="Laplace with lower.bounds");
-  abline(v=tv,col='blue')
+  graphics::hist(data,freq=FALSE,main="Laplace with lower.bounds");
+  graphics::abline(v=tv,col='blue')
   print("Verify histogram centered at line...")
   Sys.sleep(2)
 
@@ -1563,9 +1563,9 @@ test_pooledCovDP <- function(){
   n1 = 10;
   n2 = 15;
   n3 = 20;
-  x <- matrix(rnorm(2*n1,sd=2),ncol=2);
-  y <- matrix(rnorm(2*n2,sd=2),ncol=2);
-  z <- matrix(rnorm(2*n3,sd=2),ncol=2);
+  x <- matrix(stats::rnorm(2*n1,sd=2),ncol=2);
+  y <- matrix(stats::rnorm(2*n2,sd=2),ncol=2);
+  z <- matrix(stats::rnorm(2*n3,sd=2),ncol=2);
   eps <- 1;
   ws = 'bounded'
   lb1 = -6
@@ -1586,10 +1586,10 @@ test_pooledCovDP <- function(){
                            approx.n.max=anm)
   }
 
-  tv = ((n1-1)*cov(x[,1],x[,2])+(n2-1)*cov(y[,1],y[,2])+(n3-1)*cov(z[,1],z[,2]))/
+  tv = ((n1-1)*stats::cov(x[,1],x[,2])+(n2-1)*stats::cov(y[,1],y[,2])+(n3-1)*stats::cov(z[,1],z[,2]))/
     (n1+n2+n3-3);
-  hist(data,freq=FALSE,main="Laplace with upper.bounds");
-  abline(v=tv,col='blue')
+  graphics::hist(data,freq=FALSE,main="Laplace with upper.bounds");
+  graphics::abline(v=tv,col='blue')
   print("Verify histogram centered at line...")
   Sys.sleep(2)
 
@@ -1597,9 +1597,9 @@ test_pooledCovDP <- function(){
   n1 = 10;
   n2 = 15;
   n3 = 20;
-  x <- matrix(rnorm(2*n1,sd=2),ncol=2);
-  y <- matrix(rnorm(2*n2,sd=2),ncol=2);
-  z <- matrix(rnorm(2*n3,sd=2),ncol=2);
+  x <- matrix(stats::rnorm(2*n1,sd=2),ncol=2);
+  y <- matrix(stats::rnorm(2*n2,sd=2),ncol=2);
+  z <- matrix(stats::rnorm(2*n3,sd=2),ncol=2);
   eps <- 1;
   ws = 'bounded'
   lb1 = -6
@@ -1620,10 +1620,10 @@ test_pooledCovDP <- function(){
                            approx.n.max=anm)
   }
 
-  tv = ((n1-1)*cov(x[,1],x[,2])+(n2-1)*cov(y[,1],y[,2])+(n3-1)*cov(z[,1],z[,2]))/
+  tv = ((n1-1)*stats::cov(x[,1],x[,2])+(n2-1)*stats::cov(y[,1],y[,2])+(n3-1)*stats::cov(z[,1],z[,2]))/
     (n1+n2+n3-3);
-  hist(data,freq=FALSE,main="Gaussian pDP");
-  abline(v=tv,col='blue')
+  graphics::hist(data,freq=FALSE,main="Gaussian pDP");
+  graphics::abline(v=tv,col='blue')
   print("Verify histogram centered at line...")
   Sys.sleep(2)
 
@@ -1631,9 +1631,9 @@ test_pooledCovDP <- function(){
   n1 = 10;
   n2 = 15;
   n3 = 20;
-  x <- matrix(rnorm(2*n1,sd=2),ncol=2);
-  y <- matrix(rnorm(2*n2,sd=2),ncol=2);
-  z <- matrix(rnorm(2*n3,sd=2),ncol=2);
+  x <- matrix(stats::rnorm(2*n1,sd=2),ncol=2);
+  y <- matrix(stats::rnorm(2*n2,sd=2),ncol=2);
+  z <- matrix(stats::rnorm(2*n3,sd=2),ncol=2);
   eps <- .9;
   ws = 'bounded'
   lb1 = -6
@@ -1654,10 +1654,10 @@ test_pooledCovDP <- function(){
                            approx.n.max=anm)
   }
 
-  tv = ((n1-1)*cov(x[,1],x[,2])+(n2-1)*cov(y[,1],y[,2])+(n3-1)*cov(z[,1],z[,2]))/
+  tv = ((n1-1)*stats::cov(x[,1],x[,2])+(n2-1)*stats::cov(y[,1],y[,2])+(n3-1)*stats::cov(z[,1],z[,2]))/
     (n1+n2+n3-3);
-  hist(data,freq=FALSE,main="Gaussian aDP");
-  abline(v=tv,col='blue')
+  graphics::hist(data,freq=FALSE,main="Gaussian aDP");
+  graphics::abline(v=tv,col='blue')
   print("Verify histogram centered at line...")
   Sys.sleep(2)
 
@@ -1665,9 +1665,9 @@ test_pooledCovDP <- function(){
   n1 = 10;
   n2 = 15;
   n3 = 20;
-  x <- matrix(rnorm(2*n1,sd=2),ncol=2);
-  y <- matrix(rnorm(2*n2,sd=2),ncol=2);
-  z <- matrix(rnorm(2*n3,sd=2),ncol=2);
+  x <- matrix(stats::rnorm(2*n1,sd=2),ncol=2);
+  y <- matrix(stats::rnorm(2*n2,sd=2),ncol=2);
+  z <- matrix(stats::rnorm(2*n3,sd=2),ncol=2);
   eps <- 1;
   ws = 'bounded'
   lb1 = -6
@@ -1688,10 +1688,10 @@ test_pooledCovDP <- function(){
                            approx.n.max=anm)
   }
 
-  tv = ((n1-1)*cov(x[,1],x[,2])+(n2-1)*cov(y[,1],y[,2])+(n3-1)*cov(z[,1],z[,2]))/
+  tv = ((n1-1)*stats::cov(x[,1],x[,2])+(n2-1)*stats::cov(y[,1],y[,2])+(n3-1)*stats::cov(z[,1],z[,2]))/
     (n1+n2+n3-3);
-  hist(data,freq=FALSE,main="Approximate n.max");
-  abline(v=tv,col='blue')
+  graphics::hist(data,freq=FALSE,main="Approximate n.max");
+  graphics::abline(v=tv,col='blue')
   print("Verify histogram centered at line...")
   Sys.sleep(2)
 
@@ -1707,7 +1707,7 @@ test_quantileDP <- function(){
   # source(paste(cur.dir,'DataAccess.R',sep=""))
 
   ### Test input ###
-  x <- rnorm(50);
+  x <- stats::rnorm(50);
 
   print("         No input:")
   a = tryCatch(quantileDP(),error=function(e) print(paste("PASS --",e)));
@@ -1759,7 +1759,7 @@ test_quantileDP <- function(){
 
   ### TEST FUNCTIONALITY ###
   print("         Simple bounded Exponential:")
-  x <- rnorm(50,sd=2);
+  x <- stats::rnorm(50,sd=2);
   quant=.25
   eps <- 1;
   ws = 'bounded'
@@ -1772,14 +1772,14 @@ test_quantileDP <- function(){
     data[i] <- quantileDP(x, quant, eps, lb, ub, ws, mech)
   }
 
-  tv = quantile(x,quant)
-  hist(data,freq=FALSE,main="Simple bounded Exponential");
-  abline(v=tv,col='blue')
+  tv = stats::quantile(x,quant)
+  graphics::hist(data,freq=FALSE,main="Simple bounded Exponential");
+  graphics::abline(v=tv,col='blue')
   print("Verify histogram centered at line...")
   Sys.sleep(2)
 
   print("         Simple unbounded Exponential:")
-  x <- rnorm(50,sd=2);
+  x <- stats::rnorm(50,sd=2);
   quant=.25
   eps <- 1;
   ws = 'unbounded'
@@ -1792,14 +1792,14 @@ test_quantileDP <- function(){
     data[i] <- quantileDP(x, quant, eps, lb, ub, ws, mech)
   }
 
-  tv = quantile(x,quant)
-  hist(data,freq=FALSE,main="Simple unbounded Exponential");
-  abline(v=tv,col='blue')
+  tv = stats::quantile(x,quant)
+  graphics::hist(data,freq=FALSE,main="Simple unbounded Exponential");
+  graphics::abline(v=tv,col='blue')
   print("Verify histogram centered at line...")
   Sys.sleep(2)
 
   print("         Exponential with lower.bound:")
-  x <- rnorm(50,sd=2);
+  x <- stats::rnorm(50,sd=2);
   quant=.25
   eps <- 1;
   ws = 'bounded'
@@ -1812,14 +1812,14 @@ test_quantileDP <- function(){
     data[i] <- quantileDP(x, quant, eps, lb, ub, ws, mech)
   }
 
-  tv = quantile(x,quant)
-  hist(data,freq=FALSE,main="Exponential with lower.bound");
-  abline(v=tv,col='blue')
+  tv = stats::quantile(x,quant)
+  graphics::hist(data,freq=FALSE,main="Exponential with lower.bound");
+  graphics::abline(v=tv,col='blue')
   print("Verify histogram centered at line...")
   Sys.sleep(2)
 
   print("         Exponential with upper.bounds:")
-  x <- rnorm(50,sd=2);
+  x <- stats::rnorm(50,sd=2);
   quant=.25
   eps <- 1;
   ws = 'bounded'
@@ -1832,14 +1832,14 @@ test_quantileDP <- function(){
     data[i] <- quantileDP(x, quant, eps, lb, ub, ws, mech)
   }
 
-  tv = quantile(x,quant)
-  hist(data,freq=FALSE,main="Exponential with upper.bound");
-  abline(v=tv,col='blue')
+  tv = stats::quantile(x,quant)
+  graphics::hist(data,freq=FALSE,main="Exponential with upper.bound");
+  graphics::abline(v=tv,col='blue')
   print("Verify histogram centered at line...")
   Sys.sleep(2)
 
   print("         Different quants:")
-  x <- rnorm(50,sd=2);
+  x <- stats::rnorm(50,sd=2);
   quant=.1
   eps <- 1;
   ws = 'bounded'
@@ -1852,14 +1852,14 @@ test_quantileDP <- function(){
     data[i] <- quantileDP(x, quant, eps, lb, ub, ws, mech)
   }
 
-  tv = quantile(x,quant)
-  hist(data,freq=FALSE,main="Different quants");
-  abline(v=tv,col='blue')
+  tv = stats::quantile(x,quant)
+  graphics::hist(data,freq=FALSE,main="Different quants");
+  graphics::abline(v=tv,col='blue')
   print("Verify histogram centered at line...")
   Sys.sleep(2)
 
   print("         Different quants:")
-  x <- rnorm(50,sd=2);
+  x <- stats::rnorm(50,sd=2);
   quant=.75
   eps <- 1;
   ws = 'bounded'
@@ -1872,14 +1872,14 @@ test_quantileDP <- function(){
     data[i] <- quantileDP(x, quant, eps, lb, ub, ws, mech)
   }
 
-  tv = quantile(x,quant)
-  hist(data,freq=FALSE,main="Different quants");
-  abline(v=tv,col='blue')
+  tv = stats::quantile(x,quant)
+  graphics::hist(data,freq=FALSE,main="Different quants");
+  graphics::abline(v=tv,col='blue')
   print("Verify histogram centered at line...")
   Sys.sleep(2)
 
   print("         Different quants:")
-  x <- rnorm(50,sd=2);
+  x <- stats::rnorm(50,sd=2);
   quant=.9
   eps <- 1;
   ws = 'bounded'
@@ -1892,9 +1892,9 @@ test_quantileDP <- function(){
     data[i] <- quantileDP(x, quant, eps, lb, ub, ws, mech)
   }
 
-  tv = quantile(x,quant)
-  hist(data,freq=FALSE,main="Different quants");
-  abline(v=tv,col='blue')
+  tv = stats::quantile(x,quant)
+  graphics::hist(data,freq=FALSE,main="Different quants");
+  graphics::abline(v=tv,col='blue')
   print("Verify histogram centered at line...")
   Sys.sleep(2)
 
@@ -1916,7 +1916,7 @@ test_medianDP <- function(){
   ### TEST FUNCTIONALITY ###
   # Most tests done in quantileDP
   print("         Simple Bounded Exponential:")
-  x <- rnorm(50,sd=2);
+  x <- stats::rnorm(50,sd=2);
   eps <- 1;
   ws = 'bounded'
   lb = -6
@@ -1928,9 +1928,9 @@ test_medianDP <- function(){
     data[i] <- medianDP(x, eps, lb, ub, ws, mech)
   }
 
-  tv = median(x)
-  hist(data,freq=FALSE,main="Simple bounded Exponential");
-  abline(v=tv,col='blue')
+  tv = stats::median(x)
+  graphics::hist(data,freq=FALSE,main="Simple bounded Exponential");
+  graphics::abline(v=tv,col='blue')
   print("Verify histogram centered at line...")
   Sys.sleep(2)
 

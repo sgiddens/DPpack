@@ -64,9 +64,9 @@ test_Laplace <- function(){
   for (i in 1:n){
     data[i] = LaplaceMechanism(tv,eps,sens,ap);
   }
-  hist(data,freq=FALSE,main="Simple example");
+  graphics::hist(data,freq=FALSE,main="Simple example");
   x = seq(tv-5*th.s, tv+5*th.s,.1);
-  lines(x,rmutil::dlaplace(x,m=tv,s=th.s));
+  graphics::lines(x,rmutil::dlaplace(x,m=tv,s=th.s));
   print("Verify line matches histogram...")
   Sys.sleep(2)
 
@@ -81,9 +81,9 @@ test_Laplace <- function(){
   for (i in 1:n){
     data[i] = LaplaceMechanism(tv,eps,sens,ap);
   }
-  hist(data,freq=FALSE,main="Changing true.values");
+  graphics::hist(data,freq=FALSE,main="Changing true.values");
   x = seq(tv-5*th.s, tv+5*th.s,.1);
-  lines(x,rmutil::dlaplace(x,m=tv,s=th.s));
+  graphics::lines(x,rmutil::dlaplace(x,m=tv,s=th.s));
   print("Verify line matches histogram...")
   Sys.sleep(2)
 
@@ -98,9 +98,9 @@ test_Laplace <- function(){
   for (i in 1:n){
     data[i] = LaplaceMechanism(tv,eps,sens,ap);
   }
-  hist(data,freq=FALSE,main="Changing true.values/epsilon");
+  graphics::hist(data,freq=FALSE,main="Changing true.values/epsilon");
   x = seq(tv-5*th.s, tv+5*th.s,.1);
-  lines(x,rmutil::dlaplace(x,m=tv,s=th.s));
+  graphics::lines(x,rmutil::dlaplace(x,m=tv,s=th.s));
   print("Verify line matches histogram...")
   Sys.sleep(2)
 
@@ -115,9 +115,9 @@ test_Laplace <- function(){
   for (i in 1:n){
     data[i] = LaplaceMechanism(tv,eps,sens,ap);
   }
-  hist(data,freq=FALSE,main="Changing epsilon/sensitivity");
+  graphics::hist(data,freq=FALSE,main="Changing epsilon/sensitivity");
   x = seq(tv-5*th.s, tv+5*th.s,.1);
-  lines(x,rmutil::dlaplace(x,m=tv,s=th.s));
+  graphics::lines(x,rmutil::dlaplace(x,m=tv,s=th.s));
   print("Verify line matches histogram...")
   Sys.sleep(2)
 
@@ -133,9 +133,9 @@ test_Laplace <- function(){
   }
   th.s = sum(sens)/eps;
   for (j in 1:length(tv)){
-    hist(data[,j],freq=FALSE,main=paste("Using multiple:",j));
+    graphics::hist(data[,j],freq=FALSE,main=paste("Using multiple:",j));
     x = seq(tv[j]-5*th.s, tv[j]+5*th.s,.1);
-    lines(x,rmutil::dlaplace(x,m=tv[j],s=th.s));
+    graphics::lines(x,rmutil::dlaplace(x,m=tv[j],s=th.s));
     print("Verify line matches histogram...")
     Sys.sleep(2)
   }
@@ -152,9 +152,9 @@ test_Laplace <- function(){
   }
   th.s = sens/eps
   for (j in 1:length(tv)){
-    hist(data[,j],freq=FALSE,main=paste("Single sensitivity:",j));
+    graphics::hist(data[,j],freq=FALSE,main=paste("Single sensitivity:",j));
     x = seq(tv[j]-5*th.s, tv[j]+5*th.s,.1);
-    lines(x,rmutil::dlaplace(x,m=tv[j],s=th.s));
+    graphics::lines(x,rmutil::dlaplace(x,m=tv[j],s=th.s));
     print("Verify line matches histogram...")
     Sys.sleep(2)
   }
@@ -172,9 +172,9 @@ test_Laplace <- function(){
   ap = ap/sum(ap);
   th.s = sens/(ap*eps);
   for (j in 1:length(tv)){
-    hist(data[,j],freq=FALSE,main=paste("Using allocation:",j));
+    graphics::hist(data[,j],freq=FALSE,main=paste("Using allocation:",j));
     x = seq(tv[j]-5*th.s[j], tv[j]+5*th.s[j],.1);
-    lines(x,rmutil::dlaplace(x,m=tv[j],s=th.s[j]));
+    graphics::lines(x,rmutil::dlaplace(x,m=tv[j],s=th.s[j]));
     print("Verify line matches histogram...")
     Sys.sleep(2)
   }
@@ -265,15 +265,15 @@ test_Gaussian <- function(){
   sens = 1;
   dp = 'pDP'
   ap = NULL;
-  th.s = sens*(sqrt(qnorm(delta/2)^2+2*eps)-qnorm(delta/2))/(2*eps);
+  th.s = sens*(sqrt(stats::qnorm(delta/2)^2+2*eps)-stats::qnorm(delta/2))/(2*eps);
   n = 10000;
   data = numeric(n);
   for (i in 1:n){
     data[i] = GaussianMechanism(tv,eps,delta,sens,dp,ap);
   }
-  hist(data,freq=FALSE,main="Simple example (pDP)");
+  graphics::hist(data,freq=FALSE,main="Simple example (pDP)");
   x = seq(tv-5*th.s, tv+5*th.s,.1);
-  lines(x,dnorm(x,m=tv,sd=th.s));
+  graphics::lines(x,stats::dnorm(x,m=tv,sd=th.s));
   print("Verify line matches histogram...")
   Sys.sleep(2)
 
@@ -290,9 +290,9 @@ test_Gaussian <- function(){
   for (i in 1:n){
     data[i] = GaussianMechanism(tv,eps,delta,sens,dp,ap);
   }
-  hist(data,freq=FALSE,main="Simple bounded (aDP)");
+  graphics::hist(data,freq=FALSE,main="Simple bounded (aDP)");
   x = seq(tv-5*th.s, tv+5*th.s,.1);
-  lines(x,dnorm(x,m=tv,sd=th.s));
+  graphics::lines(x,stats::dnorm(x,m=tv,sd=th.s));
   print("Verify line matches histogram...")
   Sys.sleep(2)
 
@@ -303,15 +303,15 @@ test_Gaussian <- function(){
   sens = 1;
   dp = 'pDP';
   ap = NULL;
-  th.s = sens*(sqrt(qnorm(delta/2)^2+2*eps)-qnorm(delta/2))/(2*eps);
+  th.s = sens*(sqrt(stats::qnorm(delta/2)^2+2*eps)-stats::qnorm(delta/2))/(2*eps);
   n = 10000;
   data = numeric(n);
   for (i in 1:n){
     data[i] = GaussianMechanism(tv,eps,delta,sens,dp,ap);
   }
-  hist(data,freq=FALSE,main="Changing true.values");
+  graphics::hist(data,freq=FALSE,main="Changing true.values");
   x = seq(tv-5*th.s, tv+5*th.s,.1);
-  lines(x,dnorm(x,m=tv,sd=th.s));
+  graphics::lines(x,stats::dnorm(x,m=tv,sd=th.s));
   print("Verify line matches histogram...")
   Sys.sleep(2)
 
@@ -328,9 +328,9 @@ test_Gaussian <- function(){
   for (i in 1:n){
     data[i] = GaussianMechanism(tv,eps,delta,sens,dp,ap);
   }
-  hist(data,freq=FALSE,main="Changing true.values/epsilon");
+  graphics::hist(data,freq=FALSE,main="Changing true.values/epsilon");
   x = seq(tv-5*th.s, tv+5*th.s,.1);
-  lines(x,dnorm(x,m=tv,sd=th.s));
+  graphics::lines(x,stats::dnorm(x,m=tv,sd=th.s));
   print("Verify line matches histogram...")
   Sys.sleep(2)
 
@@ -341,15 +341,15 @@ test_Gaussian <- function(){
   sens = 3;
   dp = 'pDP';
   ap = NULL;
-  th.s = sens*(sqrt(qnorm(delta/2)^2+2*eps)-qnorm(delta/2))/(2*eps);
+  th.s = sens*(sqrt(stats::qnorm(delta/2)^2+2*eps)-stats::qnorm(delta/2))/(2*eps);
   n = 10000;
   data = numeric(n);
   for (i in 1:n){
     data[i] = GaussianMechanism(tv,eps,delta,sens,dp,ap);
   }
-  hist(data,freq=FALSE,main="Changing delta/sensitivities");
+  graphics::hist(data,freq=FALSE,main="Changing delta/sensitivities");
   x = seq(tv-5*th.s, tv+5*th.s,.1);
-  lines(x,dnorm(x,m=tv,sd=th.s));
+  graphics::lines(x,stats::dnorm(x,m=tv,sd=th.s));
   print("Verify line matches histogram...")
   Sys.sleep(2)
 
@@ -367,9 +367,9 @@ test_Gaussian <- function(){
   }
   th.s = sqrt(sum(sens^2))*sqrt(2*log(1.25/delta))/eps;
   for (j in 1:length(tv)){
-    hist(data[,j],freq=FALSE,main=paste("Using multiple:",j));
+    graphics::hist(data[,j],freq=FALSE,main=paste("Using multiple:",j));
     x = seq(tv[j]-5*th.s, tv[j]+5*th.s,.1);
-    lines(x,dnorm(x,m=tv[j],sd=th.s));
+    graphics::lines(x,stats::dnorm(x,m=tv[j],sd=th.s));
     print("Verify line matches histogram...")
     Sys.sleep(2)
   }
@@ -386,11 +386,11 @@ test_Gaussian <- function(){
   for (i in 1:n){
     data[i,] = GaussianMechanism(tv,eps,delta,sens,dp,ap)
   }
-  th.s = sens*(sqrt(qnorm(delta/2)^2+2*eps)-qnorm((delta)/2))/(2*eps)
+  th.s = sens*(sqrt(stats::qnorm(delta/2)^2+2*eps)-stats::qnorm((delta)/2))/(2*eps)
   for (j in 1:length(tv)){
-    hist(data[,j],freq=FALSE,main=paste("Single sensitivity:",j));
+    graphics::hist(data[,j],freq=FALSE,main=paste("Single sensitivity:",j));
     x = seq(tv[j]-5*th.s, tv[j]+5*th.s,.1);
-    lines(x,dnorm(x,m=tv[j],sd=th.s));
+    graphics::lines(x,stats::dnorm(x,m=tv[j],sd=th.s));
     print("Verify line matches histogram...")
     Sys.sleep(2)
   }
@@ -408,11 +408,11 @@ test_Gaussian <- function(){
     data[i,] = GaussianMechanism(tv,eps,delta,sens,dp,ap);
   }
   ap = ap/sum(ap);
-  th.s = sens*(sqrt(qnorm((ap*delta)/2)^2+2*(ap*eps))-qnorm((ap*delta)/2))/(2*(ap*eps));
+  th.s = sens*(sqrt(stats::qnorm((ap*delta)/2)^2+2*(ap*eps))-stats::qnorm((ap*delta)/2))/(2*(ap*eps));
   for (j in 1:length(tv)){
-    hist(data[,j],freq=FALSE,main=paste("Using allocation:",j));
+    graphics::hist(data[,j],freq=FALSE,main=paste("Using allocation:",j));
     x = seq(tv[j]-5*th.s[j], tv[j]+5*th.s[j],.1);
-    lines(x,dnorm(x,m=tv[j],sd=th.s[j]));
+    graphics::lines(x,stats::dnorm(x,m=tv[j],sd=th.s[j]));
     print("Verify line matches histogram...")
     Sys.sleep(2)
   }
@@ -489,7 +489,7 @@ test_Exponential <- function(){
   th.probs = m*exp(eps*u/(2*sens));
   th.probs = th.probs/sum(th.probs);
   plot(Z,table(data)/sum(table(data)),main="Simple example");
-  lines(Z,th.probs);
+  graphics::lines(Z,th.probs);
   print("Verify line matches dots...")
   Sys.sleep(2)
 
@@ -509,7 +509,7 @@ test_Exponential <- function(){
   th.probs = m*exp(eps*u/(2*sens));
   th.probs = th.probs/sum(th.probs);
   plot(Z,table(data)/sum(table(data)),main="Different Utility");
-  lines(Z,th.probs);
+  graphics::lines(Z,th.probs);
   print("Verify line matches dots...")
   Sys.sleep(2)
 
@@ -529,7 +529,7 @@ test_Exponential <- function(){
   th.probs = m*exp(eps*u/(2*sens));
   th.probs = th.probs/sum(th.probs);
   plot(Z,table(data)/sum(table(data)),main="Different utility/epsilon");
-  lines(Z,th.probs);
+  graphics::lines(Z,th.probs);
   print("Verify line matches dots...")
   Sys.sleep(2)
 
@@ -549,7 +549,7 @@ test_Exponential <- function(){
   th.probs = m*exp(eps*u/(2*sens));
   th.probs = th.probs/sum(th.probs);
   plot(Z,table(data)/sum(table(data)),main="Different epsilon/sensitivity");
-  lines(Z,th.probs);
+  graphics::lines(Z,th.probs);
   print("Verify line matches dots...")
   Sys.sleep(2)
 
@@ -569,7 +569,7 @@ test_Exponential <- function(){
   th.probs = m*exp(eps*u/(2*sens));
   th.probs = th.probs/sum(th.probs);
   plot(Z,table(data)/sum(table(data)),main="Using Measure");
-  lines(Z,th.probs);
+  graphics::lines(Z,th.probs);
   print("Verify line matches dots...")
   Sys.sleep(2)
 
@@ -589,7 +589,7 @@ test_Exponential <- function(){
   th.probs = m*exp(eps*u/(2*sens));
   th.probs = th.probs/sum(th.probs);
   plot(1:length(Z),table(data)/sum(table(data)),main="Returning Index");
-  lines(1:length(Z),th.probs);
+  graphics::lines(1:length(Z),th.probs);
   print("Verify line matches dots...")
   Sys.sleep(2)
   ### END TEST FUNCTIONALITY ###

@@ -60,7 +60,7 @@ This function computes the differentially private variance of a given dataset
 at user-specified privacy levels of epsilon and delta.
 }
 \examples{
-D <- rnorm(500, mean=3, sd=2)
+D <- stats::rnorm(500, mean=3, sd=2)
 lb <- -3 # 3 std devs below mean
 ub <- 9 # 3 std devs above mean
 varDP(D, 1, lb, ub)

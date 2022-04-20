@@ -303,8 +303,8 @@ regularizer.gr.l2 <- function(coeff) coeff
 #' y <- data.frame()
 #' for (j in (1:K)){
 #'   t <- seq(-.25,.25,length.out = N)
-#'   if (j==1) m <- rnorm(N,-.2,.1)
-#'   if (j==2) m <- rnorm(N, .2,.1)
+#'   if (j==1) m <- stats::rnorm(N,-.2,.1)
+#'   if (j==2) m <- stats::rnorm(N, .2,.1)
 #'   Xtemp <- data.frame(x1 = 3*t , x2 = m - t)
 #'   ytemp <- data.frame(matrix(j-1, N, 1))
 #'   X <- rbind(X, Xtemp)
@@ -408,8 +408,8 @@ tune_classification_model<- function(models, X, y, upper.bounds, lower.bounds,
 #' y <- data.frame()
 #' for (j in (1:K)){
 #'   t <- seq(-.25, .25, length.out = N)
-#'   if (j==1) m <- rnorm(N,-.2, .1)
-#'   if (j==2) m <- rnorm(N, .2, .1)
+#'   if (j==1) m <- stats::rnorm(N,-.2, .1)
+#'   if (j==2) m <- stats::rnorm(N, .2, .1)
 #'   Xtemp <- data.frame(x1 = 3*t , x2 = m - t)
 #'   ytemp <- data.frame(matrix(j-1, N, 1))
 #'   X <- rbind(X, Xtemp)
@@ -656,7 +656,7 @@ EmpiricalRiskMinimizationDP.CMS <- R6::R6Class("EmpiricalRiskMinimizationDP.CMS"
       }
       beta <- eps.prime/2
       norm.b <- rgamma(1, d, rate=beta)
-      direction.b <- rnorm(d);
+      direction.b <- stats::rnorm(d);
       direction.b <- direction.b/sqrt(sum(direction.b^2))
       b <- norm.b * direction.b
     } else {
@@ -668,7 +668,7 @@ EmpiricalRiskMinimizationDP.CMS <- R6::R6Class("EmpiricalRiskMinimizationDP.CMS"
     if (self$perturbation.method=='output'){
       beta <- n*self$gamma*self$eps/2
       norm.b <- rgamma(1, d, rate=beta)
-      direction.b <- rnorm(d)
+      direction.b <- stats::rnorm(d)
       direction.b <- direction.b/sqrt(sum(direction.b^2))
       b <- norm.b * direction.b
       tmp.coeff <- tmp.coeff + b
@@ -839,8 +839,8 @@ EmpiricalRiskMinimizationDP.CMS <- R6::R6Class("EmpiricalRiskMinimizationDP.CMS"
 #' y <- data.frame()
 #' for (j in (1:K)){
 #'   t <- seq(-.25, .25, length.out = N)
-#'   if (j==1) m <- rnorm(N,-.2, .1)
-#'   if (j==2) m <- rnorm(N, .2, .1)
+#'   if (j==1) m <- stats::rnorm(N,-.2, .1)
+#'   if (j==2) m <- stats::rnorm(N, .2, .1)
 #'   Xtemp <- data.frame(x1 = 3*t , x2 = m - t)
 #'   ytemp <- data.frame(matrix(j-1, N, 1))
 #'   X <- rbind(X, Xtemp)
@@ -1070,8 +1070,8 @@ LogisticRegressionDP <- R6::R6Class("LogisticRegressionDP",
 #' @export
 generate.sampling <- function(kernel.param){
   function(d){
-    omega <- rnorm(d,sd=sqrt(2*kernel.param))
-    phi <- runif(1,-pi,pi)
+    omega <- stats::rnorm(d,sd=sqrt(2*kernel.param))
+    phi <- stats::runif(1,-pi,pi)
     c(omega,phi)
   }
 }
@@ -1160,7 +1160,7 @@ phi.gaussian <- function(x, theta){
 #' X <- data.frame()
 #' y <- data.frame()
 #' for (i in (1:N)){
-#'   Xtemp <- data.frame(x1 = rnorm(1,sd=.28) , x2 = rnorm(1,sd=.28))
+#'   Xtemp <- data.frame(x1 = stats::rnorm(1,sd=.28) , x2 = stats::rnorm(1,sd=.28))
 #'   if (sum(Xtemp^2)<.15) ytemp <- data.frame(y=0)
 #'   else ytemp <- data.frame(y=1)
 #'   X <- rbind(X, Xtemp)
@@ -1466,7 +1466,7 @@ svmDP <- R6::R6Class("svmDP",
 #' X <- data.frame(X=seq(-1,1,length.out = n))
 #' true.theta <- c(-.3,.5) # First element is bias term
 #' p <- length(true.theta)
-#' y <- true.theta[1] + as.matrix(X)%*%true.theta[2:p] + rnorm(n=n,sd=.1)
+#' y <- true.theta[1] + as.matrix(X)%*%true.theta[2:p] + stats::rnorm(n=n,sd=.1)
 #'
 #' # Construct object for linear regression
 #' mapXy <- function(X, coeff) X%*%coeff
@@ -1687,7 +1687,7 @@ EmpiricalRiskMinimizationDP.KST <- R6::R6Class("EmpiricalRiskMinimizationDP.KST"
     else Delta <- 2*self$lambda/self$eps
     if (self$delta==0){
       norm.b <- rgamma(1, p, rate=self$eps/(2*self$zeta))
-      direction.b <- rnorm(p)
+      direction.b <- stats::rnorm(p)
       direction.b <- direction.b/sqrt(sum(direction.b^2))
       b <- norm.b*direction.b
     } else{
@@ -1882,7 +1882,7 @@ EmpiricalRiskMinimizationDP.KST <- R6::R6Class("EmpiricalRiskMinimizationDP.KST"
 #' X <- data.frame(X=seq(-1,1,length.out = n))
 #' true.theta <- c(-.3,.5) # First element is bias term
 #' p <- length(true.theta)
-#' y <- true.theta[1] + as.matrix(X)%*%true.theta[2:p] + rnorm(n=n,sd=.1)
+#' y <- true.theta[1] + as.matrix(X)%*%true.theta[2:p] + stats::rnorm(n=n,sd=.1)
 #'
 #' # Construct object for linear regression
 #' regularizer <- 'l2' # Alternatively, function(coeff) coeff%*%coeff/2
@@ -2097,7 +2097,7 @@ LinearRegressionDP <- R6::R6Class("LinearRegressionDP",
 #' X <- data.frame(X=seq(-1,1,length.out = n))
 #' true.theta <- c(-.3,.5) # First element is bias term
 #' p <- length(true.theta)
-#' y <- true.theta[1] + as.matrix(X)%*%true.theta[2:p] + rnorm(n=n,sd=.1)
+#' y <- true.theta[1] + as.matrix(X)%*%true.theta[2:p] + stats::rnorm(n=n,sd=.1)
 #'
 #' # Grid of possible gamma values for tuning linear regression model
 #' grid.search <- c(100, 1, .0001)

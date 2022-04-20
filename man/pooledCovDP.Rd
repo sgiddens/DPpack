@@ -74,10 +74,10 @@ epsilon and delta.
 }
 \examples{
 # Build datasets
-D1 <- sort(rnorm(500, mean=3, sd=2))
-D2 <- sort(rnorm(500, mean=-1, sd=0.5))
-D3 <- sort(rnorm(200, mean=3, sd=2))
-D4 <- sort(rnorm(200, mean=-1, sd=0.5))
+D1 <- sort(stats::rnorm(500, mean=3, sd=2))
+D2 <- sort(stats::rnorm(500, mean=-1, sd=0.5))
+D3 <- sort(stats::rnorm(200, mean=3, sd=2))
+D4 <- sort(stats::rnorm(200, mean=-1, sd=0.5))
 M1 <- matrix(c(D1, D2), ncol=2)
 M2 <- matrix(c(D3, D4), ncol=2)
 

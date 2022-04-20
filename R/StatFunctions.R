@@ -33,7 +33,7 @@
 #' @return Sanitized mean based on the bounded and/or unbounded definitions of
 #'   differential privacy.
 #' @examples
-#' D <- rnorm(500, mean=3, sd=2)
+#' D <- stats::rnorm(500, mean=3, sd=2)
 #' lb <- -3 # 3 std devs below mean
 #' ub <- 9 # 3 std devs above mean
 #' meanDP(D,  1, lb, ub)
@@ -128,7 +128,7 @@ meanDP <- function (x, eps, lower.bound, upper.bound,
 #' @return Sanitized variance based on the bounded and/or unbounded definitions
 #'   of differential privacy.
 #' @examples
-#' D <- rnorm(500, mean=3, sd=2)
+#' D <- stats::rnorm(500, mean=3, sd=2)
 #' lb <- -3 # 3 std devs below mean
 #' ub <- 9 # 3 std devs above mean
 #' varDP(D, 1, lb, ub)
@@ -233,7 +233,7 @@ varDP <- function (x, eps, lower.bound, upper.bound,
 #' @return Sanitized standard deviation based on the bounded and/or unbounded
 #'   definitions of differential privacy.
 #' @examples
-#' D <- rnorm(500, mean=3, sd=2)
+#' D <- stats::rnorm(500, mean=3, sd=2)
 #' lb <- -3 # 3 std devs below mean
 #' ub <- 9 # 3 std devs above mean
 #' sdDP(D, 1, lb, ub)
@@ -259,7 +259,7 @@ sdDP <- function (x, eps, lower.bound, upper.bound,
   ##########
 
   ########## Data Access/privacy layer
-  sanitized.variance <- varDP(x, eps, lower.bounds, upper.bounds,
+  sanitized.variance <- varDP(x, eps, lower.bound, upper.bound,
                               which.sensitivity ,mechanism, delta, type.DP)
   ##########
 
@@ -305,8 +305,8 @@ sdDP <- function (x, eps, lower.bound, upper.bound,
 #' @return Sanitized covariance based on the bounded and/or unbounded
 #'   definitions of differential privacy.
 #' @examples
-#' D1 <- sort(rnorm(500, mean=3, sd=2))
-#' D2 <- sort(rnorm(500, mean=-1,sd=0.5))
+#' D1 <- sort(stats::rnorm(500, mean=3, sd=2))
+#' D2 <- sort(stats::rnorm(500, mean=-1,sd=0.5))
 #' lb1 <- -3 # 3 std devs below mean
 #' lb2 <- -2.5 # 3 std devs below mean
 #' ub1 <- 9 # 3 std devs above mean
@@ -419,12 +419,12 @@ covDP <- function (x1, x2, eps, lower.bound1, upper.bound1, lower.bound2,
 #' @return Sanitized histogram based on the bounded and/or unbounded definitions
 #'   of differential privacy.
 #' @examples
-#' x <- rnorm(500)
-#' hist(x) # Non-private histogram
+#' x <- stats::rnorm(500)
+#' graphics::hist(x) # Non-private histogram
 #' result <- histogramDP(x, 1)
 #' plot(result) # Private histogram
 #'
-#' hist(x, freq=FALSE) # Normalized non-private histogram
+#' graphics::hist(x, freq=FALSE) # Normalized non-private histogram
 #' result <- histogramDP(x, .5, normalize=TRUE, which.sensitivity='unbounded',
 #'   mechanism='Gaussian',delta=0.01, allow.negative=TRUE)
 #' plot(result) # Normalized private histogram (note negative values allowed)
@@ -705,9 +705,9 @@ tableDP <- function(..., eps=1, which.sensitivity='bounded',
 #'   definitions of differential privacy.
 #' @examples
 #' # Build datasets
-#' D1 <- rnorm(500, mean=3, sd=2)
-#' D2 <- rnorm(200, mean=3, sd=2)
-#' D3 <- rnorm(100, mean=3, sd=2)
+#' D1 <- stats::rnorm(500, mean=3, sd=2)
+#' D2 <- stats::rnorm(200, mean=3, sd=2)
+#' D3 <- stats::rnorm(100, mean=3, sd=2)
 #' lower.bound <- -3 # 3 standard deviations below mean
 #' upper.bound <- 9 # 3 standard deviations above mean
 #'
@@ -877,10 +877,10 @@ pooledVarDP <- function(..., eps=1, lower.bound, upper.bound,
 #'   definitions of differential privacy.
 #' @examples
 #' # Build datasets
-#' D1 <- sort(rnorm(500, mean=3, sd=2))
-#' D2 <- sort(rnorm(500, mean=-1, sd=0.5))
-#' D3 <- sort(rnorm(200, mean=3, sd=2))
-#' D4 <- sort(rnorm(200, mean=-1, sd=0.5))
+#' D1 <- sort(stats::rnorm(500, mean=3, sd=2))
+#' D2 <- sort(stats::rnorm(500, mean=-1, sd=0.5))
+#' D3 <- sort(stats::rnorm(200, mean=3, sd=2))
+#' D4 <- sort(stats::rnorm(200, mean=-1, sd=0.5))
 #' M1 <- matrix(c(D1, D2), ncol=2)
 #' M2 <- matrix(c(D3, D4), ncol=2)
 #'
@@ -1019,7 +1019,7 @@ pooledCovDP <- function(..., eps=1, lower.bound1, upper.bound1, lower.bound2,
 #' @return Sanitized quantile based on the bounded and/or unbounded definitions
 #'   of differential privacy.
 #' @examples
-#' D <- rnorm(500)
+#' D <- stats::rnorm(500)
 #' lower.bound <- -3 # 3 standard deviations below mean
 #' upper.bound <- 3 # 3 standard deviations above mean
 #'
@@ -1087,7 +1087,7 @@ quantileDP <- function (x, quant, eps, lower.bound, upper.bound,
     sanitized.index <- ExponentialMechanism(utility, eps, sens,
                                             measure=diff(sorted))
     if (uniform.sampling){
-      sanitized.quantile <- runif(1)*
+      sanitized.quantile <- stats::runif(1)*
         (sorted[sanitized.index+1] - sorted[sanitized.index]) +
         sorted[sanitized.index]
     } else sanitized.quantile <- sorted[sanitized.index]
@@ -1128,7 +1128,7 @@ quantileDP <- function (x, quant, eps, lower.bound, upper.bound,
 #' @return Sanitized median based on the bounded and/or unbounded definitions
 #'   of differential privacy.
 #' @examples
-#' D <- rnorm(500)
+#' D <- stats::rnorm(500)
 #' lower.bound <- -3 # 3 standard deviations below mean
 #' upper.bound <- 3 # 3 standard deviations above mean
 #'

@@ -71,7 +71,7 @@ among the function values using alloc.proportions.
 n <- 100
 c0 <- 5 # Lower bound
 c1 <- 10 # Upper bound
-D1 <- runif(n, c0, c1)
+D1 <- stats::runif(n, c0, c1)
 
 # Privacy budget
 epsilon <- 0.9 # eps must be in (0, 1) for approximate differential privacy
@@ -91,7 +91,7 @@ private.mean.prob
 # Simulate second dataset
 d0 <- 3 # Lower bound
 d1 <- 6 # Upper bound
-D2 <- runif(n, d0, d1)
+D2 <- stats::runif(n, d0, d1)
 D <- matrix(c(D1,D2),ncol=2)
 sensitivities <- c((c1-c0)/n, (d1-d0)/n)
 epsilon <- 0.9 # Total privacy budget for all means
