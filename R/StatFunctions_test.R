@@ -1,6 +1,3 @@
-# cur.dir <- '~/Desktop/DP Research/DP R Package/DPpack/R/';
-library(MASS) # For CARS93 dataset
-
 test_meanDP <- function(){
   #
   #
@@ -988,9 +985,9 @@ test_tableDP <- function(){
   # source(paste(cur.dir,'DataAccess.R',sep=""))
 
   ### Test input ###
-  x <- Cars93$Type;
-  y <- Cars93$Origin;
-  z <- Cars93$AirBags;
+  x <- MASS::Cars93$Type;
+  y <- MASS::Cars93$Origin;
+  z <- MASS::Cars93$AirBags;
 
   print("         No input:")
   a = tryCatch(tableDP(),error=function(e) print(paste("PASS --",e)));
@@ -1012,8 +1009,8 @@ test_tableDP <- function(){
 
   ### TEST FUNCTIONALITY ###
   print("         Simple bounded Laplace:")
-  x <- Cars93$Type;
-  y <- Cars93$Origin;
+  x <- MASS::Cars93$Type;
+  y <- MASS::Cars93$Origin;
   eps <- 1;
   ws = 'bounded'
   mech = 'Laplace'
@@ -1030,8 +1027,8 @@ test_tableDP <- function(){
   Sys.sleep(5)
 
   print("         Simple unbounded Laplace:")
-  x <- Cars93$Type;
-  y <- Cars93$Origin;
+  x <- MASS::Cars93$Type;
+  y <- MASS::Cars93$Origin;
   eps <- 1;
   ws = 'unbounded'
   mech = 'Laplace'
@@ -1048,8 +1045,8 @@ test_tableDP <- function(){
   Sys.sleep(5)
 
   print("         Gaussian pDP:")
-  x <- Cars93$Type;
-  y <- Cars93$Origin;
+  x <- MASS::Cars93$Type;
+  y <- MASS::Cars93$Origin;
   eps <- 1;
   ws = 'bounded'
   mech = 'Gaussian'
@@ -1066,8 +1063,8 @@ test_tableDP <- function(){
   Sys.sleep(5)
 
   print("         Gaussian aDP:")
-  x <- Cars93$Type;
-  y <- Cars93$Origin;
+  x <- MASS::Cars93$Type;
+  y <- MASS::Cars93$Origin;
   eps <- .9;
   ws = 'bounded'
   mech = 'Gaussian'
@@ -1084,8 +1081,8 @@ test_tableDP <- function(){
   Sys.sleep(5)
 
   print("         Allow Negative:")
-  x <- Cars93$Type;
-  y <- Cars93$Origin;
+  x <- MASS::Cars93$Type;
+  y <- MASS::Cars93$Origin;
   eps <- 1;
   ws = 'bounded'
   mech = 'Laplace'
@@ -1102,9 +1099,9 @@ test_tableDP <- function(){
   Sys.sleep(5)
 
   print("         More than 2 inputs:")
-  x <- Cars93$Type;
-  y <- Cars93$Origin;
-  z <- Cars93$AirBags;
+  x <- MASS::Cars93$Type;
+  y <- MASS::Cars93$Origin;
+  z <- MASS::Cars93$AirBags;
   eps <- 1;
   ws = 'bounded'
   mech = 'Laplace'
@@ -1939,4 +1936,3 @@ test_medianDP <- function(){
 
   ### END TEST FUNCTIONALITY ###
 }
-

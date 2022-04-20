@@ -1,6 +1,3 @@
-library(ggplot2)
-library(rmutil)
-
 test_Laplace <- function(){
   #
   #
@@ -69,7 +66,7 @@ test_Laplace <- function(){
   }
   hist(data,freq=FALSE,main="Simple example");
   x = seq(tv-5*th.s, tv+5*th.s,.1);
-  lines(x,dlaplace(x,m=tv,s=th.s));
+  lines(x,rmutil::dlaplace(x,m=tv,s=th.s));
   print("Verify line matches histogram...")
   Sys.sleep(2)
 
@@ -86,7 +83,7 @@ test_Laplace <- function(){
   }
   hist(data,freq=FALSE,main="Changing true.values");
   x = seq(tv-5*th.s, tv+5*th.s,.1);
-  lines(x,dlaplace(x,m=tv,s=th.s));
+  lines(x,rmutil::dlaplace(x,m=tv,s=th.s));
   print("Verify line matches histogram...")
   Sys.sleep(2)
 
@@ -103,7 +100,7 @@ test_Laplace <- function(){
   }
   hist(data,freq=FALSE,main="Changing true.values/epsilon");
   x = seq(tv-5*th.s, tv+5*th.s,.1);
-  lines(x,dlaplace(x,m=tv,s=th.s));
+  lines(x,rmutil::dlaplace(x,m=tv,s=th.s));
   print("Verify line matches histogram...")
   Sys.sleep(2)
 
@@ -120,7 +117,7 @@ test_Laplace <- function(){
   }
   hist(data,freq=FALSE,main="Changing epsilon/sensitivity");
   x = seq(tv-5*th.s, tv+5*th.s,.1);
-  lines(x,dlaplace(x,m=tv,s=th.s));
+  lines(x,rmutil::dlaplace(x,m=tv,s=th.s));
   print("Verify line matches histogram...")
   Sys.sleep(2)
 
@@ -138,7 +135,7 @@ test_Laplace <- function(){
   for (j in 1:length(tv)){
     hist(data[,j],freq=FALSE,main=paste("Using multiple:",j));
     x = seq(tv[j]-5*th.s, tv[j]+5*th.s,.1);
-    lines(x,dlaplace(x,m=tv[j],s=th.s));
+    lines(x,rmutil::dlaplace(x,m=tv[j],s=th.s));
     print("Verify line matches histogram...")
     Sys.sleep(2)
   }
@@ -157,7 +154,7 @@ test_Laplace <- function(){
   for (j in 1:length(tv)){
     hist(data[,j],freq=FALSE,main=paste("Single sensitivity:",j));
     x = seq(tv[j]-5*th.s, tv[j]+5*th.s,.1);
-    lines(x,dlaplace(x,m=tv[j],s=th.s));
+    lines(x,rmutil::dlaplace(x,m=tv[j],s=th.s));
     print("Verify line matches histogram...")
     Sys.sleep(2)
   }
@@ -177,7 +174,7 @@ test_Laplace <- function(){
   for (j in 1:length(tv)){
     hist(data[,j],freq=FALSE,main=paste("Using allocation:",j));
     x = seq(tv[j]-5*th.s[j], tv[j]+5*th.s[j],.1);
-    lines(x,dlaplace(x,m=tv[j],s=th.s[j]));
+    lines(x,rmutil::dlaplace(x,m=tv[j],s=th.s[j]));
     print("Verify line matches histogram...")
     Sys.sleep(2)
   }

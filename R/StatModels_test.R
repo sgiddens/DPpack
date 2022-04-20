@@ -1,6 +1,3 @@
-library(ggplot2)
-library(e1071)
-
 ###############################################
 ### TESTING ERM.CMS VIA LOGISTIC REGRESSION ###
 ###############################################
@@ -41,10 +38,10 @@ colnames(data) <- c(colnames(X), 'label')
 # }
 # cir <- circleFun(c(0,0),2,npoints = 100)
 
-ggplot(data) + geom_point(aes(x=x1, y=x2, color = as.character(label)),
+ggplot2::ggplot(data) + ggplot2::geom_point(ggplot2::aes(x=x1, y=x2, color = as.character(label)),
                           size = 2, show.legend = F) +
-  scale_colour_discrete(name = "Label") + coord_fixed(ratio = 1) +
-  theme_bw(base_size = 12) + xlim(-.8, .8) + ylim(-.7, .7)
+  ggplot2::scale_colour_discrete(name = "Label") + ggplot2::coord_fixed(ratio = 1) +
+  ggplot2::theme_bw(base_size = 12) + ggplot2::xlim(-.8, .8) + ggplot2::ylim(-.7, .7)
 
 ### No DP, no regularization
 # gamma <- 0
@@ -86,12 +83,12 @@ colnames(gridPred)[3] <- 'label'
 gridPred <- data.frame(gridPred)
 
 # Decision boundary visualization
-ggplot() + geom_point(data = data, aes(x=x1, y=x2, color = as.character(label)),
+ggplot2::ggplot() + ggplot2::geom_point(data = data, ggplot2::aes(x=x1, y=x2, color = as.character(label)),
                       size = 2, show.legend = F) +
-  geom_tile(data = gridPred, aes(x = grid[, 1],y = grid[, 2],
+  ggplot2::geom_tile(data = gridPred, ggplot2::aes(x = grid[, 1],y = grid[, 2],
                                  fill=as.character(Z)), alpha = 0.3,
-            show.legend = F) + coord_fixed(ratio = 1) +
-  theme_bw(base_size = 12)+ xlim(-.8,.8) + ylim(-.7,.7)
+            show.legend = F) + ggplot2::coord_fixed(ratio = 1) +
+  ggplot2::theme_bw(base_size = 12)+ ggplot2::xlim(-.8,.8) + ggplot2::ylim(-.7,.7)
 ### END TESTING LOGISTIC REGRESSION USING ERM ###
 
 
@@ -135,10 +132,10 @@ colnames(data) <- c(colnames(X), 'label')
 # }
 # cir <- circleFun(c(0,0),2,npoints = 100)
 
-ggplot(data) + geom_point(aes(x=x1, y=x2, color = as.character(label)),
+ggplot2::ggplot(data) + ggplot2::geom_point(ggplot2::aes(x=x1, y=x2, color = as.character(label)),
                           size = 2, show.legend = F) +
-  scale_colour_discrete(name = "Label") + coord_fixed(ratio = 1) +
-  theme_bw(base_size = 12) + xlim(-.8, .8) + ylim(-.7, .7)
+  ggplot2::scale_colour_discrete(name = "Label") + ggplot2::coord_fixed(ratio = 1) +
+  ggplot2::theme_bw(base_size = 12) + ggplot2::xlim(-.8, .8) + ggplot2::ylim(-.7, .7)
 ### End build dataset
 
 ### Build dataset (with bias, needs scaling)
@@ -168,12 +165,12 @@ ggplot(data) + geom_point(aes(x=x1, y=x2, color = as.character(label)),
 # y <- as.matrix(data[,3])
 # colnames(data) <- c(colnames(X), 'label')
 #
-# ggplot(data) + geom_point(aes(x=x1, y=x2, color = as.character(label)), size = 2) +
-#   scale_colour_discrete(name  ="Label") +
-#   ylim(0, 3) + coord_fixed(ratio = 1) +
-#   ggtitle('Data to be classified') +
-#   theme_bw(base_size = 12) +
-#   theme(legend.position=c(0.85, 0.87))
+# ggplot2::ggplot(data) + ggplot2::geom_point(ggplot2::aes(x=x1, y=x2, color = as.character(label)), size = 2) +
+#   ggplot2::scale_colour_discrete(name  ="Label") +
+#   ggplot2::ylim(0, 3) + ggplot2::coord_fixed(ratio = 1) +
+#   ggplot2::ggtitle('Data to be classified') +
+#   ggplot2::theme_bw(base_size = 12) +
+#   ggplot2::theme(legend.position=c(0.85, 0.87))
 ### End build dataset
 
 ### No DP, no regularization
@@ -222,23 +219,23 @@ colnames(gridPred)[3] <- 'label'
 gridPred <- data.frame(gridPred)
 
 ### No bias, satisfies constraints
-ggplot() + geom_point(data = data, aes(x=x1, y=x2, color = as.character(label)),
+ggplot2::ggplot() + ggplot2::geom_point(data = data, ggplot2::aes(x=x1, y=x2, color = as.character(label)),
                       size = 2, show.legend = F) +
-  geom_tile(data = gridPred, aes(x = grid[, 1],y = grid[, 2],
+  ggplot2::geom_tile(data = gridPred, ggplot2::aes(x = grid[, 1],y = grid[, 2],
                                  fill=as.character(Z)), alpha = 0.3,
-            show.legend = F) + coord_fixed(ratio = 1) +
-  theme_bw(base_size = 12)+ xlim(-.8,.8) + ylim(-.7,.7)
+            show.legend = F) + ggplot2::coord_fixed(ratio = 1) +
+  ggplot2::theme_bw(base_size = 12)+ ggplot2::xlim(-.8,.8) + ggplot2::ylim(-.7,.7)
 
 ### With bias, needs scaling
-# ggplot() +   geom_point(data = data,
-#                         aes(x=x1, y=x2, color = as.character(label)),
+# ggplot2::ggplot() +   ggplot2::geom_point(data = data,
+#                         ggplot2::aes(x=x1, y=x2, color = as.character(label)),
 #                         size = 2, show.legend = F) +
-#   geom_tile(data = gridPred,
-#             aes(x = grid[, 1],y = grid[, 2], fill=as.character(Z)),
+#   ggplot2::geom_tile(data = gridPred,
+#             ggplot2::aes(x = grid[, 1],y = grid[, 2], fill=as.character(Z)),
 #             alpha = 0.3, show.legend = F)+
-#   ggtitle('Decision Boundary for Logistic Regression') +
-#   coord_fixed(ratio = 1) +
-#   theme_bw(base_size = 12)
+#   ggplot2::ggtitle('Decision Boundary for Logistic Regression') +
+#   ggplot2::coord_fixed(ratio = 1) +
+#   ggplot2::theme_bw(base_size = 12)
 ### END TESTING LOGISTIC REGRESSION CLASS ###
 #
 #########################################
@@ -281,10 +278,10 @@ colnames(data) <- c(colnames(X), 'label')
 # }
 # cir <- circleFun(c(0,0),2,npoints = 100)
 
-ggplot(data) + geom_point(aes(x=x1, y=x2, color = as.character(label)),
+ggplot2::ggplot(data) + ggplot2::geom_point(ggplot2::aes(x=x1, y=x2, color = as.character(label)),
                           size = 2, show.legend = F) +
-  scale_colour_discrete(name = "Label") + coord_fixed(ratio = 1) +
-  theme_bw(base_size = 12) + xlim(-.8, .8) + ylim(-.7, .7)
+  ggplot2::scale_colour_discrete(name = "Label") + ggplot2::coord_fixed(ratio = 1) +
+  ggplot2::theme_bw(base_size = 12) + ggplot2::xlim(-.8, .8) + ggplot2::ylim(-.7, .7)
 ### End build dataset
 
 ### Build dataset (with bias, needs scaling)
@@ -314,12 +311,12 @@ ggplot(data) + geom_point(aes(x=x1, y=x2, color = as.character(label)),
 # y <- as.matrix(data[,3])
 # colnames(data) <- c(colnames(X), 'label')
 #
-# ggplot(data) + geom_point(aes(x=x1, y=x2, color = as.character(label)), size = 2) +
-#   scale_colour_discrete(name  ="Label") +
-#   ylim(0, 3) + coord_fixed(ratio = 1) +
-#   ggtitle('Data to be classified') +
-#   theme_bw(base_size = 12) +
-#   theme(legend.position=c(0.85, 0.87))
+# ggplot2::ggplot(data) + ggplot2::geom_point(ggplot2::aes(x=x1, y=x2, color = as.character(label)), size = 2) +
+#   ggplot2::scale_colour_discrete(name  ="Label") +
+#   ggplot2::ylim(0, 3) + ggplot2::coord_fixed(ratio = 1) +
+#   ggplot2::ggtitle('Data to be classified') +
+#   ggplot2::theme_bw(base_size = 12) +
+#   ggplot2::theme(legend.position=c(0.85, 0.87))
 ### End build dataset
 
 ### No DP, no regularization
@@ -368,23 +365,23 @@ colnames(gridPred)[3] <- 'label'
 gridPred <- data.frame(gridPred)
 
 ### No bias, satisfies constraints
-ggplot() + geom_point(data = data, aes(x=x1, y=x2, color = as.character(label)),
+ggplot2::ggplot() + ggplot2::geom_point(data = data, ggplot2::aes(x=x1, y=x2, color = as.character(label)),
                       size = 2, show.legend = F) +
-  geom_tile(data = gridPred, aes(x = grid[, 1],y = grid[, 2],
+  ggplot2::geom_tile(data = gridPred, ggplot2::aes(x = grid[, 1],y = grid[, 2],
                                  fill=as.character(Z)), alpha = 0.3,
-            show.legend = F) + coord_fixed(ratio = 1) +
-  theme_bw(base_size = 12)+ xlim(-.8,.8) + ylim(-.7,.7)
+            show.legend = F) + ggplot2::coord_fixed(ratio = 1) +
+  ggplot2::theme_bw(base_size = 12)+ ggplot2::xlim(-.8,.8) + ggplot2::ylim(-.7,.7)
 
 ### With bias, needs scaling
-# ggplot() +   geom_point(data = data,
-#                         aes(x=x1, y=x2, color = as.character(label)),
+# ggplot2::ggplot() +   ggplot2::geom_point(data = data,
+#                         ggplot2::aes(x=x1, y=x2, color = as.character(label)),
 #                         size = 2, show.legend = F) +
-#   geom_tile(data = gridPred,
-#             aes(x = grid[, 1],y = grid[, 2], fill=as.character(Z)),
+#   ggplot2::geom_tile(data = gridPred,
+#             ggplot2::aes(x = grid[, 1],y = grid[, 2], fill=as.character(Z)),
 #             alpha = 0.3, show.legend = F)+
-#   ggtitle('Decision Boundary for Logistic Regression') +
-#   coord_fixed(ratio = 1) +
-#   theme_bw(base_size = 12)
+#   ggplot2::ggtitle('Decision Boundary for Logistic Regression') +
+#   ggplot2::coord_fixed(ratio = 1) +
+#   ggplot2::theme_bw(base_size = 12)
 ### END TESTING SVM CLASS ###
 
 #######################################################
@@ -429,11 +426,11 @@ colnames(data) <- c(colnames(X), 'label')
 # }
 # cir <- circleFun(c(0,0),2,npoints = 100)
 
-ggplot(data) + geom_point(aes(x=x1, y=x2, color = as.character(label)),
+ggplot2::ggplot(data) + ggplot2::geom_point(ggplot2::aes(x=x1, y=x2, color = as.character(label)),
                           size = 2, show.legend = F) +
-  scale_colour_discrete(name  ="Label") + #ylim(-3, 3) +
-  coord_fixed(ratio = 1) +
-  theme_bw(base_size = 12) + xlim(-.8,.8) + ylim(-.7,.7)
+  ggplot2::scale_colour_discrete(name  ="Label") + #ggplot2::ylim(-3, 3) +
+  ggplot2::coord_fixed(ratio = 1) +
+  ggplot2::theme_bw(base_size = 12) + ggplot2::xlim(-.8,.8) + ggplot2::ylim(-.7,.7)
 
 # Hard-margin
 # eps <- Inf
@@ -469,17 +466,17 @@ colnames(gridPred)[3] <- 'label'
 gridPred <- data.frame(gridPred)
 
 # decision boundary visualization
-ggplot() +   geom_point(data = data,
-                        aes(x=x1, y=x2, color = as.character(label)),
+ggplot2::ggplot() +   ggplot2::geom_point(data = data,
+                        ggplot2::aes(x=x1, y=x2, color = as.character(label)),
                         size = 2, show.legend = F) +
-  geom_tile(data = gridPred,
-            aes(x = grid[, 1],y = grid[, 2], fill=as.character(Z)),
+  ggplot2::geom_tile(data = gridPred,
+            ggplot2::aes(x = grid[, 1],y = grid[, 2], fill=as.character(Z)),
             alpha = 0.3, show.legend = F)+
-  coord_fixed(ratio = 1) +
-  theme_bw(base_size = 12) + xlim(-.8,.8) + ylim(-.7,.7)
+  ggplot2::coord_fixed(ratio = 1) +
+  ggplot2::theme_bw(base_size = 12) + ggplot2::xlim(-.8,.8) + ggplot2::ylim(-.7,.7)
 
 # Standard SVM
-stdSVM <- svm(as.matrix(X),y,kernel="radial")
+stdSVM <- e1071::svm(as.matrix(X),y,kernel="radial")
 
 # Grid
 grid <- expand.grid(seq(-.8, .8, length.out = 100), seq(-.7,.7, length.out = 100))
@@ -489,14 +486,14 @@ colnames(gridPred)[3] <- 'label'
 gridPred <- data.frame(gridPred)
 
 # decision boundary visualization
-ggplot() +   geom_point(data = data,
-                        aes(x=x1, y=x2, color = as.character(label)),
+ggplot2::ggplot() +   ggplot2::geom_point(data = data,
+                        ggplot2::aes(x=x1, y=x2, color = as.character(label)),
                         size = 2, show.legend = F) +
-  geom_tile(data = gridPred,
-            aes(x = grid[, 1],y = grid[, 2], fill=as.character(Z)),
+  ggplot2::geom_tile(data = gridPred,
+            ggplot2::aes(x = grid[, 1],y = grid[, 2], fill=as.character(Z)),
             alpha = 0.3, show.legend = F)+
-  coord_fixed(ratio = 1) +
-  theme_bw(base_size = 12) + xlim(-.8,.8) + ylim(-.7,.7)
+  ggplot2::coord_fixed(ratio = 1) +
+  ggplot2::theme_bw(base_size = 12) + ggplot2::xlim(-.8,.8) + ggplot2::ylim(-.7,.7)
 
 ### END TESTING AND COMPARING KERNEL SVM ###
 
@@ -537,11 +534,11 @@ colnames(data) <- c(colnames(X), 'label')
 # }
 # cir <- circleFun(c(0,0),2,npoints = 100)
 
-ggplot(data) + geom_point(aes(x=x1, y=x2, color = as.character(label)), size = 2,
+ggplot2::ggplot(data) + ggplot2::geom_point(ggplot2::aes(x=x1, y=x2, color = as.character(label)), size = 2,
                           show.legend = F) +
-  ylim(-1, 1) + xlim(-1,1)+
-  coord_fixed(ratio = 1) +
-  theme_bw(base_size = 12)
+  ggplot2::ylim(-1, 1) + ggplot2::xlim(-1,1)+
+  ggplot2::coord_fixed(ratio = 1) +
+  ggplot2::theme_bw(base_size = 12)
 
 eps <- 5
 gamma <- 0.01
@@ -566,14 +563,14 @@ colnames(gridPred)[3] <- 'label'
 gridPred <- data.frame(gridPred)
 
 # decision boundary visualization
-ggplot() +   geom_point(data = data,
-                        aes(x=x1, y=x2, color = as.character(label)),
-                        size = 2, show.legend = F) + ylim(-1, 1) + xlim(-1,1)+
-  geom_tile(data = gridPred,
-            aes(x = grid[, 1],y = grid[, 2], fill=as.character(Z)),
+ggplot2::ggplot() +   ggplot2::geom_point(data = data,
+                        ggplot2::aes(x=x1, y=x2, color = as.character(label)),
+                        size = 2, show.legend = F) + ggplot2::ylim(-1, 1) + ggplot2::xlim(-1,1)+
+  ggplot2::geom_tile(data = gridPred,
+            ggplot2::aes(x = grid[, 1],y = grid[, 2], fill=as.character(Z)),
             alpha = 0.3, show.legend = F)+
-  coord_fixed(ratio = 1) +
-  theme_bw(base_size = 12)
+  ggplot2::coord_fixed(ratio = 1) +
+  ggplot2::theme_bw(base_size = 12)
 ### END TESTING KERNEL SVM ON NONLINEAR DATASET ###
 
 
@@ -616,11 +613,11 @@ colnames(data) <- c(colnames(X), 'label')
 # }
 # cir <- circleFun(c(0,0),2,npoints = 100)
 
-ggplot(data) + geom_point(aes(x=x1, y=x2, color = as.character(label)), size = 2) +
-  scale_colour_discrete(name  ="Label") +
-  coord_fixed(ratio = 1) +
-  theme_bw(base_size = 12) +
-  theme(legend.position=c(0.85, 0.87))
+ggplot2::ggplot(data) + ggplot2::geom_point(ggplot2::aes(x=x1, y=x2, color = as.character(label)), size = 2) +
+  ggplot2::scale_colour_discrete(name  ="Label") +
+  ggplot2::coord_fixed(ratio = 1) +
+  ggplot2::theme_bw(base_size = 12) +
+  ggplot2::theme(legend.position=c(0.85, 0.87))
 
 set.seed(round(runif(1,0,100)))
 
@@ -642,14 +639,14 @@ colnames(gridPred)[3] <- 'label'
 gridPred <- data.frame(gridPred)
 
 # decision boundary
-ggplot() +   geom_point(data = data,
-                        aes(x=x1, y=x2, color = as.character(label)),
+ggplot2::ggplot() +   ggplot2::geom_point(data = data,
+                        ggplot2::aes(x=x1, y=x2, color = as.character(label)),
                         size = 2, show.legend = F) +
-  geom_tile(data = gridPred,
-            aes(x = grid[, 1],y = grid[, 2], fill=as.character(Z)),
+  ggplot2::geom_tile(data = gridPred,
+            ggplot2::aes(x = grid[, 1],y = grid[, 2], fill=as.character(Z)),
             alpha = 0.3, show.legend = F)+
-  coord_fixed(ratio = 1) +
-  theme_bw(base_size = 12)
+  ggplot2::coord_fixed(ratio = 1) +
+  ggplot2::theme_bw(base_size = 12)
 model$gamma
 
 ### END TESTING PARAMETER TUNING FUNCTION ###
@@ -678,10 +675,10 @@ lb <- c(-1,-2)
 # ub <- c(1, .75)
 # lb <- c(-1, -.75)
 
-ggplot(data) + geom_point(aes(x=X, y=y), size = 2) +
-  ylim(min(y), max(y)) + #coord_fixed(ratio = 1) +
-  ggtitle('Data to be regressed') +
-  theme_bw(base_size = 12)
+ggplot2::ggplot(data) + ggplot2::geom_point(ggplot2::aes(x=X, y=y), size = 2) +
+  ggplot2::ylim(min(y), max(y)) + #ggplot2::coord_fixed(ratio = 1) +
+  ggplot2::ggtitle('Data to be regressed') +
+  ggplot2::theme_bw(base_size = 12)
 
 eps <- 1
 delta <- .01
@@ -704,12 +701,12 @@ grid <- seq(-1,1,length.out=100)
 gridData <- data.frame(X=grid,y=theta[1]+theta[2]*grid)
 
 # Regression line visualization
-ggplot() + geom_point(data = data,
-                      aes(x=X, y=y),
+ggplot2::ggplot() + ggplot2::geom_point(data = data,
+                      ggplot2::aes(x=X, y=y),
                       size = 2, show.legend = F) +
-  geom_line(data=gridData, aes(x=X,y=y), color='red') + ylim(min(y), max(y)) +
-  ggtitle('Regression Line for Linear Regression') +
-  theme_bw(base_size = 12)
+  ggplot2::geom_line(data=gridData, ggplot2::aes(x=X,y=y), color='red') + ggplot2::ylim(min(y), max(y)) +
+  ggplot2::ggtitle('Regression Line for Linear Regression') +
+  ggplot2::theme_bw(base_size = 12)
 theta
 
 ### END TESTING ERMDP.KST WITH LINEAR REGRESSION ###
@@ -734,10 +731,10 @@ colnames(data) <- c(colnames(X), 'y')
 ub <- c(1, p)
 lb <- c(-1, -p)
 
-ggplot(data) + geom_point(aes(x=X, y=y), size = 2) +
-  ylim(min(y), max(y)) + #coord_fixed(ratio = 1) +
-  ggtitle('Data to be regressed') +
-  theme_bw(base_size = 12)
+ggplot2::ggplot(data) + ggplot2::geom_point(ggplot2::aes(x=X, y=y), size = 2) +
+  ggplot2::ylim(min(y), max(y)) + #ggplot2::coord_fixed(ratio = 1) +
+  ggplot2::ggtitle('Data to be regressed') +
+  ggplot2::theme_bw(base_size = 12)
 
 regularizer <- function(coeff) coeff%*%coeff/2
 regularizer.gr <- function(coeff) coeff
@@ -755,12 +752,12 @@ grid <- seq(-1,1,length.out=100)
 gridData <- data.frame(X=grid,y=theta[1]+theta[2]*grid)
 
 # Regression line visualization
-ggplot() + geom_point(data = data,
-                      aes(x=X, y=y),
+ggplot2::ggplot() + ggplot2::geom_point(data = data,
+                      ggplot2::aes(x=X, y=y),
                       size = 2, show.legend = F) +
-  geom_line(data=gridData, aes(x=X,y=y), color='red') + ylim(min(y), max(y)) +
-  ggtitle('Regression Line for Linear Regression') +
-  theme_bw(base_size = 12)
+  ggplot2::geom_line(data=gridData, ggplot2::aes(x=X,y=y), color='red') + ggplot2::ylim(min(y), max(y)) +
+  ggplot2::ggtitle('Regression Line for Linear Regression') +
+  ggplot2::theme_bw(base_size = 12)
 theta
 
 ### END TESTING LINEAR REGRESSION ###
@@ -784,10 +781,10 @@ colnames(data) <- c(colnames(X), 'y')
 ub <- c(1, p)
 lb <- c(-1, -p)
 
-ggplot(data) + geom_point(aes(x=X, y=y), size = 2) +
-  ylim(min(y), max(y)) + #coord_fixed(ratio = 1) +
-  ggtitle('Data to be regressed') +
-  theme_bw(base_size = 12)
+ggplot2::ggplot(data) + ggplot2::geom_point(ggplot2::aes(x=X, y=y), size = 2) +
+  ggplot2::ylim(min(y), max(y)) + #ggplot2::coord_fixed(ratio = 1) +
+  ggplot2::ggtitle('Data to be regressed') +
+  ggplot2::theme_bw(base_size = 12)
 
 set.seed(round(runif(1,0,100)))
 
@@ -807,12 +804,12 @@ grid <- seq(-1,1,length.out=100)
 gridData <- data.frame(X=grid,y=theta[1]+theta[2]*grid)
 
 # Regression line visualization
-ggplot() + geom_point(data = data,
-                      aes(x=X, y=y),
+ggplot2::ggplot() + ggplot2::geom_point(data = data,
+                      ggplot2::aes(x=X, y=y),
                       size = 2, show.legend = F) +
-  geom_line(data=gridData, aes(x=X,y=y), color='red') + ylim(min(y), max(y)) +
-  ggtitle('Regression Line for Linear Regression') +
-  theme_bw(base_size = 12)
+  ggplot2::geom_line(data=gridData, ggplot2::aes(x=X,y=y), color='red') + ggplot2::ylim(min(y), max(y)) +
+  ggplot2::ggtitle('Regression Line for Linear Regression') +
+  ggplot2::theme_bw(base_size = 12)
 model$gamma
 
 ### END TESTING PARAMETER TUNING FUNCTION FOR LINEAR REGRESSION ###
