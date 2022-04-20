@@ -251,7 +251,7 @@ varDP <- function (x, eps, lower.bound, upper.bound,
 #'   \insertRef{Liu2019b}{DPpack}
 #'
 #' @export
-sdDP <- function (x, eps, lower.bounds, upper.bounds,
+sdDP <- function (x, eps, lower.bound, upper.bound,
                   which.sensitivity='bounded', mechanism='Laplace', delta=0,
                   type.DP='aDP'){
   ########## Input checking

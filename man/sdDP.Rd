@@ -7,8 +7,8 @@
 sdDP(
   x,
   eps,
-  lower.bounds,
-  upper.bounds,
+  lower.bound,
+  upper.bound,
   which.sensitivity = "bounded",
   mechanism = "Laplace",
   delta = 0,
@@ -19,6 +19,12 @@ sdDP(
 \item{x}{Numeric vector whose variance is desired.}
 
 \item{eps}{Positive real number defining the epsilon privacy budget.}
+
+\item{lower.bound}{Scalar representing the global or public lower bound on
+values of x.}
+
+\item{upper.bound}{Scalar representing the global or public upper bound on
+values of x.}
 
 \item{which.sensitivity}{String indicating which type of sensitivity to use.
 Can be one of {'bounded', 'unbounded', 'both'}. If 'bounded' (default),
@@ -44,12 +50,6 @@ the Gaussian mechanism (if selected). Can be either 'pDP' for probabilistic
 DP \insertCite{Machanavajjhala2008}{DPpack} or 'aDP' for approximate DP
 \insertCite{Dwork2006b}{DPpack}. Note that if 'aDP' is chosen, epsilon must
 be strictly less than 1.}
-
-\item{lower.bound}{Scalar representing the global or public lower bound on
-values of x.}
-
-\item{upper.bound}{Scalar representing the global or public upper bound on
-values of x.}
 }
 \value{
 Sanitized standard deviation based on the bounded and/or unbounded
