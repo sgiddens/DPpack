@@ -13,9 +13,8 @@ Description: An implementation of common statistical analysis and models with
     and SVM. In addition, it implements some popular randomization mechanisms 
     such as the Laplace mechanism, Gaussian mechanism, and exponential 
     mechanism.
-License: GPL (>= 3)
+License: GPL-3 + file LICENSE
 Encoding: UTF-8
-LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
 Imports: 
