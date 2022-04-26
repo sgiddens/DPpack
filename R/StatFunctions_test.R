@@ -1,11 +1,4 @@
 test_meanDP <- function(){
-  #
-  #
-  #
-  # source(paste(cur.dir,'Mechanisms.R',sep=""))
-  # source(paste(cur.dir,'StatFunctions.R',sep=""))
-  # source(paste(cur.dir,'DataAccess.R',sep=""))
-
   ### Test input ###
   data1d <- stats::rnorm(50);
   data2d <- matrix(data=stats::rnorm(1000),ncol=2);
@@ -223,13 +216,6 @@ test_meanDP <- function(){
 }
 
 test_varDP <- function(){
-  #
-  #
-  #
-  # source(paste(cur.dir,'Mechanisms.R',sep=""))
-  # source(paste(cur.dir,'StatFunctions.R',sep=""))
-  # source(paste(cur.dir,'DataAccess.R',sep=""))
-
   ### Test input ###
   data1d <- stats::rnorm(50,sd=2);
   data2d <- matrix(data=stats::rnorm(1000),ncol=2);
@@ -419,13 +405,6 @@ test_varDP <- function(){
 }
 
 test_sdDP <- function(){
-  #
-  #
-  #
-  # source(paste(cur.dir,'Mechanisms.R',sep=""))
-  # source(paste(cur.dir,'StatFunctions.R',sep=""))
-  # source(paste(cur.dir,'DataAccess.R',sep=""))
-
   ### Test input ###
   data1d <- stats::rnorm(50,sd=2);
   data2d <- matrix(data=stats::rnorm(1000),ncol=2);
@@ -615,13 +594,6 @@ test_sdDP <- function(){
 }
 
 test_covDP <- function(){
-  #
-  #
-  #
-  # source(paste(cur.dir,'Mechanisms.R',sep=""))
-  # source(paste(cur.dir,'StatFunctions.R',sep=""))
-  # source(paste(cur.dir,'DataAccess.R',sep=""))
-
   ### Test input ###
   data1d <- stats::rnorm(50,sd=2);
   data2d <- matrix(data=stats::rnorm(1000),ncol=2);
@@ -830,13 +802,6 @@ test_covDP <- function(){
 }
 
 test_histogramDP <- function(){
-  #
-  #
-  #
-  # source(paste(cur.dir,'Mechanisms.R',sep=""))
-  # source(paste(cur.dir,'StatFunctions.R',sep=""))
-  # source(paste(cur.dir,'DataAccess.R',sep=""))
-
   ### Test input ###
   data1d <- stats::rnorm(50)
 
@@ -871,12 +836,12 @@ test_histogramDP <- function(){
 
   result <- histogramDP(x, eps, "Sturges", normal, ws, mech, delta, tdp, an)
 
-  graphics::par(mfrow=c(1,2))
+  # graphics::par(mfrow=c(1,2))
   plot(result,main="Simple bounded Laplace");
   graphics::hist(x,freq=TRUE,main="Original");
   print("Verify similarity...")
   Sys.sleep(2)
-  graphics::par(mfrow=c(1,1))
+  # graphics::par(mfrow=c(1,1))
 
   print("         Simple unbounded Laplace:")
   x <- stats::rnorm(100,mean=3,sd=2);
@@ -890,12 +855,12 @@ test_histogramDP <- function(){
 
   result <- histogramDP(x, eps, "Sturges", normal, ws, mech, delta, tdp, an)
 
-  graphics::par(mfrow=c(1,2))
+  # graphics::par(mfrow=c(1,2))
   plot(result,main="Simple unbounded Laplace");
   graphics::hist(x,freq=TRUE,main="Original");
   print("Verify similarity...")
   Sys.sleep(2)
-  graphics::par(mfrow=c(1,1))
+  # graphics::par(mfrow=c(1,1))
 
   print("         Gaussian pDP:")
   x <- stats::rnorm(100,mean=3,sd=2);
@@ -909,12 +874,12 @@ test_histogramDP <- function(){
 
   result <- histogramDP(x, eps, "Sturges", normal, ws, mech, delta, tdp, an)
 
-  graphics::par(mfrow=c(1,2))
+  # graphics::par(mfrow=c(1,2))
   plot(result,main="Gaussian pDP");
   graphics::hist(x,freq=TRUE,main="Original");
   print("Verify similarity...")
   Sys.sleep(2)
-  graphics::par(mfrow=c(1,1))
+  # graphics::par(mfrow=c(1,1))
 
   print("         Gaussian aDP:")
   x <- stats::rnorm(100,mean=3,sd=2);
@@ -928,12 +893,12 @@ test_histogramDP <- function(){
 
   result <- histogramDP(x, eps, "Sturges", normal, ws, mech, delta, tdp, an)
 
-  graphics::par(mfrow=c(1,2))
+  # graphics::par(mfrow=c(1,2))
   plot(result,main="Gaussian aDP");
   graphics::hist(x,freq=TRUE,main="Original");
   print("Verify similarity...")
   Sys.sleep(2)
-  graphics::par(mfrow=c(1,1))
+  # graphics::par(mfrow=c(1,1))
 
   print("         Normalized:")
   x <- stats::rnorm(100,mean=3,sd=2);
@@ -947,12 +912,12 @@ test_histogramDP <- function(){
 
   result <- histogramDP(x, eps, "Sturges", normal, ws, mech, delta, tdp, an)
 
-  graphics::par(mfrow=c(1,2))
+  # graphics::par(mfrow=c(1,2))
   plot(result,main="Normalized");
   graphics::hist(x,freq=FALSE,main="Original");
   print("Verify similarity...")
   Sys.sleep(2)
-  graphics::par(mfrow=c(1,1))
+  # graphics::par(mfrow=c(1,1))
 
   print("         Allow Negative:")
   x <- stats::rnorm(100,mean=3,sd=2);
@@ -966,24 +931,17 @@ test_histogramDP <- function(){
 
   result <- histogramDP(x, eps, "Sturges", normal, ws, mech, delta, tdp, an)
 
-  graphics::par(mfrow=c(1,2))
+  # graphics::par(mfrow=c(1,2))
   plot(result,main="Allow Negative");
   graphics::hist(x,freq=FALSE,main="Original");
   print("Verify similarity...")
   Sys.sleep(2)
-  graphics::par(mfrow=c(1,1))
+  # graphics::par(mfrow=c(1,1))
 
   ### END TEST FUNCTIONALITY ###
 }
 
 test_tableDP <- function(){
-  #
-  #
-  #
-  # source(paste(cur.dir,'Mechanisms.R',sep=""))
-  # source(paste(cur.dir,'StatFunctions.R',sep=""))
-  # source(paste(cur.dir,'DataAccess.R',sep=""))
-
   ### Test input ###
   x <- MASS::Cars93$Type;
   y <- MASS::Cars93$Origin;
@@ -1121,13 +1079,6 @@ test_tableDP <- function(){
 }
 
 test_pooledVarDP <- function(){
-  #
-  #
-  #
-  # source(paste(cur.dir,'Mechanisms.R',sep=""))
-  # source(paste(cur.dir,'StatFunctions.R',sep=""))
-  # source(paste(cur.dir,'DataAccess.R',sep=""))
-
   ### Test input ###
   x <- stats::rnorm(10,sd=2);
   y <- stats::rnorm(15,sd=2);
@@ -1394,13 +1345,6 @@ test_pooledVarDP <- function(){
 }
 
 test_pooledCovDP <- function(){
-  #
-  #
-  #
-  # source(paste(cur.dir,'Mechanisms.R',sep=""))
-  # source(paste(cur.dir,'StatFunctions.R',sep=""))
-  # source(paste(cur.dir,'DataAccess.R',sep=""))
-
   ### Test input ###
   x <- matrix(stats::rnorm(20,sd=2),ncol=2);
   y <- matrix(stats::rnorm(30,sd=2),ncol=2);
@@ -1699,13 +1643,6 @@ test_pooledCovDP <- function(){
 }
 
 test_quantileDP <- function(){
-  #
-  #
-  #
-  # source(paste(cur.dir,'Mechanisms.R',sep=""))
-  # source(paste(cur.dir,'StatFunctions.R',sep=""))
-  # source(paste(cur.dir,'DataAccess.R',sep=""))
-
   ### Test input ###
   x <- stats::rnorm(50);
 
@@ -1902,13 +1839,6 @@ test_quantileDP <- function(){
 }
 
 test_medianDP <- function(){
-  #
-  #
-  #
-  # source(paste(cur.dir,'Mechanisms.R',sep=""))
-  # source(paste(cur.dir,'StatFunctions.R',sep=""))
-  # source(paste(cur.dir,'DataAccess.R',sep=""))
-
   ### Test input ###
   # Input tested in quantileDP
   ### END TEST INPUT ###

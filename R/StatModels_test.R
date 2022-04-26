@@ -8,7 +8,7 @@ K <- 2
 X <- data.frame()
 y <- data.frame()
 
-set.seed(56)
+# May be helpful to set seed for testing
 for (j in (1:K)){
   t <- seq(-.25, .25, length.out = N)
   if (j==1) m <- stats::rnorm(N,-.2, .1) # Soft margin
@@ -58,8 +58,6 @@ ggplot2::ggplot(data) + ggplot2::geom_point(ggplot2::aes(x=x1, y=x2, color = as.
 ### DP, regularization
 gamma <- .01
 eps <- 1
-
-set.seed(round(stats::runif(1, 0, 100)))
 
 pm <- 'objective'
 c <- 1/4 # Necessary constant for logistic regression if objective used
@@ -102,7 +100,7 @@ K <- 2
 X <- data.frame()
 y <- data.frame()
 
-set.seed(56)
+# May be helpful to set seed for testing
 for (j in (1:K)){
   t <- seq(-.25, .25, length.out = N)
   if (j==1) m <- stats::rnorm(N,-.2, .1) # Soft margin
@@ -145,7 +143,7 @@ ggplot2::ggplot(data) + ggplot2::geom_point(ggplot2::aes(x=x1, y=x2, color = as.
 # X <- data.frame() # data matrix (each row = single example, can view as xy coordinates)
 # y <- data.frame() # class labels
 #
-# set.seed(56)
+# # May be helpful to set seed for testing
 #
 # for (j in (1:K)){
 #   # t, m are parameters of parametric equations x1, x2
@@ -188,8 +186,6 @@ ggplot2::ggplot(data) + ggplot2::geom_point(ggplot2::aes(x=x1, y=x2, color = as.
 ### DP, regularization
 gamma <- .01
 eps <- 1
-
-set.seed(round(stats::runif(1,0,100)))
 
 pm <- 'objective'
 # pm <- 'output'
@@ -248,7 +244,7 @@ K <- 2
 X <- data.frame()
 y <- data.frame()
 
-set.seed(56)
+# May be helpful to set seed for testing
 for (j in (1:K)){
   t <- seq(-.25, .25, length.out = N)
   if (j==1) m <- stats::rnorm(N,-.2, .1) # Soft margin
@@ -291,7 +287,7 @@ ggplot2::ggplot(data) + ggplot2::geom_point(ggplot2::aes(x=x1, y=x2, color = as.
 # X <- data.frame() # data matrix (each row = single example, can view as xy coordinates)
 # y <- data.frame() # class labels
 #
-# set.seed(56)
+# # May be helpful to set seed for testing
 #
 # for (j in (1:K)){
 #   # t, m are parameters of parametric equations x1, x2
@@ -334,8 +330,6 @@ ggplot2::ggplot(data) + ggplot2::geom_point(ggplot2::aes(x=x1, y=x2, color = as.
 ### DP, regularization
 gamma <- .01
 eps <- 1
-
-set.seed(round(stats::runif(1,0,100)))
 
 pm <- 'objective'
 # pm <- 'output'
@@ -394,7 +388,7 @@ K <- 2
 X <- data.frame()
 y <- data.frame()
 
-set.seed(56)
+# May be helpful to set seed for testing
 
 for (j in (1:K)){
   t <- seq(-.25,.25,length.out = N)
@@ -447,8 +441,6 @@ ggplot2::ggplot(data) + ggplot2::geom_point(ggplot2::aes(x=x1, y=x2, color = as.
 eps <- 1
 gamma <- .01
 D <- 5
-
-set.seed(round(stats::runif(1,0,100)))
 
 pm <- 'objective'
 # pm <- 'output'
@@ -507,7 +499,7 @@ K <- 2 # number of classes, binary for logistic regression
 X <- data.frame() # data matrix (each row = single example, can view as xy coordinates)
 y <- data.frame() # class labels
 
-set.seed(56)
+# May be helpful to set seed for testing
 
 for (i in (1:N)){
   Xtemp <- data.frame(x1 = stats::rnorm(1,sd=.28) , x2 = stats::rnorm(1,sd=.28))
@@ -543,8 +535,6 @@ ggplot2::ggplot(data) + ggplot2::geom_point(ggplot2::aes(x=x1, y=x2, color = as.
 eps <- 5
 gamma <- 0.01
 D <- 20
-
-set.seed(round(stats::runif(1,0,100)))
 
 # pm <- 'objective'
 pm <- 'output'
@@ -584,7 +574,7 @@ K <- 2 # number of classes, binary for logistic regression
 X <- data.frame() # data matrix (each row = single example, can view as xy coordinates)
 y <- data.frame() # class labels
 
-set.seed(56)
+# May be helpful to set seed for testing
 
 for (j in (1:K)){
   t <- seq(-.25,.25,length.out = N)
@@ -618,8 +608,6 @@ ggplot2::ggplot(data) + ggplot2::geom_point(ggplot2::aes(x=x1, y=x2, color = as.
   ggplot2::coord_fixed(ratio = 1) +
   ggplot2::theme_bw(base_size = 12) +
   ggplot2::theme(legend.position=c(0.85, 0.87))
-
-set.seed(round(stats::runif(1,0,100)))
 
 eps <- 1
 
@@ -785,8 +773,6 @@ ggplot2::ggplot(data) + ggplot2::geom_point(ggplot2::aes(x=X, y=y), size = 2) +
   ggplot2::ylim(min(y), max(y)) + #ggplot2::coord_fixed(ratio = 1) +
   ggplot2::ggtitle('Data to be regressed') +
   ggplot2::theme_bw(base_size = 12)
-
-set.seed(round(stats::runif(1,0,100)))
 
 eps <- 1
 delta <- 0.01

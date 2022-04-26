@@ -1,9 +1,4 @@
 test_Laplace <- function(){
-  #
-  #
-  #
-  # source(paste(cur.dir,'Mechanisms.R',sep=""))
-
   ### Test input ###
   print("         No input:")
   a = tryCatch(LaplaceMechanism(),error=function(e) print(paste("PASS --",e)));
@@ -182,11 +177,6 @@ test_Laplace <- function(){
 }
 
 test_Gaussian <- function(){
-  #
-  #
-  #
-  # source(paste(cur.dir,'Mechanisms.R',sep=""))
-
   ### Test input ###
   print("         No input:")
   a = tryCatch(GaussianMechanism(),error=function(e) print(paste("PASS --",e)));
@@ -420,11 +410,6 @@ test_Gaussian <- function(){
 }
 
 test_Exponential <- function(){
-  #
-  #
-  #
-  # source(paste(cur.dir,'Mechanisms.R',sep=""))
-
   ### Test input ###
   print("         No input:")
   a = tryCatch(ExponentialMechanism(),error=function(e) print(paste("PASS --",e)));
