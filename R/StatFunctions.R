@@ -1,6 +1,6 @@
 #' Differentially Private Mean
 #'
-#' This function computes the differentially private mean of a given dataset at
+#' This function compute the differentially private mean of a given dataset at
 #' user-specified privacy levels of epsilon and delta.
 #'
 #' @param x Dataset whose mean is desired.
