@@ -73,21 +73,21 @@ predicted.y <- lrdp$predict(Xtest, add.bias=TRUE)
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-new}{\code{LinearRegressionDP$new()}}
-\item \href{#method-fit}{\code{LinearRegressionDP$fit()}}
-\item \href{#method-clone}{\code{LinearRegressionDP$clone()}}
+\item \href{#method-LinearRegressionDP-new}{\code{LinearRegressionDP$new()}}
+\item \href{#method-LinearRegressionDP-fit}{\code{LinearRegressionDP$fit()}}
+\item \href{#method-LinearRegressionDP-clone}{\code{LinearRegressionDP$clone()}}
 }
 }
-\if{html}{
-\out{<details open ><summary>Inherited methods</summary>}
-\itemize{
-\item \out{<span class="pkg-link" data-pkg="DPpack" data-topic="EmpiricalRiskMinimizationDP.KST" data-id="predict">}\href{../../DPpack/html/EmpiricalRiskMinimizationDP.KST.html#method-predict}{\code{DPpack::EmpiricalRiskMinimizationDP.KST$predict()}}\out{</span>}
-}
-\out{</details>}
-}
+\if{html}{\out{
+<details open><summary>Inherited methods</summary>
+<ul>
+<li><span class="pkg-link" data-pkg="DPpack" data-topic="EmpiricalRiskMinimizationDP.KST" data-id="predict"><a href='../../DPpack/html/EmpiricalRiskMinimizationDP.KST.html#method-EmpiricalRiskMinimizationDP.KST-predict'><code>DPpack::EmpiricalRiskMinimizationDP.KST$predict()</code></a></span></li>
+</ul>
+</details>
+}}
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-new"></a>}}
-\if{latex}{\out{\hypertarget{method-new}{}}}
+\if{html}{\out{<a id="method-LinearRegressionDP-new"></a>}}
+\if{latex}{\out{\hypertarget{method-LinearRegressionDP-new}{}}}
 \subsection{Method \code{new()}}{
 Create a new LinearRegressionDP object.
 \subsection{Usage}{
@@ -128,8 +128,8 @@ A new LinearRegressionDP object.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-fit"></a>}}
-\if{latex}{\out{\hypertarget{method-fit}{}}}
+\if{html}{\out{<a id="method-LinearRegressionDP-fit"></a>}}
+\if{latex}{\out{\hypertarget{method-LinearRegressionDP-fit}{}}}
 \subsection{Method \code{fit()}}{
 Fit the differentially private linear regression model. The
 function runs the objective perturbation algorithm
@@ -176,8 +176,8 @@ Defaults to FALSE.}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
+\if{html}{\out{<a id="method-LinearRegressionDP-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-LinearRegressionDP-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

@@ -84,21 +84,15 @@ n.errors <- sum(predicted.y!=ytest)
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-new}{\code{LogisticRegressionDP$new()}}
-\item \href{#method-fit}{\code{LogisticRegressionDP$fit()}}
-\item \href{#method-predict}{\code{LogisticRegressionDP$predict()}}
-\item \href{#method-clone}{\code{LogisticRegressionDP$clone()}}
+\item \href{#method-LogisticRegressionDP-new}{\code{LogisticRegressionDP$new()}}
+\item \href{#method-LogisticRegressionDP-fit}{\code{LogisticRegressionDP$fit()}}
+\item \href{#method-LogisticRegressionDP-predict}{\code{LogisticRegressionDP$predict()}}
+\item \href{#method-LogisticRegressionDP-clone}{\code{LogisticRegressionDP$clone()}}
 }
-}
-\if{html}{
-\out{<details open ><summary>Inherited methods</summary>}
-\itemize{
-}
-\out{</details>}
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-new"></a>}}
-\if{latex}{\out{\hypertarget{method-new}{}}}
+\if{html}{\out{<a id="method-LogisticRegressionDP-new"></a>}}
+\if{latex}{\out{\hypertarget{method-LogisticRegressionDP-new}{}}}
 \subsection{Method \code{new()}}{
 Create a new \code{LogisticRegressionDP} object.
 \subsection{Usage}{
@@ -147,8 +141,8 @@ A new \code{LogisticRegressionDP} object.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-fit"></a>}}
-\if{latex}{\out{\hypertarget{method-fit}{}}}
+\if{html}{\out{<a id="method-LogisticRegressionDP-fit"></a>}}
+\if{latex}{\out{\hypertarget{method-LogisticRegressionDP-fit}{}}}
 \subsection{Method \code{fit()}}{
 Fit the differentially private logistic regression model. This
 method runs either the output perturbation or the objective perturbation
@@ -193,8 +187,8 @@ Defaults to FALSE.}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-predict"></a>}}
-\if{latex}{\out{\hypertarget{method-predict}{}}}
+\if{html}{\out{<a id="method-LogisticRegressionDP-predict"></a>}}
+\if{latex}{\out{\hypertarget{method-LogisticRegressionDP-predict}{}}}
 \subsection{Method \code{predict()}}{
 Predict label(s) for given \code{X} using the fitted
 coefficients.
@@ -225,8 +219,8 @@ Matrix of predicted labels or scores corresponding to each row of
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
+\if{html}{\out{<a id="method-LogisticRegressionDP-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-LogisticRegressionDP-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

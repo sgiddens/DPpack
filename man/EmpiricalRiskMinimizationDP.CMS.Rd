@@ -170,15 +170,15 @@ of pre-filter values used in converting data into transform space.}
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-new}{\code{EmpiricalRiskMinimizationDP.CMS$new()}}
-\item \href{#method-fit}{\code{EmpiricalRiskMinimizationDP.CMS$fit()}}
-\item \href{#method-predict}{\code{EmpiricalRiskMinimizationDP.CMS$predict()}}
-\item \href{#method-clone}{\code{EmpiricalRiskMinimizationDP.CMS$clone()}}
+\item \href{#method-EmpiricalRiskMinimizationDP.CMS-new}{\code{EmpiricalRiskMinimizationDP.CMS$new()}}
+\item \href{#method-EmpiricalRiskMinimizationDP.CMS-fit}{\code{EmpiricalRiskMinimizationDP.CMS$fit()}}
+\item \href{#method-EmpiricalRiskMinimizationDP.CMS-predict}{\code{EmpiricalRiskMinimizationDP.CMS$predict()}}
+\item \href{#method-EmpiricalRiskMinimizationDP.CMS-clone}{\code{EmpiricalRiskMinimizationDP.CMS$clone()}}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-new"></a>}}
-\if{latex}{\out{\hypertarget{method-new}{}}}
+\if{html}{\out{<a id="method-EmpiricalRiskMinimizationDP.CMS-new"></a>}}
+\if{latex}{\out{\hypertarget{method-EmpiricalRiskMinimizationDP.CMS-new}{}}}
 \subsection{Method \code{new()}}{
 Create a new \code{EmpiricalRiskMinimizationDP.CMS} object.
 \subsection{Usage}{
@@ -273,8 +273,8 @@ A new \code{EmpiricalRiskMinimizationDP.CMS} object.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-fit"></a>}}
-\if{latex}{\out{\hypertarget{method-fit}{}}}
+\if{html}{\out{<a id="method-EmpiricalRiskMinimizationDP.CMS-fit"></a>}}
+\if{latex}{\out{\hypertarget{method-EmpiricalRiskMinimizationDP.CMS-fit}{}}}
 \subsection{Method \code{fit()}}{
 Fit the differentially private empirical risk minimization
 model. This method runs either the output perturbation or the objective
@@ -325,8 +325,8 @@ Defaults to FALSE.}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-predict"></a>}}
-\if{latex}{\out{\hypertarget{method-predict}{}}}
+\if{html}{\out{<a id="method-EmpiricalRiskMinimizationDP.CMS-predict"></a>}}
+\if{latex}{\out{\hypertarget{method-EmpiricalRiskMinimizationDP.CMS-predict}{}}}
 \subsection{Method \code{predict()}}{
 Predict label(s) for given \code{X} using the fitted
 coefficients.
@@ -351,8 +351,8 @@ Matrix of predicted labels corresponding to each row of \code{X}.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
+\if{html}{\out{<a id="method-EmpiricalRiskMinimizationDP.CMS-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-EmpiricalRiskMinimizationDP.CMS-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

@@ -99,22 +99,16 @@ n.errors <- sum(predicted.y!=ytest)
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-new}{\code{svmDP$new()}}
-\item \href{#method-fit}{\code{svmDP$fit()}}
-\item \href{#method-XtoV}{\code{svmDP$XtoV()}}
-\item \href{#method-predict}{\code{svmDP$predict()}}
-\item \href{#method-clone}{\code{svmDP$clone()}}
+\item \href{#method-svmDP-new}{\code{svmDP$new()}}
+\item \href{#method-svmDP-fit}{\code{svmDP$fit()}}
+\item \href{#method-svmDP-XtoV}{\code{svmDP$XtoV()}}
+\item \href{#method-svmDP-predict}{\code{svmDP$predict()}}
+\item \href{#method-svmDP-clone}{\code{svmDP$clone()}}
 }
-}
-\if{html}{
-\out{<details open ><summary>Inherited methods</summary>}
-\itemize{
-}
-\out{</details>}
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-new"></a>}}
-\if{latex}{\out{\hypertarget{method-new}{}}}
+\if{html}{\out{<a id="method-svmDP-new"></a>}}
+\if{latex}{\out{\hypertarget{method-svmDP-new}{}}}
 \subsection{Method \code{new()}}{
 Create a new \code{svmDP} object.
 \subsection{Usage}{
@@ -185,8 +179,8 @@ A new svmDP object.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-fit"></a>}}
-\if{latex}{\out{\hypertarget{method-fit}{}}}
+\if{html}{\out{<a id="method-svmDP-fit"></a>}}
+\if{latex}{\out{\hypertarget{method-svmDP-fit}{}}}
 \subsection{Method \code{fit()}}{
 Fit the differentially private SVM model. This method runs
 either the output perturbation or the objective perturbation algorithm
@@ -231,8 +225,8 @@ Defaults to FALSE.}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-XtoV"></a>}}
-\if{latex}{\out{\hypertarget{method-XtoV}{}}}
+\if{html}{\out{<a id="method-svmDP-XtoV"></a>}}
+\if{latex}{\out{\hypertarget{method-svmDP-XtoV}{}}}
 \subsection{Method \code{XtoV()}}{
 Convert input data X into transformed data V. Uses sampled
 pre-filter values and a mapping function based on the chosen kernel to
@@ -257,8 +251,8 @@ dimension.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-predict"></a>}}
-\if{latex}{\out{\hypertarget{method-predict}{}}}
+\if{html}{\out{<a id="method-svmDP-predict"></a>}}
+\if{latex}{\out{\hypertarget{method-svmDP-predict}{}}}
 \subsection{Method \code{predict()}}{
 Predict label(s) for given \code{X} using the fitted
 coefficients.
@@ -289,8 +283,8 @@ Matrix of predicted labels or scores corresponding to each row of
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
+\if{html}{\out{<a id="method-svmDP-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-svmDP-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{
