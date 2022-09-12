@@ -564,6 +564,231 @@ ggplot2::ggplot() +   ggplot2::geom_point(data = data,
 ### END TESTING KERNEL SVM ON NONLINEAR DATASET ###
 
 
+###################################
+### TESTING WEIGHTED LINEAR SVM ###
+###################################
+## NOTE: Tested by comparing with Fig. 3 in paper "Weighted support vector
+##    machine for data classification"
+##  To test, run (1) without adding outliers or weighting, (2) with outliers
+##    but no weighting, and (3) with outliers and weighting outliers less than
+##    other datapoints. Should see "typical" weights for case 3 approach case 1
+##    as the outlier weights get smaller relative to normal weights. Noise
+##    should also be present due to DP.
+set.seed(42)
+### Build dataset (no bias, satisfies constraints)
+N <- 200
+D <- 2
+K <- 2
+X <- data.frame()
+y <- data.frame()
+
+# May be helpful to set seed for testing
+for (j in (1:K)){
+  t <- seq(-.1, .1, length.out = N)
+  # if (j==1) m <- stats::rnorm(N,-.2, .1) # Soft margin
+  # if (j==2) m <- stats::rnorm(N, .2, .1)
+  if (j==1) m <- stats::rnorm(N,-.3, .1) # Hard margin
+  if (j==2) m <- stats::rnorm(N, .3, .1)
+  Xtemp <- data.frame(x1 = 3*t , x2 = m - t)
+  ytemp <- data.frame(y = matrix(j-1, N, 1))
+  X <- rbind(X, Xtemp)
+  y <- rbind(y, ytemp)
+}
+
+# Add outliers
+outliersX <- data.frame(x1 = c(-0.27, -0.23), x2 = c(0.58, 0.59))
+outliersy <- data.frame(y = matrix(0, 2, 1))
+X <- rbind(X, outliersX)
+y <- rbind(y, outliersy)
+
+# Define weights/weights upper bound
+wub <- 2
+weights <- rep(wub, nrow(y))
+weights[(nrow(y)-1):nrow(y)] <- wub/20
+
+upper.bounds <- c(1, 1)
+lower.bounds <- c(-1,-1)
+
+data <- cbind(X, y)
+y <- as.matrix(data[,3])
+colnames(data) <- c(colnames(X), 'label')
+
+### To verify in unit circle
+# circleFun <- function(center = c(0,0),diameter = 1, npoints = 100){
+#   r = diameter / 2
+#   tt <- seq(0,2*pi,length.out = npoints)
+#   xx <- center[1] + r * cos(tt)
+#   yy <- center[2] + r * sin(tt)
+#   return(data.frame(x = xx, y = yy))
+# }
+# cir <- circleFun(c(0,0),2,npoints = 100)
+
+ggplot2::ggplot(data) + ggplot2::geom_point(ggplot2::aes(x=x1, y=x2, color = as.character(label)),
+                                            size = 2, show.legend = F) +
+  ggplot2::scale_colour_discrete(name = "Label") + ggplot2::coord_fixed(ratio = 1) +
+  ggplot2::theme_bw(base_size = 12) + ggplot2::xlim(-.8, .8) + ggplot2::ylim(-.7, .7)
+### End build dataset
+
+set.seed(NULL)
+### No DP, no regularization
+# gamma <- 0
+# eps <- Inf
+
+### No DP, regularization
+# gamma <- .01
+# eps <- Inf
+
+### DP, no regularization
+# gamma <- 0
+# eps <- 1
+
+### DP, regularization
+gamma <- .01
+eps <- 1
+
+# pm <- 'objective'
+pm <- 'output'
+wsvmdp <- svmDP$new('l2', eps, gamma, pm, kernel='linear')
+
+### No bias, satisfies constraints
+wsvmdp$fit(X,y,upper.bounds=upper.bounds,lower.bounds=lower.bounds,
+           weights=weights, weights.upper.bound=wub)
+
+theta <- wsvmdp$coeff
+
+# Decision boundary grid
+### No bias, satisfies constraints
+grid <- expand.grid(seq(-.8, .8, length.out = 100),
+                    seq(-.7, .7, length.out = 100))
+Z <- wsvmdp$predict(grid)
+
+gridPred = cbind(grid, Z)
+colnames(gridPred)[3] <- 'label'
+gridPred <- data.frame(gridPred)
+
+### No bias, satisfies constraints
+ggplot2::ggplot() + ggplot2::geom_point(data = data, ggplot2::aes(x=x1, y=x2, color = as.character(label)),
+                                        size = 2, show.legend = F) +
+  ggplot2::geom_tile(data = gridPred, ggplot2::aes(x = grid[, 1],y = grid[, 2],
+                                                   fill=as.character(Z)), alpha = 0.3,
+                     show.legend = F) + ggplot2::coord_fixed(ratio = 1) +
+  ggplot2::theme_bw(base_size = 12)+ ggplot2::xlim(-.8,.8) + ggplot2::ylim(-.7,.7)
+### END TESTING WEIGHTED LINEAR SVM CLASS ###
+############################################
+### TESTING WEIGHTED GAUSSIAN KERNEL SVM ###
+############################################
+## NOTE: Tested by comparing with Fig. 3 in paper "Weighted support vector
+##    machine for data classification"
+##  To test, run (1) without adding outliers or weighting, (2) with outliers
+##    but no weighting, and (3) with outliers and weighting outliers less than
+##    other datapoints. Should see "typical" weights for case 3 approach case 1
+##    as the outlier weights get smaller relative to normal weights. Noise
+##    should also be present due to DP.
+set.seed(42)
+### Build dataset (no bias, satisfies constraints)
+N <- 200
+D <- 2
+K <- 2
+X <- data.frame()
+y <- data.frame()
+
+# May be helpful to set seed for testing
+for (j in (1:K)){
+  t <- seq(-.1, .1, length.out = N)
+  # if (j==1) m <- stats::rnorm(N,-.2, .1) # Soft margin
+  # if (j==2) m <- stats::rnorm(N, .2, .1)
+  if (j==1) m <- stats::rnorm(N,-.3, .1) # Hard margin
+  if (j==2) m <- stats::rnorm(N, .3, .1)
+  Xtemp <- data.frame(x1 = 3*t , x2 = m - t)
+  ytemp <- data.frame(y = matrix(j-1, N, 1))
+  X <- rbind(X, Xtemp)
+  y <- rbind(y, ytemp)
+}
+
+# Add outliers
+outliersX <- data.frame(x1 = c(-0.27, -0.23), x2 = c(0.58, 0.59))
+outliersy <- data.frame(y = matrix(0, 2, 1))
+X <- rbind(X, outliersX)
+y <- rbind(y, outliersy)
+
+# Define weights/weights upper bound
+wub <- 2
+weights <- rep(wub, nrow(y))
+weights[(nrow(y)-1):nrow(y)] <- wub/20
+
+# No weights
+# wub <- NULL
+# weights <- NULL
+
+upper.bounds <- c(1, 1)
+lower.bounds <- c(-1,-1)
+
+data <- cbind(X, y)
+y <- as.matrix(data[,3])
+colnames(data) <- c(colnames(X), 'label')
+
+### To verify in unit circle
+# circleFun <- function(center = c(0,0),diameter = 1, npoints = 100){
+#   r = diameter / 2
+#   tt <- seq(0,2*pi,length.out = npoints)
+#   xx <- center[1] + r * cos(tt)
+#   yy <- center[2] + r * sin(tt)
+#   return(data.frame(x = xx, y = yy))
+# }
+# cir <- circleFun(c(0,0),2,npoints = 100)
+
+ggplot2::ggplot(data) + ggplot2::geom_point(ggplot2::aes(x=x1, y=x2, color = as.character(label)),
+                                            size = 2, show.legend = F) +
+  ggplot2::scale_colour_discrete(name = "Label") + ggplot2::coord_fixed(ratio = 1) +
+  ggplot2::theme_bw(base_size = 12) + ggplot2::xlim(-.8, .8) + ggplot2::ylim(-.7, .7)
+### End build dataset
+
+set.seed(NULL)
+### No DP, no regularization
+# gamma <- 0
+# eps <- Inf
+
+### No DP, regularization
+gamma <- .01
+eps <- Inf
+
+### DP, no regularization
+# gamma <- 0
+# eps <- 1
+
+### DP, regularization
+# gamma <- .01
+# eps <- 1
+
+D <- 5
+# pm <- 'objective'
+pm <- 'output'
+wsvmdp <- svmDP$new('l2', eps, gamma, pm, kernel='Gaussian', D)
+
+### No bias, satisfies constraints
+wsvmdp$fit(X,y,upper.bounds=upper.bounds,lower.bounds=lower.bounds,
+           weights=weights, weights.upper.bound=wub)
+
+theta <- wsvmdp$coeff
+
+# Decision boundary grid
+### No bias, satisfies constraints
+grid <- expand.grid(seq(-.8, .8, length.out = 100),
+                    seq(-.7, .7, length.out = 100))
+Z <- wsvmdp$predict(grid)
+
+gridPred = cbind(grid, Z)
+colnames(gridPred)[3] <- 'label'
+gridPred <- data.frame(gridPred)
+
+### No bias, satisfies constraints
+ggplot2::ggplot() + ggplot2::geom_point(data = data, ggplot2::aes(x=x1, y=x2, color = as.character(label)),
+                                        size = 2, show.legend = F) +
+  ggplot2::geom_tile(data = gridPred, ggplot2::aes(x = grid[, 1],y = grid[, 2],
+                                                   fill=as.character(Z)), alpha = 0.3,
+                     show.legend = F) + ggplot2::coord_fixed(ratio = 1) +
+  ggplot2::theme_bw(base_size = 12)+ ggplot2::xlim(-.8,.8) + ggplot2::ylim(-.7,.7)
+### END TESTING WEIGHTED LINEAR SVM CLASS ###
 ############################################################
 ### TESTING PARAMETER TUNING FUNCTION FOR CLASSIFICATION ###
 ############################################################

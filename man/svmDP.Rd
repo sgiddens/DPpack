@@ -5,24 +5,26 @@
 \title{Privacy-preserving Support Vector Machine}
 \description{
 This class implements differentially private support vector
-machine (SVM) \insertCite{chaudhuri2011}{DPpack}. Either the output or the
-objective perturbation method can be used.
+machine (SVM) \insertCite{chaudhuri2011}{DPpack}. It can be either weighted
+\insertCite{Yang2005}{DPpack} or unweighted. Either the output or the
+objective perturbation method can be used for unweighted SVM, though only
+the output perturbation method is currently supported for weighted SVM.
 }
 \details{
 To use this class for SVM, first use the \code{new} method to
 construct an object of this class with the desired function values and
 hyperparameters, including a choice of the desired kernel. After
-constructing the object, the \code{fit} method can be applied with a
-provided dataset and data bounds to fit the model. In fitting, the model
-stores a vector of coefficients \code{coeff} which satisfy differential
-privacy. Additionally, if a nonlinear kernel is chosen, the models stores a
-mapping function from the input data X to a higher dimensional embedding V
-in the form of a method \code{XtoV} as required
-\insertCite{chaudhuri2011}{DPpack}. These can be released directly, or used
-in conjunction with the \code{predict} method to privately predict the
-label of new datapoints. Note that the mapping function \code{XtoV} is
-based on an approximation method via Fourier transforms
-\insertCite{Rahimi2007,Rahimi2008}{DPpack}.
+constructing the object, the \code{fit} method can be applied to fit the
+model with a provided dataset, data bounds, and optional observation
+weights and weight upper bound. In fitting, the model stores a vector of
+coefficients \code{coeff} which satisfy differential privacy. Additionally,
+if a nonlinear kernel is chosen, the models stores a mapping function from
+the input data X to a higher dimensional embedding V in the form of a
+method \code{XtoV} as required \insertCite{chaudhuri2011}{DPpack}. These
+can be released directly, or used in conjunction with the \code{predict}
+method to privately predict the label of new datapoints. Note that the
+mapping function \code{XtoV} is based on an approximation method via
+Fourier transforms \insertCite{Rahimi2007,Rahimi2008}{DPpack}.
 
 Note that in order to guarantee differential privacy for the SVM model,
 certain constraints must be satisfied for the values used to construct the
@@ -36,17 +38,20 @@ the Huber loss, a smooth approximation to the hinge loss
 loss is determined by a user-specified constant, h, which defaults to 0.5,
 a typical value. Additionally, the regularizer must be 1-strongly convex
 and differentiable. It also must be doubly differentiable if objective
-perturbation is chosen. Finally, it is assumed that if x represents a
-single row of the dataset X, then the l2-norm of x is at most 1 for all x.
-In order to ensure this constraint is satisfied, the dataset is
-preprocessed and scaled, and the resulting coefficients are postprocessed
-and un-scaled so that the stored coefficients correspond to the original
-data. Due to this constraint on x, it is best to avoid using a bias term in
-the model whenever possible. If a bias term must be used, the issue can be
-partially circumvented by adding a constant column to X before fitting the
-model, which will be scaled along with the rest of X. The \code{fit} method
-contains functionality to add a column of constant 1s to X before scaling,
-if desired.
+perturbation is chosen. If weighted SVM is desired, the provided weights
+must be nonnegative and bounded above by a global or public value, which
+must also be provided.
+
+Finally, it is assumed that if x represents a single row of the dataset X,
+then the l2-norm of x is at most 1 for all x. In order to ensure this
+constraint is satisfied, the dataset is preprocessed and scaled, and the
+resulting coefficients are postprocessed and un-scaled so that the stored
+coefficients correspond to the original data. Due to this constraint on x,
+it is best to avoid using a bias term in the model whenever possible. If a
+bias term must be used, the issue can be partially circumvented by adding a
+constant column to X before fitting the model, which will be scaled along
+with the rest of X. The \code{fit} method contains functionality to add a
+column of constant 1s to X before scaling, if desired.
 }
 \examples{
 # Build train dataset X and y, and test dataset Xtest and ytest
@@ -69,15 +74,21 @@ y <- y[-seq(1,N,10),,drop=FALSE]
 regularizer <- 'l2' # Alternatively, function(coeff) coeff\%*\%coeff/2
 eps <- 1
 gamma <- 0.1
+perturbation.method <- 'output'
 kernel <- 'Gaussian'
 D <- 20
-svmdp <- svmDP$new(regularizer, eps, gamma, kernel=kernel, D=D)
+svmdp <- svmDP$new(regularizer, eps, gamma, perturbation.method,
+                   kernel=kernel, D=D)
 
 # Fit with data
 # Bounds for X based on construction
 upper.bounds <- c( 1, 1)
 lower.bounds <- c(-1,-1)
-svmdp$fit(X, y, upper.bounds, lower.bounds) # No bias term
+weights <- rep(1, nrow(y)) # Uniform weighting
+weights[nrow(y)] <- 0.5 # Half weight for last observation
+wub <- 1 # Public upper bound for weights
+svmdp$fit(X, y, upper.bounds, lower.bounds, weights=weights,
+          weights.upper.bound=wub) # No bias term
 
 # Predict new data points
 predicted.y <- svmdp$predict(Xtest)
@@ -87,14 +98,16 @@ n.errors <- sum(predicted.y!=ytest)
 \references{
 \insertRef{chaudhuri2011}{DPpack}
 
+\insertRef{Yang2005}{DPpack}
+
 \insertRef{Chapelle2007}{DPpack}
 
 \insertRef{Rahimi2007}{DPpack}
 
 \insertRef{Rahimi2008}{DPpack}
 }
-\section{Super class}{
-\code{\link[DPpack:EmpiricalRiskMinimizationDP.CMS]{DPpack::EmpiricalRiskMinimizationDP.CMS}} -> \code{svmDP}
+\section{Super classes}{
+\code{\link[DPpack:EmpiricalRiskMinimizationDP.CMS]{DPpack::EmpiricalRiskMinimizationDP.CMS}} -> \code{\link[DPpack:WeightedERMDP.CMS]{DPpack::WeightedERMDP.CMS}} -> \code{svmDP}
 }
 \section{Methods}{
 \subsection{Public methods}{
@@ -187,16 +200,24 @@ either the output perturbation or the objective perturbation algorithm
 \insertCite{chaudhuri2011}{DPpack}, depending on the value of
 perturbation.method used to construct the object, to generate an
 objective function. A numerical optimization method is then run to find
-optimal coefficients for fitting the model given the training data and
-hyperparameters. The built-in \code{\link{optim}} function using the
-"BFGS" optimization method is used. If \code{regularizer} is given as
-'l2' or if \code{regularizer.gr} is given in the construction of the
-object, the gradient of the objective function is utilized by
+optimal coefficients for fitting the model given the training data,
+weights, and hyperparameters. The built-in \code{\link{optim}} function
+using the "BFGS" optimization method is used. If \code{regularizer} is
+given as 'l2' or if \code{regularizer.gr} is given in the construction of
+the object, the gradient of the objective function is utilized by
 \code{optim} as well. Otherwise, non-gradient based optimization methods
 are used. The resulting privacy-preserving coefficients are stored in
 \code{coeff}.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{svmDP$fit(X, y, upper.bounds, lower.bounds, add.bias = FALSE)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{svmDP$fit(
+  X,
+  y,
+  upper.bounds,
+  lower.bounds,
+  add.bias = FALSE,
+  weights = NULL,
+  weights.upper.bound = NULL
+)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -220,6 +241,12 @@ corresponding upper bound is clipped at the bound.}
 
 \item{\code{add.bias}}{Boolean indicating whether to add a bias term to \code{X}.
 Defaults to FALSE.}
+
+\item{\code{weights}}{Numeric vector of observation weights of the same length as
+\code{y}. If not given, no observation weighting is performed.}
+
+\item{\code{weights.upper.bound}}{Numeric value representing the global or public
+upper bound on the weights. Required if weights are given.}
 }
 \if{html}{\out{</div>}}
 }

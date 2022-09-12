@@ -175,19 +175,23 @@ loss.gr.squared.error <- function(y.hat,y) y.hat-y
 #'   y.hat <- c(-.5, 1.2, -0.9)
 #'   y <- c(-1, 1, -1)
 #'   huber(y.hat,y)
+#'   huber(y.hat, y, w=c(0.1, 0.5, 1)) # Weights observation-level loss
 #'
 #' @keywords internal
 #'
 #' @export
 generate.loss.huber <- function(h){
-  function(y.hat, y){
+  # Weight vector w included for WeightedERMDP.CMS
+  function(y.hat, y, w = NULL){
+    if (is.null(w)) w <- rep(1, length(y))
+    if (length(w)!=length(y)) stop("Weight vector w must be same length as label vector y.")
     z <- y.hat*y
     mask1 <- z>(1+h)
     mask2 <- abs(1-z)<=h
     mask3 <- z<(1-h)
     z[mask1] <- 0
-    z[mask2] <- (1+h-z[mask2])^2/(4*h)
-    z[mask3] <- 1-z[mask3]
+    z[mask2] <- w[mask2]*(1+h-z[mask2])^2/(4*h)
+    z[mask3] <- w[mask3]*(1-z[mask3])
     z
   }
 }
@@ -209,19 +213,23 @@ generate.loss.huber <- function(h){
 #'   y.hat <- c(-.5, 1.2, -0.9)
 #'   y <- c(-1, 1, -1)
 #'   huber(y.hat,y)
+#'   huber(y.hat, y, w=c(0.1, 0.5, 1)) # Weights observation-level loss gradient
 #'
 #' @keywords internal
 #'
 #' @export
 generate.loss.gr.huber <- function(h){
-  function(y.hat, y){
+  function(y.hat, y, w = NULL){
+    # Weight vector w included for WeightedERMDP.CMS
+    if (is.null(w)) w <- rep(1, length(y))
+    if (length(w)!=length(y)) stop("Weight vector w must be same length as label vector y.")
     z <- y.hat*y
     mask1 <- z>(1+h)
     mask2 <- abs(1-z)<=h
     mask3 <- z<(1-h)
     z[mask1] <- 0
-    z[mask2] <- -y[mask2]*(1+h-z[mask2])/(2*h)
-    z[mask3] <- -y[mask3]
+    z[mask2] <- -w[mask2]*y[mask2]*(1+h-z[mask2])/(2*h)
+    z[mask3] <- -w[mask3]*y[mask3]
     z
   }
 }
@@ -638,7 +646,8 @@ EmpiricalRiskMinimizationDP.CMS <- R6::R6Class("EmpiricalRiskMinimizationDP.CMS"
   #' @param add.bias Boolean indicating whether to add a bias term to \code{X}.
   #'   Defaults to FALSE.
   fit = function(X, y, upper.bounds, lower.bounds, add.bias=FALSE){
-    preprocess <- private$preprocess_data(X,y,upper.bounds,lower.bounds,add.bias)
+    preprocess <- private$preprocess_data(X,y,upper.bounds,lower.bounds,
+                                            add.bias)
     X <- preprocess$X
     y <- preprocess$y
 
@@ -687,7 +696,7 @@ EmpiricalRiskMinimizationDP.CMS <- R6::R6Class("EmpiricalRiskMinimizationDP.CMS"
   #' @return Matrix of predicted labels corresponding to each row of \code{X}.
   predict = function(X, add.bias=FALSE){
     if (add.bias){
-      X <- dplyr::mutate(X, bias =1)
+      X <- dplyr::mutate(X, bias=1)
       X <- X[, c(ncol(X), 1:(ncol(X)-1))]
     }
     self$mapXy(as.matrix(X), self$coeff)
@@ -713,7 +722,8 @@ EmpiricalRiskMinimizationDP.CMS <- R6::R6Class("EmpiricalRiskMinimizationDP.CMS"
   # return A list of preprocessed values for X, y, upper.bounds, and
   #   lower.bounds for use in the privacy-preserving empirical risk
   #   minimization algorithm.
-  preprocess_data = function(X, y, upper.bounds, lower.bounds, add.bias){
+  preprocess_data = function(X, y, upper.bounds, lower.bounds, add.bias,
+                             weights=NULL, weights.upper.bound=NULL){
     # Make sure values are correct
     if (length(upper.bounds)!=ncol(X)) {
       stop("Length of upper.bounds must be equal to the number of columns of X.");
@@ -725,7 +735,7 @@ EmpiricalRiskMinimizationDP.CMS <- R6::R6Class("EmpiricalRiskMinimizationDP.CMS"
     # Add bias if needed (highly recommended to not do this due to unwanted
     #       regularization of bias term)
     if (add.bias){
-      X <- dplyr::mutate(X, bias =1)
+      X <- dplyr::mutate(X, bias=1)
       X <- X[, c(ncol(X), 1:(ncol(X)-1))]
       upper.bounds <- c(1,upper.bounds)
       lower.bounds <- c(1,lower.bounds)
@@ -740,6 +750,7 @@ EmpiricalRiskMinimizationDP.CMS <- R6::R6Class("EmpiricalRiskMinimizationDP.CMS"
       X[X[,i]>upper.bounds[i],i] <- upper.bounds[i]
       X[X[,i]<lower.bounds[i],i] <- lower.bounds[i]
     }
+
     list(X=X, y=y, upper.bounds=upper.bounds, lower.bounds=lower.bounds)
   },
   # description Postprocess coefficients obtained by fitting the model using
@@ -791,6 +802,368 @@ EmpiricalRiskMinimizationDP.CMS <- R6::R6Class("EmpiricalRiskMinimizationDP.CMS"
     coeff0 <- numeric(ncol(X))
     opt.res <- optim(coeff0, fn=objective, gr=objective.gr, method="BFGS",
                      X=X, y=y, Delta=Delta, b=b)
+    opt.res$par
+  }
+))
+
+#' Privacy-preserving Weighted Expected Risk Minimization
+#'
+#' @description This class implements differentially private empirical risk
+#'   minimization in the case where weighted observation-level losses are
+#'   desired (such as weighted SVM \insertCite{Yang2005}{DPpack}). Currently,
+#'   only the output perturbation method is implemented.
+#'
+#' @details To use this class for weighted empirical risk minimization, first
+#'   use the \code{new} method to construct an object of this class with the
+#'   desired function values and hyperparameters. After constructing the object,
+#'   the \code{fit} method can be applied with a provided dataset, data bounds,
+#'   weights, and weight bounds to fit the model. In fitting, the model stores a
+#'   vector of coefficients \code{coeff} which satisfy differential privacy.
+#'   These can be released directly, or used in conjunction with the
+#'   \code{predict} method to privately predict the outcomes of new datapoints.
+#'
+#'   Note that in order to guarantee differential privacy for weighted empirical
+#'   risk minimization, certain constraints must be satisfied for the values
+#'   used to construct the object, as well as for the data used to fit. These
+#'   conditions depend on the chosen perturbation method, though currently only
+#'   output perturbation is implemented. Specifically, the provided loss
+#'   function must be convex and differentiable with respect to \code{y.hat},
+#'   and the absolute value of the first derivative of the loss function must be
+#'   at most 1. If objective perturbation is chosen (not currently implemented),
+#'   the loss function must also be doubly differentiable and the absolute value
+#'   of the second derivative of the loss function must be bounded above by a
+#'   constant c for all possible values of \code{y.hat} and \code{y}, where
+#'   \code{y.hat} is the predicted label and \code{y} is the true label. The
+#'   regularizer must be 1-strongly convex and differentiable. It also must be
+#'   doubly differentiable if objective perturbation is chosen. For the data x,
+#'   it is assumed that if x represents a single row of the dataset X, then the
+#'   l2-norm of x is at most 1 for all x. Note that because of this, a bias term
+#'   cannot be included without appropriate scaling/preprocessing of the
+#'   dataset. To ensure privacy, the add.bias argument in the \code{fit} and
+#'   \code{predict} methods should only be utilized in subclasses within this
+#'   package where appropriate preprocessing is implemented, not in this class.
+#'   Finally, if weights are provided, they should be nonnegative, of the same
+#'   length as y, and be upper bounded by a global or public bound which must
+#'   also be provided.
+#'
+#' @references \insertRef{chaudhuri2011}{DPpack}
+#'
+#'   \insertRef{Yang2005}{DPpack}
+#'
+#' @examples
+#' # Build train dataset X and y, and test dataset Xtest and ytest
+#' N <- 200
+#' K <- 2
+#' X <- data.frame()
+#' y <- data.frame()
+#' for (j in (1:K)){
+#'   t <- seq(-.25, .25, length.out = N)
+#'   if (j==1) m <- stats::rnorm(N,-.2, .1)
+#'   if (j==2) m <- stats::rnorm(N, .2, .1)
+#'   Xtemp <- data.frame(x1 = 3*t , x2 = m - t)
+#'   ytemp <- data.frame(matrix(j-1, N, 1))
+#'   X <- rbind(X, Xtemp)
+#'   y <- rbind(y, ytemp)
+#' }
+#' Xtest <- X[seq(1,(N*K),10),]
+#' ytest <- y[seq(1,(N*K),10),,drop=FALSE]
+#' X <- X[-seq(1,(N*K),10),]
+#' y <- y[-seq(1,(N*K),10),,drop=FALSE]
+#'
+#' # Construct object for weighted linear SVM
+#' mapXy <- function(X, coeff) X%*%coeff
+#' # Huber loss from DPpack
+#' huber.h <- 0.5
+#' loss <- generate.loss.huber(huber.h)
+#' regularizer <- 'l2' # Alternatively, function(coeff) coeff%*%coeff/2
+#' eps <- 1
+#' gamma <- 0.1
+#' perturbation.method <- 'output'
+#' c <- 1/(2*huber.h) # Required value for SVM
+#' mapXy.gr <- function(X, coeff) t(X)
+#' loss.gr <- generate.loss.gr.huber(huber.h)
+#' regularizer.gr <- function(coeff) coeff
+#' wermdp <- WeightedERMDP.CMS$new(mapXy, loss, regularizer, eps,
+#'                                 gamma, perturbation.method, c,
+#'                                 mapXy.gr, loss.gr,
+#'                                 regularizer.gr)
+#'
+#' # Fit with data
+#' # Bounds for X based on construction
+#' upper.bounds <- c( 1, 1)
+#' lower.bounds <- c(-1,-1)
+#' weights <- rep(1, nrow(y)) # Uniform weighting
+#' weights[nrow(y)] <- 0.5 # half weight for last observation
+#' wub <- 1 # Public upper bound for weights
+#' wermdp$fit(X, y, upper.bounds, lower.bounds, weights=weights,
+#'            weights.upper.bound=wub)
+#' wermdp$coeff # Gets private coefficients
+#'
+#' # Predict new data points
+#' predicted.y <- wermdp$predict(Xtest)
+#' n.errors <- sum(round(predicted.y)!=ytest)
+#'
+#' @keywords internal
+#'
+#' @export
+WeightedERMDP.CMS <- R6::R6Class("WeightedERMDP.CMS",
+  inherit=EmpiricalRiskMinimizationDP.CMS,
+  public=list(
+  #' @description Create a new \code{WeightedERMDP.CMS} object.
+  #' @param mapXy Map function of the form \code{mapXy(X, coeff)} mapping input
+  #'   data matrix \code{X} and coefficient vector or matrix \code{coeff} to
+  #'   output labels \code{y}. Should return a column matrix of predicted labels
+  #'   for each row of \code{X}. See \code{\link{mapXy.sigmoid}} for an example.
+  #' @param loss Loss function of the form \code{loss(y.hat, y, w)}, where
+  #'   \code{y.hat} and \code{y} are matrices and \code{w} is a matrix or vector
+  #'   of weights of the same length as \code{y}. Should be defined such that it
+  #'   returns a matrix of weighted loss values for each element of \code{y.hat}
+  #'   and \code{y}. If \code{w} is not given, the function should operate as if
+  #'   uniform weights were given. See \code{\link{generate.huber.loss}} for an
+  #'   example. It must be convex and differentiable, and the absolute value of
+  #'   the first derivative of the loss function must be at most 1.
+  #'   Additionally, if the objective perturbation method is chosen, it must be
+  #'   doubly differentiable and the absolute value of the second derivative of
+  #'   the loss function must be bounded above by a constant c for all possible
+  #'   values of \code{y.hat} and \code{y}.
+  #' @param regularizer String or regularization function. If a string, must be
+  #'   'l2', indicating to use l2 regularization. If a function, must have form
+  #'   \code{regularizer(coeff)}, where \code{coeff} is a vector or matrix, and
+  #'   return the value of the regularizer at \code{coeff}. See
+  #'   \code{\link{regularizer.l2}} for an example. Additionally, in order to
+  #'   ensure differential privacy, the function must be 1-strongly convex and
+  #'   differentiable. If the objective perturbation method is chosen, it must
+  #'   also be doubly differentiable.
+  #' @param eps Positive real number defining the epsilon privacy budget. If set
+  #'   to Inf, runs algorithm without differential privacy.
+  #' @param gamma Nonnegative real number representing the regularization
+  #'   constant.
+  #' @param perturbation.method String indicating whether to use the 'output' or
+  #'   the 'objective' perturbation methods \insertCite{chaudhuri2011}{DPpack}.
+  #'   Defaults to 'objective'. Currently, only the output perturbation method
+  #'   is supported.
+  #' @param c Positive real number denoting the upper bound on the absolute
+  #'   value of the second derivative of the loss function, as required to
+  #'   ensure differential privacy for the objective perturbation method. This
+  #'   input is unnecessary if perturbation.method is 'output', but is required
+  #'   if perturbation.method is 'objective'. Defaults to NULL.
+  #' @param mapXy.gr Optional function representing the gradient of the map
+  #'   function with respect to the values in \code{coeff}. If given, must be of
+  #'   the form \code{mapXy.gr(X, coeff)}, where \code{X} is a matrix and
+  #'   \code{coeff} is a matrix or numeric vector. Should be defined such that
+  #'   the ith row of the output represents the gradient with respect to the ith
+  #'   coefficient. See \code{\link{mapXy.gr.sigmoid}} for an example. If not
+  #'   given, non-gradient based optimization methods are used to compute the
+  #'   coefficient values in fitting the model.
+  #' @param loss.gr Optional function representing the gradient of the loss
+  #'   function with respect to \code{y.hat} and of the form
+  #'   \code{loss.gr(y.hat, y, w)}, where \code{y.hat} and \code{y} are matrices
+  #'   and \code{w} is a matrix or vector of weights. Should be defined such
+  #'   that the ith row of the output represents the gradient of the (possibly
+  #'   weighted) loss function at the ith set of input values. See
+  #'   \code{\link{generate.loss.gr.huber}} for an example. If not given,
+  #'   non-gradient based optimization methods are used to compute the
+  #'   coefficient values in fitting the model.
+  #' @param regularizer.gr Optional function representing the gradient of the
+  #'   regularization function with respect to \code{coeff} and of the form
+  #'   \code{regularizer.gr(coeff)}. Should return a vector. See
+  #'   \code{\link{regularizer.gr.l2}} for an example. If \code{regularizer} is
+  #'   given as a string, this value is ignored. If not given and
+  #'   \code{regularizer} is a function, non-gradient based optimization methods
+  #'   are used to compute the coefficient values in fitting the model.
+  #'
+  #' @return A new \code{WeightedERMDP.CMS} object.
+  initialize = function(mapXy, loss, regularizer, eps, gamma,
+                        perturbation.method = 'objective', c = NULL,
+                        mapXy.gr = NULL, loss.gr = NULL, regularizer.gr = NULL){
+    super$initialize(mapXy, loss, regularizer, eps, gamma, perturbation.method,
+                     c, mapXy.gr, loss.gr, regularizer.gr)
+  },
+  #' @description Fit the differentially private weighted empirical risk
+  #'   minimization model. This method runs either the output perturbation or
+  #'   the objective perturbation algorithm \insertCite{chaudhuri2011}{DPpack}
+  #'   (only output is currently implemented), depending on the value of
+  #'   perturbation.method used to construct the object, to generate an
+  #'   objective function. A numerical optimization method is then run to find
+  #'   optimal coefficients for fitting the model given the training data,
+  #'   weights, and hyperparameters. The built-in \code{\link{optim}} function
+  #'   using the "BFGS" optimization method is used. If \code{mapXy.gr},
+  #'   \code{loss.gr}, and \code{regularizer.gr} are all given in the
+  #'   construction of the object, the gradient of the objective function is
+  #'   utilized by \code{optim} as well. Otherwise, non-gradient based
+  #'   optimization methods are used. The resulting privacy-preserving
+  #'   coefficients are stored in \code{coeff}.
+  #' @param X Dataframe of data to be fit.
+  #' @param y Vector or matrix of true labels for each row of \code{X}.
+  #' @param upper.bounds Numeric vector of length \code{ncol(X)} giving upper
+  #'   bounds on the values in each column of X. The \code{ncol(X)} values are
+  #'   assumed to be in the same order as the corresponding columns of \code{X}.
+  #'   Any value in the columns of \code{X} larger than the corresponding upper
+  #'   bound is clipped at the bound.
+  #' @param lower.bounds Numeric vector of length \code{ncol(X)} giving lower
+  #'   bounds on the values in each column of \code{X}. The \code{ncol(X)}
+  #'   values are assumed to be in the same order as the corresponding columns
+  #'   of \code{X}. Any value in the columns of \code{X} larger than the
+  #'   corresponding upper bound is clipped at the bound.
+  #' @param add.bias Boolean indicating whether to add a bias term to \code{X}.
+  #'   Defaults to FALSE.
+  #' @param weights Numeric vector of observation weights of the same length as
+  #'   \code{y}.
+  #' @param weights.upper.bound Numeric value representing the global or public
+  #'   upper bound on the weights.
+  fit = function(X, y, upper.bounds, lower.bounds, add.bias=FALSE, weights=NULL,
+                 weights.upper.bound=NULL){
+    if (!is.null(weights) & self$perturbation.method!="output"){
+      stop(paste("Currently, weighting ERM samples only tested for SVM with output ",
+                 "perturbation and should not be used with objective perturbation."))
+    }
+    preprocess <- private$preprocess_data(X,y,upper.bounds,lower.bounds,
+                                          add.bias,weights,weights.upper.bound)
+    X <- preprocess$X
+    y <- preprocess$y
+    weights <- preprocess$weights
+    if (is.null(weights)) weights.upper.bound <- 1
+
+    n <- length(y)
+    d <- ncol(X)
+    if (!is.infinite(self$eps) & self$perturbation.method=='objective'){
+      eps.prime <- self$eps - log(1 + 2*self$c/(n*self$gamma) +
+                                    self$c^2/(n^2*self$gamma^2))
+      if (eps.prime > 0) {
+        Delta <- 0
+      }
+      else {
+        Delta <- self$c/(n*(exp(self$eps/4) - 1)) - self$gamma
+        eps.prime <- self$eps/2
+      }
+      beta <- eps.prime/2
+      norm.b <- rgamma(1, d, rate=beta)
+      direction.b <- stats::rnorm(d);
+      direction.b <- direction.b/sqrt(sum(direction.b^2))
+      b <- norm.b * direction.b
+    } else {
+      Delta <- 0
+      b <- numeric(d)
+    }
+
+    tmp.coeff <- private$optimize_coeff(X, y, Delta, b, weights)
+    if (self$perturbation.method=='output'){
+      beta <- n*self$gamma*self$eps/(2*weights.upper.bound)
+      norm.b <- rgamma(1, d, rate=beta)
+      direction.b <- stats::rnorm(d)
+      direction.b <- direction.b/sqrt(sum(direction.b^2))
+      b <- norm.b * direction.b
+      tmp.coeff <- tmp.coeff + b
+    }
+    self$coeff <- private$postprocess_coeff(tmp.coeff, preprocess)
+    invisible(self)
+  },
+  #' @description Predict label(s) for given \code{X} using the fitted
+  #'   coefficients.
+  #' @param X Dataframe of data on which to make predictions. Must be of same
+  #'   form as \code{X} used to fit coefficients.
+  #' @param add.bias Boolean indicating whether to add a bias term to \code{X}.
+  #'   Defaults to FALSE. If add.bias was set to TRUE when fitting the
+  #'   coefficients, add.bias should be set to TRUE for predictions.
+  #'
+  #' @return Matrix of predicted labels corresponding to each row of \code{X}.
+  predict = function(X, add.bias=FALSE){
+    super$predict(X, add.bias)
+  }
+), private=list(
+  # description Preprocess input data and bounds to ensure they meet the
+  #   assumptions necessary for fitting the model. If desired, a bias term can
+  #   also be added.
+  # param X Dataframe of data to be fit. Will be converted to a matrix.
+  # param y Vector or matrix of true labels for each row of X. Will be
+  #   converted to a matrix.
+  # param upper.bounds Numeric vector of length ncol(X) giving upper bounds on
+  #   the values in each column of X. The ncol(X) values are assumed to be in
+  #   the same order as the corresponding columns of X. Any value in the
+  #   columns of X larger than the corresponding upper bound is clipped at the
+  #   bound.
+  # param lower.bounds Numeric vector of length ncol(X) giving lower bounds on
+  #   the values in each column of X. The ncol(X) values are assumed to be in
+  #   the same order as the corresponding columns of X. Any value in the
+  #   columns of X larger than the corresponding upper bound is clipped at the
+  #   bound.
+  # param add.bias Boolean indicating whether to add a bias term to X.
+  # param weights Numeric vector of observation weights of the same length as
+  #   \code{y}.
+  # param weights.upper.bound Numeric value representing the global or public
+  #   upper bound on the weights.
+  # return A list of preprocessed values for X, y, upper.bounds, and
+  #   lower.bounds for use in the privacy-preserving empirical risk
+  #   minimization algorithm.
+  preprocess_data = function(X, y, upper.bounds, lower.bounds, add.bias,
+                             weights=NULL, weights.upper.bound=NULL){
+    res <- super$preprocess_data(X, y, upper.bounds, lower.bounds, add.bias)
+
+    # Handle weights
+    if (!is.null(weights)){
+      if (is.null(weights.upper.bound)){
+        stop("Upper bound on weights must be given if weights vector given.")
+      }
+      if (any(weights<0)) stop("Weights must be nonnegative.")
+
+      weights[weights>weights.upper.bound] <- weights.upper.bound
+    }
+    list(X=res$X, y=res$y, upper.bounds=res$upper.bounds,
+         lower.bounds=res$lower.bounds, weights=weights)
+  },
+  # description Postprocess coefficients obtained by fitting the model using
+  #   differential privacy to ensure they match original inputs X and y.
+  #   Effectively undoes the processing done in preprocess_data.
+  # param coeff Vector of coefficients obtained by fitting the model.
+  # param preprocess List of values returned by preprocess_data and used to
+  #   process coeff.
+  # return The processed coefficient vector.
+  postprocess_coeff = function(coeff, preprocess){
+    super$postprocess_coeff(coeff, preprocess)
+  },
+  # description Run numerical optimization method to find optimal coefficients
+  #   for fitting model given training data, observation weights, and
+  #   hyperparameters. This function builds the objective function based on the
+  #   training data and observation weights, and runs the built-in optim function
+  #   using the "BFGS" optimization method. If mapXy.gr, loss.gr, and
+  #   regularizer.gr are all given in the construction of the object, the gradient
+  #   of the objective function is utilized by optim as well. Otherwise,
+  #   non-gradient based methods are used.
+  # param X Matrix of data to be fit.
+  # param y Vector or matrix of true labels for each row of X.
+  # param Delta Nonnegative real number set by the differentially private
+  #   algorithm and required for constructing the objective function.
+  # param b Numeric perturbation vector randomly drawn by the differentially
+  #   private algorithm and required for constructing the objective function.
+  # param weights Numeric vector of observation weights of the same length as
+  #   \code{y}.
+  # return Vector of fitted coefficients.
+  optimize_coeff=function(X, y, Delta, b, weights){
+    n <- length(y)
+    d <- ncol(X)
+
+    # Get objective function
+    objective <- function(par, X, y, Delta, b, weights){
+      as.numeric(sum(self$loss(self$mapXy(X,par),y, weights))/n +
+                   self$gamma*self$regularizer(par)/n + t(b)%*%par/n +
+                   Delta*par%*%par/2)
+    }
+
+    # Get gradient function
+    if (!is.null(self$mapXy.gr) && !is.null(self$loss.gr) &&
+        !is.null(self$regularizer.gr)) {
+      objective.gr <- function(par, X, y, Delta, b, weights){
+        as.numeric(self$mapXy.gr(X,par)%*%
+                     self$loss.gr(self$mapXy(X,par), y, weights)/n +
+                     self$gamma*self$regularizer.gr(par)/n + b/n + Delta*par)
+      }
+    }
+    else objective.gr <- NULL
+
+    # Run optimization
+    coeff0 <- numeric(ncol(X))
+    opt.res <- optim(coeff0, fn=objective, gr=objective.gr, method="BFGS",
+                     X=X, y=y, Delta=Delta, b=b, weights=weights)
     opt.res$par
   }
 ))
@@ -973,7 +1346,7 @@ LogisticRegressionDP <- R6::R6Class("LogisticRegressionDP",
   #   lower.bounds for use in the privacy-preserving logistic regression
   #   algorithm.
   preprocess_data = function(X, y, upper.bounds, lower.bounds, add.bias){
-    res <- super$preprocess_data(X,y,upper.bounds,lower.bounds, add.bias)
+    res <- super$preprocess_data(X, y, upper.bounds, lower.bounds, add.bias)
     X <- res$X
     y <- res$y
     upper.bounds <- res$upper.bounds
@@ -1104,23 +1477,25 @@ phi.gaussian <- function(x, theta){
 #' Privacy-preserving Support Vector Machine
 #'
 #' @description This class implements differentially private support vector
-#'   machine (SVM) \insertCite{chaudhuri2011}{DPpack}. Either the output or the
-#'   objective perturbation method can be used.
+#'   machine (SVM) \insertCite{chaudhuri2011}{DPpack}. It can be either weighted
+#'   \insertCite{Yang2005}{DPpack} or unweighted. Either the output or the
+#'   objective perturbation method can be used for unweighted SVM, though only
+#'   the output perturbation method is currently supported for weighted SVM.
 #'
 #' @details To use this class for SVM, first use the \code{new} method to
 #'   construct an object of this class with the desired function values and
 #'   hyperparameters, including a choice of the desired kernel. After
-#'   constructing the object, the \code{fit} method can be applied with a
-#'   provided dataset and data bounds to fit the model. In fitting, the model
-#'   stores a vector of coefficients \code{coeff} which satisfy differential
-#'   privacy. Additionally, if a nonlinear kernel is chosen, the models stores a
-#'   mapping function from the input data X to a higher dimensional embedding V
-#'   in the form of a method \code{XtoV} as required
-#'   \insertCite{chaudhuri2011}{DPpack}. These can be released directly, or used
-#'   in conjunction with the \code{predict} method to privately predict the
-#'   label of new datapoints. Note that the mapping function \code{XtoV} is
-#'   based on an approximation method via Fourier transforms
-#'   \insertCite{Rahimi2007,Rahimi2008}{DPpack}.
+#'   constructing the object, the \code{fit} method can be applied to fit the
+#'   model with a provided dataset, data bounds, and optional observation
+#'   weights and weight upper bound. In fitting, the model stores a vector of
+#'   coefficients \code{coeff} which satisfy differential privacy. Additionally,
+#'   if a nonlinear kernel is chosen, the models stores a mapping function from
+#'   the input data X to a higher dimensional embedding V in the form of a
+#'   method \code{XtoV} as required \insertCite{chaudhuri2011}{DPpack}. These
+#'   can be released directly, or used in conjunction with the \code{predict}
+#'   method to privately predict the label of new datapoints. Note that the
+#'   mapping function \code{XtoV} is based on an approximation method via
+#'   Fourier transforms \insertCite{Rahimi2007,Rahimi2008}{DPpack}.
 #'
 #'   Note that in order to guarantee differential privacy for the SVM model,
 #'   certain constraints must be satisfied for the values used to construct the
@@ -1134,19 +1509,24 @@ phi.gaussian <- function(x, theta){
 #'   loss is determined by a user-specified constant, h, which defaults to 0.5,
 #'   a typical value. Additionally, the regularizer must be 1-strongly convex
 #'   and differentiable. It also must be doubly differentiable if objective
-#'   perturbation is chosen. Finally, it is assumed that if x represents a
-#'   single row of the dataset X, then the l2-norm of x is at most 1 for all x.
-#'   In order to ensure this constraint is satisfied, the dataset is
-#'   preprocessed and scaled, and the resulting coefficients are postprocessed
-#'   and un-scaled so that the stored coefficients correspond to the original
-#'   data. Due to this constraint on x, it is best to avoid using a bias term in
-#'   the model whenever possible. If a bias term must be used, the issue can be
-#'   partially circumvented by adding a constant column to X before fitting the
-#'   model, which will be scaled along with the rest of X. The \code{fit} method
-#'   contains functionality to add a column of constant 1s to X before scaling,
-#'   if desired.
+#'   perturbation is chosen. If weighted SVM is desired, the provided weights
+#'   must be nonnegative and bounded above by a global or public value, which
+#'   must also be provided.
+#'
+#'   Finally, it is assumed that if x represents a single row of the dataset X,
+#'   then the l2-norm of x is at most 1 for all x. In order to ensure this
+#'   constraint is satisfied, the dataset is preprocessed and scaled, and the
+#'   resulting coefficients are postprocessed and un-scaled so that the stored
+#'   coefficients correspond to the original data. Due to this constraint on x,
+#'   it is best to avoid using a bias term in the model whenever possible. If a
+#'   bias term must be used, the issue can be partially circumvented by adding a
+#'   constant column to X before fitting the model, which will be scaled along
+#'   with the rest of X. The \code{fit} method contains functionality to add a
+#'   column of constant 1s to X before scaling, if desired.
 #'
 #' @references \insertRef{chaudhuri2011}{DPpack}
+#'
+#'   \insertRef{Yang2005}{DPpack}
 #'
 #'   \insertRef{Chapelle2007}{DPpack}
 #'
@@ -1175,15 +1555,21 @@ phi.gaussian <- function(x, theta){
 #' regularizer <- 'l2' # Alternatively, function(coeff) coeff%*%coeff/2
 #' eps <- 1
 #' gamma <- 0.1
+#' perturbation.method <- 'output'
 #' kernel <- 'Gaussian'
 #' D <- 20
-#' svmdp <- svmDP$new(regularizer, eps, gamma, kernel=kernel, D=D)
+#' svmdp <- svmDP$new(regularizer, eps, gamma, perturbation.method,
+#'                    kernel=kernel, D=D)
 #'
 #' # Fit with data
 #' # Bounds for X based on construction
 #' upper.bounds <- c( 1, 1)
 #' lower.bounds <- c(-1,-1)
-#' svmdp$fit(X, y, upper.bounds, lower.bounds) # No bias term
+#' weights <- rep(1, nrow(y)) # Uniform weighting
+#' weights[nrow(y)] <- 0.5 # Half weight for last observation
+#' wub <- 1 # Public upper bound for weights
+#' svmdp$fit(X, y, upper.bounds, lower.bounds, weights=weights,
+#'           weights.upper.bound=wub) # No bias term
 #'
 #' # Predict new data points
 #' predicted.y <- svmdp$predict(Xtest)
@@ -1191,7 +1577,7 @@ phi.gaussian <- function(x, theta){
 #'
 #' @export
 svmDP <- R6::R6Class("svmDP",
-  inherit=EmpiricalRiskMinimizationDP.CMS,
+  inherit=WeightedERMDP.CMS,
   public=list(
   #' @description Create a new \code{svmDP} object.
   #' @param regularizer String or regularization function. If a string, must be
@@ -1252,11 +1638,11 @@ svmDP <- R6::R6Class("svmDP",
   #'   \insertCite{chaudhuri2011}{DPpack}, depending on the value of
   #'   perturbation.method used to construct the object, to generate an
   #'   objective function. A numerical optimization method is then run to find
-  #'   optimal coefficients for fitting the model given the training data and
-  #'   hyperparameters. The built-in \code{\link{optim}} function using the
-  #'   "BFGS" optimization method is used. If \code{regularizer} is given as
-  #'   'l2' or if \code{regularizer.gr} is given in the construction of the
-  #'   object, the gradient of the objective function is utilized by
+  #'   optimal coefficients for fitting the model given the training data,
+  #'   weights, and hyperparameters. The built-in \code{\link{optim}} function
+  #'   using the "BFGS" optimization method is used. If \code{regularizer} is
+  #'   given as 'l2' or if \code{regularizer.gr} is given in the construction of
+  #'   the object, the gradient of the objective function is utilized by
   #'   \code{optim} as well. Otherwise, non-gradient based optimization methods
   #'   are used. The resulting privacy-preserving coefficients are stored in
   #'   \code{coeff}.
@@ -1274,12 +1660,21 @@ svmDP <- R6::R6Class("svmDP",
   #'   corresponding upper bound is clipped at the bound.
   #' @param add.bias Boolean indicating whether to add a bias term to \code{X}.
   #'   Defaults to FALSE.
-  fit = function(X, y, upper.bounds, lower.bounds, add.bias=FALSE){
+  #' @param weights Numeric vector of observation weights of the same length as
+  #'   \code{y}. If not given, no observation weighting is performed.
+  #' @param weights.upper.bound Numeric value representing the global or public
+  #'   upper bound on the weights. Required if weights are given.
+  fit = function(X, y, upper.bounds, lower.bounds, add.bias=FALSE, weights=NULL,
+                 weights.upper.bound=NULL){
+    if (!is.null(weights) & self$perturbation.method!="output"){
+      stop("Weighted SVM is only implemented for output perturbation.")
+    }
     if (self$kernel=='Gaussian'){
       if (is.null(self$kernel.param)) self$kernel.param <- 1/ncol(X)
       self$sampling <- generate.sampling(self$kernel.param)
     }
-    super$fit(X,y,upper.bounds,lower.bounds,add.bias)
+    super$fit(X, y, upper.bounds, lower.bounds, add.bias, weights,
+              weights.upper.bound)
   },
   #' @description Convert input data X into transformed data V. Uses sampled
   #'   pre-filter values and a mapping function based on the chosen kernel to
@@ -1354,14 +1749,19 @@ svmDP <- R6::R6Class("svmDP",
   #   columns of X larger than the corresponding upper bound is clipped at the
   #   bound.
   # param add.bias Boolean indicating whether to add a bias term to X.
+  # param weights Numeric vector of observation weights of the same length as
+  #   \code{y}.
+  # param weights.upper.bound Numeric value representing the global or public
+  #   upper bound on the weights.
   # return A list of preprocessed values for X, y, upper.bounds, and
   #   lower.bounds for use in the privacy-preserving SVM algorithm.
-  preprocess_data = function(X, y, upper.bounds, lower.bounds, add.bias){
-    # Add bias if needed (highly recommended to not do this due to unwanted
-    #       regularization of bias term)
+  preprocess_data = function(X, y, upper.bounds, lower.bounds, add.bias,
+                             weights=NULL, weights.upper.bound=NULL){
     if (self$kernel!="linear"){
+      # Add bias if needed (highly recommended to not do this due to unwanted
+      #       regularization of bias term)
       if (add.bias){
-        X <- dplyr::mutate(X, bias =1)
+        X <- dplyr::mutate(X, bias=1)
         X <- X[, c(ncol(X), 1:(ncol(X)-1))]
         upper.bounds <- c(1,upper.bounds)
         lower.bounds <- c(1,lower.bounds)
@@ -1383,8 +1783,11 @@ svmDP <- R6::R6Class("svmDP",
 
       lbs <- c(numeric(ncol(V)) - sqrt(1/self$D))
       ubs <- c(numeric(ncol(V)) + sqrt(1/self$D))
-      res <- super$preprocess_data(V, y, ubs, lbs, add.bias=FALSE)
-    } else res <- super$preprocess_data(X,y,upper.bounds,lower.bounds, add.bias)
+      res <- super$preprocess_data(V, y, ubs, lbs, add.bias=FALSE,
+                                   weights=weights,
+                                   weights.upper.bound=weights.upper.bound)
+    } else res <- super$preprocess_data(X, y, upper.bounds, lower.bounds,
+                                        add.bias, weights, weights.upper.bound)
 
     X <- res$X
     y <- res$y
@@ -1406,7 +1809,7 @@ svmDP <- R6::R6Class("svmDP",
     # Convert to 1 and -1 for SVM algorithm
     y[y==0] <- -1
 
-    list(X=X.norm, y=y, scale1=scale1, scale2=scale2)
+    list(X=X.norm, y=y, scale1=scale1, scale2=scale2, weights=res$weights)
   },
   # description Postprocess coefficients obtained by fitting the model using
   #   differential privacy to ensure they match original inputs X and y.

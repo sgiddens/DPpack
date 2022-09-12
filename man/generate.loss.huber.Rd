@@ -26,6 +26,7 @@ privacy-preserving SVM at the specified value of h in the form required by
   y.hat <- c(-.5, 1.2, -0.9)
   y <- c(-1, 1, -1)
   huber(y.hat,y)
+  huber(y.hat, y, w=c(0.1, 0.5, 1)) # Weights observation-level loss
 
 }
 \keyword{internal}
