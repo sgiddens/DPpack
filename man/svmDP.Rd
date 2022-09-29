@@ -73,7 +73,7 @@ y <- y[-seq(1,N,10),,drop=FALSE]
 # Construct object for SVM
 regularizer <- 'l2' # Alternatively, function(coeff) coeff\%*\%coeff/2
 eps <- 1
-gamma <- 0.1
+gamma <- 1
 perturbation.method <- 'output'
 kernel <- 'Gaussian'
 D <- 20

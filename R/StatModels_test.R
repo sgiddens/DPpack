@@ -56,7 +56,7 @@ ggplot2::ggplot(data) + ggplot2::geom_point(ggplot2::aes(x=x1, y=x2, color = as.
 # eps <- 1
 
 ### DP, regularization
-gamma <- .01
+gamma <- 1
 eps <- 1
 
 pm <- 'objective'
@@ -184,7 +184,7 @@ ggplot2::ggplot(data) + ggplot2::geom_point(ggplot2::aes(x=x1, y=x2, color = as.
 # eps <- 1
 
 ### DP, regularization
-gamma <- .01
+gamma <- 1
 eps <- 1
 
 pm <- 'objective'
@@ -328,7 +328,7 @@ ggplot2::ggplot(data) + ggplot2::geom_point(ggplot2::aes(x=x1, y=x2, color = as.
 # eps <- 1
 
 ### DP, regularization
-gamma <- .01
+gamma <- 1
 eps <- 1
 
 pm <- 'objective'
@@ -439,7 +439,7 @@ ggplot2::ggplot(data) + ggplot2::geom_point(ggplot2::aes(x=x1, y=x2, color = as.
 
 # With DP
 eps <- 1
-gamma <- .01
+gamma <- 1
 D <- 5
 
 pm <- 'objective'
@@ -533,7 +533,7 @@ ggplot2::ggplot(data) + ggplot2::geom_point(ggplot2::aes(x=x1, y=x2, color = as.
   ggplot2::theme_bw(base_size = 12)
 
 eps <- 5
-gamma <- 0.01
+gamma <- 1
 D <- 20
 
 # pm <- 'objective'
@@ -643,7 +643,7 @@ set.seed(NULL)
 # eps <- 1
 
 ### DP, regularization
-gamma <- .01
+gamma <- 5
 eps <- 1
 
 # pm <- 'objective'
@@ -749,7 +749,7 @@ set.seed(NULL)
 # eps <- Inf
 
 ### No DP, regularization
-gamma <- .01
+gamma <- 1
 eps <- Inf
 
 ### DP, no regularization

@@ -434,7 +434,7 @@ tune_classification_model<- function(models, X, y, upper.bounds, lower.bounds,
 #' loss <- function(y.hat,y) -(y*log(y.hat) + (1-y)*log(1-y.hat))
 #' regularizer <- 'l2' # Alternatively, function(coeff) coeff%*%coeff/2
 #' eps <- 1
-#' gamma <- 0.1
+#' gamma <- 1
 #' perturbation.method <- 'objective'
 #' c <- 1/4 # Required value for logistic regression
 #' mapXy.gr <- function(X, coeff) as.numeric(e1071::dsigmoid(X%*%coeff))*t(X)
@@ -654,13 +654,18 @@ EmpiricalRiskMinimizationDP.CMS <- R6::R6Class("EmpiricalRiskMinimizationDP.CMS"
     n <- length(y)
     d <- ncol(X)
     if (!is.infinite(self$eps) & self$perturbation.method=='objective'){
-      eps.prime <- self$eps - log(1 + 2*self$c/(n*self$gamma) +
-                                    self$c^2/(n^2*self$gamma^2))
+      # eps.prime <- self$eps - log(1 + 2*self$c/(n*self$gamma) +
+      #                               self$c^2/(n^2*self$gamma^2))
+      # NOTE: Gamma from Chaudhuri's paper is gamma/n in this implementation
+      eps.prime <- self$eps - log(1 + 2*self$c/self$gamma +
+                                    self$c^2/self$gamma^2)
       if (eps.prime > 0) {
         Delta <- 0
       }
       else {
-        Delta <- self$c/(n*(exp(self$eps/4) - 1)) - self$gamma
+        # Delta <- self$c/(n*(exp(self$eps/4) - 1)) - self$gamma
+        # NOTE: Gamma from Chaudhuri's paper is gamma/n in this implementation
+        Delta <- self$c/(n*(exp(self$eps/4) - 1)) - self$gamma/n
         eps.prime <- self$eps/2
       }
       beta <- eps.prime/2
@@ -675,7 +680,9 @@ EmpiricalRiskMinimizationDP.CMS <- R6::R6Class("EmpiricalRiskMinimizationDP.CMS"
 
     tmp.coeff <- private$optimize_coeff(X, y, Delta, b)
     if (self$perturbation.method=='output'){
-      beta <- n*self$gamma*self$eps/2
+      # beta <- n*self$gamma*self$eps/2
+      # NOTE: Gamma from Chaudhuri's paper is gamma/n in this implementation
+      beta <- self$gamma*self$eps/2
       norm.b <- rgamma(1, d, rate=beta)
       direction.b <- stats::rnorm(d)
       direction.b <- direction.b/sqrt(sum(direction.b^2))
@@ -783,6 +790,7 @@ EmpiricalRiskMinimizationDP.CMS <- R6::R6Class("EmpiricalRiskMinimizationDP.CMS"
 
     # Get objective function
     objective <- function(par, X, y, Delta, b){
+      # NOTE: Gamma from Chaudhuri's paper is gamma/n in this implementation
       as.numeric(sum(self$loss(self$mapXy(X,par),y))/n +
                    self$gamma*self$regularizer(par)/n + t(b)%*%par/n +
                    Delta*par%*%par/2)
@@ -792,6 +800,7 @@ EmpiricalRiskMinimizationDP.CMS <- R6::R6Class("EmpiricalRiskMinimizationDP.CMS"
     if (!is.null(self$mapXy.gr) && !is.null(self$loss.gr) &&
         !is.null(self$regularizer.gr)) {
       objective.gr <- function(par, X, y, Delta, b){
+        # NOTE: Gamma from Chaudhuri's paper is gamma/n in this implementation
         as.numeric(self$mapXy.gr(X,par)%*%self$loss.gr(self$mapXy(X,par),y)/n +
                      self$gamma*self$regularizer.gr(par)/n + b/n + Delta*par)
       }
@@ -877,7 +886,7 @@ EmpiricalRiskMinimizationDP.CMS <- R6::R6Class("EmpiricalRiskMinimizationDP.CMS"
 #' loss <- generate.loss.huber(huber.h)
 #' regularizer <- 'l2' # Alternatively, function(coeff) coeff%*%coeff/2
 #' eps <- 1
-#' gamma <- 0.1
+#' gamma <- 1
 #' perturbation.method <- 'output'
 #' c <- 1/(2*huber.h) # Required value for SVM
 #' mapXy.gr <- function(X, coeff) t(X)
@@ -1027,13 +1036,18 @@ WeightedERMDP.CMS <- R6::R6Class("WeightedERMDP.CMS",
     n <- length(y)
     d <- ncol(X)
     if (!is.infinite(self$eps) & self$perturbation.method=='objective'){
-      eps.prime <- self$eps - log(1 + 2*self$c/(n*self$gamma) +
-                                    self$c^2/(n^2*self$gamma^2))
+      # eps.prime <- self$eps - log(1 + 2*self$c/(n*self$gamma) +
+      #                               self$c^2/(n^2*self$gamma^2))
+      # NOTE: Gamma from Chaudhuri's paper is gamma/n in this implementation
+      eps.prime <- self$eps - log(1 + 2*self$c/self$gamma +
+                                    self$c^2/self$gamma^2)
       if (eps.prime > 0) {
         Delta <- 0
       }
       else {
-        Delta <- self$c/(n*(exp(self$eps/4) - 1)) - self$gamma
+        # Delta <- self$c/(n*(exp(self$eps/4) - 1)) - self$gamma
+        # NOTE: Gamma from Chaudhuri's paper is gamma/n in this implementation
+        Delta <- self$c/(n*(exp(self$eps/4) - 1)) - self$gamma/n
         eps.prime <- self$eps/2
       }
       beta <- eps.prime/2
@@ -1048,7 +1062,9 @@ WeightedERMDP.CMS <- R6::R6Class("WeightedERMDP.CMS",
 
     tmp.coeff <- private$optimize_coeff(X, y, Delta, b, weights)
     if (self$perturbation.method=='output'){
-      beta <- n*self$gamma*self$eps/(2*weights.upper.bound)
+      # beta <- n*self$gamma*self$eps/(2*weights.upper.bound)
+      # NOTE: Gamma from Chaudhuri's paper is gamma/n in this implementation
+      beta <- self$gamma*self$eps/(2*weights.upper.bound)
       norm.b <- rgamma(1, d, rate=beta)
       direction.b <- stats::rnorm(d)
       direction.b <- direction.b/sqrt(sum(direction.b^2))
@@ -1144,6 +1160,7 @@ WeightedERMDP.CMS <- R6::R6Class("WeightedERMDP.CMS",
 
     # Get objective function
     objective <- function(par, X, y, Delta, b, weights){
+      # NOTE: Gamma from Chaudhuri's paper is gamma/n in this implementation
       as.numeric(sum(self$loss(self$mapXy(X,par),y, weights))/n +
                    self$gamma*self$regularizer(par)/n + t(b)%*%par/n +
                    Delta*par%*%par/2)
@@ -1152,6 +1169,7 @@ WeightedERMDP.CMS <- R6::R6Class("WeightedERMDP.CMS",
     # Get gradient function
     if (!is.null(self$mapXy.gr) && !is.null(self$loss.gr) &&
         !is.null(self$regularizer.gr)) {
+      # NOTE: Gamma from Chaudhuri's paper is gamma/n in this implementation
       objective.gr <- function(par, X, y, Delta, b, weights){
         as.numeric(self$mapXy.gr(X,par)%*%
                      self$loss.gr(self$mapXy(X,par), y, weights)/n +
@@ -1227,7 +1245,7 @@ WeightedERMDP.CMS <- R6::R6Class("WeightedERMDP.CMS",
 #' # Construct object for logistic regression
 #' regularizer <- 'l2' # Alternatively, function(coeff) coeff%*%coeff/2
 #' eps <- 1
-#' gamma <- 0.1
+#' gamma <- 1
 #' lrdp <- LogisticRegressionDP$new(regularizer, eps, gamma)
 #'
 #' # Fit with data
@@ -1397,6 +1415,7 @@ LogisticRegressionDP <- R6::R6Class("LogisticRegressionDP",
 
     # Get objective function
     objective <- function(par, X, y, gamma, Delta, b){
+      # NOTE: Gamma from Chaudhuri's paper is gamma/n in this implementation
       as.numeric(sum(self$loss(self$mapXy(X,par),y))/n +
                    gamma*self$regularizer(par)/n + t(b)%*%par/n +
                    Delta*par%*%par/2)
@@ -1405,6 +1424,7 @@ LogisticRegressionDP <- R6::R6Class("LogisticRegressionDP",
     # Get gradient function
     if (!is.null(self$mapXy.gr) && !is.null(self$loss.gr) &&
         !is.null(self$regularizer.gr)) {
+      # NOTE: Gamma from Chaudhuri's paper is gamma/n in this implementation
       objective.gr <- function(par, X, y, gamma, Delta, b){
         as.numeric(t(X)%*%(self$mapXy(X, par)-y)/n +
                      gamma*self$regularizer.gr(par)/n + b/n + Delta*par)
@@ -1554,7 +1574,7 @@ phi.gaussian <- function(x, theta){
 #' # Construct object for SVM
 #' regularizer <- 'l2' # Alternatively, function(coeff) coeff%*%coeff/2
 #' eps <- 1
-#' gamma <- 0.1
+#' gamma <- 1
 #' perturbation.method <- 'output'
 #' kernel <- 'Gaussian'
 #' D <- 20

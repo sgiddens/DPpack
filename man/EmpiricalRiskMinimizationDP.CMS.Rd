@@ -67,7 +67,7 @@ mapXy <- function(X, coeff) e1071::sigmoid(X\%*\%coeff)
 loss <- function(y.hat,y) -(y*log(y.hat) + (1-y)*log(1-y.hat))
 regularizer <- 'l2' # Alternatively, function(coeff) coeff\%*\%coeff/2
 eps <- 1
-gamma <- 0.1
+gamma <- 1
 perturbation.method <- 'objective'
 c <- 1/4 # Required value for logistic regression
 mapXy.gr <- function(X, coeff) as.numeric(e1071::dsigmoid(X\%*\%coeff))*t(X)

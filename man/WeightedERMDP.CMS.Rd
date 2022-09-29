@@ -70,7 +70,7 @@ huber.h <- 0.5
 loss <- generate.loss.huber(huber.h)
 regularizer <- 'l2' # Alternatively, function(coeff) coeff\%*\%coeff/2
 eps <- 1
-gamma <- 0.1
+gamma <- 1
 perturbation.method <- 'output'
 c <- 1/(2*huber.h) # Required value for SVM
 mapXy.gr <- function(X, coeff) t(X)
