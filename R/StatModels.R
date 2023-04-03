@@ -815,7 +815,7 @@ EmpiricalRiskMinimizationDP.CMS <- R6::R6Class("EmpiricalRiskMinimizationDP.CMS"
   }
 ))
 
-#' Privacy-preserving Weighted Expected Risk Minimization
+#' Privacy-preserving Weighted Empirical Risk Minimization
 #'
 #' @description This class implements differentially private empirical risk
 #'   minimization in the case where weighted observation-level losses are
@@ -1120,6 +1120,7 @@ WeightedERMDP.CMS <- R6::R6Class("WeightedERMDP.CMS",
       if (is.null(weights.upper.bound)){
         stop("Upper bound on weights must be given if weights vector given.")
       }
+
       if (any(weights<0)) stop("Weights must be nonnegative.")
 
       weights[weights>weights.upper.bound] <- weights.upper.bound
