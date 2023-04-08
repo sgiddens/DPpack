@@ -10,7 +10,9 @@ tune_classification_model(
   y,
   upper.bounds,
   lower.bounds,
-  add.bias = FALSE
+  add.bias = FALSE,
+  weights = NULL,
+  weights.upper.bound = NULL
 )
 }
 \arguments{
@@ -37,6 +39,12 @@ of X smaller than the corresponding lower bound is clipped at the bound.}
 
 \item{add.bias}{Boolean indicating whether to add a bias term to X. Defaults
 to FALSE.}
+
+\item{weights}{Numeric vector of observation weights of the same length as
+\code{y}.}
+
+\item{weights.upper.bound}{Numeric value representing the global or public
+upper bound on the weights.}
 }
 \value{
 Single model object selected from the input list models with tuned
@@ -76,21 +84,26 @@ ytest <- y[seq(1,(N*K),10),,drop=FALSE]
 X <- X[-seq(1,(N*K),10),]
 y <- y[-seq(1,(N*K),10),,drop=FALSE]
 y <- as.matrix(y)
+weights <- rep(1, nrow(y)) # Uniform weighting
+weights[nrow(y)] <- 0.5 # half weight for last observation
+wub <- 1 # Public upper bound for weights
 
 # Grid of possible gamma values for tuning logistic regression model
 grid.search <- c(100, 1, .0001)
 
-# Construct objects for logistic regression parameter tuning
+# Construct objects for SVM parameter tuning
 eps <- 1 # Privacy budget should be the same for all models
-lrdp1 <- LogisticRegressionDP$new("l2", eps, grid.search[1])
-lrdp2 <- LogisticRegressionDP$new("l2", eps, grid.search[2])
-lrdp3 <- LogisticRegressionDP$new("l2", eps, grid.search[3])
-models <- c(lrdp1, lrdp2, lrdp3)
+svmdp1 <- svmDP$new("l2", eps, grid.search[1], perturbation.method='output')
+svmdp2 <- svmDP$new("l2", eps, grid.search[2], perturbation.method='output')
+svmdp3 <- svmDP$new("l2", eps, grid.search[3], perturbation.method='output')
+models <- c(svmdp1, svmdp2, svmdp3)
 
 # Tune using data and bounds for X based on its construction
 upper.bounds <- c( 1, 1)
 lower.bounds <- c(-1,-1)
-tuned.model <- tune_classification_model(models, X, y, upper.bounds, lower.bounds)
+tuned.model <- tune_classification_model(models, X, y, upper.bounds,
+                                         lower.bounds, weights=weights,
+                                         weights.upper.bound=wub)
 tuned.model$gamma # Gives resulting selected hyperparameter
 
 # tuned.model result can be used the same as a trained LogisticRegressionDP model

@@ -1,7 +1,7 @@
 Package: DPpack
 Type: Package
 Title: Differentially Private Statistical Analysis and Machine Learning
-Version: 0.0.11
+Version: 0.1.0
 Author: Spencer Giddens <giddens2spencer@gmail.com> with contributions from Fang 
     Liu <fliu2@nd.edu>
 Maintainer: Spencer Giddens <giddens2spencer@gmail.com>

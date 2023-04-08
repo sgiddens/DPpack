@@ -818,6 +818,11 @@ data <- cbind(X,y)
 y <- as.matrix(data[,3])
 colnames(data) <- c(colnames(X), 'label')
 
+# With weights
+weights <- rep(1,length(y))
+weights[1:floor(length(y)/2)] <- 0.5
+wub <- 1
+
 # To verify in unit circle
 # circleFun <- function(center = c(0,0),diameter = 1, npoints = 100){
 #   r = diameter / 2
@@ -828,7 +833,8 @@ colnames(data) <- c(colnames(X), 'label')
 # }
 # cir <- circleFun(c(0,0),2,npoints = 100)
 
-ggplot2::ggplot(data) + ggplot2::geom_point(ggplot2::aes(x=x1, y=x2, color = as.character(label)), size = 2) +
+ggplot2::ggplot(data) +
+  ggplot2::geom_point(ggplot2::aes(x=x1, y=x2, color = as.character(label)), size = 2) +
   ggplot2::scale_colour_discrete(name  ="Label") +
   ggplot2::coord_fixed(ratio = 1) +
   ggplot2::theme_bw(base_size = 12) +
@@ -836,12 +842,17 @@ ggplot2::ggplot(data) + ggplot2::geom_point(ggplot2::aes(x=x1, y=x2, color = as.
 
 eps <- 1
 
-lrdp1 <- LogisticRegressionDP$new("l2", eps, 100)
-lrdp2 <- LogisticRegressionDP$new("l2", eps, 1)
-lrdp3 <- LogisticRegressionDP$new("l2", eps, .0001)
+# lrdp1 <- LogisticRegressionDP$new("l2", eps, 100)
+# lrdp2 <- LogisticRegressionDP$new("l2", eps, 1)
+# lrdp3 <- LogisticRegressionDP$new("l2", eps, .0001)
 
-models <- c(lrdp1, lrdp2, lrdp3)
-model <- tune_classification_model(models, X, y, upper.bounds, lower.bounds)
+svmdp1 <- svmDP$new("l2", eps, 100, perturbation.method='output')
+svmdp2 <- svmDP$new("l2", eps, 1, perturbation.method='output')
+svmdp3 <- svmDP$new("l2", eps, .0001, perturbation.method='output')
+
+models <- c(svmdp1, svmdp2, svmdp3)
+model <- tune_classification_model(models, X, y, upper.bounds, lower.bounds,
+                                   weights=weights, weights.upper.bound=wub)
 theta <- model$coeff
 
 # Grid

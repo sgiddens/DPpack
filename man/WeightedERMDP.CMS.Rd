@@ -2,7 +2,7 @@
 % Please edit documentation in R/StatModels.R
 \name{WeightedERMDP.CMS}
 \alias{WeightedERMDP.CMS}
-\title{Privacy-preserving Weighted Expected Risk Minimization}
+\title{Privacy-preserving Weighted Empirical Risk Minimization}
 \description{
 This class implements differentially private empirical risk
 minimization in the case where weighted observation-level losses are
@@ -148,7 +148,7 @@ for each row of \code{X}. See \code{\link{mapXy.sigmoid}} for an example.}
 of weights of the same length as \code{y}. Should be defined such that it
 returns a matrix of weighted loss values for each element of \code{y.hat}
 and \code{y}. If \code{w} is not given, the function should operate as if
-uniform weights were given. See \code{\link{generate.huber.loss}} for an
+uniform weights were given. See \code{\link{generate.loss.huber}} for an
 example. It must be convex and differentiable, and the absolute value of
 the first derivative of the loss function must be at most 1.
 Additionally, if the objective perturbation method is chosen, it must be

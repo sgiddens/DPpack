@@ -301,6 +301,10 @@ regularizer.gr.l2 <- function(coeff) coeff
 #'   of X smaller than the corresponding lower bound is clipped at the bound.
 #' @param add.bias Boolean indicating whether to add a bias term to X. Defaults
 #'   to FALSE.
+#' @param weights Numeric vector of observation weights of the same length as
+#'   \code{y}.
+#' @param weights.upper.bound Numeric value representing the global or public
+#'   upper bound on the weights.
 #' @return Single model object selected from the input list models with tuned
 #'   parameters.
 #' @examples
@@ -323,21 +327,26 @@ regularizer.gr.l2 <- function(coeff) coeff
 #' X <- X[-seq(1,(N*K),10),]
 #' y <- y[-seq(1,(N*K),10),,drop=FALSE]
 #' y <- as.matrix(y)
+#' weights <- rep(1, nrow(y)) # Uniform weighting
+#' weights[nrow(y)] <- 0.5 # half weight for last observation
+#' wub <- 1 # Public upper bound for weights
 #'
 #' # Grid of possible gamma values for tuning logistic regression model
 #' grid.search <- c(100, 1, .0001)
 #'
-#' # Construct objects for logistic regression parameter tuning
+#' # Construct objects for SVM parameter tuning
 #' eps <- 1 # Privacy budget should be the same for all models
-#' lrdp1 <- LogisticRegressionDP$new("l2", eps, grid.search[1])
-#' lrdp2 <- LogisticRegressionDP$new("l2", eps, grid.search[2])
-#' lrdp3 <- LogisticRegressionDP$new("l2", eps, grid.search[3])
-#' models <- c(lrdp1, lrdp2, lrdp3)
+#' svmdp1 <- svmDP$new("l2", eps, grid.search[1], perturbation.method='output')
+#' svmdp2 <- svmDP$new("l2", eps, grid.search[2], perturbation.method='output')
+#' svmdp3 <- svmDP$new("l2", eps, grid.search[3], perturbation.method='output')
+#' models <- c(svmdp1, svmdp2, svmdp3)
 #'
 #' # Tune using data and bounds for X based on its construction
 #' upper.bounds <- c( 1, 1)
 #' lower.bounds <- c(-1,-1)
-#' tuned.model <- tune_classification_model(models, X, y, upper.bounds, lower.bounds)
+#' tuned.model <- tune_classification_model(models, X, y, upper.bounds,
+#'                                          lower.bounds, weights=weights,
+#'                                          weights.upper.bound=wub)
 #' tuned.model$gamma # Gives resulting selected hyperparameter
 #'
 #' # tuned.model result can be used the same as a trained LogisticRegressionDP model
@@ -349,7 +358,7 @@ regularizer.gr.l2 <- function(coeff) coeff
 #'
 #' @export
 tune_classification_model<- function(models, X, y, upper.bounds, lower.bounds,
-                      add.bias=FALSE){
+                      add.bias=FALSE, weights=NULL, weights.upper.bound=NULL){
   # Make sure values are correct
   m <- length(models)
   n <- length(y)
@@ -360,7 +369,13 @@ tune_classification_model<- function(models, X, y, upper.bounds, lower.bounds,
   for (i in 1:m){
     subX <- X[seq(i,n,m+1),,drop=FALSE]
     suby <- y[seq(i,n,m+1)]
-    models[[i]]$fit(subX,suby,upper.bounds,lower.bounds,add.bias)
+    if (!is.null(weights)) subWeights <- weights[seq(i,n,m+1)]
+    if (is.null(weights)){
+      models[[i]]$fit(subX,suby,upper.bounds,lower.bounds,add.bias)
+    } else{
+      models[[i]]$fit(subX,suby,upper.bounds,lower.bounds,add.bias,
+                      weights=subWeights, weights.upper.bound=weights.upper.bound)
+    }
     validatey.hat <- models[[i]]$predict(validateX,add.bias,raw.value=FALSE)
     z[i] <- sum(validatey!=validatey.hat)
   }
@@ -726,6 +741,11 @@ EmpiricalRiskMinimizationDP.CMS <- R6::R6Class("EmpiricalRiskMinimizationDP.CMS"
   #   columns of X larger than the corresponding upper bound is clipped at the
   #   bound.
   # param add.bias Boolean indicating whether to add a bias term to X.
+  # param weights Numeric vector of observation weights of the same length as
+  #   \code{y}.
+  # param weights.upper.bound Numeric value representing the global or public
+  #   upper bound on the weights.
+  #
   # return A list of preprocessed values for X, y, upper.bounds, and
   #   lower.bounds for use in the privacy-preserving empirical risk
   #   minimization algorithm.
@@ -928,7 +948,7 @@ WeightedERMDP.CMS <- R6::R6Class("WeightedERMDP.CMS",
   #'   of weights of the same length as \code{y}. Should be defined such that it
   #'   returns a matrix of weighted loss values for each element of \code{y.hat}
   #'   and \code{y}. If \code{w} is not given, the function should operate as if
-  #'   uniform weights were given. See \code{\link{generate.huber.loss}} for an
+  #'   uniform weights were given. See \code{\link{generate.loss.huber}} for an
   #'   example. It must be convex and differentiable, and the absolute value of
   #'   the first derivative of the loss function must be at most 1.
   #'   Additionally, if the objective perturbation method is chosen, it must be
