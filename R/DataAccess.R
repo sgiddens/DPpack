@@ -116,8 +116,8 @@ covDataAccess <- function (x1, x2, lower.bound1, upper.bound1,
 #'   \code{\link[graphics]{hist}}.
 #' @param mechanism String indicating which mechanism to use for differential
 #'   privacy. If the 'Laplace' mechanism is chosen, l1 sensitivities are
-#'   returned. If the 'Gaussian' mechanism is chosen, l2 sensitivities are
-#'   returned.
+#'   returned. If the 'Gaussian' or 'analytic' mechanisms are chosen, l2
+#'   sensitivities are returned.
 #' @return List of the true histogram and the sensitivities calculated based on
 #'   bounded and unbounded differential privacy.
 #' @examples
@@ -136,7 +136,7 @@ histogramDataAccess <- function (x, breaks, mechanism){
   if (mechanism=='Laplace'){
     bs <- 2
     us <- 1
-  } else if (mechanism=='Gaussian'){
+  } else if (mechanism=='Gaussian' | mechanism=='analytic'){
     bs <- sqrt(2)
     us <- 1
   }
@@ -155,8 +155,8 @@ histogramDataAccess <- function (x, breaks, mechanism){
 #' @param ... Vectors of data from which to create the contingency table.
 #' @param mechanism String indicating which mechanism to use for differential
 #'   privacy. If the 'Laplace' mechanism is chosen, l1 sensitivities are
-#'   returned. If the 'Gaussian' mechanism is chosen, l2 sensitivities are
-#'   returned.
+#'   returned. If the 'Gaussian' or 'analytic' mechanisms are chosen, l2
+#'   sensitivities are returned.
 #' @return List of the true contingency table and the sensitivities calculated
 #'   based on bounded and unbounded differential privacy.
 #' @examples
@@ -166,7 +166,7 @@ histogramDataAccess <- function (x, breaks, mechanism){
 #'
 #' @references \insertRef{Liu2019b}{DPpack}
 #'
-#' \insertRef{Kifer2011}{DPpack}
+#'   \insertRef{Kifer2011}{DPpack}
 #'
 #' @keywords internal
 #'
@@ -176,7 +176,7 @@ tableDataAccess <- function(..., mechanism='Laplace'){
   if (mechanism=='Laplace'){
     bs <- 2
     us <- 1
-  } else if (mechanism=='Gaussian'){
+  } else if (mechanism=='Gaussian' | mechanism=='analytic'){
     bs <- sqrt(2)
     us <- 1
   }

@@ -11,8 +11,8 @@ tableDataAccess(..., mechanism = "Laplace")
 
 \item{mechanism}{String indicating which mechanism to use for differential
 privacy. If the 'Laplace' mechanism is chosen, l1 sensitivities are
-returned. If the 'Gaussian' mechanism is chosen, l2 sensitivities are
-returned.}
+returned. If the 'Gaussian' or 'analytic' mechanisms are chosen, l2
+sensitivities are returned.}
 }
 \value{
 List of the true contingency table and the sensitivities calculated

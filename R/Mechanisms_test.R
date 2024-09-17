@@ -409,6 +409,204 @@ test_Gaussian <- function(){
   ### END TEST FUNCTIONALITY ###
 }
 
+test_analytic_Gaussian <- function(){
+  ### Test input ###
+  print("         No input:")
+  a = tryCatch(AnalyticGaussianMechanism(),error=function(e) print(paste("PASS --",e)));
+  if (!is.character(a)) print("FAIL");
+  print("")
+
+  print("         Bad true.values:");
+  a = tryCatch(AnalyticGaussianMechanism('a',1,1,1),
+               error=function(e) print(paste("PASS --",e)));
+  if (!is.character(a)) print("FAIL");
+  print("")
+
+  print("         Bad eps:")
+  a = tryCatch(AnalyticGaussianMechanism(0,'a',1,1),
+               error=function(e) print(paste("PASS --",e)));
+  if (!is.character(a)) print("FAIL");
+  a = tryCatch(AnalyticGaussianMechanism(0,-1,1,1),
+               error=function(e) print(paste("PASS --",e)));
+  if (!is.character(a)) print("FAIL");
+  a = tryCatch(AnalyticGaussianMechanism(0,0,1,1),
+               error=function(e) print(paste("PASS --",e)));
+  if (!is.character(a)) print("FAIL");
+  print("")
+
+  print("         Bad delta:")
+  a = tryCatch(AnalyticGaussianMechanism(0,1,'a',1),
+               error=function(e) print(paste("PASS --",e)));
+  if (!is.character(a)) print("FAIL");
+  a = tryCatch(AnalyticGaussianMechanism(0,1,-1,1),
+               error=function(e) print(paste("PASS --",e)));
+  if (!is.character(a)) print("FAIL");
+  a = tryCatch(AnalyticGaussianMechanism(0,1,0,1),
+               error=function(e) print(paste("PASS --",e)));
+  if (!is.character(a)) print("FAIL");
+  print("")
+
+  print("         Bad sensitivities:")
+  a = tryCatch(AnalyticGaussianMechanism(0,1,1),
+               error=function(e) print(paste("PASS --",e)));
+  if (!is.character(a)) print("FAIL");
+  a = tryCatch(AnalyticGaussianMechanism(0,1,1,c(1,2)),
+               error=function(e) print(paste("PASS --",e)));
+  if (!is.character(a)) print("FAIL");
+  a = tryCatch(AnalyticGaussianMechanism(0,1,1,-1),
+               error=function(e) print(paste("PASS --",e)));
+  if (!is.character(a)) print("FAIL");
+  print("")
+
+  print("         Bad alloc.proportions:")
+  a = tryCatch(AnalyticGaussianMechanism(0,1,1,1,alloc.proportions='a'),
+               error=function(e) print(paste("PASS --",e)));
+  if (!is.character(a)) print("FAIL");
+  a = tryCatch(AnalyticGaussianMechanism(0,1,1,1,alloc.proportions=-1),
+               error=function(e) print(paste("PASS --",e)));
+  if (!is.character(a)) print("FAIL");
+  a = tryCatch(AnalyticGaussianMechanism(c(0,1),1,1,1,alloc.proportions=c(1,2,3)),
+               error=function(e) print(paste("PASS --",e)));
+  if (!is.character(a)) print("FAIL");
+  print("")
+  ### END TEST INPUT ###
+
+  ### TEST FUNCTIONALITY ###
+  print("         Simple example:");
+  tv = 0;
+  eps = .5;
+  delta = .01;
+  sens = 1;
+  ap = NULL;
+  th.s = calibrateAnalyticGaussianMechanism(eps, delta, sens)
+  n = 10000;
+  data = numeric(n);
+  for (i in 1:n){
+    data[i] = AnalyticGaussianMechanism(tv,eps,delta,sens,ap);
+  }
+  graphics::hist(data,freq=FALSE,main="Simple example");
+  x = seq(tv-5*th.s, tv+5*th.s,.1);
+  graphics::lines(x,stats::dnorm(x,m=tv,sd=th.s));
+  print("Verify line matches histogram...")
+  Sys.sleep(2)
+
+  print("         Changing true.values:");
+  tv = 5;
+  eps = .5;
+  delta = .01
+  sens = 1;
+  ap = NULL;
+  th.s = calibrateAnalyticGaussianMechanism(eps, delta, sens)
+  n = 10000;
+  data = numeric(n);
+  for (i in 1:n){
+    data[i] = AnalyticGaussianMechanism(tv,eps,delta,sens,ap);
+  }
+  graphics::hist(data,freq=FALSE,main="Changing true.values");
+  x = seq(tv-5*th.s, tv+5*th.s,.1);
+  graphics::lines(x,stats::dnorm(x,m=tv,sd=th.s));
+  print("Verify line matches histogram...")
+  Sys.sleep(2)
+
+  print("         Changing true.values/epsilon:");
+  tv = -5;
+  eps = 2;
+  delta = .01
+  sens = 1;
+  ap = NULL;
+  th.s = calibrateAnalyticGaussianMechanism(eps, delta, sens)
+  n = 10000;
+  data = numeric(n);
+  for (i in 1:n){
+    data[i] = AnalyticGaussianMechanism(tv,eps,delta,sens,ap);
+  }
+  graphics::hist(data,freq=FALSE,main="Changing true.values/epsilon");
+  x = seq(tv-5*th.s, tv+5*th.s,.1);
+  graphics::lines(x,stats::dnorm(x,m=tv,sd=th.s));
+  print("Verify line matches histogram...")
+  Sys.sleep(2)
+
+  print("         Changing delta/sensitivities:");
+  tv = -5;
+  eps = .5;
+  delta = .1
+  sens = 3;
+  ap = NULL;
+  th.s = calibrateAnalyticGaussianMechanism(eps, delta, sens)
+  n = 10000;
+  data = numeric(n);
+  for (i in 1:n){
+    data[i] = AnalyticGaussianMechanism(tv,eps,delta,sens,ap);
+  }
+  graphics::hist(data,freq=FALSE,main="Changing delta/sensitivities");
+  x = seq(tv-5*th.s, tv+5*th.s,.1);
+  graphics::lines(x,stats::dnorm(x,m=tv,sd=th.s));
+  print("Verify line matches histogram...")
+  Sys.sleep(2)
+
+  print("         Using multiple:");
+  tv = c(-5,0,10);
+  eps = .5
+  delta = .01
+  sens = c(.5,1,2);
+  ap = NULL;
+  n = 10000;
+  data = matrix(NaN,nrow=n,ncol=length(tv));
+  for (i in 1:n){
+    data[i,] = AnalyticGaussianMechanism(tv,eps,delta,sens,ap);
+  }
+  th.s = calibrateAnalyticGaussianMechanism(eps, delta, sqrt(sum(sens^2)))
+  for (j in 1:length(tv)){
+    graphics::hist(data[,j],freq=FALSE,main=paste("Using multiple:",j));
+    x = seq(tv[j]-5*th.s, tv[j]+5*th.s,.1);
+    graphics::lines(x,stats::dnorm(x,m=tv[j],sd=th.s));
+    print("Verify line matches histogram...")
+    Sys.sleep(2)
+  }
+
+  print("         Single sensitivity for multiple values:")
+  tv = c(-5,0)
+  eps = .5;
+  delta = .01
+  sens = 1
+  ap = NULL
+  n = 10000
+  data = matrix(NaN,nrow=n,ncol=length(tv))
+  for (i in 1:n){
+    data[i,] = AnalyticGaussianMechanism(tv,eps,delta,sens,ap)
+  }
+  th.s = calibrateAnalyticGaussianMechanism(eps, delta, sens)
+  for (j in 1:length(tv)){
+    graphics::hist(data[,j],freq=FALSE,main=paste("Single sensitivity:",j));
+    x = seq(tv[j]-5*th.s, tv[j]+5*th.s,.1);
+    graphics::lines(x,stats::dnorm(x,m=tv[j],sd=th.s));
+    print("Verify line matches histogram...")
+    Sys.sleep(2)
+  }
+
+  print("         Using allocation:");
+  tv = c(-5,0);
+  eps = .5;
+  delta = .01
+  sens = c(.5,1);
+  ap = c(1,9);
+  n = 10000;
+  data = matrix(NaN,nrow=n,ncol=length(tv));
+  for (i in 1:n){
+    data[i,] = AnalyticGaussianMechanism(tv,eps,delta,sens,ap);
+  }
+  ap = ap/sum(ap);
+  for (j in 1:length(tv)){
+    th.s = calibrateAnalyticGaussianMechanism(ap[j]*eps, ap[j]*delta, sens[j])
+    graphics::hist(data[,j],freq=FALSE,main=paste("Using allocation:",j));
+    x = seq(tv[j]-5*th.s, tv[j]+5*th.s,.1);
+    graphics::lines(x,stats::dnorm(x,m=tv[j],sd=th.s));
+    print("Verify line matches histogram...")
+    Sys.sleep(2)
+  }
+  ### END TEST FUNCTIONALITY ###
+}
+
 test_Exponential <- function(){
   ### Test input ###
   print("         No input:")

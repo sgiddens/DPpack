@@ -31,12 +31,13 @@ case.}
 
 \item{mechanism}{String indicating which mechanism to use for differential
 privacy. Currently the following mechanisms are supported: {'Laplace',
-'Gaussian'}. Default is Laplace. See \code{\link{LaplaceMechanism}} and
-\code{\link{GaussianMechanism}} for a description of the supported
+'Gaussian', 'analytic'}. Default is Laplace. See \code{\link{LaplaceMechanism}},
+\code{\link{GaussianMechanism}}, and
+\code{\link{AnalyticGaussianMechanism}} for descriptions of the supported
 mechanisms.}
 
 \item{delta}{Nonnegative real number defining the delta privacy parameter. If
-0 (default), reduces to eps-DP and the Laplace mechanism is used.}
+0 (default), reduces to eps-DP.}
 
 \item{type.DP}{String indicating the type of differential privacy desired for
 the Gaussian mechanism (if selected). Can be either 'pDP' for probabilistic

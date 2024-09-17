@@ -1,7 +1,7 @@
 Package: DPpack
 Type: Package
 Title: Differentially Private Statistical Analysis and Machine Learning
-Version: 0.1.0
+Version: 0.2.0
 Author: Spencer Giddens <giddens2spencer@gmail.com> with contributions from Fang 
     Liu <fliu2@nd.edu>
 Maintainer: Spencer Giddens <giddens2spencer@gmail.com>
@@ -19,10 +19,10 @@ Description: An implementation of common statistical analysis and models with
     <doi:10.1007/11681878_14>, Gaussian mechanism (Dwork et al., 2006b)
     <doi:10.1007/11761679_29>, and exponential mechanism
     (McSherry & Talwar, 2007) <doi:10.1109/FOCS.2007.66>.
-License: GPL-3
+License: GPL-3 | file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.1
+RoxygenNote: 7.3.2
 Imports: 
     rmutil (>= 1.1.5),
     Rdpack (>= 2.1.2), 

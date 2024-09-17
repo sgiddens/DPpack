@@ -49,6 +49,20 @@ test_meanDP <- function(){
   if (!is.character(a)) print("FAIL");
   print("")
 
+  print("         Mechanism Gaussian with delta=0:")
+  a = tryCatch(meanDP(data2d,1,lower.bound=-3, upper.bound=3,
+                      mechanism='Gaussian', type.DP='pDP'),
+               error=function(e) print(paste("PASS --",e)));
+  if (!is.character(a)) print("FAIL");
+  print("")
+
+  print("         Mechanism analytic with delta=0:")
+  a = tryCatch(meanDP(data2d,1,lower.bound=-3, upper.bound=3,
+                      mechanism='analytic'),
+               error=function(e) print(paste("PASS --",e)));
+  if (!is.character(a)) print("FAIL");
+  print("")
+
   print("         Bad which.sensitivity:")
   a = tryCatch(meanDP(data2d,1,lower.bound=-3, upper.bound=3,
                       which.sensitivity='abc',type.DP='pDP'),
@@ -191,6 +205,27 @@ test_meanDP <- function(){
   print("Verify histogram centered at line...")
   Sys.sleep(2)
 
+  print("         Analytic Gaussian:")
+  x <- data1d;
+  eps <- .9;
+  ws = 'bounded'
+  lb = -3
+  ub = 3
+  mech = 'analytic'
+  delta = .01
+  tdp = 'pDP'
+  n = 10000;
+  data <- numeric(n);
+  for (i in 1:n){
+    data[i] <- meanDP(x, eps, lb, ub, ws, mech, delta, tdp)
+  }
+
+  tv = mean(x)
+  graphics::hist(data,freq=FALSE,main="Analytic Gaussian");
+  graphics::abline(v=tv,col='blue')
+  print("Verify histogram centered at line...")
+  Sys.sleep(2)
+
   print("         Multidimensional x:")
   x <- data2d;
   eps <- 1;
@@ -255,6 +290,20 @@ test_varDP <- function(){
   print("         Bad mechanism:")
   a = tryCatch(varDP(data1d,1,lower.bound=-6,upper.bound=6,
                      mechanism='abc',type.DP='pDP'),
+               error=function(e) print(paste("PASS --",e)));
+  if (!is.character(a)) print("FAIL");
+  print("")
+
+  print("         Mechanism Gaussian with delta=0:")
+  a = tryCatch(varDP(data1d,1,lower.bound=-6,upper.bound=6,
+                     mechanism='Gaussian',type.DP='pDP'),
+               error=function(e) print(paste("PASS --",e)));
+  if (!is.character(a)) print("FAIL");
+  print("")
+
+  print("         Mechanism analytic with delta=0:")
+  a = tryCatch(varDP(data1d,1,lower.bound=-6,upper.bound=6,
+                     mechanism='analytic'),
                error=function(e) print(paste("PASS --",e)));
   if (!is.character(a)) print("FAIL");
   print("")
@@ -401,6 +450,27 @@ test_varDP <- function(){
   print("Verify histogram centered at line...")
   Sys.sleep(2)
 
+  print("         Analytic Gaussian:")
+  x <- data1d;
+  eps <- .9;
+  ws = 'bounded'
+  lb = -6
+  ub = 6
+  mech = 'analytic'
+  delta = .5
+  tdp = 'pDP'
+  n = 10000;
+  data <- numeric(n);
+  for (i in 1:n){
+    data[i] <- varDP(x, eps, lb, ub, ws, mech, delta, tdp)
+  }
+
+  tv = stats::var(x)
+  graphics::hist(data,freq=FALSE,main="Analytic Gaussian");
+  graphics::abline(v=tv,col='blue')
+  print("Verify histogram centered at line...")
+  Sys.sleep(2)
+
   ### END TEST FUNCTIONALITY ###
 }
 
@@ -444,6 +514,20 @@ test_sdDP <- function(){
   print("         Bad mechanism:")
   a = tryCatch(sdDP(data1d,1,lower.bound=-6,upper.bound=6,
                      mechanism='abc',type.DP='pDP'),
+               error=function(e) print(paste("PASS --",e)));
+  if (!is.character(a)) print("FAIL");
+  print("")
+
+  print("         Mechanism Gaussian with delta=0:")
+  a = tryCatch(sdDP(data1d,1,lower.bound=-6,upper.bound=6,
+                    mechanism='Gaussian',type.DP='pDP'),
+               error=function(e) print(paste("PASS --",e)));
+  if (!is.character(a)) print("FAIL");
+  print("")
+
+  print("         Mechanism analytic with delta=0:")
+  a = tryCatch(sdDP(data1d,1,lower.bound=-6,upper.bound=6,
+                    mechanism='analytic'),
                error=function(e) print(paste("PASS --",e)));
   if (!is.character(a)) print("FAIL");
   print("")
@@ -590,6 +674,27 @@ test_sdDP <- function(){
   print("Verify histogram centered at line...")
   Sys.sleep(2)
 
+  print("         Analytic Gaussian:")
+  x <- data1d;
+  eps <- .9;
+  ws = 'bounded'
+  lb = -6
+  ub = 6
+  mech = 'analytic'
+  delta = .5
+  tdp = 'pDP'
+  n = 10000;
+  data <- numeric(n);
+  for (i in 1:n){
+    data[i] <- sdDP(x, eps, lb, ub, ws, mech, delta, tdp)
+  }
+
+  tv = stats::sd(x)
+  graphics::hist(data,freq=FALSE,main="Analytic Gaussian");
+  graphics::abline(v=tv,col='blue')
+  print("Verify histogram centered at line...")
+  Sys.sleep(2)
+
   ### END TEST FUNCTIONALITY ###
 }
 
@@ -627,6 +732,21 @@ test_covDP <- function(){
   a = tryCatch(covDP(data1d,data1d+1,1,lower.bound1=-6,upper.bound1=6,
                      lower.bound2=-5,upper.bound2=7,mechanism='abc',
                      type.DP='pDP'),
+               error=function(e) print(paste("PASS --",e)));
+  if (!is.character(a)) print("FAIL");
+  print("")
+
+  print("         Mechanism Gaussian with delta=0:")
+  a = tryCatch(covDP(data1d,data1d+1,1,lower.bound1=-6,upper.bound1=6,
+                     lower.bound2=-5,upper.bound2=7,mechanism='Gaussian',
+                     type.DP='pDP'),
+               error=function(e) print(paste("PASS --",e)));
+  if (!is.character(a)) print("FAIL");
+  print("")
+
+  print("         Mechanism analytic with delta=0:")
+  a = tryCatch(covDP(data1d,data1d+1,1,lower.bound1=-6,upper.bound1=6,
+                     lower.bound2=-5,upper.bound2=7,mechanism='analytic'),
                error=function(e) print(paste("PASS --",e)));
   if (!is.character(a)) print("FAIL");
   print("")
@@ -798,6 +918,31 @@ test_covDP <- function(){
   print("Verify histogram centered at line...")
   Sys.sleep(2)
 
+  print("         Analytic Gaussian:")
+  x1 <- data1d;
+  x2 = data1d+1;
+  eps <- .9;
+  ws = 'bounded'
+  lb1 = -6
+  ub1 = 6
+  lb2 = -5
+  ub2 = 7
+  mech = 'analytic'
+  delta = .01
+  tdp = 'pDP'
+  ap = NULL
+  n = 10000;
+  data <- numeric(n);
+  for (i in 1:n){
+    data[i] <- covDP(x1, x2, eps, lb1, ub1, lb2, ub2, ws, mech, delta, tdp)
+  }
+
+  tv = stats::cov(x1,x2)
+  graphics::hist(data,freq=FALSE,main="Analytic Gaussian");
+  graphics::abline(v=tv,col='blue')
+  print("Verify histogram centered at line...")
+  Sys.sleep(2)
+
   ### END TEST FUNCTIONALITY ###
 }
 
@@ -812,6 +957,18 @@ test_histogramDP <- function(){
 
   print("         Bad mechanism:")
   a = tryCatch(histogramDP(data1d,1,mechanism='abc',type.DP='pDP'),
+               error=function(e) print(paste("PASS --",e)));
+  if (!is.character(a)) print("FAIL");
+  print("")
+
+  print("         Mechanism Gaussian with delta=0:")
+  a = tryCatch(histogramDP(data1d,1,mechanism='Gaussian',type.DP='pDP'),
+               error=function(e) print(paste("PASS --",e)));
+  if (!is.character(a)) print("FAIL");
+  print("")
+
+  print("         Mechanism analytic with delta=0:")
+  a = tryCatch(histogramDP(data1d,1,mechanism='analytic'),
                error=function(e) print(paste("PASS --",e)));
   if (!is.character(a)) print("FAIL");
   print("")
@@ -900,6 +1057,25 @@ test_histogramDP <- function(){
   Sys.sleep(2)
   # graphics::par(mfrow=c(1,1))
 
+  print("         Analytic Gaussian:")
+  x <- stats::rnorm(100,mean=3,sd=2);
+  eps <- .9;
+  normal <- FALSE;
+  ws = 'bounded'
+  mech = 'analytic'
+  delta = .01
+  tdp = 'pDP'
+  an = FALSE;
+
+  result <- histogramDP(x, eps, "Sturges", normal, ws, mech, delta, tdp, an)
+
+  # graphics::par(mfrow=c(1,2))
+  plot(result,main="Analytic Gaussian");
+  graphics::hist(x,freq=TRUE,main="Original");
+  print("Verify similarity...")
+  Sys.sleep(2)
+  # graphics::par(mfrow=c(1,1))
+
   print("         Normalized:")
   x <- stats::rnorm(100,mean=3,sd=2);
   eps <- 1;
@@ -954,6 +1130,18 @@ test_tableDP <- function(){
 
   print("         Bad mechanism:")
   a = tryCatch(tableDP(x,y,eps=1,mechanism='abc',type.DP='pDP'),
+               error=function(e) print(paste("PASS --",e)));
+  if (!is.character(a)) print("FAIL");
+  print("")
+
+  print("         Mechanism Gaussian with delta=0:")
+  a = tryCatch(tableDP(x,y,eps=1,mechanism='Gaussian',type.DP='pDP'),
+               error=function(e) print(paste("PASS --",e)));
+  if (!is.character(a)) print("FAIL");
+  print("")
+
+  print("         Mechanism analytic with delta=0:")
+  a = tryCatch(tableDP(x,y,eps=1,mechanism='analytic'),
                error=function(e) print(paste("PASS --",e)));
   if (!is.character(a)) print("FAIL");
   print("")
@@ -1038,6 +1226,24 @@ test_tableDP <- function(){
                 type.DP=tdp,allow.negative=an));
   Sys.sleep(5)
 
+  print("         Analytic Gaussian:")
+  x <- MASS::Cars93$Type;
+  y <- MASS::Cars93$Origin;
+  eps <- .9;
+  ws = 'bounded'
+  mech = 'analytic'
+  delta = .01
+  tdp = 'pDP'
+  an = FALSE;
+
+  print("Verify similarity...")
+  print("Original:")
+  print(table(x,y))
+  print("Sanitized:")
+  print(tableDP(x,y,eps=eps,which.sensitivity=ws,mechanism=mech,delta=delta,
+                type.DP=tdp,allow.negative=an));
+  Sys.sleep(5)
+
   print("         Allow Negative:")
   x <- MASS::Cars93$Type;
   y <- MASS::Cars93$Origin;
@@ -1112,6 +1318,20 @@ test_pooledVarDP <- function(){
   print("         Bad mechanism:")
   a = tryCatch(pooledVarDP(x,y,z,eps=1,lower.bound=-6,upper.bound=6,
                            mechanism='abc',type.DP='pDP'),
+               error=function(e) print(paste("PASS --",e)));
+  if (!is.character(a)) print("FAIL");
+  print("")
+
+  print("         Mechanism Gaussian with delta=0:")
+  a = tryCatch(pooledVarDP(x,y,z,eps=1,lower.bound=-6,upper.bound=6,
+                           mechanism='Gaussian',type.DP='pDP'),
+               error=function(e) print(paste("PASS --",e)));
+  if (!is.character(a)) print("FAIL");
+  print("")
+
+  print("         Mechanism analytic with delta=0:")
+  a = tryCatch(pooledVarDP(x,y,z,eps=1,lower.bound=-6,upper.bound=6,
+                           mechanism='analytic'),
                error=function(e) print(paste("PASS --",e)));
   if (!is.character(a)) print("FAIL");
   print("")
@@ -1312,6 +1532,36 @@ test_pooledVarDP <- function(){
   print("Verify histogram centered at line...")
   Sys.sleep(2)
 
+  print("         Analytic Gaussian:")
+  n1 = 10
+  n2 = 15
+  n3 = 20
+  x <- stats::rnorm(n1,sd=2);
+  y <- stats::rnorm(n2,sd=2);
+  z <- stats::rnorm(n3,sd=2);
+  eps <- .9;
+  ws = 'bounded'
+  lb = -6
+  ub = 6
+  mech = 'analytic'
+  delta = .01
+  tdp = 'pDP'
+  anm = FALSE
+  n = 10000;
+  data <- numeric(n);
+  for (i in 1:n){
+    data[i] <- pooledVarDP(x,y,z, eps=eps,
+                           lower.bound=lb, upper.bound=ub, which.sensitivity=ws,
+                           mechanism=mech, delta=delta, type.DP=tdp,
+                           approx.n.max=anm)
+  }
+
+  tv = ((n1-1)*stats::var(x) + (n2-1)*stats::var(y) + (n3-1)*stats::var(z))/(n1+n2+n3-3);
+  graphics::hist(data,freq=FALSE,main="Analytic Gaussian");
+  graphics::abline(v=tv,col='blue')
+  print("Verify histogram centered at line...")
+  Sys.sleep(2)
+
   print("         Approx n.max:")
   n1 = 10
   n2 = 15
@@ -1387,6 +1637,21 @@ test_pooledCovDP <- function(){
   a = tryCatch(pooledCovDP(x,y,z,eps=1,lower.bound1 = -6,upper.bound1=6,
                            lower.bound2=-6,upper.bound2=6, mechanism='abc',
                            type.DP='pDP'),
+               error=function(e) print(paste("PASS --",e)));
+  if (!is.character(a)) print("FAIL");
+  print("")
+
+  print("         Mechanism Gaussian with delta=0:")
+  a = tryCatch(pooledCovDP(x,y,z,eps=1,lower.bound1 = -6,upper.bound1=6,
+                           lower.bound2=-6,upper.bound2=6, mechanism='Gaussian',
+                           type.DP='pDP'),
+               error=function(e) print(paste("PASS --",e)));
+  if (!is.character(a)) print("FAIL");
+  print("")
+
+  print("         Mechanism analytic with delta=0:")
+  a = tryCatch(pooledCovDP(x,y,z,eps=1,lower.bound1 = -6,upper.bound1=6,
+                           lower.bound2=-6,upper.bound2=6, mechanism='analytic'),
                error=function(e) print(paste("PASS --",e)));
   if (!is.character(a)) print("FAIL");
   print("")
@@ -1601,6 +1866,40 @@ test_pooledCovDP <- function(){
   tv = ((n1-1)*stats::cov(x[,1],x[,2])+(n2-1)*stats::cov(y[,1],y[,2])+(n3-1)*stats::cov(z[,1],z[,2]))/
     (n1+n2+n3-3);
   graphics::hist(data,freq=FALSE,main="Gaussian aDP");
+  graphics::abline(v=tv,col='blue')
+  print("Verify histogram centered at line...")
+  Sys.sleep(2)
+
+  print("         Analytic Gaussian:")
+  n1 = 10;
+  n2 = 15;
+  n3 = 20;
+  x <- matrix(stats::rnorm(2*n1,sd=2),ncol=2);
+  y <- matrix(stats::rnorm(2*n2,sd=2),ncol=2);
+  z <- matrix(stats::rnorm(2*n3,sd=2),ncol=2);
+  eps <- .9;
+  ws = 'bounded'
+  lb1 = -6
+  ub1 = 6
+  lb2 = -6
+  ub2 = 6
+  mech = 'analytic'
+  delta = .01
+  tdp = 'pDP'
+  anm = FALSE;
+  n = 10000;
+  data <- numeric(n);
+  for (i in 1:n){
+    data[i] <- pooledCovDP(x,y,z, eps=eps,
+                           lower.bound1=lb1, upper.bound1=ub1,
+                           lower.bound2=lb2, upper.bound2=ub2,
+                           which.sensitivity=ws, mechanism=mech, delta=delta, type.DP=tdp,
+                           approx.n.max=anm)
+  }
+
+  tv = ((n1-1)*stats::cov(x[,1],x[,2])+(n2-1)*stats::cov(y[,1],y[,2])+(n3-1)*stats::cov(z[,1],z[,2]))/
+    (n1+n2+n3-3);
+  graphics::hist(data,freq=FALSE,main="Analytic Gaussian");
   graphics::abline(v=tv,col='blue')
   print("Verify histogram centered at line...")
   Sys.sleep(2)
