@@ -36,11 +36,11 @@
 calibrateAnalyticGaussianMechanism <- function(epsilon, delta,
                                                sensitivity, tol=1e-12){
   caseA <- function(epsilon, s){
-    pnorm(sqrt(epsilon*s)) - exp(epsilon)*pnorm(-sqrt(epsilon*(s+2.0)))
+    stats::pnorm(sqrt(epsilon*s)) - exp(epsilon)*stats::pnorm(-sqrt(epsilon*(s+2.0)))
   }
 
   caseB <- function(epsilon, s){
-    pnorm(-sqrt(epsilon*s)) - exp(epsilon)*pnorm(-sqrt(epsilon*(s+2.0)))
+    stats::pnorm(-sqrt(epsilon*s)) - exp(epsilon)*stats::pnorm(-sqrt(epsilon*(s+2.0)))
   }
 
   doubling_trick <- function(predicate_stop, s_inf, s_sup){
