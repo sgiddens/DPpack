@@ -14,10 +14,11 @@ Description: An implementation of common statistical analysis and models with
     <https://proceedings.mlr.press/v23/kifer12.html>
     and SVM (Chaudhuri et al., 2011)
     <https://jmlr.org/papers/v12/chaudhuri11a.html>. In addition, it implements
-    some popular randomization mechanisms
-    such as the Laplace mechanism (Dwork et al., 2006a)
+    some popular randomization mechanisms, including
+    the Laplace mechanism (Dwork et al., 2006a)
     <doi:10.1007/11681878_14>, Gaussian mechanism (Dwork et al., 2006b)
-    <doi:10.1007/11761679_29>, and exponential mechanism
+    <doi:10.1007/11761679_29>, analytic Gaussian mechanism (Balle & Wang, 2018)
+    <https://proceedings.mlr.press/v80/balle18a.html>, and exponential mechanism
     (McSherry & Talwar, 2007) <doi:10.1109/FOCS.2007.66>.
 License: GPL-3 | file LICENSE
 Encoding: UTF-8
