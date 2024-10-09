@@ -33,7 +33,7 @@ upper bounds over the first and second columns of all input data,
 respectively.}
 
 \item{which.sensitivity}{String indicating which type of sensitivity to use.
-Can be one of {'bounded', 'unbounded', 'both'}. If 'bounded' (default),
+Can be one of \{'bounded', 'unbounded', 'both'\}. If 'bounded' (default),
 returns result based on bounded definition for differential privacy. If
 'unbounded', returns result based on unbounded definition. If 'both',
 returns result based on both methods \insertCite{Kifer2011}{DPpack}. Note
@@ -43,8 +43,8 @@ composition. Care must be taken not to violate differential privacy in this
 case.}
 
 \item{mechanism}{String indicating which mechanism to use for differential
-privacy. Currently the following mechanisms are supported: {'Laplace',
-'Gaussian', 'analytic'}. Default is Laplace. See \code{\link{LaplaceMechanism}},
+privacy. Currently the following mechanisms are supported: \{'Laplace',
+'Gaussian', 'analytic'\}. Default is Laplace. See \code{\link{LaplaceMechanism}},
 \code{\link{GaussianMechanism}}, and
 \code{\link{AnalyticGaussianMechanism}} for descriptions of the supported
 mechanisms.}

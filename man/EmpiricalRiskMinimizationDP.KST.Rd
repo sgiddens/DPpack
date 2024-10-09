@@ -262,7 +262,7 @@ model. The function runs the objective perturbation algorithm
 \insertCite{Kifer2012}{DPpack} to generate an objective function. A
 numerical optimization method is then run to find optimal coefficients
 for fitting the model given the training data and hyperparameters. The
-\code{\link{nloptr}} function is used. If mapXy.gr, loss.gr, and
+\code{\link[nloptr]{nloptr}} function is used. If mapXy.gr, loss.gr, and
 regularizer.gr are all given in the construction of the object, the
 gradient of the objective function and the Jacobian of the constraint
 function are utilized for the algorithm, and the NLOPT_LD_MMA method is

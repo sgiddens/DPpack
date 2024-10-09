@@ -10,7 +10,7 @@
 #' @param upper.bound Scalar representing the global or public upper bound on
 #'   values of x.
 #' @param which.sensitivity String indicating which type of sensitivity to use.
-#'   Can be one of {'bounded', 'unbounded', 'both'}. If 'bounded' (default),
+#'   Can be one of \{'bounded', 'unbounded', 'both'\}. If 'bounded' (default),
 #'   returns result based on bounded definition for differential privacy. If
 #'   'unbounded', returns result based on unbounded definition. If 'both',
 #'   returns result based on both methods \insertCite{Kifer2011}{DPpack}. Note
@@ -19,8 +19,8 @@
 #'   composition. Care must be taken not to violate differential privacy in this
 #'   case.
 #' @param mechanism String indicating which mechanism to use for differential
-#'   privacy. Currently the following mechanisms are supported: {'Laplace',
-#'   'Gaussian', 'analytic'}. Default is Laplace. See \code{\link{LaplaceMechanism}},
+#'   privacy. Currently the following mechanisms are supported: \{'Laplace',
+#'   'Gaussian', 'analytic'\}. Default is Laplace. See \code{\link{LaplaceMechanism}},
 #'   \code{\link{GaussianMechanism}}, and
 #'   \code{\link{AnalyticGaussianMechanism}} for descriptions of the supported
 #'   mechanisms.
@@ -107,7 +107,7 @@ meanDP <- function (x, eps, lower.bound, upper.bound,
 #' @param upper.bound Scalar representing the global or public upper bound on
 #'   values of x.
 #' @param which.sensitivity String indicating which type of sensitivity to use.
-#'   Can be one of {'bounded', 'unbounded', 'both'}. If 'bounded' (default),
+#'   Can be one of \{'bounded', 'unbounded', 'both'\}. If 'bounded' (default),
 #'   returns result based on bounded definition for differential privacy. If
 #'   'unbounded', returns result based on unbounded definition. If 'both',
 #'   returns result based on both methods \insertCite{Kifer2011}{DPpack}. Note
@@ -116,8 +116,8 @@ meanDP <- function (x, eps, lower.bound, upper.bound,
 #'   composition. Care must be taken not to violate differential privacy in this
 #'   case.
 #' @param mechanism String indicating which mechanism to use for differential
-#'   privacy. Currently the following mechanisms are supported: {'Laplace',
-#'   'Gaussian', 'analytic'}. Default is Laplace. See \code{\link{LaplaceMechanism}},
+#'   privacy. Currently the following mechanisms are supported: \{'Laplace',
+#'   'Gaussian', 'analytic'\}. Default is Laplace. See \code{\link{LaplaceMechanism}},
 #'   \code{\link{GaussianMechanism}}, and
 #'   \code{\link{AnalyticGaussianMechanism}} for descriptions of the supported
 #'   mechanisms.
@@ -217,7 +217,7 @@ varDP <- function (x, eps, lower.bound, upper.bound,
 #' @param upper.bound Scalar representing the global or public upper bound on
 #'   values of x.
 #' @param which.sensitivity String indicating which type of sensitivity to use.
-#'   Can be one of {'bounded', 'unbounded', 'both'}. If 'bounded' (default),
+#'   Can be one of \{'bounded', 'unbounded', 'both'\}. If 'bounded' (default),
 #'   returns result based on bounded definition for differential privacy. If
 #'   'unbounded', returns result based on unbounded definition. If 'both',
 #'   returns result based on both methods \insertCite{Kifer2011}{DPpack}. Note
@@ -226,8 +226,8 @@ varDP <- function (x, eps, lower.bound, upper.bound,
 #'   composition. Care must be taken not to violate differential privacy in this
 #'   case.
 #' @param mechanism String indicating which mechanism to use for differential
-#'   privacy. Currently the following mechanisms are supported: {'Laplace',
-#'   'Gaussian', 'analytic'}. Default is Laplace. See \code{\link{LaplaceMechanism}},
+#'   privacy. Currently the following mechanisms are supported: \{'Laplace',
+#'   'Gaussian', 'analytic'\}. Default is Laplace. See \code{\link{LaplaceMechanism}},
 #'   \code{\link{GaussianMechanism}}, and
 #'   \code{\link{AnalyticGaussianMechanism}} for descriptions of the supported
 #'   mechanisms.
@@ -290,7 +290,7 @@ sdDP <- function (x, eps, lower.bound, upper.bound,
 #' @param upper.bound1,upper.bound2 Real numbers giving the global or public
 #'   upper bounds of x1 and x2, respectively.
 #' @param which.sensitivity String indicating which type of sensitivity to use.
-#'   Can be one of {'bounded', 'unbounded', 'both'}. If 'bounded' (default),
+#'   Can be one of \{'bounded', 'unbounded', 'both'\}. If 'bounded' (default),
 #'   returns result based on bounded definition for differential privacy. If
 #'   'unbounded', returns result based on unbounded definition. If 'both',
 #'   returns result based on both methods \insertCite{Kifer2011}{DPpack}. Note
@@ -299,8 +299,8 @@ sdDP <- function (x, eps, lower.bound, upper.bound,
 #'   composition. Care must be taken not to violate differential privacy in this
 #'   case.
 #' @param mechanism String indicating which mechanism to use for differential
-#'   privacy. Currently the following mechanisms are supported: {'Laplace',
-#'   'Gaussian', 'analytic'}. Default is Laplace. See \code{\link{LaplaceMechanism}},
+#'   privacy. Currently the following mechanisms are supported: \{'Laplace',
+#'   'Gaussian', 'analytic'\}. Default is Laplace. See \code{\link{LaplaceMechanism}},
 #'   \code{\link{GaussianMechanism}}, and
 #'   \code{\link{AnalyticGaussianMechanism}} for descriptions of the supported
 #'   mechanisms.
@@ -403,7 +403,7 @@ covDP <- function (x1, x2, eps, lower.bound1, upper.bound1, lower.bound2,
 #'   correspond to frequencies. If TRUE, returned histogram counts correspond to
 #'   densities (i.e. area of histogram is one).
 #' @param which.sensitivity String indicating which type of sensitivity to use.
-#'   Can be one of {'bounded', 'unbounded', 'both'}. If 'bounded' (default),
+#'   Can be one of \{'bounded', 'unbounded', 'both'\}. If 'bounded' (default),
 #'   returns result based on bounded definition for differential privacy. If
 #'   'unbounded', returns result based on unbounded definition. If 'both',
 #'   returns result based on both methods \insertCite{Kifer2011}{DPpack}. Note
@@ -412,8 +412,8 @@ covDP <- function (x1, x2, eps, lower.bound1, upper.bound1, lower.bound2,
 #'   composition. Care must be taken not to violate differential privacy in this
 #'   case.
 #' @param mechanism String indicating which mechanism to use for differential
-#'   privacy. Currently the following mechanisms are supported: {'Laplace',
-#'   'Gaussian', 'analytic'}. Default is Laplace. See \code{\link{LaplaceMechanism}},
+#'   privacy. Currently the following mechanisms are supported: \{'Laplace',
+#'   'Gaussian', 'analytic'\}. Default is Laplace. See \code{\link{LaplaceMechanism}},
 #'   \code{\link{GaussianMechanism}}, and
 #'   \code{\link{AnalyticGaussianMechanism}} for descriptions of the supported
 #'   mechanisms.
@@ -557,7 +557,7 @@ histogramDP <- function(x, eps, breaks="Sturges", normalize=FALSE,
 #' @param ... Vectors of data from which to create the contingency table.
 #' @param eps Positive real number defining the epsilon privacy budget.
 #' @param which.sensitivity String indicating which type of sensitivity to use.
-#'   Can be one of {'bounded', 'unbounded', 'both'}. If 'bounded' (default),
+#'   Can be one of \{'bounded', 'unbounded', 'both'\}. If 'bounded' (default),
 #'   returns result based on bounded definition for differential privacy. If
 #'   'unbounded', returns result based on unbounded definition. If 'both',
 #'   returns result based on both methods \insertCite{Kifer2011}{DPpack}. Note
@@ -566,8 +566,8 @@ histogramDP <- function(x, eps, breaks="Sturges", normalize=FALSE,
 #'   composition. Care must be taken not to violate differential privacy in this
 #'   case.
 #' @param mechanism String indicating which mechanism to use for differential
-#'   privacy. Currently the following mechanisms are supported: {'Laplace',
-#'   'Gaussian', 'analytic'}. Default is Laplace. See \code{\link{LaplaceMechanism}},
+#'   privacy. Currently the following mechanisms are supported: \{'Laplace',
+#'   'Gaussian', 'analytic'\}. Default is Laplace. See \code{\link{LaplaceMechanism}},
 #'   \code{\link{GaussianMechanism}}, and
 #'   \code{\link{AnalyticGaussianMechanism}} for descriptions of the supported
 #'   mechanisms.
@@ -706,7 +706,7 @@ tableDP <- function(..., eps=1, which.sensitivity='bounded',
 #' @param upper.bound Real number giving the global or public upper bound of the
 #'   input data.
 #' @param which.sensitivity String indicating which type of sensitivity to use.
-#'   Can be one of {'bounded', 'unbounded', 'both'}. If 'bounded' (default),
+#'   Can be one of \{'bounded', 'unbounded', 'both'\}. If 'bounded' (default),
 #'   returns result based on bounded definition for differential privacy. If
 #'   'unbounded', returns result based on unbounded definition. If 'both',
 #'   returns result based on both methods \insertCite{Kifer2011}{DPpack}. Note
@@ -715,8 +715,8 @@ tableDP <- function(..., eps=1, which.sensitivity='bounded',
 #'   composition. Care must be taken not to violate differential privacy in this
 #'   case.
 #' @param mechanism String indicating which mechanism to use for differential
-#'   privacy. Currently the following mechanisms are supported: {'Laplace',
-#'   'Gaussian', 'analytic'}. Default is Laplace. See \code{\link{LaplaceMechanism}},
+#'   privacy. Currently the following mechanisms are supported: \{'Laplace',
+#'   'Gaussian', 'analytic'\}. Default is Laplace. See \code{\link{LaplaceMechanism}},
 #'   \code{\link{GaussianMechanism}}, and
 #'   \code{\link{AnalyticGaussianMechanism}} for descriptions of the supported
 #'   mechanisms.
@@ -899,7 +899,7 @@ pooledVarDP <- function(..., eps=1, lower.bound, upper.bound,
 #'   upper bounds over the first and second columns of all input data,
 #'   respectively.
 #' @param which.sensitivity String indicating which type of sensitivity to use.
-#'   Can be one of {'bounded', 'unbounded', 'both'}. If 'bounded' (default),
+#'   Can be one of \{'bounded', 'unbounded', 'both'\}. If 'bounded' (default),
 #'   returns result based on bounded definition for differential privacy. If
 #'   'unbounded', returns result based on unbounded definition. If 'both',
 #'   returns result based on both methods \insertCite{Kifer2011}{DPpack}. Note
@@ -908,8 +908,8 @@ pooledVarDP <- function(..., eps=1, lower.bound, upper.bound,
 #'   composition. Care must be taken not to violate differential privacy in this
 #'   case.
 #' @param mechanism String indicating which mechanism to use for differential
-#'   privacy. Currently the following mechanisms are supported: {'Laplace',
-#'   'Gaussian', 'analytic'}. Default is Laplace. See \code{\link{LaplaceMechanism}},
+#'   privacy. Currently the following mechanisms are supported: \{'Laplace',
+#'   'Gaussian', 'analytic'\}. Default is Laplace. See \code{\link{LaplaceMechanism}},
 #'   \code{\link{GaussianMechanism}}, and
 #'   \code{\link{AnalyticGaussianMechanism}} for descriptions of the supported
 #'   mechanisms.
@@ -1060,7 +1060,7 @@ pooledCovDP <- function(..., eps=1, lower.bound1, upper.bound1, lower.bound2,
 #' @param lower.bound Real number giving the global or public lower bound of x.
 #' @param upper.bound Real number giving the global or public upper bound of x.
 #' @param which.sensitivity String indicating which type of sensitivity to use.
-#'   Can be one of {'bounded', 'unbounded', 'both'}. If 'bounded' (default),
+#'   Can be one of \{'bounded', 'unbounded', 'both'\}. If 'bounded' (default),
 #'   returns result based on bounded definition for differential privacy. If
 #'   'unbounded', returns result based on unbounded definition. If 'both',
 #'   returns result based on both methods \insertCite{Kifer2011}{DPpack}. Note
@@ -1068,7 +1068,7 @@ pooledCovDP <- function(..., eps=1, lower.bound1, upper.bound1, lower.bound2,
 #'   0)-differential privacy, but may not do so collectively and in composition.
 #'   Care must be taken not to violate differential privacy in this case.
 #' @param mechanism String indicating which mechanism to use for differential
-#'   privacy. Currently the following mechanisms are supported: {'exponential'}.
+#'   privacy. Currently the following mechanisms are supported: \{'exponential'\}.
 #'   See \code{\link{ExponentialMechanism}} for a description of the supported
 #'   mechanisms.
 #' @param uniform.sampling Boolean indicating whether to sample uniformly
@@ -1169,7 +1169,7 @@ quantileDP <- function (x, quant, eps, lower.bound, upper.bound,
 #' @param lower.bound Real number giving the global or public lower bound of x.
 #' @param upper.bound Real number giving the global or public upper bound of x.
 #' @param which.sensitivity String indicating which type of sensitivity to use.
-#'   Can be one of {'bounded', 'unbounded', 'both'}. If 'bounded' (default),
+#'   Can be one of \{'bounded', 'unbounded', 'both'\}. If 'bounded' (default),
 #'   returns result based on bounded definition for differential privacy. If
 #'   'unbounded', returns result based on unbounded definition. If 'both',
 #'   returns result based on both methods \insertCite{Kifer2011}{DPpack}. Note
@@ -1177,7 +1177,7 @@ quantileDP <- function (x, quant, eps, lower.bound, upper.bound,
 #'   0)-differential privacy, but may not do so collectively and in composition.
 #'   Care must be taken not to violate differential privacy in this case.
 #' @param mechanism String indicating which mechanism to use for differential
-#'   privacy. Currently the following mechanisms are supported: {'exponential'}.
+#'   privacy. Currently the following mechanisms are supported: \{'exponential'\}.
 #'   See \code{\link{ExponentialMechanism}} for a description of the supported
 #'   mechanisms.
 #' @param uniform.sampling Boolean indicating whether to sample uniformly

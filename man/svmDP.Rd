@@ -160,7 +160,7 @@ the 'objective' perturbation methods \insertCite{chaudhuri2011}{DPpack}.
 Defaults to 'objective'.}
 
 \item{\code{kernel}}{String indicating which kernel to use for SVM. Must be one of
-{'linear', 'Gaussian'}. If 'linear' (default), linear SVM is used. If
+\{'linear', 'Gaussian'\}. If 'linear' (default), linear SVM is used. If
 'Gaussian,' uses the sampling function corresponding to the Gaussian
 (radial) kernel approximation.}
 

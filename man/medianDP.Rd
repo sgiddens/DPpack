@@ -24,7 +24,7 @@ medianDP(
 \item{upper.bound}{Real number giving the global or public upper bound of x.}
 
 \item{which.sensitivity}{String indicating which type of sensitivity to use.
-Can be one of {'bounded', 'unbounded', 'both'}. If 'bounded' (default),
+Can be one of \{'bounded', 'unbounded', 'both'\}. If 'bounded' (default),
 returns result based on bounded definition for differential privacy. If
 'unbounded', returns result based on unbounded definition. If 'both',
 returns result based on both methods \insertCite{Kifer2011}{DPpack}. Note
@@ -33,7 +33,7 @@ that if 'both' is chosen, each result individually satisfies (eps,
 Care must be taken not to violate differential privacy in this case.}
 
 \item{mechanism}{String indicating which mechanism to use for differential
-privacy. Currently the following mechanisms are supported: {'exponential'}.
+privacy. Currently the following mechanisms are supported: \{'exponential'\}.
 See \code{\link{ExponentialMechanism}} for a description of the supported
 mechanisms.}
 

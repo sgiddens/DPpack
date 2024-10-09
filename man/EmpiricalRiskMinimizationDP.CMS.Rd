@@ -136,10 +136,10 @@ ensure differential privacy for the objective perturbation method.}
 \item{\code{coeff}}{Numeric vector of coefficients for the model.}
 
 \item{\code{kernel}}{Value only used in child class \code{\link{svmDP}}. String
-indicating which kernel to use for SVM. Must be one of {'linear',
-'Gaussian'}. If 'linear' (default), linear SVM is used. If 'Gaussian,'
-uses the sampling function corresponding to the Gaussian (radial) kernel
-approximation.}
+indicating which kernel to use for SVM. Must be one of \{'linear',
+'Gaussian'\}. If 'linear' (default), linear SVM is used. If
+'Gaussian', uses the sampling function corresponding to the Gaussian
+(radial) kernel approximation.}
 
 \item{\code{D}}{Value only used in child class \code{\link{svmDP}}. Nonnegative
 integer indicating the dimensionality of the transform space

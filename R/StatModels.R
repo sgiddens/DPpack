@@ -515,10 +515,10 @@ EmpiricalRiskMinimizationDP.CMS <- R6::R6Class("EmpiricalRiskMinimizationDP.CMS"
   #' @field coeff Numeric vector of coefficients for the model.
   coeff = NULL,
   #' @field kernel Value only used in child class \code{\link{svmDP}}. String
-  #'   indicating which kernel to use for SVM. Must be one of {'linear',
-  #'   'Gaussian'}. If 'linear' (default), linear SVM is used. If 'Gaussian,'
-  #'   uses the sampling function corresponding to the Gaussian (radial) kernel
-  #'   approximation.
+  #'   indicating which kernel to use for SVM. Must be one of \{'linear',
+  #'   'Gaussian'\}. If 'linear' (default), linear SVM is used. If
+  #'   'Gaussian', uses the sampling function corresponding to the Gaussian
+  #'   (radial) kernel approximation.
   kernel = NULL,
   #' @field D Value only used in child class \code{\link{svmDP}}. Nonnegative
   #'   integer indicating the dimensionality of the transform space
@@ -1636,7 +1636,7 @@ svmDP <- R6::R6Class("svmDP",
   #'   the 'objective' perturbation methods \insertCite{chaudhuri2011}{DPpack}.
   #'   Defaults to 'objective'.
   #' @param kernel String indicating which kernel to use for SVM. Must be one of
-  #'   {'linear', 'Gaussian'}. If 'linear' (default), linear SVM is used. If
+  #'   \{'linear', 'Gaussian'\}. If 'linear' (default), linear SVM is used. If
   #'   'Gaussian,' uses the sampling function corresponding to the Gaussian
   #'   (radial) kernel approximation.
   #' @param D Nonnegative integer indicating the dimensionality of the transform
@@ -2092,7 +2092,7 @@ EmpiricalRiskMinimizationDP.KST <- R6::R6Class("EmpiricalRiskMinimizationDP.KST"
   #'   \insertCite{Kifer2012}{DPpack} to generate an objective function. A
   #'   numerical optimization method is then run to find optimal coefficients
   #'   for fitting the model given the training data and hyperparameters. The
-  #'   \code{\link{nloptr}} function is used. If mapXy.gr, loss.gr, and
+  #'   \code{\link[nloptr]{nloptr}} function is used. If mapXy.gr, loss.gr, and
   #'   regularizer.gr are all given in the construction of the object, the
   #'   gradient of the objective function and the Jacobian of the constraint
   #'   function are utilized for the algorithm, and the NLOPT_LD_MMA method is
@@ -2389,7 +2389,7 @@ LinearRegressionDP <- R6::R6Class("LinearRegressionDP",
   #'   \insertCite{Kifer2012}{DPpack} to generate an objective function. A
   #'   numerical optimization method is then run to find optimal coefficients
   #'   for fitting the model given the training data and hyperparameters. The
-  #'   \code{\link{nloptr}} function is used. If \code{regularizer} is given as
+  #'   \code{\link[nloptr]{nloptr}} function is used. If \code{regularizer} is given as
   #'   'l2' or if \code{regularizer.gr} is given in the construction of the
   #'   object, the gradient of the objective function and the Jacobian of the
   #'   constraint function are utilized for the algorithm, and the NLOPT_LD_MMA
