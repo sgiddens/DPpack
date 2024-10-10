@@ -41,9 +41,8 @@ case.}
 
 \item{mechanism}{String indicating which mechanism to use for differential
 privacy. Currently the following mechanisms are supported: \{'Laplace',
-'Gaussian', 'analytic'\}. Default is Laplace. See \code{\link{LaplaceMechanism}},
-\code{\link{GaussianMechanism}}, and
-\code{\link{AnalyticGaussianMechanism}} for descriptions of the supported
+'Gaussian', 'analytic'\}. Default is Laplace. See \code{\link{LaplaceMechanism}}
+and \code{\link{GaussianMechanism}} for descriptions of the supported
 mechanisms.}
 
 \item{delta}{Nonnegative real number defining the delta privacy parameter. If

@@ -20,9 +20,8 @@
 #'   case.
 #' @param mechanism String indicating which mechanism to use for differential
 #'   privacy. Currently the following mechanisms are supported: \{'Laplace',
-#'   'Gaussian', 'analytic'\}. Default is Laplace. See \code{\link{LaplaceMechanism}},
-#'   \code{\link{GaussianMechanism}}, and
-#'   \code{\link{AnalyticGaussianMechanism}} for descriptions of the supported
+#'   'Gaussian', 'analytic'\}. Default is Laplace. See \code{\link{LaplaceMechanism}}
+#'   and \code{\link{GaussianMechanism}} for descriptions of the supported
 #'   mechanisms.
 #' @param delta Nonnegative real number defining the delta privacy parameter. If
 #'   0 (default), reduces to eps-DP.
@@ -86,7 +85,7 @@ meanDP <- function (x, eps, lower.bound, upper.bound,
   } else if (mechanism=='Gaussian'){
     sanitized.mean <- GaussianMechanism(tv, eps, delta, sens, type.DP)
   } else if (mechanism=='analytic'){
-    sanitized.mean <- AnalyticGaussianMechanism(tv, eps, delta, sens)
+    sanitized.mean <- GaussianMechanism(tv, eps, delta, sens, analytic=TRUE)
   }
   ##########
 
@@ -117,9 +116,8 @@ meanDP <- function (x, eps, lower.bound, upper.bound,
 #'   case.
 #' @param mechanism String indicating which mechanism to use for differential
 #'   privacy. Currently the following mechanisms are supported: \{'Laplace',
-#'   'Gaussian', 'analytic'\}. Default is Laplace. See \code{\link{LaplaceMechanism}},
-#'   \code{\link{GaussianMechanism}}, and
-#'   \code{\link{AnalyticGaussianMechanism}} for descriptions of the supported
+#'   'Gaussian', 'analytic'\}. Default is Laplace. See \code{\link{LaplaceMechanism}}
+#'   and \code{\link{GaussianMechanism}} for descriptions of the supported
 #'   mechanisms.
 #' @param delta Nonnegative real number defining the delta privacy parameter. If
 #'   0 (default), reduces to eps-DP.
@@ -195,7 +193,7 @@ varDP <- function (x, eps, lower.bound, upper.bound,
   } else if (mechanism=='analytic'){
     sanitized.var <- -1
     while (sanitized.var<=0){
-      sanitized.var <- AnalyticGaussianMechanism(tv, eps, delta, sens)
+      sanitized.var <- GaussianMechanism(tv, eps, delta, sens, analytic=TRUE)
     }
   }
   ##########
@@ -227,9 +225,8 @@ varDP <- function (x, eps, lower.bound, upper.bound,
 #'   case.
 #' @param mechanism String indicating which mechanism to use for differential
 #'   privacy. Currently the following mechanisms are supported: \{'Laplace',
-#'   'Gaussian', 'analytic'\}. Default is Laplace. See \code{\link{LaplaceMechanism}},
-#'   \code{\link{GaussianMechanism}}, and
-#'   \code{\link{AnalyticGaussianMechanism}} for descriptions of the supported
+#'   'Gaussian', 'analytic'\}. Default is Laplace. See \code{\link{LaplaceMechanism}}
+#'   and \code{\link{GaussianMechanism}} for descriptions of the supported
 #'   mechanisms.
 #' @param delta Nonnegative real number defining the delta privacy parameter. If
 #'   0 (default), reduces to eps-DP.
@@ -300,9 +297,8 @@ sdDP <- function (x, eps, lower.bound, upper.bound,
 #'   case.
 #' @param mechanism String indicating which mechanism to use for differential
 #'   privacy. Currently the following mechanisms are supported: \{'Laplace',
-#'   'Gaussian', 'analytic'\}. Default is Laplace. See \code{\link{LaplaceMechanism}},
-#'   \code{\link{GaussianMechanism}}, and
-#'   \code{\link{AnalyticGaussianMechanism}} for descriptions of the supported
+#'   'Gaussian', 'analytic'\}. Default is Laplace. See \code{\link{LaplaceMechanism}}
+#'   and \code{\link{GaussianMechanism}} for descriptions of the supported
 #'   mechanisms.
 #' @param delta Nonnegative real number defining the delta privacy parameter. If
 #'   0 (default), reduces to eps-DP.
@@ -380,7 +376,7 @@ covDP <- function (x1, x2, eps, lower.bound1, upper.bound1, lower.bound2,
   } else if (mechanism=='Gaussian'){
     sanitized.cov <- GaussianMechanism(tv, eps, delta, sens, type.DP)
   } else if (mechanism=='analytic'){
-    sanitized.cov <- AnalyticGaussianMechanism(tv, eps, delta, sens)
+    sanitized.cov <- GaussianMechanism(tv, eps, delta, sens, analytic=TRUE)
   }
   ##########
 
@@ -413,9 +409,8 @@ covDP <- function (x1, x2, eps, lower.bound1, upper.bound1, lower.bound2,
 #'   case.
 #' @param mechanism String indicating which mechanism to use for differential
 #'   privacy. Currently the following mechanisms are supported: \{'Laplace',
-#'   'Gaussian', 'analytic'\}. Default is Laplace. See \code{\link{LaplaceMechanism}},
-#'   \code{\link{GaussianMechanism}}, and
-#'   \code{\link{AnalyticGaussianMechanism}} for descriptions of the supported
+#'   'Gaussian', 'analytic'\}. Default is Laplace. See \code{\link{LaplaceMechanism}}
+#'   and \code{\link{GaussianMechanism}} for descriptions of the supported
 #'   mechanisms.
 #' @param delta Nonnegative real number defining the delta privacy parameter. If
 #'   0 (default), reduces to eps-DP.
@@ -496,14 +491,16 @@ histogramDP <- function(x, eps, breaks="Sturges", normalize=FALSE,
     }
   } else if (mechanism=='analytic'){
     if (which.sensitivity=='bounded'){
-      sanitized.counts <- AnalyticGaussianMechanism(counts, eps, delta, bs)
+      sanitized.counts <- GaussianMechanism(counts, eps, delta, bs,
+                                            analytic=TRUE)
     } else if (which.sensitivity=='unbounded'){
-      sanitized.counts <- AnalyticGaussianMechanism(counts, eps, delta, us)
+      sanitized.counts <- GaussianMechanism(counts, eps, delta, us,
+                                            analytic=TRUE)
     } else if (which.sensitivity=='both'){
-      sanitized.counts.bounded <- AnalyticGaussianMechanism(counts, eps,
-                                                            delta, bs)
-      sanitized.counts.unbounded <- AnalyticGaussianMechanism(counts, eps,
-                                                              delta, us)
+      sanitized.counts.bounded <- GaussianMechanism(counts, eps, delta, bs,
+                                                    analytic=TRUE)
+      sanitized.counts.unbounded <- GaussianMechanism(counts, eps, delta, us,
+                                                      analytic=TRUE)
     }
   }
   ##########
@@ -567,9 +564,8 @@ histogramDP <- function(x, eps, breaks="Sturges", normalize=FALSE,
 #'   case.
 #' @param mechanism String indicating which mechanism to use for differential
 #'   privacy. Currently the following mechanisms are supported: \{'Laplace',
-#'   'Gaussian', 'analytic'\}. Default is Laplace. See \code{\link{LaplaceMechanism}},
-#'   \code{\link{GaussianMechanism}}, and
-#'   \code{\link{AnalyticGaussianMechanism}} for descriptions of the supported
+#'   'Gaussian', 'analytic'\}. Default is Laplace. See \code{\link{LaplaceMechanism}}
+#'   and \code{\link{GaussianMechanism}} for descriptions of the supported
 #'   mechanisms.
 #' @param delta Nonnegative real number defining the delta privacy parameter. If
 #'   0 (default), reduces to eps-DP.
@@ -652,12 +648,14 @@ tableDP <- function(..., eps=1, which.sensitivity='bounded',
     }
   } else if (mechanism=='analytic'){
     if (which.sensitivity=='bounded'){
-      sanitized.table <- AnalyticGaussianMechanism(tv, eps, delta, bs)
+      sanitized.table <- GaussianMechanism(tv, eps, delta, bs, analytic=TRUE)
     } else if (which.sensitivity=='unbounded'){
-      sanitized.table <- AnalyticGaussianMechanism(tv, eps, delta, us)
+      sanitized.table <- GaussianMechanism(tv, eps, delta, us, analytic=TRUE)
     } else if (which.sensitivity=='both'){
-      sanitized.table.bounded <- AnalyticGaussianMechanism(tv, eps, delta, bs)
-      sanitized.table.unbounded <- AnalyticGaussianMechanism(tv, eps, delta, us)
+      sanitized.table.bounded <- GaussianMechanism(tv, eps, delta, bs,
+                                                   analytic=TRUE)
+      sanitized.table.unbounded <- GaussianMechanism(tv, eps, delta, us,
+                                                     analytic=TRUE)
     }
   }
   ##########
@@ -716,9 +714,8 @@ tableDP <- function(..., eps=1, which.sensitivity='bounded',
 #'   case.
 #' @param mechanism String indicating which mechanism to use for differential
 #'   privacy. Currently the following mechanisms are supported: \{'Laplace',
-#'   'Gaussian', 'analytic'\}. Default is Laplace. See \code{\link{LaplaceMechanism}},
-#'   \code{\link{GaussianMechanism}}, and
-#'   \code{\link{AnalyticGaussianMechanism}} for descriptions of the supported
+#'   'Gaussian', 'analytic'\}. Default is Laplace. See \code{\link{LaplaceMechanism}}
+#'   and \code{\link{GaussianMechanism}} for descriptions of the supported
 #'   mechanisms.
 #' @param delta Nonnegative real number defining the delta privacy parameter. If
 #'   0 (default), reduces to eps-DP.
@@ -852,21 +849,23 @@ pooledVarDP <- function(..., eps=1, lower.bound, upper.bound,
     if (which.sensitivity=='bounded'){
       sanitized.var <- -1
       while (sanitized.var<=0){ # Make sure variance is > 0 after noise
-        sanitized.var <- AnalyticGaussianMechanism(tv, eps, delta, bs)
+        sanitized.var <- GaussianMechanism(tv, eps, delta, bs, analytic=TRUE)
       }
     } else if (which.sensitivity=='unbounded'){
       sanitized.var <- -1
       while (sanitized.var<=0){ # Make sure variance is > 0 after noise
-        sanitized.var <- AnalyticGaussianMechanism(tv, eps, delta, us)
+        sanitized.var <- GaussianMechanism(tv, eps, delta, us, analytic=TRUE)
       }
     } else if (which.sensitivity=='both'){
       sanitized.var.bounded <- -1
       while (sanitized.var.bounded<=0){ # Make sure variance is > 0 after noise
-        sanitized.var.bounded <- AnalyticGaussianMechanism(tv, eps, delta, bs)
+        sanitized.var.bounded <- GaussianMechanism(tv, eps, delta, bs,
+                                                   analytic=TRUE)
       }
       sanitized.var.unbounded <- -1
       while (sanitized.var.unbounded<=0){ # Make sure variance is > 0 after noise
-        sanitized.var.unbounded <- AnalyticGaussianMechanism(tv, eps, delta, us)
+        sanitized.var.unbounded <- GaussianMechanism(tv, eps, delta, us,
+                                                     analytic=TRUE)
       }
     }
   }
@@ -909,9 +908,8 @@ pooledVarDP <- function(..., eps=1, lower.bound, upper.bound,
 #'   case.
 #' @param mechanism String indicating which mechanism to use for differential
 #'   privacy. Currently the following mechanisms are supported: \{'Laplace',
-#'   'Gaussian', 'analytic'\}. Default is Laplace. See \code{\link{LaplaceMechanism}},
-#'   \code{\link{GaussianMechanism}}, and
-#'   \code{\link{AnalyticGaussianMechanism}} for descriptions of the supported
+#'   'Gaussian', 'analytic'\}. Default is Laplace. See \code{\link{LaplaceMechanism}}
+#'   and \code{\link{GaussianMechanism}} for descriptions of the supported
 #'   mechanisms.
 #' @param delta Nonnegative real number defining the delta privacy parameter. If
 #'   0 (default), reduces to eps-DP.
@@ -1028,12 +1026,14 @@ pooledCovDP <- function(..., eps=1, lower.bound1, upper.bound1, lower.bound2,
     }
   } else if (mechanism=='analytic'){
     if (which.sensitivity=='bounded'){
-      sanitized.cov <- AnalyticGaussianMechanism(tv, eps, delta, bs)
+      sanitized.cov <- GaussianMechanism(tv, eps, delta, bs, analytic=TRUE)
     } else if (which.sensitivity=='unbounded'){
-      sanitized.cov <- AnalyticGaussianMechanism(tv, eps, delta, us)
+      sanitized.cov <- GaussianMechanism(tv, eps, delta, us, analytic=TRUE)
     } else if (which.sensitivity=='both'){
-      sanitized.cov.bounded <- AnalyticGaussianMechanism(tv, eps, delta, bs)
-      sanitized.cov.unbounded <- AnalyticGaussianMechanism(tv, eps, delta, us)
+      sanitized.cov.bounded <- GaussianMechanism(tv, eps, delta, bs,
+                                                 analytic=TRUE)
+      sanitized.cov.unbounded <- GaussianMechanism(tv, eps, delta, us,
+                                                   analytic=TRUE)
     }
   }
   ##########

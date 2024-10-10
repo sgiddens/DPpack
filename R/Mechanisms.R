@@ -152,6 +152,11 @@ LaplaceMechanism <- function (true.values, eps, sensitivities,
 #'   delta)-level privacy across all computations. Input does not need to be
 #'   normalized, meaning alloc.proportions = c(3,1) produces the same result as
 #'   the example above.
+#' @param analytic Indicates whether to use the analytic Gaussian mechanism to
+#'   compute the noise scale \insertCite{Balle2018}{DPpack}. Defaults to FALSE.
+#' @param tol Error tolerance for binary search used in determining the noise
+#'   parameter for the analytic Gaussian mechanism. Unused if analytic is FALSE.
+#'   Defaults to 1e-12.
 #' @return Sanitized function values based on the bounded and/or unbounded
 #'   definitions of differential privacy, sanitized via the Gaussian mechanism.
 #' @examples
@@ -175,6 +180,12 @@ LaplaceMechanism <- function (true.values, eps, sensitivities,
 #' private.mean.prob <- GaussianMechanism(mean(D1), epsilon, delta, sensitivity,
 #'                                        type.DP = 'pDP')
 #' private.mean.prob
+#'
+#' # Analytic Gaussian mechanism
+#' epsilon <- 1.1 # epsilon can be > 1 for analytic Gaussian mechanism
+#' private.mean.analytic <- GaussianMechanism(mean(D1), epsilon, delta,
+#'                                            sensitivity, analytic=TRUE)
+#' private.mean.analytic
 #'
 #' # Simulate second dataset
 #' d0 <- 3 # Lower bound
@@ -206,13 +217,16 @@ LaplaceMechanism <- function (true.values, eps, sensitivities,
 #'
 #'   \insertRef{Kifer2011}{DPpack}
 #'
+#'   \insertRef{Balle2018}{DPpack}
+#'
 #'   \insertRef{Liu2019a}{DPpack}
 #'
 #'   \insertRef{Dwork2006b}{DPpack}
 #'
 #' @export
 GaussianMechanism <- function (true.values, eps, delta, sensitivities,
-                               type.DP='aDP', alloc.proportions=NULL){
+                               type.DP='aDP', alloc.proportions=NULL,
+                               analytic=FALSE, tol=1e-12){
   ### INPUT CHECKING ###
   {
   if (!is.numeric(true.values) || !is.atomic(true.values)){
@@ -225,8 +239,11 @@ GaussianMechanism <- function (true.values, eps, delta, sensitivities,
   }
   if (any(sensitivities<=0)) stop("Global sensitivities must be > 0.")
 
+  if (analytic && type.DP!='aDP')
+    stop("Only approximate DP can be used when analytic is TRUE.")
   if (type.DP!='pDP' && type.DP!='aDP') stop("type.DP must be one of {'pDP', 'aDP'}.")
-  if (type.DP=='aDP' && eps>=1) stop("eps must be < 1 for aDP.")
+  if (!analytic && type.DP=='aDP' && eps>=1)
+    stop("eps must be < 1 for aDP unless analytic is TRUE.")
 
   if (!is.null(alloc.proportions)){
     if (length(alloc.proportions)!=length(sensitivities)) {
@@ -246,7 +263,11 @@ GaussianMechanism <- function (true.values, eps, delta, sensitivities,
                                              stats::qnorm(delta/2))/(2*eps)
       noise <- stats::rnorm(n, sd=param)
     } else if (type.DP == 'aDP'){ # Equation 18 from Gaussian paper
-      param <- sqrt(sum(sensitivities^2))*(sqrt(2*log(1.25/delta)))/eps
+      if (analytic){
+        param <- calibrateAnalyticGaussianMechanism(eps, delta,
+                                                    sqrt(sum(sensitivities^2)),
+                                                    tol)
+      } else param <- sqrt(sum(sensitivities^2))*(sqrt(2*log(1.25/delta)))/eps
       noise <- stats::rnorm(n, sd=param)
     }
   } else{
@@ -262,152 +283,15 @@ GaussianMechanism <- function (true.values, eps, delta, sensitivities,
       }
     } else if (type.DP == 'aDP'){
       for (i in 1:n){
-        param <- sensitivities[i]*(sqrt(2*log(1.25/alloc.delta[i])))/alloc.eps[i]
+        if (analytic){
+          param <- calibrateAnalyticGaussianMechanism(alloc.eps[i],
+                                                      alloc.delta[i],
+                                                      sensitivities[i], tol)
+        } else{
+          param <- sensitivities[i]*(sqrt(2*log(1.25/alloc.delta[i])))/alloc.eps[i]
+        }
         noise[i] <- stats::rnorm(n=1, sd=param)
       }
-    }
-  }
-  private.values <- true.values + noise
-  return(private.values)
-}
-
-#' Analytic Gaussian Mechanism
-#'
-#' This function implements the analytic Gaussian mechanism for differential
-#' privacy by adding noise to the true value(s) of a function according to
-#' specified values of epsilon, delta, and l2-global sensitivity(-ies). The
-#' noise scale is for the analytic Gaussian mechanism
-#' \insertCite{Balle2018}{DPpack}. Global sensitivity calculated based either on
-#' bounded or unbounded differential privacy can be used
-#' \insertCite{Kifer2011}{DPpack}. If true.values is a vector, the provided
-#' epsilon and delta are divided such that (epsilon, delta)-level differential
-#' privacy is satisfied across all function values. In the case that each
-#' element of true.values comes from its own function with different
-#' corresponding sensitivities, a vector of sensitivities may be provided. In
-#' this case, if desired, the user can specify how to divide epsilon and delta
-#' among the function values using alloc.proportions.
-#'
-#' @param true.values Real number or numeric vector corresponding to the true
-#'   value(s) of the desired function.
-#' @param eps Positive real number defining the epsilon privacy parameter.
-#' @param delta Positive real number defining the delta privacy parameter.
-#' @param sensitivities Real number or numeric vector corresponding to the
-#'   l2-global sensitivity(-ies) of the function(s) generating true.values. This
-#'   value must be of length 1 or of the same length as true.values. If it is of
-#'   length 1 and true.values is a vector, this indicates that the given
-#'   sensitivity applies simultaneously to all elements of true.values and that
-#'   the privacy budget need not be allocated (alloc.proportions is unused in
-#'   this case). If it is of the same length as true.values, this indicates that
-#'   each element of true.values comes from its own function with different
-#'   corresponding sensitivities. In this case, the l2-norm of the provided
-#'   sensitivities is used to generate the Gaussian noise.
-#' @param alloc.proportions Optional numeric vector giving the allocation
-#'   proportions of epsilon and delta to the function values in the case of
-#'   vector-valued sensitivities. For example, if sensitivities is of length two
-#'   and alloc.proportions = c(.75, .25), then 75% of the privacy budget eps
-#'   (and 75% of delta) is allocated to the noise computation for the first
-#'   element of true.values, and the remaining 25% is allocated to the noise
-#'   computation for the second element of true.values. This ensures (eps,
-#'   delta)-level privacy across all computations. Input does not need to be
-#'   normalized, meaning alloc.proportions = c(3,1) produces the same result as
-#'   the example above.
-#' @param tol Optional error tolerance for binary search used in determining the
-#'   noise parameter for the analytic Gaussian mechanism. Defaults to 1e-12.
-#' @return Sanitized function values based on the bounded and/or unbounded
-#'   definitions of differential privacy, sanitized via the analytic Gaussian
-#'   mechanism.
-#' @examples
-#' # Simulate dataset
-#' n <- 100
-#' c0 <- 5 # Lower bound
-#' c1 <- 10 # Upper bound
-#' D1 <- stats::runif(n, c0, c1)
-#'
-#' # Privacy budget
-#' epsilon <- 1.1 # epsilon can be > 1 for analytic Gaussian mechanism
-#' delta <- 0.01
-#' sensitivity <- (c1-c0)/n
-#'
-#' private.mean <- AnalyticGaussianMechanism(mean(D1), epsilon,
-#'                                           delta, sensitivity)
-#' private.mean
-#'
-#'
-#' # Simulate second dataset
-#' d0 <- 3 # Lower bound
-#' d1 <- 6 # Upper bound
-#' D2 <- stats::runif(n, d0, d1)
-#' D <- matrix(c(D1,D2),ncol=2)
-#' sensitivities <- c((c1-c0)/n, (d1-d0)/n)
-#' epsilon <- 0.9 # Total privacy budget for all means
-#' delta <- 0.01
-#'
-#' # Here, sensitivities are summed and the result is used to generate Laplace
-#' # noise. This is essentially the same as allocating epsilon proportional to
-#' # the corresponding sensitivity. The results satisfy (0.9,0.01)-approximate
-#' # differential privacy.
-#' private.means <- AnalyticGaussianMechanism(apply(D, 2, mean), epsilon,
-#'                                            delta, sensitivities)
-#' private.means
-#'
-#' # Here, privacy budget is explicitly split so that 75% is given to the first
-#' # vector element and 25% is given to the second.
-#' private.means <- AnalyticGaussianMechanism(apply(D, 2, mean), epsilon,
-#'                                            delta, sensitivities,
-#'                                            alloc.proportions = c(0.75, 0.25))
-#' private.means
-#'
-#' @importFrom Rdpack reprompt
-#'
-#' @references \insertRef{Dwork2006a}{DPpack}
-#'
-#'   \insertRef{Balle2018}{DPpack}
-#'
-#'   \insertRef{Kifer2011}{DPpack}
-#'
-#'   \insertRef{Liu2019a}{DPpack}
-#'
-#'   \insertRef{Dwork2006b}{DPpack}
-#'
-#' @export
-AnalyticGaussianMechanism <- function (true.values, eps, delta, sensitivities,
-                                       alloc.proportions=NULL, tol=1e-12){
-  ### INPUT CHECKING ###
-  {
-    if (!is.numeric(true.values) || !is.atomic(true.values)){
-      stop("true.values must be numeric atomic vectors or scalars.")
-    }
-    if (!is.numeric(eps) || length(eps)>1 || eps<=0) stop("eps must be a scalar > 0")
-    if (!is.numeric(delta) || length(delta)>1 || delta<=0) stop("delta must be a scalar > 0")
-    if (length(sensitivities)!=length(true.values) & length(sensitivities)!=1){
-      stop("Length of sensitivities must match length of true.values or be length 1.")
-    }
-    if (any(sensitivities<=0)) stop("Global sensitivities must be > 0.")
-
-    if (!is.null(alloc.proportions)){
-      if (length(alloc.proportions)!=length(sensitivities)) {
-        stop("Length of alloc.proportions, if given, must match length of sensitivities.")
-      }
-      if (any(alloc.proportions<=0)){
-        stop("Values in alloc.proportions, if given, must be > 0.")
-      }
-      alloc.proportions <- alloc.proportions/sum(alloc.proportions)
-    }
-  }
-  ########
-  n <- length(true.values)
-  if (is.null(alloc.proportions)){
-    param <- calibrateAnalyticGaussianMechanism(eps, delta,
-                                                sqrt(sum(sensitivities^2)), tol)
-    noise <- stats::rnorm(n, sd=param)
-  } else{
-    noise <- double(n)
-    alloc.eps <- eps*alloc.proportions
-    alloc.delta <- delta*alloc.proportions
-    for (i in 1:n){
-      param <- calibrateAnalyticGaussianMechanism(alloc.eps[i], alloc.delta[i],
-                                                  sensitivities[i], tol)
-      noise[i] <- stats::rnorm(n=1, sd=param)
     }
   }
   private.values <- true.values + noise

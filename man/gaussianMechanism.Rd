@@ -10,7 +10,9 @@ GaussianMechanism(
   delta,
   sensitivities,
   type.DP = "aDP",
-  alloc.proportions = NULL
+  alloc.proportions = NULL,
+  analytic = FALSE,
+  tol = 1e-12
 )
 }
 \arguments{
@@ -48,6 +50,13 @@ computation for the second element of true.values. This ensures (eps,
 delta)-level privacy across all computations. Input does not need to be
 normalized, meaning alloc.proportions = c(3,1) produces the same result as
 the example above.}
+
+\item{analytic}{Indicates whether to use the analytic Gaussian mechanism to
+compute the noise scale \insertCite{Balle2018}{DPpack}. Defaults to FALSE.}
+
+\item{tol}{Error tolerance for binary search used in determining the noise
+parameter for the analytic Gaussian mechanism. Unused if analytic is FALSE.
+Defaults to 1e-12.}
 }
 \value{
 Sanitized function values based on the bounded and/or unbounded
@@ -88,6 +97,12 @@ private.mean.prob <- GaussianMechanism(mean(D1), epsilon, delta, sensitivity,
                                        type.DP = 'pDP')
 private.mean.prob
 
+# Analytic Gaussian mechanism
+epsilon <- 1.1 # epsilon can be > 1 for analytic Gaussian mechanism
+private.mean.analytic <- GaussianMechanism(mean(D1), epsilon, delta,
+                                           sensitivity, analytic=TRUE)
+private.mean.analytic
+
 # Simulate second dataset
 d0 <- 3 # Lower bound
 d1 <- 6 # Upper bound
@@ -117,6 +132,8 @@ private.means
 \insertRef{Dwork2006a}{DPpack}
 
 \insertRef{Kifer2011}{DPpack}
+
+\insertRef{Balle2018}{DPpack}
 
 \insertRef{Liu2019a}{DPpack}
 
