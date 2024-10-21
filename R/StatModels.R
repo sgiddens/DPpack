@@ -272,7 +272,7 @@ regularizer.gr.l2 <- function(coeff) coeff
 #'
 #' This function implements the privacy-preserving hyperparameter tuning
 #' function for binary classification \insertCite{chaudhuri2011}{DPpack} using
-#' the exponential mechanism. It accepts a list of models with various chosen
+#' the exponential mechanism. It accepts a list of DP models with various chosen
 #' hyperparameters, a dataset X with corresponding labels y, upper and lower
 #' bounds on the columns of X, and a boolean indicating whether to add bias in
 #' the construction of each of the models. The data are split into m+1 equal
@@ -283,7 +283,7 @@ regularizer.gr.l2 <- function(coeff) coeff
 #' mechanism (\code{\link{ExponentialMechanism}}) to select a tuned model in a
 #' privacy-preserving way.
 #'
-#' @param models Vector of binary classification model objects, each initialized
+#' @param DPmodels Vector of binary classification model objects, each initialized
 #'   with a different combination of hyperparameter values from the search space
 #'   for tuning. Each model should be initialized with the same epsilon privacy
 #'   parameter value eps. The tuned model satisfies eps-level differential
@@ -305,7 +305,7 @@ regularizer.gr.l2 <- function(coeff) coeff
 #'   \code{y}.
 #' @param weights.upper.bound Numeric value representing the global or public
 #'   upper bound on the weights.
-#' @return Single model object selected from the input list models with tuned
+#' @return Single model object selected from the input list DPmodels with tuned
 #'   parameters.
 #' @examples
 #' # Build train dataset X and y, and test dataset Xtest and ytest
@@ -339,12 +339,12 @@ regularizer.gr.l2 <- function(coeff) coeff
 #' svmdp1 <- svmDP$new("l2", eps, grid.search[1], perturbation.method='output')
 #' svmdp2 <- svmDP$new("l2", eps, grid.search[2], perturbation.method='output')
 #' svmdp3 <- svmDP$new("l2", eps, grid.search[3], perturbation.method='output')
-#' models <- c(svmdp1, svmdp2, svmdp3)
+#' DPmodels <- c(svmdp1, svmdp2, svmdp3)
 #'
 #' # Tune using data and bounds for X based on its construction
 #' upper.bounds <- c( 1, 1)
 #' lower.bounds <- c(-1,-1)
-#' tuned.model <- tune_classification_model(models, X, y, upper.bounds,
+#' tuned.model <- tune_classification_model(DPmodels, X, y, upper.bounds,
 #'                                          lower.bounds, weights=weights,
 #'                                          weights.upper.bound=wub)
 #' tuned.model$gamma # Gives resulting selected hyperparameter
@@ -357,10 +357,10 @@ regularizer.gr.l2 <- function(coeff) coeff
 #' @references \insertRef{chaudhuri2011}{DPpack}
 #'
 #' @export
-tune_classification_model<- function(models, X, y, upper.bounds, lower.bounds,
+tune_classification_model<- function(DPmodels, X, y, upper.bounds, lower.bounds,
                       add.bias=FALSE, weights=NULL, weights.upper.bound=NULL){
   # Make sure values are correct
-  m <- length(models)
+  m <- length(DPmodels)
   n <- length(y)
   # Split data into m+1 groups
   validateX <- X[seq(m+1,n,m+1),,drop=FALSE]
@@ -371,15 +371,15 @@ tune_classification_model<- function(models, X, y, upper.bounds, lower.bounds,
     suby <- y[seq(i,n,m+1)]
     if (!is.null(weights)) subWeights <- weights[seq(i,n,m+1)]
     if (is.null(weights)){
-      models[[i]]$fit(subX,suby,upper.bounds,lower.bounds,add.bias)
+      DPmodels[[i]]$fit(subX,suby,upper.bounds,lower.bounds,add.bias)
     } else{
-      models[[i]]$fit(subX,suby,upper.bounds,lower.bounds,add.bias,
+      DPmodels[[i]]$fit(subX,suby,upper.bounds,lower.bounds,add.bias,
                       weights=subWeights, weights.upper.bound=weights.upper.bound)
     }
-    validatey.hat <- models[[i]]$predict(validateX,add.bias,raw.value=FALSE)
+    validatey.hat <- DPmodels[[i]]$predict(validateX,add.bias,raw.value=FALSE)
     z[i] <- sum(validatey!=validatey.hat)
   }
-  res <- ExponentialMechanism(-z, models[[1]]$eps, 1, candidates=models)
+  res <- ExponentialMechanism(-z, DPmodels[[1]]$eps, 1, candidates=DPmodels)
   res[[1]]
 }
 
@@ -1731,7 +1731,7 @@ svmDP <- R6::R6Class("svmDP",
     V <- matrix(NaN, nrow=nrow(X), ncol=self$D)
     for (i in 1:nrow(X)){
       for (j in 1:self$D){
-        V[i,j] <- sqrt(1/self$D)*self$phi(X[i,],self$prefilter[j,])
+        V[i,j] <- sqrt(2/self$D)*self$phi(X[i,],self$prefilter[j,])
       }
     }
     V
@@ -1822,8 +1822,8 @@ svmDP <- R6::R6Class("svmDP",
 
       V <- self$XtoV(X)
 
-      lbs <- c(numeric(ncol(V)) - sqrt(1/self$D))
-      ubs <- c(numeric(ncol(V)) + sqrt(1/self$D))
+      lbs <- c(numeric(ncol(V)) - sqrt(2/self$D))
+      ubs <- c(numeric(ncol(V)) + sqrt(2/self$D))
       res <- super$preprocess_data(V, y, ubs, lbs, add.bias=FALSE,
                                    weights=weights,
                                    weights.upper.bound=weights.upper.bound)
@@ -2499,7 +2499,7 @@ LinearRegressionDP <- R6::R6Class("LinearRegressionDP",
 #'
 #' This function implements the privacy-preserving hyperparameter tuning
 #' function for linear regression \insertCite{Kifer2012}{DPpack} using the
-#' exponential mechanism. It accepts a list of models with various chosen
+#' exponential mechanism. It accepts a list of DP models with various chosen
 #' hyperparameters, a dataset X with corresponding values y, upper and lower
 #' bounds on the columns of X and the values of y, and a boolean indicating
 #' whether to add bias in the construction of each of the models. The data are
@@ -2511,7 +2511,7 @@ LinearRegressionDP <- R6::R6Class("LinearRegressionDP",
 #' (\code{\link{ExponentialMechanism}}) to select a tuned model in a
 #' privacy-preserving way.
 #'
-#' @param models Vector of linear regression model objects, each initialized
+#' @param DPmodels Vector of linear regression model objects, each initialized
 #'   with a different combination of hyperparameter values from the search space
 #'   for tuning. Each model should be initialized with the same epsilon privacy
 #'   parameter value eps. The tuned model satisfies eps-level differential
@@ -2533,7 +2533,7 @@ LinearRegressionDP <- R6::R6Class("LinearRegressionDP",
 #'   corresponding lower bound is clipped at the bound.
 #' @param add.bias Boolean indicating whether to add a bias term to X. Defaults
 #'   to FALSE.
-#' @return Single model object selected from the input list models with tuned
+#' @return Single model object selected from the input list DPmodels with tuned
 #'   parameters.
 #' @examples
 #' # Build example dataset
@@ -2553,12 +2553,12 @@ LinearRegressionDP <- R6::R6Class("LinearRegressionDP",
 #' linrdp1 <- LinearRegressionDP$new("l2", eps, delta, grid.search[1])
 #' linrdp2 <- LinearRegressionDP$new("l2", eps, delta, grid.search[2])
 #' linrdp3 <- LinearRegressionDP$new("l2", eps, delta, grid.search[3])
-#' models <- c(linrdp1, linrdp2, linrdp3)
+#' DPmodels <- c(linrdp1, linrdp2, linrdp3)
 #'
 #' # Tune using data and bounds for X and y based on their construction
 #' upper.bounds <- c( 1, 2) # Bounds for X and y
 #' lower.bounds <- c(-1,-2) # Bounds for X and y
-#' tuned.model <- tune_linear_regression_model(models, X, y, upper.bounds,
+#' tuned.model <- tune_linear_regression_model(DPmodels, X, y, upper.bounds,
 #'                                             lower.bounds, add.bias=TRUE)
 #' tuned.model$gamma # Gives resulting selected hyperparameter
 #'
@@ -2572,10 +2572,10 @@ LinearRegressionDP <- R6::R6Class("LinearRegressionDP",
 #' @references \insertRef{Kifer2012}{DPpack}
 #'
 #' @export
-tune_linear_regression_model<- function(models, X, y, upper.bounds, lower.bounds,
+tune_linear_regression_model<- function(DPmodels, X, y, upper.bounds, lower.bounds,
                                      add.bias=FALSE){
   # Make sure values are correct
-  m <- length(models)
+  m <- length(DPmodels)
   n <- length(y)
   # Split data into m+1 groups
   validateX <- X[seq(m+1,n,m+1),,drop=FALSE]
@@ -2584,8 +2584,8 @@ tune_linear_regression_model<- function(models, X, y, upper.bounds, lower.bounds
   for (i in 1:m){
     subX <- X[seq(i,n,m+1),,drop=FALSE]
     suby <- y[seq(i,n,m+1)]
-    models[[i]]$fit(subX,suby,upper.bounds,lower.bounds,add.bias)
-    validatey.hat <- models[[i]]$predict(validateX,add.bias)
+    DPmodels[[i]]$fit(subX,suby,upper.bounds,lower.bounds,add.bias)
+    validatey.hat <- DPmodels[[i]]$predict(validateX,add.bias)
     z[i] <- sum((validatey - validatey.hat)^2)
   }
   # Bounds for y give global sensitivity for exponential mechanism in linear
@@ -2593,7 +2593,7 @@ tune_linear_regression_model<- function(models, X, y, upper.bounds, lower.bounds
   #    between upper and lower bounds.
   ub.y <- upper.bounds[length(upper.bounds)]
   lb.y <- lower.bounds[length(lower.bounds)]
-  res <- ExponentialMechanism(-z, models[[1]]$eps, (ub.y-lb.y)^2,
-                              candidates=models)
+  res <- ExponentialMechanism(-z, DPmodels[[1]]$eps, (ub.y-lb.y)^2,
+                              candidates=DPmodels)
   res[[1]]
 }

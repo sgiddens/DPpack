@@ -11,8 +11,7 @@ quantileDP(
   lower.bound,
   upper.bound,
   which.sensitivity = "bounded",
-  mechanism = "exponential",
-  uniform.sampling = TRUE
+  mechanism = "exponential"
 )
 }
 \arguments{
@@ -39,12 +38,6 @@ Care must be taken not to violate differential privacy in this case.}
 privacy. Currently the following mechanisms are supported: \{'exponential'\}.
 See \code{\link{ExponentialMechanism}} for a description of the supported
 mechanisms.}
-
-\item{uniform.sampling}{Boolean indicating whether to sample uniformly
-between sorted dataset values when returning the private quantile. If TRUE,
-it is possible for this function to return any number between lower.bound
-and upper.bound. If FALSE, only a value present in the dataset or the lower
-bound can be returned.}
 }
 \value{
 Sanitized quantile based on the bounded and/or unbounded definitions
@@ -63,12 +56,6 @@ quant <- 0.25
 eps <- 1
 # Get 25th quantile satisfying pure 1-differential privacy
 private.quantile <- quantileDP(D, quant, eps, lower.bound, upper.bound)
-private.quantile
-
-# Get 75th quantile requiring released value to be in dataset
-quant <- 0.75
-private.quantile <- quantileDP(D, quant, eps, lower.bound, upper.bound,
-                               uniform.sampling = FALSE)
 private.quantile
 
 }

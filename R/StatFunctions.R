@@ -393,6 +393,10 @@ covDP <- function (x1, x2, eps, lower.bound1, upper.bound1, lower.bound2,
 #'
 #' @param x Numeric vector from which the histogram will be formed.
 #' @param eps Positive real number defining the epsilon privacy budget.
+#' @param lower.bound Scalar representing the global or public lower bound on
+#'   values of x.
+#' @param upper.bound Scalar representing the global or public upper bound on
+#'   values of x.
 #' @param breaks Identical to the argument with the same name from
 #'   \code{\link[graphics]{hist}}.
 #' @param normalize Logical value. If FALSE (default), returned histogram counts
@@ -427,12 +431,13 @@ covDP <- function (x1, x2, eps, lower.bound1, upper.bound1, lower.bound2,
 #' @examples
 #' x <- stats::rnorm(500)
 #' graphics::hist(x) # Non-private histogram
-#' result <- histogramDP(x, 1)
+#' result <- histogramDP(x, 1, -3, 3)
 #' plot(result) # Private histogram
 #'
 #' graphics::hist(x, freq=FALSE) # Normalized non-private histogram
-#' result <- histogramDP(x, .5, normalize=TRUE, which.sensitivity='unbounded',
-#'   mechanism='Gaussian',delta=0.01, allow.negative=TRUE)
+#' result <- histogramDP(x, .5, -3, 3, normalize=TRUE,
+#'   which.sensitivity='unbounded', mechanism='Gaussian', delta=0.01,
+#'   allow.negative=TRUE)
 #' plot(result) # Normalized private histogram (note negative values allowed)
 #'
 #' @references \insertRef{Dwork2006a}{DPpack}
@@ -444,11 +449,17 @@ covDP <- function (x1, x2, eps, lower.bound1, upper.bound1, lower.bound2,
 #'   \insertRef{Dwork2006b}{DPpack}
 #'
 #' @export
-histogramDP <- function(x, eps, breaks="Sturges", normalize=FALSE,
-                        which.sensitivity='bounded', mechanism='Laplace',
-                        delta=0, type.DP='aDP', allow.negative=FALSE){
+histogramDP <- function(x, eps, lower.bound, upper.bound, breaks="Sturges",
+                        normalize=FALSE, which.sensitivity='bounded',
+                        mechanism='Laplace', delta=0, type.DP='aDP',
+                        allow.negative=FALSE){
   #### INPUT CHECKING ####
   {
+  if (length(upper.bound)!=1) stop("Length of upper.bound must be 1.")
+  if (length(lower.bound)!=1) stop("Length of lower.bound must be 1.")
+  x[x<lower.bound] <- lower.bound
+  x[x>upper.bound] <- upper.bound
+
   if (which.sensitivity!='bounded' & which.sensitivity!='unbounded' &
       which.sensitivity!='both'){
     stop("which.sensitivity must be one of {'bounded', 'unbounded', 'both'}.")
@@ -468,6 +479,21 @@ histogramDP <- function(x, eps, breaks="Sturges", normalize=FALSE,
   ##########
 
   ########## Privacy layer
+  if (!tv$equidist) stop("Only equidistant histogram bins are supported.")
+  # Add counts if needed to incorporate bounds
+  while (all(lower.bound < tv$breaks)){
+    difference <- tv$breaks[2] - tv$breaks[1]
+    tv$mids <- c(tv$breaks[1] - difference/2, tv$mids)
+    tv$breaks <- c(tv$breaks[1] - difference, tv$breaks)
+    tv$counts <- c(0, tv$counts)
+  }
+  while (all(tv$breaks < upper.bound)){
+    difference <- tv$breaks[2] - tv$breaks[1]
+    tv$mids <- c(tv$mids, tv$breaks[length(tv$breaks)] + difference/2)
+    tv$breaks <- c(tv$breaks, tv$breaks[length(tv$breaks)] + difference)
+    tv$counts <- c(tv$counts, 0)
+  }
+
   counts <- tv$counts
   if (mechanism=='Laplace'){
     if (which.sensitivity=='bounded'){
@@ -1071,11 +1097,6 @@ pooledCovDP <- function(..., eps=1, lower.bound1, upper.bound1, lower.bound2,
 #'   privacy. Currently the following mechanisms are supported: \{'exponential'\}.
 #'   See \code{\link{ExponentialMechanism}} for a description of the supported
 #'   mechanisms.
-#' @param uniform.sampling Boolean indicating whether to sample uniformly
-#'   between sorted dataset values when returning the private quantile. If TRUE,
-#'   it is possible for this function to return any number between lower.bound
-#'   and upper.bound. If FALSE, only a value present in the dataset or the lower
-#'   bound can be returned.
 #' @return Sanitized quantile based on the bounded and/or unbounded definitions
 #'   of differential privacy.
 #' @examples
@@ -1089,12 +1110,6 @@ pooledCovDP <- function(..., eps=1, lower.bound1, upper.bound1, lower.bound2,
 #' private.quantile <- quantileDP(D, quant, eps, lower.bound, upper.bound)
 #' private.quantile
 #'
-#' # Get 75th quantile requiring released value to be in dataset
-#' quant <- 0.75
-#' private.quantile <- quantileDP(D, quant, eps, lower.bound, upper.bound,
-#'                                uniform.sampling = FALSE)
-#' private.quantile
-#'
 #' @references \insertRef{Dwork2006a}{DPpack}
 #'
 #'   \insertRef{Kifer2011}{DPpack}
@@ -1103,11 +1118,7 @@ pooledCovDP <- function(..., eps=1, lower.bound1, upper.bound1, lower.bound2,
 #'
 #' @export
 quantileDP <- function (x, quant, eps, lower.bound, upper.bound,
-                        which.sensitivity='bounded', mechanism='exponential',
-                        uniform.sampling=TRUE){
-  # NOTE: See
-  # https://github.com/IBM/differential-privacy-library/blob/main/diffprivlib/tools/quantiles.py
-  #
+                        which.sensitivity='bounded', mechanism='exponential'){
   # NOTE: The data access and privacy layers are somewhat mixed.
 
   #### INPUT CHECKING ####
@@ -1146,11 +1157,9 @@ quantileDP <- function (x, quant, eps, lower.bound, upper.bound,
   if (mechanism=='exponential'){
     sanitized.index <- ExponentialMechanism(utility, eps, sens,
                                             measure=diff(sorted))
-    if (uniform.sampling){
-      sanitized.quantile <- stats::runif(1)*
-        (sorted[sanitized.index+1] - sorted[sanitized.index]) +
-        sorted[sanitized.index]
-    } else sanitized.quantile <- sorted[sanitized.index]
+    sanitized.quantile <- stats::runif(1)*
+      (sorted[sanitized.index+1] - sorted[sanitized.index]) +
+      sorted[sanitized.index]
   }
   ##########
 
@@ -1180,11 +1189,6 @@ quantileDP <- function (x, quant, eps, lower.bound, upper.bound,
 #'   privacy. Currently the following mechanisms are supported: \{'exponential'\}.
 #'   See \code{\link{ExponentialMechanism}} for a description of the supported
 #'   mechanisms.
-#' @param uniform.sampling Boolean indicating whether to sample uniformly
-#'   between sorted dataset values when returning the private quantile. If TRUE,
-#'   it is possible for this function to return any number between lower.bound
-#'   and upper.bound. If FALSE, only a value present in the dataset or the lower
-#'   bound can be returned.
 #' @return Sanitized median based on the bounded and/or unbounded definitions
 #'   of differential privacy.
 #' @examples
@@ -1197,10 +1201,6 @@ quantileDP <- function (x, quant, eps, lower.bound, upper.bound,
 #' private.median <- medianDP(D, eps, lower.bound, upper.bound)
 #' private.median
 #'
-#' # Require released value to be in dataset
-#' private.median <- medianDP(c(1,0,3,3,2), eps, 0, 4, uniform.sampling = FALSE)
-#' private.median
-#'
 #' @references \insertRef{Dwork2006a}{DPpack}
 #'
 #'   \insertRef{Kifer2011}{DPpack}
@@ -1209,10 +1209,9 @@ quantileDP <- function (x, quant, eps, lower.bound, upper.bound,
 #'
 #' @export
 medianDP <- function (x, eps, lower.bound, upper.bound,
-                      which.sensitivity='bounded', mechanism='exponential',
-                      uniform.sampling=TRUE){
+                      which.sensitivity='bounded', mechanism='exponential'){
   sanitized.median <- quantileDP(x,.5,eps,lower.bound,upper.bound,
-                                 which.sensitivity,mechanism,uniform.sampling)
+                                 which.sensitivity,mechanism)
   return(sanitized.median)
   ##########
 }

@@ -5,7 +5,7 @@
 \title{Privacy-preserving Hyperparameter Tuning for Binary Classification Models}
 \usage{
 tune_classification_model(
-  models,
+  DPmodels,
   X,
   y,
   upper.bounds,
@@ -16,7 +16,7 @@ tune_classification_model(
 )
 }
 \arguments{
-\item{models}{Vector of binary classification model objects, each initialized
+\item{DPmodels}{Vector of binary classification model objects, each initialized
 with a different combination of hyperparameter values from the search space
 for tuning. Each model should be initialized with the same epsilon privacy
 parameter value eps. The tuned model satisfies eps-level differential
@@ -47,13 +47,13 @@ to FALSE.}
 upper bound on the weights.}
 }
 \value{
-Single model object selected from the input list models with tuned
+Single model object selected from the input list DPmodels with tuned
 parameters.
 }
 \description{
 This function implements the privacy-preserving hyperparameter tuning
 function for binary classification \insertCite{chaudhuri2011}{DPpack} using
-the exponential mechanism. It accepts a list of models with various chosen
+the exponential mechanism. It accepts a list of DP models with various chosen
 hyperparameters, a dataset X with corresponding labels y, upper and lower
 bounds on the columns of X, and a boolean indicating whether to add bias in
 the construction of each of the models. The data are split into m+1 equal
@@ -96,12 +96,12 @@ eps <- 1 # Privacy budget should be the same for all models
 svmdp1 <- svmDP$new("l2", eps, grid.search[1], perturbation.method='output')
 svmdp2 <- svmDP$new("l2", eps, grid.search[2], perturbation.method='output')
 svmdp3 <- svmDP$new("l2", eps, grid.search[3], perturbation.method='output')
-models <- c(svmdp1, svmdp2, svmdp3)
+DPmodels <- c(svmdp1, svmdp2, svmdp3)
 
 # Tune using data and bounds for X based on its construction
 upper.bounds <- c( 1, 1)
 lower.bounds <- c(-1,-1)
-tuned.model <- tune_classification_model(models, X, y, upper.bounds,
+tuned.model <- tune_classification_model(DPmodels, X, y, upper.bounds,
                                          lower.bounds, weights=weights,
                                          weights.upper.bound=wub)
 tuned.model$gamma # Gives resulting selected hyperparameter

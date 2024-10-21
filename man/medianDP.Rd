@@ -10,8 +10,7 @@ medianDP(
   lower.bound,
   upper.bound,
   which.sensitivity = "bounded",
-  mechanism = "exponential",
-  uniform.sampling = TRUE
+  mechanism = "exponential"
 )
 }
 \arguments{
@@ -36,12 +35,6 @@ Care must be taken not to violate differential privacy in this case.}
 privacy. Currently the following mechanisms are supported: \{'exponential'\}.
 See \code{\link{ExponentialMechanism}} for a description of the supported
 mechanisms.}
-
-\item{uniform.sampling}{Boolean indicating whether to sample uniformly
-between sorted dataset values when returning the private quantile. If TRUE,
-it is possible for this function to return any number between lower.bound
-and upper.bound. If FALSE, only a value present in the dataset or the lower
-bound can be returned.}
 }
 \value{
 Sanitized median based on the bounded and/or unbounded definitions
@@ -59,10 +52,6 @@ upper.bound <- 3 # 3 standard deviations above mean
 eps <- 1
 # Get median satisfying pure 1-differential privacy
 private.median <- medianDP(D, eps, lower.bound, upper.bound)
-private.median
-
-# Require released value to be in dataset
-private.median <- medianDP(c(1,0,3,3,2), eps, 0, 4, uniform.sampling = FALSE)
 private.median
 
 }

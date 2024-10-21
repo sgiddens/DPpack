@@ -7,6 +7,8 @@
 histogramDP(
   x,
   eps,
+  lower.bound,
+  upper.bound,
   breaks = "Sturges",
   normalize = FALSE,
   which.sensitivity = "bounded",
@@ -20,6 +22,12 @@ histogramDP(
 \item{x}{Numeric vector from which the histogram will be formed.}
 
 \item{eps}{Positive real number defining the epsilon privacy budget.}
+
+\item{lower.bound}{Scalar representing the global or public lower bound on
+values of x.}
+
+\item{upper.bound}{Scalar representing the global or public upper bound on
+values of x.}
 
 \item{breaks}{Identical to the argument with the same name from
 \code{\link[graphics]{hist}}.}
@@ -69,12 +77,13 @@ returned with sanitized values for the counts for easy plotting.
 \examples{
 x <- stats::rnorm(500)
 graphics::hist(x) # Non-private histogram
-result <- histogramDP(x, 1)
+result <- histogramDP(x, 1, -3, 3)
 plot(result) # Private histogram
 
 graphics::hist(x, freq=FALSE) # Normalized non-private histogram
-result <- histogramDP(x, .5, normalize=TRUE, which.sensitivity='unbounded',
-  mechanism='Gaussian',delta=0.01, allow.negative=TRUE)
+result <- histogramDP(x, .5, -3, 3, normalize=TRUE,
+  which.sensitivity='unbounded', mechanism='Gaussian', delta=0.01,
+  allow.negative=TRUE)
 plot(result) # Normalized private histogram (note negative values allowed)
 
 }

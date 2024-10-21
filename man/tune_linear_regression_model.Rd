@@ -5,7 +5,7 @@
 \title{Privacy-preserving Hyperparameter Tuning for Linear Regression Models}
 \usage{
 tune_linear_regression_model(
-  models,
+  DPmodels,
   X,
   y,
   upper.bounds,
@@ -14,7 +14,7 @@ tune_linear_regression_model(
 )
 }
 \arguments{
-\item{models}{Vector of linear regression model objects, each initialized
+\item{DPmodels}{Vector of linear regression model objects, each initialized
 with a different combination of hyperparameter values from the search space
 for tuning. Each model should be initialized with the same epsilon privacy
 parameter value eps. The tuned model satisfies eps-level differential
@@ -43,13 +43,13 @@ corresponding lower bound is clipped at the bound.}
 to FALSE.}
 }
 \value{
-Single model object selected from the input list models with tuned
+Single model object selected from the input list DPmodels with tuned
 parameters.
 }
 \description{
 This function implements the privacy-preserving hyperparameter tuning
 function for linear regression \insertCite{Kifer2012}{DPpack} using the
-exponential mechanism. It accepts a list of models with various chosen
+exponential mechanism. It accepts a list of DP models with various chosen
 hyperparameters, a dataset X with corresponding values y, upper and lower
 bounds on the columns of X and the values of y, and a boolean indicating
 whether to add bias in the construction of each of the models. The data are
@@ -79,12 +79,12 @@ delta <- 0.01
 linrdp1 <- LinearRegressionDP$new("l2", eps, delta, grid.search[1])
 linrdp2 <- LinearRegressionDP$new("l2", eps, delta, grid.search[2])
 linrdp3 <- LinearRegressionDP$new("l2", eps, delta, grid.search[3])
-models <- c(linrdp1, linrdp2, linrdp3)
+DPmodels <- c(linrdp1, linrdp2, linrdp3)
 
 # Tune using data and bounds for X and y based on their construction
 upper.bounds <- c( 1, 2) # Bounds for X and y
 lower.bounds <- c(-1,-2) # Bounds for X and y
-tuned.model <- tune_linear_regression_model(models, X, y, upper.bounds,
+tuned.model <- tune_linear_regression_model(DPmodels, X, y, upper.bounds,
                                             lower.bounds, add.bias=TRUE)
 tuned.model$gamma # Gives resulting selected hyperparameter
 
